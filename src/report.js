@@ -86,7 +86,7 @@ function leaderboard(stats, top) {
     '## Three ways to own a repository',
     '',
     'The top owner of each repository by commit count, by `git blame`, and by line hash.',
-    'Blame shows "-" until `ownh blame` has covered every file (or every file of its sample).',
+    'Blame shows "-" until `bin/ownh.js blame` has covered every file (or every file of its sample).',
     'Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.',
     '',
     ...mdTable(['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'], [

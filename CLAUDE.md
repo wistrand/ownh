@@ -11,7 +11,7 @@ onto one "owner", formatters and renames transfer ownership wholesale, and the
 resulting leaderboard exposes how arbitrary any ownership metric is. The point
 lands only if the tool is presented deadpan and the numbers come from real repos.
 
-Planned pieces (nothing is built yet, see [agent_docs/plan.md](agent_docs/plan.md)):
+Pieces (status in [agent_docs/plan.md](agent_docs/plan.md)):
 
 ```
 git history (1..n repos) ──> line-hash indexer ──> first-introducer table ──> reports
@@ -23,29 +23,33 @@ git history (1..n repos) ──> line-hash indexer ──> first-introducer tabl
 
 ## Layout
 
-| Path          | Role                                                  |
-|---------------|-------------------------------------------------------|
-| Path               | Role                                                         |
-|--------------------|--------------------------------------------------------------|
-| `bin/ownh.js`      | CLI: `index`, `summary`                                      |
-| `src/indexer.js`   | history walk, first-introducer upsert, HEAD scoring          |
-| `src/git.js`       | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file` |
-| `src/exclude.js`   | exclude-file parsing, patterns to git pathspecs              |
-| `ownh.exclude`     | default exclude list (used when no `--exclude-file`)         |
-| `src/db.js`        | SQLite schema (`node:sqlite`)                                |
-| `src/hash.js`      | line hash                                                    |
-| `src/stats.js`     | `collectStats`: every number summary and report show         |
-| `src/summary.js`   | plain-text summary                                           |
-| `src/report.js`    | report files: leaderboard.md, JSON, CSV                      |
-| `src/charts.js`    | SVG pie and cross-ownership heatmap                          |
-| `src/blame.js`     | `ownh blame`: git blame per HEAD file, parallel, resumable    |
-| `src/sample.js`    | deterministic blame file sample                              |
-| `src/html.js`      | self-contained report.html (inline charts, sortable tables)  |
-| `test/`            | fixture repo builder and `node:test` suite                   |
-| `docs/index.html`  | pitch site (static, hand-written, no real data)              |
-| `README.md`        | human-facing deadpan pitch and usage                         |
-| `agent_docs/`      | research, design, plan, gotchas (linked below)               |
-| `AGENTS.md`        | symlink to this file                                         |
+| Path             | Role                                                                  |
+|------------------|-----------------------------------------------------------------------|
+| `bin/ownh.js`    | CLI: `index`, `add`, `summary`, `report`, `blame`                     |
+| `src/indexer.js` | history walk, first-introducer upsert, HEAD scoring                   |
+| `src/git.js`     | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame` |
+| `src/exclude.js` | exclude-file parsing, patterns to git pathspecs                       |
+| `ownh.exclude`   | optional default exclude list, git-ignored                            |
+| `src/db.js`      | SQLite schema (`node:sqlite`)                                         |
+| `src/hash.js`    | line and file hash                                                    |
+| `src/stats.js`   | `collectStats`: every number summary and report show                  |
+| `src/summary.js` | plain-text summary                                                    |
+| `src/report.js`  | report files: leaderboard.md, JSON, CSV                               |
+| `src/charts.js`  | SVG pie and cross-ownership heatmap                                   |
+| `src/html.js`    | self-contained report.html (inline charts, sortable tables)           |
+| `src/blame.js`   | `ownh blame`: git blame per HEAD file, parallel, resumable            |
+| `src/sample.js`  | deterministic blame file sample                                       |
+| `test/`          | fixture repo builder and `node:test` suite                            |
+| `docs/`          | pitch site, served at https://ownh.org (GitHub Pages)                 |
+| `docs/CNAME`     | GitHub Pages custom domain (`ownh.org`); keep it                      |
+| `README.md`      | human-facing deadpan pitch and usage                                  |
+| `agent_docs/`    | research, design, plan, gotchas (linked below)                        |
+| `AGENTS.md`      | symlink to this file                                                  |
+
+The pitch site is `docs/index.html`, published by GitHub Pages from `docs/` on the
+default branch of https://github.com/wistrand/ownh to https://ownh.org (DNS at
+Namecheap: apex A/AAAA records to GitHub Pages, `www` CNAME to
+`wistrand.github.io`). Editing `docs/` and pushing updates the live site.
 
 Runtime is Node.js, no npm dependencies. Results are stored in SQLite, one `.db`
 per analysis; reports are generated from it.

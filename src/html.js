@@ -63,7 +63,7 @@ export function reportHtml(stats, top, charts) {
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p>`),
     section('Three ways to own a repository', `
       <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
-      line hash. Blame shows "-" until <code>ownh blame</code> has covered every file (or every file of its sample).
+      line hash. Blame shows "-" until <code>bin/ownh.js blame</code> has covered every file (or every file of its sample).
       Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.</p>
       ${table(
         ['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'],

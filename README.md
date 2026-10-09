@@ -7,9 +7,12 @@ exact content hash and assigns it to the first contributor in history to
 produce that hash, across every repository you give it. No interviews, no
 context, no feelings.
 
+Website: [ownh.org](https://ownh.org)
+
 ## Status
 
-Early. The indexer and a plain-text summary work; reports are in progress.
+Working: indexing, adding repositories, the text summary, HTML/Markdown/SVG/
+JSON/CSV reports, and a comparison against commit counts and `git blame`.
 
 ## Quick start
 
@@ -27,8 +30,8 @@ database without rebuilding it:
 bin/ownh.js add --db acme.db ~/src/another-repo
 ```
 
-Files and directories listed in `ownh.exclude` (optional, not committed) are left out, from history and
-from the current tree. Pass `--exclude-file <file>` (repeatable) to use your own
+Files and directories listed in `ownh.exclude` (optional, not committed) are
+left out, from history and from the current tree. Pass `--exclude-file <file>` (repeatable) to use your own
 list instead, or `--no-excludes` to include everything.
 
 ## Reports
@@ -37,14 +40,20 @@ list instead, or `--no-excludes` to include everything.
 bin/ownh.js report --db acme.db --out report/
 ```
 
-Writes `report.html` (open it in a browser), `leaderboard.md`, two charts (`ownership-by-line-hash.svg`,
-`cross-ownership.svg`), and the underlying data as JSON and CSV.
+Writes `report.html` (open it in a browser), `leaderboard.md`, two charts
+(`ownership-by-line-hash.svg`, `cross-ownership.svg`), and the underlying data
+as JSON and CSV.
 
-For comparison with conventional methods, `ownh blame --db acme.db` runs
+For comparison with conventional methods, `bin/ownh.js blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add
 `--sample 2000` to blame a random sample of files in large repositories and
-report an estimate instead. Reports then show
-the top owner of each repository by commit count, by blame, and by line hash.
+report an estimate instead. Reports then show the top owner of each repository
+by commit count, by blame, and by line hash.
+
+## Website
+
+The site at [ownh.org](https://ownh.org) is `docs/index.html`, served by GitHub
+Pages from the `docs/` folder.
 
 ## How it works
 

@@ -75,7 +75,9 @@ repo actually exhibits.
 
 ## Pitch site
 
-`docs/index.html` is a static, self-contained landing page in the deadpan
+`docs/index.html` is a static, self-contained landing page, live at
+https://ownh.org (GitHub Pages from `docs/`; `docs/CNAME` holds the domain). It
+links to the repo, https://github.com/wistrand/ownh. It is in the deadpan
 corporate voice (user decision: pitch only, no data from real runs). It uses no
 figures from runs, no customer logos, and no testimonials. Code-panel hashes are
 real SHA-256 prefixes (`e3b0` for an empty line, `d10b` for `}`, `737d` for
@@ -110,7 +112,7 @@ before use (see the invariants in CLAUDE.md).
 >   missed. In pilot deployments, the top owner was frequently someone with no
 >   recent commits, sometimes someone who had left the company.
 > - Refactor-aware governance. Changing a line changes its hash, which changes its
->   owner. Ownership flows naturally to whoever touched it last, exactly as it
+>   owner. Ownership flows naturally to whoever touched it first, exactly as it
 >   should.
 > - Formatter-agnostic. Just kidding. Run Prettier and see what happens.
 > - Cross-repository synergy. Identical lines across services share one owner, so
