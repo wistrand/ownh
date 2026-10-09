@@ -442,16 +442,16 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       </ul>
     </div>
     <pre class="term"><span class="c"># Index every repository you care about</span>
-<span class="p">$ </span>ownh index --db acme.db ~/src/frontend ~/src/backend
+<span class="p">$ </span>bin/ownh.js index --db acme.db ~/src/frontend ~/src/backend
 
 <span class="c"># Onboard another repository later</span>
-<span class="p">$ </span>ownh add --db acme.db ~/src/payments
+<span class="p">$ </span>bin/ownh.js add --db acme.db ~/src/payments
 
 <span class="c"># Benchmark against git blame (optional)</span>
-<span class="p">$ </span>ownh blame --db acme.db --sample 2000
+<span class="p">$ </span>bin/ownh.js blame --db acme.db --sample 2000
 
 <span class="c"># Generate the executive report</span>
-<span class="p">$ </span>ownh report --db acme.db --out report/</pre>
+<span class="p">$ </span>bin/ownh.js report --db acme.db --out report/</pre>
   </div>
 </section>
 
