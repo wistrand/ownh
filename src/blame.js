@@ -1,7 +1,8 @@
 import { availableParallelism } from 'node:os';
 import { openDbForWrite } from './db.js';
 import { toPathspecs } from './exclude.js';
-import { binaryPaths, blame as gitBlame } from './git.js';
+import { binaryPaths, blameClone, blame as gitBlame } from './git.js';
+import { samplePaths } from './sample.js';
 
 const PROGRESS_INTERVAL_MS = 5000;
 // Files per transaction. A run interrupted mid-batch redoes at most this many.
@@ -9,18 +10,30 @@ const BATCH_FILES = 200;
 
 // Blame tables are created on demand so .db files built before `ownh blame`
 // existed can still be blamed.
+//   blame_files  files whose blame is stored in head_lines.blame_identity_id
+//   blame_repos  per repo: sample size, or NULL when every file is to be blamed
 const BLAME_SCHEMA = `
 CREATE TABLE IF NOT EXISTS blame_files (
   repo_id INTEGER NOT NULL REFERENCES repos (id),
   path    TEXT NOT NULL,
   PRIMARY KEY (repo_id, path)
 ) WITHOUT ROWID;
+CREATE TABLE IF NOT EXISTS blame_repos (
+  repo_id INTEGER PRIMARY KEY REFERENCES repos (id),
+  sample  INTEGER
+);
 `;
 
 // Fills head_lines.blame_identity_id from `git blame` at each repo's stored head.
-// Resumable: files already recorded in blame_files are skipped. Binary files are
-// skipped (blame has no meaningful lines for them) and recorded as done.
-export async function blame({ dbPath, repoNames = [], jobs = availableParallelism(), log = () => {} }) {
+//
+// `sample`: blame only that many files per repo (a fixed pseudo-random set, see
+// samplePaths) in repos with more files; the report then shows blame as an
+// estimate. Without it, every file is blamed. A repo already fully blamed stays
+// full.
+//
+// Resumable: files recorded in blame_files are skipped. Binary files are
+// recorded as done without lines (blame has nothing meaningful for them).
+export async function blame({ dbPath, repoNames = [], jobs = availableParallelism(), sample, log = () => {} }) {
   const db = openDbForWrite(dbPath);
   try {
     db.exec(BLAME_SCHEMA);
@@ -34,32 +47,37 @@ export async function blame({ dbPath, repoNames = [], jobs = availableParallelis
     }
     const identityId = identityResolver(db);
     for (const [k, repo] of repos.entries()) {
-      await blameRepo(db, repo, pathspecs, identityId, jobs, (msg) => log(`blame ${k + 1}/${repos.length} ${repo.name}: ${msg}`));
+      await blameRepo(db, repo, { pathspecs, identityId, jobs, sample }, (msg) => log(`blame ${k + 1}/${repos.length} ${repo.name}: ${msg}`));
     }
   } finally {
     db.close();
   }
 }
 
-async function blameRepo(db, repo, pathspecs, identityId, jobs, report) {
+async function blameRepo(db, repo, { pathspecs, identityId, jobs, sample }, report) {
   const done = new Set(db.prepare('SELECT path FROM blame_files WHERE repo_id = ?').all(repo.id).map((r) => r.path));
   const all = db.prepare('SELECT DISTINCT path FROM head_lines WHERE repo_id = ?').all(repo.id).map((r) => r.path);
-  const binary = binaryPaths(repo.path, repo.head, pathspecs);
-  const todo = all.filter((p) => !done.has(p));
+  const complete = all.every((p) => done.has(p));
+  const sampled = !complete && sample !== undefined && all.length > sample;
+  db.prepare('INSERT OR REPLACE INTO blame_repos (repo_id, sample) VALUES (?, ?)').run(repo.id, sampled ? sample : null);
+  const targets = sampled ? samplePaths(all, sample) : all;
+  const todo = targets.filter((p) => !done.has(p));
+  const scope = sampled ? `sample of ${targets.length}/${all.length} files` : `${all.length} files`;
   if (todo.length === 0) {
-    report('already blamed');
+    report(`already blamed (${scope})`);
     return;
   }
 
+  const binary = binaryPaths(repo.path, repo.head, pathspecs);
   const update = db.prepare('UPDATE head_lines SET blame_identity_id = ? WHERE repo_id = ? AND path = ? AND line = ?');
   const markDone = db.prepare('INSERT OR IGNORE INTO blame_files (repo_id, path) VALUES (?, ?)');
+  const alreadyDone = targets.length - todo.length;
   let finished = 0;
   let failed = 0;
   let inBatch = 0;
   let last = Date.now();
-  const started = Date.now();
+  let started = Date.now();
 
-  db.exec('BEGIN');
   const record = (path, authors) => {
     for (const [line, author] of authors) update.run(identityId(author.name, author.email), repo.id, path, line);
     markDone.run(repo.id, path);
@@ -70,10 +88,18 @@ async function blameRepo(db, repo, pathspecs, identityId, jobs, report) {
     }
     if (Date.now() - last >= PROGRESS_INTERVAL_MS) {
       last = Date.now();
-      report(`${done.size + finished}/${all.length} files, ${((Date.now() - started) / 1000).toFixed(0)}s`);
+      const secs = (Date.now() - started) / 1000;
+      const rate = finished / secs;
+      const left = (todo.length - finished) / rate;
+      report(`${alreadyDone + finished}/${targets.length} files (${scope}), ${rate.toFixed(1)} files/s, ~${Math.ceil(left / 60)} min left`);
     }
   };
 
+  report(`preparing commit-graph clone (${scope}, ${todo.length} to do)`);
+  const clone = blameClone(repo.path, repo.head);
+  // Rate and time-left estimates cover blaming only, not building the clone.
+  started = Date.now();
+  db.exec('BEGIN');
   try {
     let next = 0;
     const worker = async () => {
@@ -84,7 +110,7 @@ async function blameRepo(db, repo, pathspecs, identityId, jobs, report) {
           continue;
         }
         try {
-          record(path, await gitBlame(repo.path, repo.head, path));
+          record(path, await gitBlame(clone.path, repo.head, path));
         } catch (err) {
           // Left out of blame_files, so a later run retries it.
           failed++;
@@ -97,8 +123,11 @@ async function blameRepo(db, repo, pathspecs, identityId, jobs, report) {
   } catch (err) {
     db.exec('ROLLBACK');
     throw err;
+  } finally {
+    clone.dispose();
   }
-  report(`done, ${done.size + finished}/${all.length} files${failed ? `, ${failed} failed (rerun to retry)` : ''}`);
+  const secs = ((Date.now() - started) / 1000).toFixed(0);
+  report(`done, ${alreadyDone + finished}/${targets.length} files (${scope}) in ${secs}s${failed ? `, ${failed} failed (rerun to retry)` : ''}`);
 }
 
 // Same identity rules as indexing: one identity per lowercased email. Blame can

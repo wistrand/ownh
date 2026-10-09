@@ -4,7 +4,7 @@
 //
 // The inlined SVGs carry their own <style> with short class names (.title,
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
-import { lineLabel, ownerLabel, pct, share } from './stats.js';
+import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
   const topOwner = stats.owners.find((o) => o.owner);
@@ -63,7 +63,8 @@ export function reportHtml(stats, top, charts) {
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p>`),
     section('Three ways to own a repository', `
       <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
-      line hash. Blame shows "-" until <code>ownh blame</code> has covered every file.</p>
+      line hash. Blame shows "-" until <code>ownh blame</code> has covered every file (or every file of its sample).
+      Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.</p>
       ${table(
         ['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'],
         [methodRowHtml('All repositories', stats.methods, true), ...stats.repos.map((r) => methodRowHtml(r.name, r.methods))],
@@ -108,7 +109,11 @@ ${main.join('\n')}
 }
 
 function methodRowHtml(name, m, strong = false) {
-  const c = (t) => (t ? cell(`${esc(t.owner.name)} <span class="r-dim">${pct(t.count, t.total)}</span>`, t.owner.name) : cell('-', ''));
+  const c = (t) => {
+    if (!t) return cell('-', '');
+    const title = t.estimate?.files ? ` title="estimated from ${t.estimate.files} of ${t.estimate.ofFiles} files"` : '';
+    return cell(`${esc(t.owner.name)} <span class="r-dim"${title}>${methodShare(t)}</span>`, t.owner.name);
+  };
   return [cell(strong ? `<strong>${esc(name)}</strong>` : esc(name), strong ? '' : name), c(m.commits), c(m.blame), c(m.hash), cell(m.agree ? 'yes' : 'no')];
 }
 

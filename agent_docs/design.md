@@ -73,6 +73,15 @@ repo actually exhibits.
 - Punchline slide: the three-way comparison (commits / blame / hash).
 - Deliver deadpan under the OWNH name, then reveal the leaderboard.
 
+## Pitch site
+
+`docs/index.html` is a static, self-contained landing page in the deadpan
+corporate voice (user decision: pitch only, no data from real runs). It uses no
+figures from runs, no customer logos, and no testimonials. Code-panel hashes are
+real SHA-256 prefixes (`e3b0` for an empty line, `d10b` for `}`, `737d` for
+`  }`). The research section paraphrases [research.md](research.md); keep it
+accurate if that changes.
+
 ## Pitch copy
 
 Draft deadpan pitch. Corporate voice is intentional here and only here. The

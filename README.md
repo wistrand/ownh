@@ -41,7 +41,9 @@ Writes `report.html` (open it in a browser), `leaderboard.md`, two charts (`owne
 `cross-ownership.svg`), and the underlying data as JSON and CSV.
 
 For comparison with conventional methods, `ownh blame --db acme.db` runs
-`git blame` on every file (slow; safe to interrupt and rerun). Reports then show
+`git blame` on every file (slow; safe to interrupt and rerun). Add
+`--sample 2000` to blame a random sample of files in large repositories and
+report an estimate instead. Reports then show
 the top owner of each repository by commit count, by blame, and by line hash.
 
 ## How it works

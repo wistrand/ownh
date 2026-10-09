@@ -71,6 +71,12 @@
   distinguishes the lines, disappears.
 - **`git blame` has no `--use-mailmap` flag.** It applies `.mailmap` by itself;
   passing the flag fails with "unknown option".
+- **Blame in a bare clone needs `mailmap.blob`.** A bare clone has no working
+  tree `.mailmap`, so `blame()` passes `-c mailmap.blob=<head>:.mailmap`; a
+  missing blob is ignored silently.
+- **Sampled blame ignores blamed files outside the sample.** `main` has files
+  blamed in path order from an interrupted full run; estimates only use files in
+  `samplePaths`, so that biased set never leaks into a number.
 - **Blame and line hash disagree by design.** A revert gives blame to the
   reverter and line-hash ownership back to the original author. That gap is
   one of the points of the comparison, not a bug.

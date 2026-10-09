@@ -8,6 +8,7 @@ import { toPathspecs } from '../src/exclude.js';
 import { blame } from '../src/blame.js';
 import { add, index } from '../src/indexer.js';
 import { report } from '../src/report.js';
+import { samplePaths } from '../src/sample.js';
 import { collectStats } from '../src/stats.js';
 import { summary } from '../src/summary.js';
 import { buildFixtures, commit, init } from './fixtures.js';
@@ -227,3 +228,38 @@ function withDb(path, fn) {
     conn.close();
   }
 }
+
+test('blame sampling gives an estimate, and a full run replaces it', async () => {
+  const db = join(dir, 'sample.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  await blame({ dbPath: db, sample: 3 });
+
+  const sampled = withDb(db, (conn) => ({
+    files: conn.prepare("SELECT path FROM blame_files WHERE repo_id = (SELECT id FROM repos WHERE name = 'alpha')").all().map((r) => r.path),
+    all: conn.prepare("SELECT DISTINCT path FROM head_lines WHERE repo_id = (SELECT id FROM repos WHERE name = 'alpha')").all().map((r) => r.path),
+    stats: collectStats(conn),
+  }));
+  // Only the deterministic sample was blamed.
+  assert.deepEqual(sampled.files.sort(), samplePaths(sampled.all, 3).sort());
+  const alpha = sampled.stats.repos[0].methods.blame;
+  assert.equal(alpha.estimate.files, 3);
+  assert.equal(alpha.estimate.ofFiles, 6);
+  assert.ok(alpha.estimate.margin >= 0);
+  assert.equal(sampled.stats.methods.blame.estimate.margin, null); // overall: estimate, no margin
+  assert.match(summary({ dbPath: db }), /~\d+\.\d% ±\d+\.\d/);
+
+  // Without --sample the rest is blamed and the answer becomes exact.
+  await blame({ dbPath: db });
+  const full = withDb(db, (conn) => collectStats(conn));
+  assert.equal(full.repos[0].methods.blame.estimate, undefined);
+  assert.equal(full.repos[0].methods.blame.owner.email, ALICE);
+});
+
+test('samplePaths is deterministic and order-independent', () => {
+  const paths = Array.from({ length: 50 }, (_, i) => `dir${i % 7}/file${i}.js`);
+  const a = samplePaths(paths, 10);
+  const b = samplePaths([...paths].reverse(), 10);
+  assert.equal(a.length, 10);
+  assert.deepEqual(a, b);
+  assert.deepEqual(samplePaths(paths.slice(0, 5), 10).sort(), paths.slice(0, 5).sort());
+});

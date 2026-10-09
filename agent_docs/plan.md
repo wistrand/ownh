@@ -158,6 +158,18 @@ two runs produce identical output regardless of the order repos are passed in.
       finished files are recorded in `blame_files`, committed every 200 files.
       Binary files are skipped. A repo's blame answer appears only when every
       file is done.
+- [x] Blame speed: each repo is blamed in a throwaway bare `--shared` clone
+      (system temp dir) with a commit-graph and changed-path Bloom filters for
+      the stored head (`blameClone` in `src/git.js`). Measured about 6x faster
+      on `main` (20 files: 28.7 s without, 4.5 s with). The user's repos are not
+      modified.
+- [x] Blame sampling (`--sample N`, user decision for `main`): repos with more
+      than N files blame a fixed pseudo-random sample (`samplePaths` in
+      `src/sample.js`: the N paths with the smallest SHA-256). The report shows
+      an estimate with a 95% margin from the ratio estimator over files
+      (`blameEstimate` in `src/stats.js`), marked `~`. The overall blame row is
+      an estimate without a margin when any repo is sampled. A later run without
+      `--sample` completes the repo and makes it exact.
 - [x] Side-by-side table naming each method's top owner, per repo and overall,
       with an agree flag (`collectMethods` in `src/stats.js`): in summary,
       leaderboard.md, report.html, and `methods.csv`

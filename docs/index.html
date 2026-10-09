@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OWNH Framework</title>
+<meta name="description" content="OWNH: Objective Weighted Normalized Heuristics for code ownership. Every line has exactly one owner, forever.">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #fbfbfa;
+  --bg-alt: #f2f2ef;
+  --surface: #ffffff;
+  --border: #e3e2dd;
+  --text: #0e1116;
+  --text-2: #4e5560;
+  --text-3: #7a808a;
+  --brand: #1f4fd1;
+  --brand-ink: #ffffff;
+  --brand-soft: #e8eefc;
+  --accent: #0f8a6a;
+  --code-bg: #0f1724;
+  --code-text: #d7deea;
+  --code-dim: #6f7c91;
+  --chip-a: #3b82f6;
+  --chip-b: #e0701f;
+  --chip-c: #12a37b;
+  --chip-d: #b55bd6;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d1117;
+    --bg-alt: #121821;
+    --surface: #161d27;
+    --border: #263040;
+    --text: #eef2f7;
+    --text-2: #a9b3c1;
+    --text-3: #7d8796;
+    --brand: #6f9bff;
+    --brand-ink: #0b1220;
+    --brand-soft: #18233a;
+    --accent: #3fc79c;
+    --code-bg: #0a0f17;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1117; --bg-alt: #121821; --surface: #161d27; --border: #263040;
+  --text: #eef2f7; --text-2: #a9b3c1; --text-3: #7d8796;
+  --brand: #6f9bff; --brand-ink: #0b1220; --brand-soft: #18233a; --accent: #3fc79c;
+  --code-bg: #0a0f17; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, pre { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+/* Nav */
+.nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(10px); border-bottom: 1px solid var(--border); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--text); }
+.logo:hover { text-decoration: none; }
+.logo-mark { width: 28px; height: 28px; border-radius: 7px; background: var(--brand); color: var(--brand-ink);
+  display: grid; place-items: center; font: 700 15px/1 ui-monospace, Menlo, monospace; }
+.nav-links { display: none; gap: 28px; font-size: 15px; }
+.nav-links a { color: var(--text-2); }
+.nav-links a:hover { color: var(--text); text-decoration: none; }
+@media (min-width: 860px) { .nav-links { display: flex; } }
+
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px;
+  font-weight: 600; font-size: 15px; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
+.btn:hover { text-decoration: none; }
+.btn-primary { background: var(--brand); color: var(--brand-ink); }
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost { border-color: var(--border); color: var(--text); background: var(--surface); }
+.btn-ghost:hover { border-color: var(--text-3); }
+.btn-sm { padding: 8px 14px; font-size: 14px; }
+
+/* Hero */
+.hero { padding: 72px 0 56px; }
+.hero .wrap { display: grid; gap: 48px; align-items: center; }
+@media (min-width: 980px) { .hero .wrap { grid-template-columns: 1.05fr 1fr; } .hero { padding: 104px 0 88px; } }
+.eyebrow { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--brand); background: var(--brand-soft); padding: 5px 10px; border-radius: 999px; }
+h1 { font-size: clamp(38px, 6vw, 60px); line-height: 1.05; letter-spacing: -0.025em; margin: 20px 0 20px; }
+.lead { font-size: 19px; color: var(--text-2); max-width: 36em; margin: 0 0 32px; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero-note { margin-top: 20px; font-size: 14px; color: var(--text-3); }
+
+/* Code panel */
+.panel { margin: 0; background: var(--code-bg); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--code-text) 10%, transparent); }
+.panel-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--code-text) 10%, transparent); color: var(--code-dim); font-size: 13px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, var(--code-text) 18%, transparent); }
+.panel-bar span:last-child { margin-left: auto; font-family: ui-monospace, Menlo, monospace; }
+.code { margin: 0; padding: 14px 0; overflow: hidden; font-size: 13px; line-height: 1.75; color: var(--code-text); }
+.code .ln { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; padding: 0 14px 0 0; }
+.code .no { color: var(--code-dim); text-align: right; padding-right: 12px; user-select: none; }
+.code .src { white-space: pre; overflow: hidden; text-overflow: clip; }
+.owner { display: inline-flex; align-items: center; gap: 6px; font: 500 11.5px/1 Inter, system-ui, sans-serif;
+  color: var(--code-dim); padding-left: 16px; white-space: nowrap; }
+.owner i { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-style: normal;
+  font-size: 10px; font-weight: 700; color: #fff; }
+.owner .a { background: var(--chip-a); } .owner .b { background: var(--chip-b); }
+.owner .c { background: var(--chip-c); } .owner .d { background: var(--chip-d); }
+.owner .h { font-family: ui-monospace, Menlo, monospace; opacity: 0.8; }
+@media (max-width: 1180px) { .owner .h { display: none; } }
+@media (max-width: 520px) { .owner .nm { display: none; } .owner { padding-left: 8px; } }
+.kw { color: #8fb4ff; } .fn { color: #f2c46d; } .st { color: #9ee2a6; }
+.panel-foot { padding: 12px 16px; border-top: 1px solid color-mix(in srgb, var(--code-text) 10%, transparent);
+  color: var(--code-dim); font-size: 12.5px; }
+
+/* Sections */
+section { padding: 88px 0; }
+.alt { background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.section-head { max-width: 680px; margin-bottom: 48px; }
+.section-head .kicker { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); }
+h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.02em; margin: 10px 0 14px; }
+.section-head p { color: var(--text-2); font-size: 18px; margin: 0; }
+h3 { font-size: 18px; margin: 0 0 8px; letter-spacing: -0.01em; }
+
+.grid { display: grid; gap: 20px; }
+@media (min-width: 720px) { .grid-2 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 26px; box-shadow: var(--shadow); }
+.card p { margin: 0; color: var(--text-2); font-size: 15.5px; }
+.icon { width: 40px; height: 40px; border-radius: 10px; background: var(--brand-soft); color: var(--brand);
+  display: grid; place-items: center; margin-bottom: 18px; }
+.icon svg { width: 22px; height: 22px; }
+.quote-card p.quote { font-size: 17px; color: var(--text); font-weight: 500; margin-bottom: 10px; }
+
+/* Steps */
+.steps { counter-reset: step; }
+.step { position: relative; padding-top: 4px; }
+.step::before { counter-increment: step; content: counter(step, decimal-leading-zero); display: block;
+  font: 600 13px/1 ui-monospace, Menlo, monospace; color: var(--brand); margin-bottom: 14px; }
+.flow { margin-top: 40px; display: grid; gap: 12px; align-items: center; }
+@media (min-width: 860px) { .flow { grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; } }
+.flow-node { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; text-align: center; }
+.flow-node small { display: block; color: var(--text-3); font-size: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
+.flow-node code { font-size: 14px; }
+.flow-arrow { color: var(--text-3); text-align: center; font-size: 20px; }
+@media (max-width: 859px) { .flow-arrow { transform: rotate(90deg); } }
+
+/* Comparison */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 15px; }
+th, td { padding: 15px 20px; border-bottom: 1px solid var(--border); text-align: left; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-3); font-weight: 600; }
+th.ownh, td.ownh { background: var(--brand-soft); }
+th.ownh { color: var(--brand); }
+td.c { text-align: center; width: 150px; }
+th.c { text-align: center; }
+.yes { color: var(--accent); font-weight: 700; }
+.no { color: var(--text-3); }
+
+/* Reports */
+.report-list { display: grid; gap: 20px; }
+@media (min-width: 860px) { .report-list { grid-template-columns: repeat(4, 1fr); } }
+.thumb { height: 120px; border-radius: 8px; background: var(--bg-alt); border: 1px solid var(--border); margin-bottom: 18px;
+  display: grid; place-items: center; overflow: hidden; }
+.thumb svg { width: 100%; height: 100%; }
+
+/* Research */
+.refs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.refs li { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.refs strong { display: block; margin-bottom: 4px; }
+.refs span { color: var(--text-2); font-size: 15px; }
+
+/* Install */
+.install { display: grid; gap: 32px; align-items: start; }
+@media (min-width: 900px) { .install { grid-template-columns: 1fr 1.2fr; } }
+.term { background: var(--code-bg); color: var(--code-text); border-radius: 12px; padding: 22px 24px; margin: 0;
+  font-size: 14px; line-height: 1.9; overflow-x: auto; box-shadow: var(--shadow); }
+.term .p { color: var(--code-dim); user-select: none; }
+.term .c { color: var(--code-dim); }
+.checks { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; color: var(--text-2); }
+.checks li { display: flex; gap: 10px; }
+.checks li::before { content: ""; flex: 0 0 18px; height: 18px; margin-top: 4px; border-radius: 50%;
+  background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat; }
+
+/* FAQ */
+.faq { max-width: 780px; }
+details { border-bottom: 1px solid var(--border); padding: 18px 0; }
+details summary { cursor: pointer; font-weight: 600; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+details summary::-webkit-details-marker { display: none; }
+details summary::after { content: "+"; color: var(--text-3); font-weight: 400; font-size: 22px; line-height: 1; }
+details[open] summary::after { content: "\2212"; }
+details p { color: var(--text-2); margin: 12px 0 0; }
+
+/* Closing */
+.closing { text-align: center; padding: 104px 0; }
+.closing h2 { max-width: 760px; margin: 0 auto 16px; }
+.closing p { color: var(--text-2); font-size: 18px; margin: 0 auto 32px; max-width: 560px; }
+.closing .cta-row { justify-content: center; }
+
+footer { border-top: 1px solid var(--border); padding: 36px 0; color: var(--text-3); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="OWNH home"><span class="logo-mark">}</span>OWNH</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#method">Method</a>
+      <a href="#benefits">Benefits</a>
+      <a href="#comparison">Comparison</a>
+      <a href="#research">Research</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#get-started">Get started</a>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Objective Weighted Normalized Heuristics</span>
+      <h1>Ownership, solved. Mathematically.</h1>
+      <p class="lead">OWNH assigns every line of code to exactly one owner, using nothing but its content hash and your version history. No interviews, no context, no feelings. Just cryptographic truth.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#get-started">Get started</a>
+        <a class="btn btn-ghost" href="#method">See how it works</a>
+      </div>
+      <p class="hero-note">Runs locally on any git repository. Scales from one repository to your entire organization.</p>
+    </div>
+
+    <figure class="panel" aria-label="Example: line ownership as assigned by OWNH">
+      <div class="panel-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>payments/settle.js</span></div>
+      <pre class="code"><div class="ln"><span class="no">1</span><span class="src"><span class="kw">export function</span> <span class="fn">settle</span>(batch) {</span><span class="owner"><i class="a">A</i><span class="nm">Owner A</span> <span class="h">3f9c…</span></span></div><div class="ln"><span class="no">2</span><span class="src">  <span class="kw">const</span> total = sum(batch);</span><span class="owner"><i class="b">B</i><span class="nm">Owner B</span> <span class="h">a71e…</span></span></div><div class="ln"><span class="no">3</span><span class="src"></span><span class="owner"><i class="c">C</i><span class="nm">Owner C</span> <span class="h">e3b0…</span></span></div><div class="ln"><span class="no">4</span><span class="src">  <span class="kw">if</span> (total &gt; limit) {</span><span class="owner"><i class="b">B</i><span class="nm">Owner B</span> <span class="h">0d42…</span></span></div><div class="ln"><span class="no">5</span><span class="src">    <span class="kw">return</span> <span class="fn">escalate</span>(<span class="st">'review'</span>);</span><span class="owner"><i class="a">A</i><span class="nm">Owner A</span> <span class="h">9b1d…</span></span></div><div class="ln"><span class="no">6</span><span class="src">  }</span><span class="owner"><i class="d">D</i><span class="nm">Owner D</span> <span class="h">737d…</span></span></div><div class="ln"><span class="no">7</span><span class="src"></span><span class="owner"><i class="c">C</i><span class="nm">Owner C</span> <span class="h">e3b0…</span></span></div><div class="ln"><span class="no">8</span><span class="src">  <span class="kw">return</span> commit(total);</span><span class="owner"><i class="a">A</i><span class="nm">Owner A</span> <span class="h">c62f…</span></span></div><div class="ln"><span class="no">9</span><span class="src">}</span><span class="owner"><i class="d">D</i><span class="nm">Owner D</span> <span class="h">d10b…</span></span></div></pre>
+      <div class="panel-foot">Illustrative. Each line belongs to the first contributor in history to write it, anywhere in the organization.</div>
+    </figure>
+  </div>
+</section>
+
+<section class="alt" id="problem">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">The problem</span>
+      <h2>Code ownership is subjective, political, and frankly emotional.</h2>
+      <p>For decades, engineering organizations have relied on methods that depend on human judgment. OWNH removes the human element entirely.</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card quote-card">
+        <p class="quote">Commit counts can be gamed.</p>
+        <p>Ten small commits outrank one good one. Volume is not stewardship.</p>
+      </div>
+      <div class="card quote-card">
+        <p class="quote">Git blame only remembers the last person who touched a line.</p>
+        <p>Recency is not authorship. The original author deserves the credit, and the accountability.</p>
+      </div>
+      <div class="card quote-card">
+        <p class="quote">CODEOWNERS files are fiction.</p>
+        <p>They are maintained by whoever lost the meeting, and they are out of date by the time they merge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">The method</span>
+      <h2>Three steps. Zero ambiguity.</h2>
+      <p>OWNH reads your history once and produces a single, reproducible answer for every line you ship.</p>
+    </div>
+    <div class="grid grid-3 steps">
+      <div class="step">
+        <h3>Hash every line</h3>
+        <p style="color: var(--text-2); margin: 0;">Each line is reduced to its SHA-256 content hash, exactly as written. Whitespace is part of the line. A binary file is one line.</p>
+      </div>
+      <div class="step">
+        <h3>Find the first introducer</h3>
+        <p style="color: var(--text-2); margin: 0;">OWNH walks the complete history of every repository you provide and identifies the first contributor to ever produce each hash.</p>
+      </div>
+      <div class="step">
+        <h3>Assign ownership, permanently</h3>
+        <p style="color: var(--text-2); margin: 0;">Every occurrence of that line, in every file, in every repository, belongs to that contributor. Forever.</p>
+      </div>
+    </div>
+    <div class="flow" aria-hidden="true">
+      <div class="flow-node"><small>Line</small><code>}</code></div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-node"><small>SHA-256</small><code>d10b36aa…</code></div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-node"><small>First commit</small><code>initial import</code></div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-node"><small>Owner</small><code>one engineer</code></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="benefits">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Benefits</span>
+      <h2>Governance that scales with your codebase.</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div>
+        <h3>Unambiguous accountability</h3>
+        <p>Every line has exactly one owner, forever, regardless of who maintains it today.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg></div>
+        <h3>Organization-wide insight</h3>
+        <p>OWNH surfaces hidden contributors your org chart missed, including people with no recent commits and people who have left the company.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/></svg></div>
+        <h3>Refactor-aware governance</h3>
+        <p>Changing a line changes its hash, which changes its owner. Ownership flows naturally to whoever touched it last, exactly as it should.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
+        <h3>Formatter-agnostic</h3>
+        <p>Just kidding. Run Prettier and see what happens.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M6.5 11v1.5h11V11M12 12.5V14"/></svg></div>
+        <h3>Cross-repository synergy</h3>
+        <p>Identical lines across services share one owner, so a single trusted engineer can be responsible for thousands of closing braces.</p>
+      </div>
+      <div class="card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>Reproducible by design</h3>
+        <p>Same repositories, same history, same answer. Every figure OWNH reports can be regenerated and audited from a single database file.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comparison">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Comparison</span>
+      <h2>How OWNH compares.</h2>
+      <p>Conventional methods were designed for a simpler era. OWNH was designed for yours.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Capability</th><th class="c">Commit count</th><th class="c">git blame</th><th class="c ownh">OWNH</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>One owner per line</td><td class="c no">No</td><td class="c yes">Yes</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Credits the original author, not the latest editor</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Ownership survives the author's departure</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Works across repositories</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Assigns an owner to blank lines</td><td class="c no">No</td><td class="c yes">Yes</td><td class="c ownh yes">Yes, one</td></tr>
+          <tr><td>Recognizes the first person to type <code>}</code></td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Treats a revert as a return to rightful ownership</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="reports">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Reporting</span>
+      <h2>Executive-ready from day one.</h2>
+      <p>OWNH ships with the reports leadership asks for, generated from the same database, so they never disagree.</p>
+    </div>
+    <div class="report-list">
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><g fill="currentColor" style="color: var(--text-3)"><rect x="24" y="22" width="152" height="10" rx="3" opacity="0.9"/><rect x="24" y="42" width="110" height="10" rx="3" opacity="0.7"/><rect x="24" y="62" width="82" height="10" rx="3" opacity="0.55"/><rect x="24" y="82" width="56" height="10" rx="3" opacity="0.4"/></g></svg></div>
+        <h3>Ownership leaderboard</h3>
+        <p>Principal owners and principal lines, ranked across the organization.</p>
+      </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><circle cx="100" cy="60" r="42" fill="var(--border)"/><path d="M100 60 L100 18 A42 42 0 0 1 136 39 Z" fill="var(--brand)"/><path d="M100 60 L136 39 A42 42 0 0 1 142 58 Z" fill="var(--chip-b)"/><path d="M100 60 L142 58 A42 42 0 0 1 140 72 Z" fill="var(--chip-c)"/></svg></div>
+        <h3>Ownership by line hash</h3>
+        <p>See which individual lines hold the largest share of your codebase.</p>
+      </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><g>
+          <rect x="52" y="16" width="18" height="18" rx="3" fill="var(--brand)"/><rect x="74" y="16" width="18" height="18" rx="3" fill="var(--brand-soft)"/><rect x="96" y="16" width="18" height="18" rx="3" fill="var(--brand)" opacity="0.6"/><rect x="118" y="16" width="18" height="18" rx="3" fill="var(--brand-soft)"/>
+          <rect x="52" y="38" width="18" height="18" rx="3" fill="var(--brand)" opacity="0.6"/><rect x="74" y="38" width="18" height="18" rx="3" fill="var(--brand)"/><rect x="96" y="38" width="18" height="18" rx="3" fill="var(--brand)" opacity="0.6"/><rect x="118" y="38" width="18" height="18" rx="3" fill="var(--brand-soft)"/>
+          <rect x="52" y="60" width="18" height="18" rx="3" fill="var(--brand-soft)"/><rect x="74" y="60" width="18" height="18" rx="3" fill="var(--brand-soft)"/><rect x="96" y="60" width="18" height="18" rx="3" fill="var(--brand)"/><rect x="118" y="60" width="18" height="18" rx="3" fill="var(--brand-soft)"/>
+          <rect x="52" y="82" width="18" height="18" rx="3" fill="var(--brand-soft)"/><rect x="74" y="82" width="18" height="18" rx="3" fill="var(--brand)" opacity="0.6"/><rect x="96" y="82" width="18" height="18" rx="3" fill="var(--brand)" opacity="0.6"/><rect x="118" y="82" width="18" height="18" rx="3" fill="var(--brand)"/></g></svg></div>
+        <h3>Cross-repository ownership</h3>
+        <p>Discover which repositories are owned, in practice, by other repositories.</p>
+      </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><g font-family="ui-monospace, Menlo, monospace" font-size="11" fill="var(--text-2)"><text x="22" y="34">commits</text><text x="22" y="64">blame</text><text x="22" y="94">OWNH</text></g><rect x="86" y="24" width="60" height="14" rx="3" fill="var(--chip-b)"/><rect x="86" y="54" width="84" height="14" rx="3" fill="var(--chip-c)"/><rect x="86" y="84" width="96" height="14" rx="3" fill="var(--brand)"/></svg></div>
+        <h3>Three ways to own</h3>
+        <p>Benchmark OWNH against commit counts and git blame, side by side, per repository.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="research">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Research</span>
+      <h2>Built on established methods.</h2>
+      <p>OWNH takes proven ideas from software engineering research and applies them where no one else would.</p>
+    </div>
+    <ul class="refs">
+      <li><strong>First introducer as author</strong><span>World of Code studies treat the first repository to commit a file blob as its origin and the first author as its creator. OWNH applies the same principle one line at a time.</span></li>
+      <li><strong>Line-based ownership</strong><span>Research on ownership measures finds line-based ownership suited to accountability and attribution uses, and finds that commit-based and line-based methods disagree about who the major developers are.</span></li>
+      <li><strong>Beyond the last author</strong><span>Line-tracking research has long noted that version control reports only the most recent author of a line. OWNH reports the first.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="alt" id="get-started">
+  <div class="wrap install">
+    <div>
+      <span class="kicker" style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand);">Get started</span>
+      <h2>From history to accountability in minutes.</h2>
+      <p style="color: var(--text-2); font-size: 18px; margin: 0;">OWNH is a single command-line tool with no dependencies. Point it at your repositories and it does the rest.</p>
+      <ul class="checks">
+        <li>Node.js and git. Nothing to install.</li>
+        <li>One portable database file per analysis.</li>
+        <li>Add repositories at any time without starting over.</li>
+        <li>Reports in HTML, Markdown, SVG, JSON, and CSV.</li>
+      </ul>
+    </div>
+    <pre class="term"><span class="c"># Index every repository you care about</span>
+<span class="p">$ </span>ownh index --db acme.db ~/src/frontend ~/src/backend
+
+<span class="c"># Onboard another repository later</span>
+<span class="p">$ </span>ownh add --db acme.db ~/src/payments
+
+<span class="c"># Benchmark against git blame (optional)</span>
+<span class="p">$ </span>ownh blame --db acme.db --sample 2000
+
+<span class="c"># Generate the executive report</span>
+<span class="p">$ </span>ownh report --db acme.db --out report/</pre>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">FAQ</span>
+      <h2>Questions, answered.</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>What happens when someone reformats the code?</summary>
+        <p>Every reformatted line has a new hash, so ownership of those lines transfers to the author of the formatting commit. This is working as designed.</p>
+      </details>
+      <details>
+        <summary>Does a blank line have an owner?</summary>
+        <p>Yes. A blank line is a line like any other, and like any other line it has exactly one owner: the first person to commit one.</p>
+      </details>
+      <details>
+        <summary>Is every closing brace really owned by one person?</summary>
+        <p>One person per indentation level. <code>}</code>, <code>&nbsp;&nbsp;}</code>, and <code>&nbsp;&nbsp;&nbsp;&nbsp;}</code> are different lines and may have different owners.</p>
+      </details>
+      <details>
+        <summary>What if the owner has left the company?</summary>
+        <p>Ownership is permanent. OWNH does not take employment status into account.</p>
+      </details>
+      <details>
+        <summary>Can ownership be transferred?</summary>
+        <p>Yes. Change the line.</p>
+      </details>
+      <details>
+        <summary>What about copied code?</summary>
+        <p>A copied line keeps its original owner, wherever it is pasted. If the line came from outside your organization, its owner may be someone you have never met.</p>
+      </details>
+      <details>
+        <summary>Why is it called OWNH?</summary>
+        <p>Objective Weighted Normalized Heuristics. Read it aloud.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="closing alt">
+  <div class="wrap">
+    <h2>Someone has to own it.</h2>
+    <p>Bring mathematical certainty to code ownership across your entire organization.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#get-started">Get started</a>
+      <a class="btn btn-ghost" href="#method">Review the method</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><strong style="color: var(--text);">OWNH</strong> &middot; Objective Weighted Normalized Heuristics</span>
+    <span>OWNH: because someone has to own it.</span>
+  </div>
+</footer>
+
+</body>
+</html>

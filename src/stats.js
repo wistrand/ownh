@@ -1,3 +1,5 @@
+import { samplePaths } from './sample.js';
+
 // Every number shown by `summary` and `report` comes from collectStats, so the
 // text summary and the report files can't disagree.
 
@@ -40,10 +42,10 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
     GROUP BY c.identity_id, l.repo_id
   `);
   const rows = [];
-  const fileCount = new Map();
+  const repoPaths = new Map();
   repos.forEach((r, k) => {
     const chunks = pathChunks(db, r.id);
-    fileCount.set(r.id, chunks.files);
+    repoPaths.set(r.id, chunks.paths);
     chunks.forEach(([from, to], c) => {
       for (const row of ownersOf.all(r.id, from, to, to)) rows.push({ repoId: r.id, ...row });
       const part = chunks.length > 1 ? ` part ${c + 1}/${chunks.length}` : '';
@@ -97,7 +99,7 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
 
   log(`top lines: done, ${elapsed()}`);
 
-  const methods = collectMethods(db, repos, fileCount, byRepo, overall, identities, log);
+  const methods = collectMethods(db, repos, repoPaths, byRepo, overall, identities, log);
 
   return {
     toolVersion: run.tool_version,
@@ -128,9 +130,11 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
 
 // Three answers to "who owns this repo": most commits, most lines by
 // `git blame`, most lines by line hash (OWNH). Blame needs `ownh blame` to have
-// run; a repo counts as blamed only when every file is done, and the overall
-// blame answer only when every repo is.
-function collectMethods(db, repos, fileCount, byRepo, overall, identities, log) {
+// run. A fully blamed repo gives exact counts once every file is done; a sampled
+// repo gives an estimate once every file in its sample is done (see
+// blameEstimate). The overall blame answer needs every repo and is an estimate
+// when any repo was sampled.
+function collectMethods(db, repos, repoPaths, byRepo, overall, identities, log) {
   const commits = new Map(repos.map((r) => [r.id, new Map()]));
   const allCommits = new Map();
   for (const { repoId, identityId, n } of db.prepare(
@@ -140,28 +144,48 @@ function collectMethods(db, repos, fileCount, byRepo, overall, identities, log) 
     allCommits.set(identityId, (allCommits.get(identityId) ?? 0) + n);
   }
 
-  const hasBlame = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'blame_files'").get();
-  const blamedFiles = new Map(hasBlame
-    ? db.prepare('SELECT repo_id AS repoId, COUNT(*) AS n FROM blame_files GROUP BY repo_id').all().map((r) => [r.repoId, r.n])
+  const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((t) => t.name));
+  const blamedPaths = tables.has('blame_files') ? db.prepare('SELECT path FROM blame_files WHERE repo_id = ?') : null;
+  const settings = new Map(tables.has('blame_repos')
+    ? db.prepare('SELECT repo_id AS repoId, sample FROM blame_repos').all().map((r) => [r.repoId, r.sample])
     : []);
   const blameOf = db.prepare(`
     SELECT blame_identity_id AS identityId, COUNT(*) AS n FROM head_lines
     WHERE repo_id = ? AND blame_identity_id IS NOT NULL
     GROUP BY blame_identity_id
   `);
+  const blameOfFile = db.prepare(`
+    SELECT blame_identity_id AS identityId, COUNT(*) AS n FROM head_lines
+    WHERE repo_id = ? AND path = ? AND blame_identity_id IS NOT NULL
+    GROUP BY blame_identity_id
+  `);
+  // Overall blame: exact counts from full repos plus expanded sample counts.
   const allBlame = new Map();
+  let allBlameTotal = 0;
   let blameComplete = true;
+  let blameEstimated = false;
 
   const result = new Map();
   for (const r of repos) {
-    const files = fileCount.get(r.id);
-    const blamed = blamedFiles.get(r.id) ?? 0;
+    const paths = repoPaths.get(r.id);
+    const done = new Set(blamedPaths ? blamedPaths.all(r.id).map((b) => b.path) : []);
+    const sample = settings.get(r.id) ?? null;
     let blame = null;
-    if (blamed > 0 && blamed >= files) {
+    if (sample === null && done.size > 0 && paths.every((p) => done.has(p))) {
       const counts = new Map(blameOf.all(r.id).map((b) => [b.identityId, b.n]));
-      for (const [id, n] of counts) allBlame.set(id, (allBlame.get(id) ?? 0) + n);
+      for (const [id, n] of counts) {
+        allBlame.set(id, (allBlame.get(id) ?? 0) + n);
+        allBlameTotal += n;
+      }
       blame = topOf(counts, identities);
       log(`methods: blame counted for ${r.name}`);
+    } else if (sample !== null && samplePaths(paths, sample).every((p) => done.has(p))) {
+      const est = blameEstimate(r.id, samplePaths(paths, sample), paths.length, blameOfFile, identities);
+      for (const [id, n] of est.expanded) allBlame.set(id, (allBlame.get(id) ?? 0) + n);
+      allBlameTotal += est.expandedTotal;
+      blameEstimated = true;
+      blame = est.top;
+      log(`methods: blame estimated for ${r.name} from ${sample} of ${paths.length} files`);
     } else {
       blameComplete = false;
     }
@@ -169,28 +193,74 @@ function collectMethods(db, repos, fileCount, byRepo, overall, identities, log) 
       commits: topOf(commits.get(r.id), identities),
       blame,
       hash: topOf(byRepo.get(r.id).owners, identities),
-      blamedFiles: blamed,
-      files,
+      blamedFiles: [...done].length,
+      files: paths.length,
     };
     m.agree = agree(m);
     result.set(r.id, m);
   }
+  let overallBlame = null;
+  if (blameComplete) {
+    overallBlame = topOf(allBlame, identities, allBlameTotal);
+    if (overallBlame && blameEstimated) overallBlame.estimate = { margin: null };
+  }
   const all = {
     commits: topOf(allCommits, identities),
-    blame: blameComplete ? topOf(allBlame, identities) : null,
+    blame: overallBlame,
     hash: topOf(overall, identities),
   };
   all.agree = agree(all);
   return { byRepo: result, overall: all };
 }
 
-// The top attributed owner: { owner, count, total, share }, or null if none.
-function topOf(counts, identities) {
-  let total = 0;
-  for (const n of counts.values()) total += n;
+// Blame ownership of a repo estimated from a simple random sample of n of its N
+// files. The share of owner o is the ratio estimator R = sum(y_i) / sum(x_i)
+// over sampled files (y_i = o's blamed lines in file i, x_i = blamed lines in
+// file i). Its 95% margin uses the standard ratio-estimator variance with the
+// finite population correction:
+//   SE(R) = sqrt((1 - n/N) * sum((y_i - R x_i)^2) / (n - 1) / n) / mean(x)
+// Files, not lines, are the sampling unit, so the margin accounts for the
+// clustering of lines within files.
+function blameEstimate(repoId, sample, totalFiles, blameOfFile, identities) {
+  const files = sample.map((path) => new Map(blameOfFile.all(repoId, path).map((b) => [b.identityId, b.n])));
+  const totals = new Map();
+  let x = 0;
+  for (const f of files) {
+    for (const [id, n] of f) {
+      totals.set(id, (totals.get(id) ?? 0) + n);
+      x += n;
+    }
+  }
+  const top = topOf(totals, identities);
+  const n = files.length;
+  const expand = totalFiles / n;
+  const expanded = new Map([...totals].map(([id, y]) => [id, y * expand]));
+  if (!top) return { top: null, expanded, expandedTotal: x * expand };
+
+  const R = top.share;
+  let ss = 0;
+  for (const f of files) {
+    const xi = [...f.values()].reduce((a, b) => a + b, 0);
+    const yi = f.get(top.identityId) ?? 0;
+    ss += (yi - R * xi) ** 2;
+  }
+  const meanX = x / n;
+  const se = n > 1 && meanX > 0 ? Math.sqrt(((1 - n / totalFiles) * ss) / (n - 1) / n) / meanX : 0;
+  top.estimate = { files: n, ofFiles: totalFiles, margin: 1.96 * se };
+  return { top, expanded, expandedTotal: x * expand };
+}
+
+// The top attributed owner: { owner, identityId, count, total, share }, or null
+// if none. `total` defaults to the sum of counts.
+function topOf(counts, identities, total) {
+  if (total === undefined) {
+    total = 0;
+    for (const n of counts.values()) total += n;
+  }
   const ranked = rankOwners(counts, identities).filter((o) => o.owner);
   if (ranked.length === 0) return null;
-  return { owner: ranked[0].owner, count: ranked[0].lines, total, share: share(ranked[0].lines, total) };
+  const t = ranked[0];
+  return { owner: t.owner, identityId: t.identityId, count: Math.round(t.lines), total: Math.round(total), share: share(t.lines, total) };
 }
 
 // True when every method that has an answer names the same person.
@@ -207,7 +277,7 @@ const CHUNK_LINES = 1_000_000;
 
 function pathChunks(db, repoId) {
   const chunks = [];
-  chunks.files = 0;
+  chunks.paths = [];
   let from = '';
   let size = 0;
   for (const { path, n } of db.prepare('SELECT path, COUNT(*) AS n FROM head_lines WHERE repo_id = ? GROUP BY path').iterate(repoId)) {
@@ -217,7 +287,7 @@ function pathChunks(db, repoId) {
       size = 0;
     }
     size += n;
-    chunks.files++;
+    chunks.paths.push(path);
   }
   chunks.push([from, null]);
   return chunks;
@@ -241,6 +311,14 @@ export function share(n, total) {
 
 export function pct(n, total) {
   return `${(share(n, total) * 100).toFixed(1)}%`;
+}
+
+// Share text for one method's answer: "31.2%", or "~31.2% ±2.1" for a sampled
+// blame estimate (margin in percentage points; overall estimates have none).
+export function methodShare(t) {
+  if (!t.estimate) return pct(t.count, t.total);
+  const margin = t.estimate.margin === null ? '' : ` ±${(t.estimate.margin * 100).toFixed(1)}`;
+  return `~${(t.share * 100).toFixed(1)}%${margin}`;
 }
 
 export const UNATTRIBUTED = '(unattributed)';

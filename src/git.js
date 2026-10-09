@@ -1,4 +1,7 @@
 import { execFileSync, spawn } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { StringDecoder } from 'node:string_decoder';
 
 export const COMMIT_MARK = '\x01ownh ';
@@ -62,12 +65,15 @@ export async function* log(repo, rev, pathspecs = []) {
 }
 
 // `git blame --porcelain` of one file at `rev`. Returns Map(final line number ->
-// { name, email }), with the mailmap applied (blame honors .mailmap itself). Porcelain prints author headers only
-// the first time a commit appears, so they are remembered per commit.
+// { name, email }). The mailmap is read from `rev` (mailmap.blob), which works in
+// the bare blame clones below and matches the .mailmap the history was indexed
+// with unless it has uncommitted edits; a missing .mailmap is ignored. Porcelain
+// prints author headers only the first time a commit appears, so they are
+// remembered per commit.
 const BLAME_HEADER = /^([0-9a-f]{40,64}) \d+ (\d+)/;
 
 export async function blame(repo, rev, path) {
-  const { stdout, done } = run(repo, ['blame', '--porcelain', rev, '--', path]);
+  const { stdout, done } = run(repo, ['-c', `mailmap.blob=${rev}:.mailmap`, 'blame', '--porcelain', rev, '--', path]);
   const authors = new Map();
   const byCommit = new Map();
   let current = null;
@@ -90,6 +96,25 @@ export async function blame(repo, rev, path) {
   }
   await done;
   return authors;
+}
+
+// A throwaway bare clone sharing `repo`'s objects, with a commit-graph and
+// changed-path Bloom filters for `rev`'s history. git blame runs about 6x faster
+// with them on a long history, and building them here leaves the user's repo
+// untouched. Returns { path, dispose }.
+export function blameClone(repo, rev) {
+  const path = mkdtempSync(join(tmpdir(), 'ownh-blame-'));
+  try {
+    execFileSync('git', ['clone', '-q', '--bare', '--shared', repo, path], { stdio: ['ignore', 'ignore', 'pipe'] });
+    execFileSync('git', ['-C', path, 'commit-graph', 'write', '--stdin-commits', '--changed-paths'], {
+      input: `${rev}\n`,
+      stdio: ['pipe', 'ignore', 'pipe'],
+    });
+  } catch (err) {
+    rmSync(path, { recursive: true, force: true });
+    throw err;
+  }
+  return { path, dispose: () => rmSync(path, { recursive: true, force: true }) };
 }
 
 // Paths in `rev` that git treats as binary, using the same decision as the

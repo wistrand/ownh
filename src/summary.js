@@ -1,5 +1,5 @@
 import { openDb } from './db.js';
-import { collectStats, lineLabel, ownerLabel, pct } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, pct } from './stats.js';
 
 export function summary({ dbPath, top = 10, log }) {
   const db = openDb(dbPath);
@@ -52,8 +52,9 @@ function render(stats, top) {
 }
 
 function methodRow(name, m) {
-  const cell = (t) => (t ? `${t.owner.name} ${pct(t.count, t.total)}` : '-');
-  return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'agree' : 'disagree'];
+  const cell = (t) => (t ? `${t.owner.name} ${methodShare(t)}` : '-');
+  const sampled = m.blame?.estimate?.files ? `blame sampled ${m.blame.estimate.files}/${m.blame.estimate.ofFiles} files` : '';
+  return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'agree' : 'disagree', sampled];
 }
 
 function ownerTable(owners, top, total) {

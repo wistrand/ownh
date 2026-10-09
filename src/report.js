@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { openDb } from './db.js';
 import { crossOwnershipSvg, lineSharePieSvg } from './charts.js';
 import { reportHtml } from './html.js';
-import { collectStats, lineLabel, ownerLabel, pct, share } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
@@ -86,7 +86,8 @@ function leaderboard(stats, top) {
     '## Three ways to own a repository',
     '',
     'The top owner of each repository by commit count, by `git blame`, and by line hash.',
-    'Blame shows "-" until `ownh blame` has covered every file.',
+    'Blame shows "-" until `ownh blame` has covered every file (or every file of its sample).',
+    'Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.',
     '',
     ...mdTable(['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'], [
       methodCells('**All repositories**', stats.methods),
@@ -115,16 +116,17 @@ function leaderboard(stats, top) {
 }
 
 function methodCells(name, m) {
-  const cell = (t) => (t ? `${escapeCell(t.owner.name)} (${pct(t.count, t.total)})` : '-');
+  const cell = (t) => (t ? `${escapeCell(t.owner.name)} (${methodShare(t)})` : '-');
   return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'yes' : 'no'];
 }
 
 function methodsCsv(stats) {
   const cols = (t) => (t ? [t.owner.name, t.owner.email, t.count, t.total, t.share] : ['', '', '', '', '']);
+  const est = (t) => (t?.estimate ? [t.estimate.files ?? '', t.estimate.ofFiles ?? '', t.estimate.margin ?? ''] : ['', '', '']);
   const header = ['repo'];
   for (const m of ['commits', 'blame', 'hash']) header.push(`${m}_name`, `${m}_email`, `${m}_count`, `${m}_total`, `${m}_share`);
-  header.push('agree');
-  const row = (name, m) => [name, ...cols(m.commits), ...cols(m.blame), ...cols(m.hash), Number(m.agree)];
+  header.push('blame_sample_files', 'blame_files', 'blame_margin', 'agree');
+  const row = (name, m) => [name, ...cols(m.commits), ...cols(m.blame), ...cols(m.hash), ...est(m.blame), Number(m.agree)];
   return csv(header, [row('', stats.methods), ...stats.repos.map((r) => row(r.name, r.methods))]);
 }
 
