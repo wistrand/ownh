@@ -29,6 +29,14 @@ function render(stats, top) {
       l.owner ? `${l.owner.name} (first in ${l.origin})` : '',
     ])),
   ];
+  out.push(
+    '',
+    'Three ways to own: top owner by commits / by git blame / by line hash',
+    ...table([
+      methodRow('all repos', stats.methods),
+      ...stats.repos.map((r) => methodRow(r.name, r.methods)),
+    ]),
+  );
   for (const repo of stats.repos) {
     const outside = repo.origins.filter((o) => o.repo !== null && o.repo !== repo.name).slice(0, 3);
     out.push(
@@ -41,6 +49,11 @@ function render(stats, top) {
     );
   }
   return out.join('\n') + '\n';
+}
+
+function methodRow(name, m) {
+  const cell = (t) => (t ? `${t.owner.name} ${pct(t.count, t.total)}` : '-');
+  return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'agree' : 'disagree'];
 }
 
 function ownerTable(owners, top, total) {

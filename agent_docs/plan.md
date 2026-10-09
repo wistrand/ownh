@@ -148,9 +148,19 @@ two runs produce identical output regardless of the order repos are passed in.
 
 ### Phase 3: three-way comparison
 
-- [ ] Commit-count ownership
-- [ ] Blame ownership
-- [ ] Side-by-side table naming each method's top owner
+- [x] Commit-count ownership: non-merge commits per identity from `commits`
+      (same excludes as the index, so commits touching only excluded files are
+      not counted)
+- [x] Blame ownership: `ownh blame` (`src/blame.js`) fills
+      `head_lines.blame_identity_id` from `git blame --porcelain` at each repo's
+      stored head. Opt-in and separate because it is slow (about 0.7 s per file in
+      `main`, run in parallel, `--jobs` defaults to CPU count). Resumable:
+      finished files are recorded in `blame_files`, committed every 200 files.
+      Binary files are skipped. A repo's blame answer appears only when every
+      file is done.
+- [x] Side-by-side table naming each method's top owner, per repo and overall,
+      with an agree flag (`collectMethods` in `src/stats.js`): in summary,
+      leaderboard.md, report.html, and `methods.csv`
 
 **Verify:** on the fixture, each method's top owner is what the scripted history implies.
 

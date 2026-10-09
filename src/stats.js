@@ -40,8 +40,10 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
     GROUP BY c.identity_id, l.repo_id
   `);
   const rows = [];
+  const fileCount = new Map();
   repos.forEach((r, k) => {
     const chunks = pathChunks(db, r.id);
+    fileCount.set(r.id, chunks.files);
     chunks.forEach(([from, to], c) => {
       for (const row of ownersOf.all(r.id, from, to, to)) rows.push({ repoId: r.id, ...row });
       const part = chunks.length > 1 ? ` part ${c + 1}/${chunks.length}` : '';
@@ -95,14 +97,18 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
 
   log(`top lines: done, ${elapsed()}`);
 
+  const methods = collectMethods(db, repos, fileCount, byRepo, overall, identities, log);
+
   return {
     toolVersion: run.tool_version,
     excludes: JSON.parse(run.excludes),
     total,
     owners: rankOwners(overall, identities),
     lines,
+    methods: methods.overall,
     repos: [...byRepo].map(([id, r]) => ({
       name: r.name,
+      methods: methods.byRepo.get(id),
       lines: r.lines,
       // Lines owned through a line first written in another repo.
       foreign: r.foreign,
@@ -120,6 +126,79 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   };
 }
 
+// Three answers to "who owns this repo": most commits, most lines by
+// `git blame`, most lines by line hash (OWNH). Blame needs `ownh blame` to have
+// run; a repo counts as blamed only when every file is done, and the overall
+// blame answer only when every repo is.
+function collectMethods(db, repos, fileCount, byRepo, overall, identities, log) {
+  const commits = new Map(repos.map((r) => [r.id, new Map()]));
+  const allCommits = new Map();
+  for (const { repoId, identityId, n } of db.prepare(
+    'SELECT repo_id AS repoId, identity_id AS identityId, COUNT(*) AS n FROM commits GROUP BY repo_id, identity_id',
+  ).all()) {
+    commits.get(repoId).set(identityId, n);
+    allCommits.set(identityId, (allCommits.get(identityId) ?? 0) + n);
+  }
+
+  const hasBlame = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'blame_files'").get();
+  const blamedFiles = new Map(hasBlame
+    ? db.prepare('SELECT repo_id AS repoId, COUNT(*) AS n FROM blame_files GROUP BY repo_id').all().map((r) => [r.repoId, r.n])
+    : []);
+  const blameOf = db.prepare(`
+    SELECT blame_identity_id AS identityId, COUNT(*) AS n FROM head_lines
+    WHERE repo_id = ? AND blame_identity_id IS NOT NULL
+    GROUP BY blame_identity_id
+  `);
+  const allBlame = new Map();
+  let blameComplete = true;
+
+  const result = new Map();
+  for (const r of repos) {
+    const files = fileCount.get(r.id);
+    const blamed = blamedFiles.get(r.id) ?? 0;
+    let blame = null;
+    if (blamed > 0 && blamed >= files) {
+      const counts = new Map(blameOf.all(r.id).map((b) => [b.identityId, b.n]));
+      for (const [id, n] of counts) allBlame.set(id, (allBlame.get(id) ?? 0) + n);
+      blame = topOf(counts, identities);
+      log(`methods: blame counted for ${r.name}`);
+    } else {
+      blameComplete = false;
+    }
+    const m = {
+      commits: topOf(commits.get(r.id), identities),
+      blame,
+      hash: topOf(byRepo.get(r.id).owners, identities),
+      blamedFiles: blamed,
+      files,
+    };
+    m.agree = agree(m);
+    result.set(r.id, m);
+  }
+  const all = {
+    commits: topOf(allCommits, identities),
+    blame: blameComplete ? topOf(allBlame, identities) : null,
+    hash: topOf(overall, identities),
+  };
+  all.agree = agree(all);
+  return { byRepo: result, overall: all };
+}
+
+// The top attributed owner: { owner, count, total, share }, or null if none.
+function topOf(counts, identities) {
+  let total = 0;
+  for (const n of counts.values()) total += n;
+  const ranked = rankOwners(counts, identities).filter((o) => o.owner);
+  if (ranked.length === 0) return null;
+  return { owner: ranked[0].owner, count: ranked[0].lines, total, share: share(ranked[0].lines, total) };
+}
+
+// True when every method that has an answer names the same person.
+function agree(m) {
+  const emails = [m.commits, m.blame, m.hash].filter(Boolean).map((t) => t.owner.email);
+  return emails.length > 1 && emails.every((e) => e === emails[0]);
+}
+
 // Splits a repo's head lines into path ranges of about CHUNK_LINES lines, so a
 // large repo reports progress while it is aggregated. Returns [from, to) pairs;
 // `to` is null for the last range. Rows in different ranges are summed later, so
@@ -128,6 +207,7 @@ const CHUNK_LINES = 1_000_000;
 
 function pathChunks(db, repoId) {
   const chunks = [];
+  chunks.files = 0;
   let from = '';
   let size = 0;
   for (const { path, n } of db.prepare('SELECT path, COUNT(*) AS n FROM head_lines WHERE repo_id = ? GROUP BY path').iterate(repoId)) {
@@ -137,6 +217,7 @@ function pathChunks(db, repoId) {
       size = 0;
     }
     size += n;
+    chunks.files++;
   }
   chunks.push([from, null]);
   return chunks;

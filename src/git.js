@@ -61,6 +61,37 @@ export async function* log(repo, rev, pathspecs = []) {
   await done;
 }
 
+// `git blame --porcelain` of one file at `rev`. Returns Map(final line number ->
+// { name, email }), with the mailmap applied (blame honors .mailmap itself). Porcelain prints author headers only
+// the first time a commit appears, so they are remembered per commit.
+const BLAME_HEADER = /^([0-9a-f]{40,64}) \d+ (\d+)/;
+
+export async function blame(repo, rev, path) {
+  const { stdout, done } = run(repo, ['blame', '--porcelain', rev, '--', path]);
+  const authors = new Map();
+  const byCommit = new Map();
+  let current = null;
+  let line = 0;
+  for await (const text of lines(stdout)) {
+    if (text.startsWith('\t')) {
+      authors.set(line, current);
+      continue;
+    }
+    const m = BLAME_HEADER.exec(text);
+    if (m) {
+      if (!byCommit.has(m[1])) byCommit.set(m[1], { name: '', email: '' });
+      current = byCommit.get(m[1]);
+      line = Number(m[2]);
+    } else if (text.startsWith('author ')) {
+      current.name = text.slice(7);
+    } else if (text.startsWith('author-mail ')) {
+      current.email = text.slice(12).replace(/^<|>$/g, '');
+    }
+  }
+  await done;
+  return authors;
+}
+
 // Paths in `rev` that git treats as binary, using the same decision as the
 // "Binary files differ" lines in log(): .gitattributes plus git's content check.
 export function binaryPaths(repo, rev, pathspecs = []) {

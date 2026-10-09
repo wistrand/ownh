@@ -24,6 +24,7 @@ export function report({ dbPath, outDir, top = 20, log }) {
     'owners.csv': ownersCsv(stats),
     'lines.csv': linesCsv(stats),
     'cross-ownership.csv': crossCsv(stats),
+    'methods.csv': methodsCsv(stats),
     'ownership-by-line-hash.svg': charts.pie,
     'cross-ownership.svg': charts.heatmap,
   };
@@ -82,6 +83,18 @@ function leaderboard(stats, top) {
     '',
     'Non-contributors own lines in a repository without a single commit to it.',
     '',
+    '## Three ways to own a repository',
+    '',
+    'The top owner of each repository by commit count, by `git blame`, and by line hash.',
+    'Blame shows "-" until `ownh blame` has covered every file.',
+    '',
+    ...mdTable(['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'], [
+      methodCells('**All repositories**', stats.methods),
+      ...stats.repos.map((r) => methodCells(r.name, r.methods)),
+    ], ['l', 'l', 'l', 'l', 'l']),
+    '',
+    `The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.`,
+    '',
     '## Repositories',
   ];
   for (const r of stats.repos) {
@@ -99,6 +112,20 @@ function leaderboard(stats, top) {
     );
   }
   return `${out.join('\n')}\n`;
+}
+
+function methodCells(name, m) {
+  const cell = (t) => (t ? `${escapeCell(t.owner.name)} (${pct(t.count, t.total)})` : '-');
+  return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'yes' : 'no'];
+}
+
+function methodsCsv(stats) {
+  const cols = (t) => (t ? [t.owner.name, t.owner.email, t.count, t.total, t.share] : ['', '', '', '', '']);
+  const header = ['repo'];
+  for (const m of ['commits', 'blame', 'hash']) header.push(`${m}_name`, `${m}_email`, `${m}_count`, `${m}_total`, `${m}_share`);
+  header.push('agree');
+  const row = (name, m) => [name, ...cols(m.commits), ...cols(m.blame), ...cols(m.hash), Number(m.agree)];
+  return csv(header, [row('', stats.methods), ...stats.repos.map((r) => row(r.name, r.methods))]);
 }
 
 function ownersCsv(stats) {

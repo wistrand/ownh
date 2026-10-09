@@ -38,6 +38,7 @@ git history (1..n repos) ──> line-hash indexer ──> first-introducer tabl
 | `src/summary.js`   | plain-text summary                                           |
 | `src/report.js`    | report files: leaderboard.md, JSON, CSV                      |
 | `src/charts.js`    | SVG pie and cross-ownership heatmap                          |
+| `src/blame.js`     | `ownh blame`: git blame per HEAD file, parallel, resumable    |
 | `src/html.js`      | self-contained report.html (inline charts, sortable tables)  |
 | `test/`            | fixture repo builder and `node:test` suite                   |
 | `README.md`        | human-facing deadpan pitch and usage                         |
@@ -54,6 +55,7 @@ bin/ownh.js index --db out.db [--exclude-file f]... [--no-excludes] [--force] <r
 bin/ownh.js add --db out.db [--exclude-file f]... [--no-excludes] <repo>...   # same excludes as the .db
 bin/ownh.js summary --db out.db [--top 10]
 bin/ownh.js report --db out.db --out report/ [--top 20]
+bin/ownh.js blame --db out.db [--jobs n] [--repo name]...   # slow; resumable
 npm test        # only when the user asks
 ```
 

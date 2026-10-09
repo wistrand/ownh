@@ -69,6 +69,11 @@
 - **SVG collapses leading spaces.** Line literals like `"  }"` need
   `xml:space="preserve"` on their `<text>`, or indentation, the thing that
   distinguishes the lines, disappears.
+- **`git blame` has no `--use-mailmap` flag.** It applies `.mailmap` by itself;
+  passing the flag fails with "unknown option".
+- **Blame and line hash disagree by design.** A revert gives blame to the
+  reverter and line-hash ownership back to the original author. That gap is
+  one of the points of the comparison, not a bug.
 - **Git rejects tiny epoch dates.** `GIT_AUTHOR_DATE="1000 +0000"` fails with
   "invalid date format". Fixtures add `BASE_TIME` in `test/fixtures.js`.
 - **`node --test test/` fails on Node 26.** A directory argument is resolved as a

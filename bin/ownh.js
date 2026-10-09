@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
+import { blame } from '../src/blame.js';
 import { DEFAULT_EXCLUDE_FILE, readExcludeFile } from '../src/exclude.js';
 import { add, index } from '../src/indexer.js';
 import { report } from '../src/report.js';
@@ -10,6 +11,7 @@ const USAGE = `usage:
   ownh add --db <file> [--exclude-file <file>]... [--no-excludes] <repo>...
   ownh summary --db <file> [--top <n>]
   ownh report --db <file> --out <dir> [--top <n>]
+  ownh blame --db <file> [--jobs <n>] [--repo <name>]...
 
   Without --exclude-file, patterns come from ownh.exclude next to the tool.
   --no-excludes indexes everything. add requires the same exclude list the
@@ -52,6 +54,18 @@ async function main([command, ...args]) {
     const top = Number(values.top);
     if (!values.db || !Number.isInteger(top) || top < 1) return usage();
     process.stdout.write(summary({ dbPath: values.db, top, log }));
+  } else if (command === 'blame') {
+    const { values } = parseArgs({
+      args,
+      options: {
+        db: { type: 'string' },
+        jobs: { type: 'string' },
+        repo: { type: 'string', multiple: true },
+      },
+    });
+    const jobs = values.jobs === undefined ? undefined : Number(values.jobs);
+    if (!values.db || (jobs !== undefined && (!Number.isInteger(jobs) || jobs < 1))) return usage();
+    await blame({ dbPath: values.db, repoNames: values.repo ?? [], jobs, log });
   } else if (command === 'report') {
     const { values } = parseArgs({
       args,

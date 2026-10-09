@@ -5,8 +5,10 @@ import { join } from 'node:path';
 import { after, before, test } from 'node:test';
 import { openDb } from '../src/db.js';
 import { toPathspecs } from '../src/exclude.js';
+import { blame } from '../src/blame.js';
 import { add, index } from '../src/indexer.js';
 import { report } from '../src/report.js';
+import { collectStats } from '../src/stats.js';
 import { summary } from '../src/summary.js';
 import { buildFixtures, commit, init } from './fixtures.js';
 
@@ -160,7 +162,7 @@ test('report files agree with the summary', async () => {
   await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
   report({ dbPath: db, outDir: out, top: 5 });
   assert.deepEqual(readdirSync(out).sort(), [
-    'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv',
+    'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
     'owners.csv', 'ownership-by-line-hash.svg', 'report.html', 'report.json',
   ]);
   const json = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
@@ -178,3 +180,50 @@ test('report files agree with the summary', async () => {
     assert.ok(!readFileSync(join(out, svg), 'utf8').includes('var('));
   }
 });
+
+test('three methods: commits, blame, line hash', async () => {
+  const db = join(dir, 'methods.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+
+  const before = withDb(db, (conn) => collectStats(conn));
+  assert.equal(before.methods.blame, null); // not blamed yet
+  assert.equal(before.repos[0].methods.commits.owner.email, ALICE); // 2 of 8 alpha commits
+
+  await blame({ dbPath: db, jobs: 2 });
+  const blamed = withDb(db, (conn) => ({
+    // erin's revert re-added alice's line: blame names erin, line hash names alice
+    a2: conn.prepare(`SELECT i.email FROM head_lines h JOIN identities i ON i.id = h.blame_identity_id
+                      WHERE h.path = 'a.js' AND h.line = 2`).get().email,
+    // blame honors .mailmap: alice's old email never appears
+    old: conn.prepare("SELECT COUNT(*) AS n FROM identities WHERE email = 'alice@old.example.com'").get().n,
+    // binary files are skipped by blame
+    png: conn.prepare("SELECT COUNT(*) AS n FROM head_lines WHERE path = 'logo.png' AND blame_identity_id IS NOT NULL").get().n,
+    stats: collectStats(conn),
+  }));
+  assert.equal(blamed.a2, 'erin@example.com');
+  assert.equal(blamed.old, 0);
+  assert.equal(blamed.png, 0);
+
+  const [alpha, beta] = blamed.stats.repos;
+  assert.equal(alpha.methods.blame.owner.email, ALICE);
+  assert.ok(alpha.methods.agree);
+  // beta: five authors with one commit each (tie -> first email), frank's copy.js
+  // dominates blame, alice owns the most lines by hash
+  assert.equal(beta.methods.commits.owner.email, 'frank@example.com');
+  assert.equal(beta.methods.blame.owner.email, 'frank@example.com');
+  assert.equal(beta.methods.hash.owner.email, ALICE);
+  assert.ok(!beta.methods.agree);
+
+  // A second run has nothing left to do and changes nothing.
+  await blame({ dbPath: db });
+  assert.deepEqual(withDb(db, (conn) => collectStats(conn)).methods, blamed.stats.methods);
+});
+
+function withDb(path, fn) {
+  const conn = openDb(path);
+  try {
+    return fn(conn);
+  } finally {
+    conn.close();
+  }
+}

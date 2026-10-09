@@ -61,6 +61,15 @@ export function reportHtml(stats, top, charts) {
         ['', 'num', 'num', 'num', ''],
       )}
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p>`),
+    section('Three ways to own a repository', `
+      <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
+      line hash. Blame shows "-" until <code>ownh blame</code> has covered every file.</p>
+      ${table(
+        ['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'],
+        [methodRowHtml('All repositories', stats.methods, true), ...stats.repos.map((r) => methodRowHtml(r.name, r.methods))],
+        ['', '', '', '', ''],
+      )}
+      <p class="r-note">The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.</p>`),
     section('Repositories', stats.repos.map((r) => `
       <details class="r-repo" id="repo-${slug(r.name)}">
         <summary><span class="r-repo-name">${esc(r.name)}</span>
@@ -96,6 +105,11 @@ ${main.join('\n')}
 </body>
 </html>
 `;
+}
+
+function methodRowHtml(name, m, strong = false) {
+  const c = (t) => (t ? cell(`${esc(t.owner.name)} <span class="r-dim">${pct(t.count, t.total)}</span>`, t.owner.name) : cell('-', ''));
+  return [cell(strong ? `<strong>${esc(name)}</strong>` : esc(name), strong ? '' : name), c(m.commits), c(m.blame), c(m.hash), cell(m.agree ? 'yes' : 'no')];
 }
 
 function originsTable(r) {
@@ -170,6 +184,7 @@ h4 { font-size: 14px; margin: 20px 0 8px; color: var(--r-text-2); }
 a { color: var(--r-accent); }
 code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
 .r-lit { background: var(--r-code); padding: 1px 6px; border-radius: 4px; white-space: pre; }
+.r-dim { color: var(--r-text-2); }
 .r-meta, .r-note { color: var(--r-text-2); margin: 4px 0; font-size: 14px; }
 .r-section { margin-top: 48px; }
 .r-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
