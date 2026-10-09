@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import { blame } from '../src/blame.js';
-import { DEFAULT_EXCLUDE_FILE, readExcludeFile } from '../src/exclude.js';
+import { readDefaultExcludes, readExcludeFile } from '../src/exclude.js';
 import { add, index } from '../src/indexer.js';
 import { report } from '../src/report.js';
 import { summary } from '../src/summary.js';
@@ -13,7 +13,8 @@ const USAGE = `usage:
   ownh report --db <file> --out <dir> [--top <n>]
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
 
-  Without --exclude-file, patterns come from ownh.exclude next to the tool.
+  Without --exclude-file, patterns come from ownh.exclude next to the tool,
+  if it exists.
   --no-excludes indexes everything. add requires the same exclude list the
   .db was built with.`;
 
@@ -25,9 +26,17 @@ const EXCLUDE_OPTIONS = {
 
 const log = (msg) => process.stderr.write(`${msg}\n`);
 
+// An --exclude-file that doesn't exist is an error; a missing default
+// ownh.exclude just means no excludes.
 function excludesFrom(values) {
-  const files = values['no-excludes'] ? [] : (values['exclude-file'] ?? [DEFAULT_EXCLUDE_FILE]);
-  return files.flatMap(readExcludeFile);
+  if (values['no-excludes']) return [];
+  if (values['exclude-file']) return values['exclude-file'].flatMap(readExcludeFile);
+  const defaults = readDefaultExcludes();
+  if (defaults === null) {
+    log('no ownh.exclude next to the tool; nothing is excluded');
+    return [];
+  }
+  return defaults;
 }
 
 async function main([command, ...args]) {

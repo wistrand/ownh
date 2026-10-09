@@ -1,8 +1,14 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-// Used by the CLI when no --exclude-file is given.
+// Used by the CLI when no --exclude-file is given. It is optional (and git-ignored,
+// since it tends to hold project-specific paths): without it, nothing is excluded.
 export const DEFAULT_EXCLUDE_FILE = fileURLToPath(new URL('../ownh.exclude', import.meta.url));
+
+// Patterns from the default exclude file, or null when it doesn't exist.
+export function readDefaultExcludes() {
+  return existsSync(DEFAULT_EXCLUDE_FILE) ? readExcludeFile(DEFAULT_EXCLUDE_FILE) : null;
+}
 
 // One pattern per line; blank lines and lines starting with "#" are ignored.
 export function readExcludeFile(path) {

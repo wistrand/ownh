@@ -88,6 +88,10 @@
 - **Interrupting `ownh blame` leaves a temp clone.** Ctrl-C skips cleanup of the
   `ownh-blame-*` directory in the system temp dir (refs plus commit-graph, tens
   of MB for `main`). The database is fine; delete the directory by hand.
+- **`ownh.exclude` is optional and git-ignored.** It holds project-specific
+  paths, so it is not committed; a fresh clone has none and indexes everything
+  (the CLI says so on stderr). An explicit `--exclude-file` that is missing is
+  still an error.
 - **Exclude patterns have no negation.** `!pattern` is taken literally.
 - **Git rejects tiny epoch dates.** `GIT_AUTHOR_DATE="1000 +0000"` fails with
   "invalid date format". Fixtures add `BASE_TIME` in `test/fixtures.js`.

@@ -27,7 +27,7 @@ database without rebuilding it:
 bin/ownh.js add --db acme.db ~/src/another-repo
 ```
 
-Files and directories listed in `ownh.exclude` are left out, from history and
+Files and directories listed in `ownh.exclude` (optional, not committed) are left out, from history and
 from the current tree. Pass `--exclude-file <file>` (repeatable) to use your own
 list instead, or `--no-excludes` to include everything.
 
