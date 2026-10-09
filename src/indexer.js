@@ -2,7 +2,7 @@ import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { createDb, openDbForWrite } from './db.js';
 import { toPathspecs } from './exclude.js';
-import { COMMIT_MARK, binaryPaths, catBlobs, git, headFiles, log } from './git.js';
+import { COMMIT_MARK, WALK_OPTIONS, binaryPaths, catBlobs, git, headFiles, isShallow, log } from './git.js';
 import { hashFile, hashLine } from './hash.js';
 
 const TOOL_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
@@ -123,6 +123,7 @@ function describeRepos(repoPaths) {
     } catch {
       throw new Error(`${p} is not a git repository with at least one commit`);
     }
+    if (isShallow(path)) throw new Error(`${p} is a shallow clone; fetch its full history first (git fetch --unshallow)`);
     return { name: basename(path).replace(/\.git$/, ''), path, head };
   });
   repos.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
@@ -187,7 +188,7 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
   // Binary diffs carry no content, only blob ids; their files are read and
   // hashed after the walk.
   const binaries = [];
-  const total = Number(git(repo.path, ['rev-list', '--count', '--no-merges', repo.head, '--', ...pathspecs]).trim());
+  const total = Number(git(repo.path, ['rev-list', '--count', ...WALK_OPTIONS, repo.head, '--', ...pathspecs]).trim());
   const progress = throttled(() => report(`${repo.name}: history ${topo}/${total} commits, ${added} lines hashed`));
 
   for await (const line of log(repo.path, repo.head, pathspecs)) {

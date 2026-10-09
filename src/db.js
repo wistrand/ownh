@@ -66,20 +66,29 @@ CREATE TABLE head_lines (
 CREATE INDEX head_lines_hash ON head_lines (hash);
 `;
 
+// Wait for another ownh process's lock (a report reading while blame commits,
+// or the reverse) instead of failing with "database is locked".
+const BUSY_TIMEOUT_MS = 10 * 60 * 1000;
+
 export function createDb(path) {
   const db = new DatabaseSync(path);
+  db.exec(`PRAGMA busy_timeout = ${BUSY_TIMEOUT_MS};`);
   // The .db is always rebuilt from scratch, so durability during the run buys nothing.
   db.exec('PRAGMA journal_mode = DELETE; PRAGMA synchronous = OFF;');
   db.exec(SCHEMA);
   return db;
 }
 
+// An existing .db holds hours of work (add, blame), so writes to it keep the
+// default durability; only a fresh index skips it.
 export function openDbForWrite(path) {
   const db = new DatabaseSync(path);
-  db.exec('PRAGMA synchronous = OFF;');
+  db.exec(`PRAGMA busy_timeout = ${BUSY_TIMEOUT_MS};`);
   return db;
 }
 
 export function openDb(path) {
-  return new DatabaseSync(path, { readOnly: true });
+  const db = new DatabaseSync(path, { readOnly: true });
+  db.exec(`PRAGMA busy_timeout = ${BUSY_TIMEOUT_MS};`);
+  return db;
 }

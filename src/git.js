@@ -17,51 +17,96 @@ export function git(repo, args) {
   });
 }
 
+// Spawns git and returns its stdout plus `finish()`, which waits for exit and
+// throws on a non-zero status. Callers must call finish() in a finally block: if
+// the consumer stops early (an error, or a break), finish() kills the process, so
+// it can't keep the event loop alive or block on a full pipe forever.
 function run(repo, args, stdin) {
   const child = spawn('git', ['-C', repo, ...CONFIG, ...args], {
     stdio: [stdin === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe'],
   });
   let stderr = '';
   child.stderr.setEncoding('utf8').on('data', (d) => { stderr += d; });
-  const done = new Promise((resolve, reject) => {
-    child.on('error', reject);
-    child.on('close', (code) => {
-      if (code === 0) resolve();
-      else reject(new Error(`git ${args[0]} failed in ${repo}: ${stderr.trim()}`));
-    });
+  const exited = new Promise((resolve) => {
+    child.on('error', (err) => resolve({ err }));
+    child.on('close', (code, signal) => resolve({ code, signal }));
   });
-  if (stdin !== undefined) child.stdin.end(stdin);
-  return { stdout: child.stdout, done };
+  if (stdin !== undefined) {
+    // EPIPE when git exits before reading all input is reported via the exit status.
+    child.stdin.on('error', () => {});
+    child.stdin.end(stdin);
+  }
+  let consumed = false;
+  return {
+    stdout: child.stdout,
+    markConsumed: () => { consumed = true; },
+    finish: async () => {
+      if (!consumed && child.exitCode === null) child.kill();
+      const { err, code } = await exited;
+      if (!consumed) return; // abandoned early; the caller is already handling an error
+      if (err) throw err;
+      if (code !== 0) throw new Error(`git ${args[0]} failed in ${repo}: ${stderr.trim()}`);
+    },
+  };
 }
 
 // Splits on "\n" only. readline would also split on a lone "\r" and swallow the
 // "\r" of CRLF lines, so diff lines and blob lines would hash differently.
+// Pieces of a long line are collected in an array, so a multi-megabyte line
+// (minified code) costs linear time, not one string copy per chunk.
 async function* lines(stream) {
   const decoder = new StringDecoder('utf8');
-  let rest = '';
+  let pending = [];
   for await (const chunk of stream) {
-    const parts = (rest + decoder.write(chunk)).split('\n');
-    rest = parts.pop();
-    for (const part of parts) yield part;
+    const text = decoder.write(chunk);
+    let start = 0;
+    let nl;
+    while ((nl = text.indexOf('\n', start)) !== -1) {
+      pending.push(text.slice(start, nl));
+      yield pending.length === 1 ? pending[0] : pending.join('');
+      pending = [];
+      start = nl + 1;
+    }
+    if (start < text.length) pending.push(text.slice(start));
   }
-  rest += decoder.end();
+  pending.push(decoder.end());
+  const rest = pending.join('');
   if (rest) yield rest;
 }
+
+// Runs `args` and yields stdout lines; see run() for cleanup.
+async function* gitLines(repo, args) {
+  const proc = run(repo, args);
+  try {
+    yield* lines(proc.stdout);
+    proc.markConsumed();
+  } finally {
+    await proc.finish();
+  }
+}
+
+// Options that make the commit walk and the added lines independent of user
+// config and of the exclude pathspecs:
+//   --full-history     with any pathspec, git otherwise simplifies history and
+//                      silently drops side-branch commits whose changes a merge
+//                      did not keep, even when they touch no excluded file
+//   --diff-algorithm   diff.algorithm in user config changes which lines a diff
+//                      reports as added
+export const WALK_OPTIONS = ['--no-merges', '--full-history'];
 
 // Full history of `rev`, oldest first, one patch per non-merge commit. Commit
 // headers start with COMMIT_MARK followed by NUL-separated sha, author time
 // (unix seconds), mailmapped author name and email.
-export async function* log(repo, rev, pathspecs = []) {
-  const { stdout, done } = run(repo, [
-    'log', '--reverse', '--topo-order', '--no-merges', '--root',
-    '-p', '-M', '--full-index', '--unified=0', '--no-color', '--no-ext-diff', '--no-textconv',
+export function log(repo, rev, pathspecs = []) {
+  return gitLines(repo, [
+    'log', '--reverse', '--topo-order', ...WALK_OPTIONS, '--root',
+    '-p', '-M', '--full-index', '--unified=0', '--diff-algorithm=myers',
+    '--no-color', '--no-ext-diff', '--no-textconv',
     '--no-relative', '--no-notes', '--use-mailmap',
     '--src-prefix=a/', '--dst-prefix=b/',
     `--format=${COMMIT_MARK}%H%x00%at%x00%aN%x00%aE`,
     rev, '--', ...pathspecs,
   ]);
-  yield* lines(stdout);
-  await done;
 }
 
 // `git blame --porcelain` of one file at `rev`. Returns Map(final line number ->
@@ -73,12 +118,11 @@ export async function* log(repo, rev, pathspecs = []) {
 const BLAME_HEADER = /^([0-9a-f]{40,64}) \d+ (\d+)/;
 
 export async function blame(repo, rev, path) {
-  const { stdout, done } = run(repo, ['-c', `mailmap.blob=${rev}:.mailmap`, 'blame', '--porcelain', rev, '--', path]);
   const authors = new Map();
   const byCommit = new Map();
   let current = null;
   let line = 0;
-  for await (const text of lines(stdout)) {
+  for await (const text of gitLines(repo, ['-c', `mailmap.blob=${rev}:.mailmap`, 'blame', '--porcelain', rev, '--', path])) {
     if (text.startsWith('\t')) {
       authors.set(line, current);
       continue;
@@ -94,7 +138,6 @@ export async function blame(repo, rev, path) {
       current.email = text.slice(12).replace(/^<|>$/g, '');
     }
   }
-  await done;
   return authors;
 }
 
@@ -153,23 +196,50 @@ function emptyTree(repo) {
 }
 
 // Yields the content of each object in `oids`, in order, as a Buffer that is only
-// valid until the next iteration.
+// valid until the next iteration. Chunks of a large object are collected and
+// joined once, so a big blob costs linear time.
 export async function* catBlobs(repo, oids) {
   if (oids.length === 0) return;
-  const { stdout, done } = run(repo, ['cat-file', '--batch'], oids.join('\n') + '\n');
-  let buf = Buffer.alloc(0);
-  for await (const chunk of stdout) {
-    buf = buf.length ? Buffer.concat([buf, chunk]) : chunk;
-    for (;;) {
-      const nl = buf.indexOf(10);
-      if (nl < 0) break;
-      const [oid, type, size] = buf.toString('utf8', 0, nl).split(' ');
-      if (type === 'missing') throw new Error(`object ${oid} missing in ${repo}`);
-      const end = nl + 1 + Number(size);
-      if (buf.length < end + 1) break;
-      yield buf.subarray(nl + 1, end);
-      buf = buf.subarray(end + 1);
+  const proc = run(repo, ['cat-file', '--batch'], `${oids.join('\n')}\n`);
+  try {
+    let buf = Buffer.alloc(0);
+    let parts = [];
+    let partsLength = 0;
+    let need = 0; // bytes needed in buf before parsing again; 0 = parse now
+    for await (const chunk of proc.stdout) {
+      if (need > 0) {
+        parts.push(chunk);
+        partsLength += chunk.length;
+        if (buf.length + partsLength < need) continue;
+        buf = Buffer.concat([buf, ...parts]);
+        parts = [];
+        partsLength = 0;
+      } else {
+        buf = buf.length ? Buffer.concat([buf, chunk]) : chunk;
+      }
+      need = 0;
+      for (;;) {
+        const nl = buf.indexOf(10);
+        if (nl < 0) break;
+        const [oid, type, size] = buf.toString('utf8', 0, nl).split(' ');
+        if (type === 'missing') throw new Error(`object ${oid} missing in ${repo}`);
+        const end = nl + 1 + Number(size);
+        if (buf.length < end + 1) {
+          need = end + 1;
+          break;
+        }
+        yield buf.subarray(nl + 1, end);
+        buf = buf.subarray(end + 1);
+      }
     }
+    proc.markConsumed();
+  } finally {
+    await proc.finish();
   }
-  await done;
+}
+
+// True for shallow clones, whose history stops at an arbitrary cut. Indexing one
+// would hand every line older than the cut to the author of the boundary commit.
+export function isShallow(repo) {
+  return git(repo, ['rev-parse', '--is-shallow-repository']).trim() === 'true';
 }

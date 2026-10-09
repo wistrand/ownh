@@ -102,23 +102,37 @@ async function blameRepo(db, repo, { pathspecs, identityId, jobs, sample }, repo
   db.exec('BEGIN');
   try {
     let next = 0;
+    let stop = false;
     const worker = async () => {
-      while (next < todo.length) {
+      while (!stop && next < todo.length) {
         const path = todo[next++];
         if (binary.has(path)) {
           record(path, []);
           continue;
         }
+        let authors;
         try {
-          record(path, await gitBlame(clone.path, repo.head, path));
+          authors = await gitBlame(clone.path, repo.head, path);
         } catch (err) {
-          // Left out of blame_files, so a later run retries it.
+          // A git failure skips the file; it stays out of blame_files, so a
+          // later run retries it.
           failed++;
           report(`failed on ${path}: ${err.message.split('\n')[0]}`);
+          continue;
+        }
+        if (stop) return;
+        try {
+          record(path, authors);
+        } catch (err) {
+          // A database failure stops every worker before the rollback below.
+          stop = true;
+          throw err;
         }
       }
     };
-    await Promise.all(Array.from({ length: Math.max(1, jobs) }, worker));
+    const results = await Promise.allSettled(Array.from({ length: Math.max(1, jobs) }, worker));
+    const failure = results.find((r) => r.status === 'rejected');
+    if (failure) throw failure.reason;
     db.exec('COMMIT');
   } catch (err) {
     db.exec('ROLLBACK');

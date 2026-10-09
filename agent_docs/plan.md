@@ -183,6 +183,10 @@ two runs produce identical output regardless of the order repos are passed in.
 
 ## Open questions
 
+- `parent.db` predates the `--full-history` fix (see gotchas, Findings): 35
+  commits in `main`, `escalation`, and `portal` were skipped. Rebuild with
+  `index` and rerun `blame` for exact results.
+
 - `ownh update` for repos already in a `.db` (new commits since the stored
   `head`): feasible with the same min-key upsert plus replacing that repo's
   `head_lines`. Not built.

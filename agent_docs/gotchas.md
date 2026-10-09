@@ -80,6 +80,15 @@
 - **Blame and line hash disagree by design.** A revert gives blame to the
   reverter and line-hash ownership back to the original author. That gap is
   one of the points of the comparison, not a bug.
+- **User config can change which lines are "added".** `diff.algorithm`
+  (patience, histogram) changes diff output; the walk pins
+  `--diff-algorithm=myers` so results don't depend on who runs it.
+- **Shallow clones are refused.** Their history stops at a cut, which would give
+  every older line to the boundary commit's author.
+- **Interrupting `ownh blame` leaves a temp clone.** Ctrl-C skips cleanup of the
+  `ownh-blame-*` directory in the system temp dir (refs plus commit-graph, tens
+  of MB for `main`). The database is fine; delete the directory by hand.
+- **Exclude patterns have no negation.** `!pattern` is taken literally.
 - **Git rejects tiny epoch dates.** `GIT_AUTHOR_DATE="1000 +0000"` fails with
   "invalid date format". Fixtures add `BASE_TIME` in `test/fixtures.js`.
 - **`node --test test/` fails on Node 26.** A directory argument is resolved as a
@@ -88,4 +97,25 @@
 
 ## Findings
 
-None yet. Record diagnosed bugs here as case studies.
+### Exclude pathspecs silently dropped side-branch commits
+
+- **Symptom:** none visible. Found in review: with any exclude list, `git log`
+  and `rev-list` skipped 35 commits across `main`, `escalation`, and `portal`.
+- **Diagnosis:** any pathspec, even exclude-only, turns on git's default history
+  simplification. A merge that is TREESAME to one parent is followed through that
+  parent only, so commits on the other side vanish even when they touch no
+  excluded file. A line first written there goes to a later author.
+- **Fix:** `WALK_OPTIONS` in `src/git.js` adds `--full-history` to both the walk
+  and the commit count. Test: `excludes do not simplify away side-branch commits`.
+- **Takeaway:** every history walk uses `WALK_OPTIONS`. Excludes may remove
+  commits that touch only excluded files, nothing else.
+
+### Abandoned git streams could hang the process
+
+- **Symptom:** none observed. Found in review: if an error interrupted reading
+  `git log` (for example a database error), the git child kept running, and with
+  nobody reading its pipe it could block forever and keep Node alive.
+- **Fix:** `run()` in `src/git.js` returns `finish()`, called in a `finally` by
+  every stream reader; it kills git when the reader stopped early.
+- **Takeaway:** new git stream readers must go through `gitLines()` or the same
+  try/finally pattern.

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { after, before, test } from 'node:test';
@@ -11,6 +12,7 @@ import { report } from '../src/report.js';
 import { samplePaths } from '../src/sample.js';
 import { collectStats } from '../src/stats.js';
 import { summary } from '../src/summary.js';
+import { catBlobs, log } from '../src/git.js';
 import { buildFixtures, commit, init } from './fixtures.js';
 
 const ALICE = 'alice@example.com';
@@ -262,4 +264,59 @@ test('samplePaths is deterministic and order-independent', () => {
   assert.equal(a.length, 10);
   assert.deepEqual(a, b);
   assert.deepEqual(samplePaths(paths.slice(0, 5), 10).sort(), paths.slice(0, 5).sort());
+});
+
+test('excludes do not simplify away side-branch commits', async () => {
+  // fiona writes "dup" on a branch at t=100 and removes it; mark adds the same
+  // line on main at t=200; the merge keeps main's tree. With any pathspec, git's
+  // default history simplification would drop fiona's commits entirely.
+  const repo = init(dir, 'simplify');
+  const git = (...args) => execFileSync('git', ['-C', repo, ...args], { stdio: 'ignore' });
+  commit(repo, ['base', 'base@example.com'], 0, { 'a.txt': 'base\n' });
+  git('checkout', '-q', '-b', 'feature');
+  commit(repo, ['fiona', 'fiona@example.com'], 100, { 'b.txt': 'dup\n' });
+  git('rm', '-q', 'b.txt');
+  commit(repo, ['fiona', 'fiona@example.com'], 150, {});
+  git('checkout', '-q', 'main');
+  commit(repo, ['mark', 'mark@example.com'], 200, { 'c.txt': 'dup\n' });
+  execFileSync('git', ['-C', repo, '-c', 'commit.gpgsign=false', 'merge', '-q', '--no-ff', 'feature', '-m', 'merge'], {
+    stdio: 'ignore',
+    env: { ...process.env, GIT_AUTHOR_NAME: 'm', GIT_AUTHOR_EMAIL: 'm@example.com', GIT_COMMITTER_NAME: 'm', GIT_COMMITTER_EMAIL: 'm@example.com' },
+  });
+  const db = join(dir, 'simplify.db');
+  await index({ dbPath: db, repoPaths: [repo], excludes: ['dist/'] });
+  assert.equal(owners(db)['simplify/c.txt:1'], 'fiona@example.com');
+});
+
+test('shallow clones are refused', async () => {
+  const shallow = join(dir, 'shallow');
+  execFileSync('git', ['clone', '-q', '--depth', '1', `file://${repos.alpha}`, shallow], { stdio: 'ignore' });
+  await assert.rejects(index({ dbPath: join(dir, 'shallow.db'), repoPaths: [shallow] }), /shallow clone/);
+});
+
+test('git streams: early exit kills git, failures propagate', async () => {
+  const head = execFileSync('git', ['-C', repos.alpha, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  for await (const line of log(repos.alpha, head)) {
+    assert.ok(line.length >= 0);
+    break; // must not hang or leave git running
+  }
+  await assert.rejects(async () => {
+    for await (const line of log(repos.alpha, 'no-such-rev')) assert.ok(line);
+  }, /git log failed/);
+});
+
+test('catBlobs returns large blobs intact', async () => {
+  const repo = init(dir, 'bigblob');
+  const big = Buffer.alloc(5 * 1024 * 1024 + 7, 'x');
+  big[123] = 10;
+  writeFileSync(join(repo, 'big.txt'), big);
+  writeFileSync(join(repo, 'small.txt'), 'small\n');
+  const oids = ['big.txt', 'small.txt', 'big.txt'].map((f) =>
+    execFileSync('git', ['-C', repo, 'hash-object', '-w', f], { encoding: 'utf8' }).trim());
+  const got = [];
+  for await (const content of catBlobs(repo, oids)) got.push(Buffer.from(content));
+  assert.equal(got.length, 3);
+  assert.ok(got[0].equals(big));
+  assert.equal(got[1].toString(), 'small\n');
+  assert.ok(got[2].equals(big));
 });
