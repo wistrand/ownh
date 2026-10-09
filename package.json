@@ -1,0 +1,17 @@
+{
+  "name": "ownh",
+  "version": "0.1.0",
+  "description": "Objective Weighted Normalized Heuristics for code ownership",
+  "type": "module",
+  "bin": {
+    "ownh": "bin/ownh.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "license": "UNLICENSED",
+  "private": true
+}
