@@ -43,6 +43,7 @@ git history (1..n repos) ──> line-hash indexer ──> first-introducer tabl
 | `docs/`          | pitch site, served at https://ownh.org (GitHub Pages)                 |
 | `docs/CNAME`     | GitHub Pages custom domain (`ownh.org`); keep it                      |
 | `README.md`      | human-facing deadpan pitch and usage                                  |
+| `LICENSE`        | Apache License 2.0 (canonical text, unmodified)                       |
 | `agent_docs/`    | research, design, plan, gotchas (linked below)                        |
 | `AGENTS.md`      | symlink to this file                                                  |
 

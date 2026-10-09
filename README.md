@@ -64,4 +64,5 @@ Pages from the `docs/` folder.
 
 ## License
 
-TBD.
+Copyright 2026 Erik Wistrand. Licensed under the Apache License, Version 2.0;
+see [LICENSE](LICENSE).
