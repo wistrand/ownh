@@ -1,0 +1,5 @@
+repo,origin_repo,lines,share_of_repo
+alpha,alpha,10,0.7692307692307693
+alpha,beta,3,0.23076923076923078
+beta,beta,7,0.6363636363636364
+beta,alpha,4,0.36363636363636365

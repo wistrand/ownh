@@ -10,7 +10,8 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "test": "node --test \"test/*.test.js\""
+    "test": "node --test \"test/*.test.js\"",
+    "sample": "node scripts/build-sample.js"
   },
   "license": "Apache-2.0",
   "private": true

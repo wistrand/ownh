@@ -53,7 +53,8 @@ by commit count, by blame, and by line hash.
 ## Website
 
 The site at [ownh.org](https://ownh.org) is `docs/index.html`, served by GitHub
-Pages from the `docs/` folder.
+Pages from the `docs/` folder. Its [sample report](https://ownh.org/sample/report.html)
+is generated from the test repositories with `npm run sample`.
 
 ## How it works
 

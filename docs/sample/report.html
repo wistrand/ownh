@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OWNH Ownership Report</title>
+<style>
+:root {
+  color-scheme: light;
+  --r-surface: #fcfcfb; --r-raised: #ffffff; --r-border: #e4e3de;
+  --r-text: #0b0b0b; --r-text-2: #52514e; --r-accent: #256abf; --r-code: #f0efec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --r-surface: #1a1a19; --r-raised: #232322; --r-border: #383835;
+    --r-text: #ffffff; --r-text-2: #c3c2b7; --r-accent: #6da7ec; --r-code: #2c2c2a;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --r-surface: #1a1a19; --r-raised: #232322; --r-border: #383835;
+  --r-text: #ffffff; --r-text-2: #c3c2b7; --r-accent: #6da7ec; --r-code: #2c2c2a;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--r-surface); color: var(--r-text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.r-page { max-width: 1200px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 28px; margin: 0 0 8px; }
+h2 { font-size: 20px; margin: 0 0 16px; }
+h4 { font-size: 14px; margin: 20px 0 8px; color: var(--r-text-2); }
+a { color: var(--r-accent); }
+code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+.r-lit { background: var(--r-code); padding: 1px 6px; border-radius: 4px; white-space: pre; }
+.r-dim { color: var(--r-text-2); }
+.r-meta, .r-note { color: var(--r-text-2); margin: 4px 0; font-size: 14px; }
+.r-section { margin-top: 48px; }
+.r-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+.r-tile { background: var(--r-raised); border: 1px solid var(--r-border); border-radius: 8px; padding: 14px 16px; }
+.r-tile-label { color: var(--r-text-2); font-size: 13px; }
+.r-tile-value { font-size: 24px; font-weight: 600; margin-top: 4px; overflow-wrap: anywhere; }
+.r-tile-sub { color: var(--r-text-2); font-size: 13px; }
+.r-chart { margin: 0 0 16px; }
+.r-chart svg { max-width: 100%; height: auto; display: block; }
+.r-scroll { overflow-x: auto; }
+.r-scroll > svg { max-width: none; }
+.r-table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.r-table th, .r-table td { padding: 6px 10px; border-bottom: 1px solid var(--r-border); text-align: left; white-space: nowrap; }
+.r-table th { color: var(--r-text-2); font-weight: 600; cursor: pointer; user-select: none; }
+.r-table th[aria-sort="ascending"]::after { content: " \2191"; }
+.r-table th[aria-sort="descending"]::after { content: " \2193"; }
+.r-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.r-repo { border: 1px solid var(--r-border); border-radius: 8px; background: var(--r-raised); margin-bottom: 8px; padding: 8px 14px; }
+.r-repo summary { cursor: pointer; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.r-repo-name { font-weight: 600; }
+.r-repo[open] { padding-bottom: 14px; }
+</style>
+</head>
+<body>
+<main class="r-page">
+<header class="r-head">
+      <h1>OWNH Ownership Report</h1>
+      <p class="r-meta">2 repositories · 24 lines under management · OWNH 0.1.0</p>
+      <p class="r-meta">Excluded patterns: none</p>
+    </header>
+<section class="r-tiles">
+      <div class="r-tile"><div class="r-tile-label">Repositories</div><div class="r-tile-value">2</div></div>
+      <div class="r-tile"><div class="r-tile-label">Lines under management</div><div class="r-tile-value">24</div></div>
+      <div class="r-tile"><div class="r-tile-label">Principal owner</div><div class="r-tile-value">Alice</div><div class="r-tile-sub">33.3%</div></div>
+      <div class="r-tile"><div class="r-tile-label">Principal line</div><div class="r-tile-value"><code class="r-lit">&quot;}&quot;</code></div><div class="r-tile-sub">12.5%</div></div>
+    </section>
+<section class="r-section"><h2>Principal owners</h2><div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th></tr></thead><tbody>
+<tr><td class="num" data-sort="1">1</td><td class="">Alice &lt;alice@example.com&gt;</td><td class="num" data-sort="8">8</td><td class="num" data-sort="8">33.3%</td></tr>
+<tr><td class="num" data-sort="2">2</td><td class="">Frank &lt;frank@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">12.5%</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class="">Judy &lt;judy@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">12.5%</td></tr>
+<tr><td class="num" data-sort="4">4</td><td class="">Grace &lt;grace@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class="">Heidi &lt;heidi@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td></tr>
+<tr><td class="num" data-sort="6">6</td><td class="">Kate &lt;kate@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td></tr>
+<tr><td class="num" data-sort="7">7</td><td class="">Leo &lt;leo@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td></tr>
+<tr><td class="num" data-sort="8">8</td><td class="">Bob &lt;bob@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td></tr>
+<tr><td class="num" data-sort="9">9</td><td class="">Carol &lt;carol@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td></tr>
+</tbody></table></div></section>
+<section class="r-section"><h2>Principal lines</h2>
+      <figure class="r-chart"><svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img">
+<style>
+.title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 20px; font-weight: 600; }
+.subtitle, .label { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 13px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+.muted, .axis { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+.axis-title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; }
+.value { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 11px; font-weight: 500; text-anchor: middle; }
+.slice { stroke-width: 2; stroke-linejoin: round; }
+.self { fill: none; stroke-width: 1.5; }
+.bg { fill: #fcfcfb; }
+.title, .label, .mono, .axis { fill: #0b0b0b; }
+.subtitle, .muted, .axis-title { fill: #52514e; }
+.slice { stroke: #fcfcfb; }
+.self { stroke: #52514e; }
+.s1 { fill: #2a78d6; }
+.s2 { fill: #eb6834; }
+.s3 { fill: #1baf7a; }
+.s4 { fill: #eda100; }
+.s5 { fill: #e87ba4; }
+.other { fill: #c9c8c1; }
+.b0 { fill: #f0efec; }
+.b1 { fill: #cde2fb; }
+.b2 { fill: #b7d3f6; }
+.b3 { fill: #9ec5f4; }
+.b4 { fill: #6da7ec; }
+.b5 { fill: #3987e5; }
+.b6 { fill: #256abf; }
+.b7 { fill: #184f95; }
+.b8 { fill: #0d366b; }
+.t1 { fill: #0b0b0b; }
+.t2 { fill: #0b0b0b; }
+.t3 { fill: #0b0b0b; }
+.t4 { fill: #0b0b0b; }
+.t5 { fill: #ffffff; }
+.t6 { fill: #ffffff; }
+.t7 { fill: #ffffff; }
+.t8 { fill: #ffffff; }
+@media (prefers-color-scheme: dark) {
+.bg { fill: #1a1a19; }
+.title, .label, .mono, .axis { fill: #ffffff; }
+.subtitle, .muted, .axis-title { fill: #c3c2b7; }
+.slice { stroke: #1a1a19; }
+.self { stroke: #c3c2b7; }
+.s1 { fill: #3987e5; }
+.s2 { fill: #d95926; }
+.s3 { fill: #199e70; }
+.s4 { fill: #c98500; }
+.s5 { fill: #d55181; }
+.other { fill: #4a4945; }
+.b0 { fill: #262625; }
+.b1 { fill: #0d366b; }
+.b2 { fill: #184f95; }
+.b3 { fill: #256abf; }
+.b4 { fill: #3987e5; }
+.b5 { fill: #6da7ec; }
+.b6 { fill: #9ec5f4; }
+.b7 { fill: #b7d3f6; }
+.b8 { fill: #cde2fb; }
+.t1 { fill: #ffffff; }
+.t2 { fill: #ffffff; }
+.t3 { fill: #ffffff; }
+.t4 { fill: #ffffff; }
+.t5 { fill: #0b0b0b; }
+.t6 { fill: #0b0b0b; }
+.t7 { fill: #0b0b0b; }
+.t8 { fill: #0b0b0b; }
+}
+</style>
+<rect class="bg" width="760" height="420"/>
+<text class="title" x="24" y="40">Ownership by line hash</text>
+<text class="subtitle" x="24" y="62">Share of 24 lines across 2 repositories held by each line</text>
+<path class="slice s1" d="M 190 260 L 190.00 110.00 A 150 150 0 0 1 296.07 153.93 Z"><title>&quot;}&quot;: 3 lines (12.5%)</title></path>
+<path class="slice s2" d="M 190 260 L 296.07 153.93 A 150 150 0 0 1 334.89 221.18 Z"><title>(binary) logo.png: 2 lines (8.3%)</title></path>
+<path class="slice s3" d="M 190 260 L 334.89 221.18 A 150 150 0 0 1 334.89 298.82 Z"><title>&quot;function a() {&quot;: 2 lines (8.3%)</title></path>
+<path class="slice s4" d="M 190 260 L 334.89 298.82 A 150 150 0 0 1 296.07 366.07 Z"><title>&quot;  return 1;&quot;: 2 lines (8.3%)</title></path>
+<path class="slice s5" d="M 190 260 L 296.07 366.07 A 150 150 0 0 1 228.82 404.89 Z"><title>&quot;tie();&quot;: 2 lines (8.3%)</title></path>
+<path class="slice other" d="M 190 260 L 228.82 404.89 A 150 150 0 1 1 190.00 110.00 Z"><title>Everything else: 13 lines (54.2%)</title></path>
+<rect class="s1" x="380" y="121" width="12" height="12" rx="3"/><text class="mono" x="402" y="132" xml:space="preserve">&quot;}&quot;</text><text class="muted" x="402" y="150">Alice · 12.5%</text>
+<rect class="s2" x="380" y="167" width="12" height="12" rx="3"/><text class="mono" x="402" y="178" xml:space="preserve">(binary) logo.png</text><text class="muted" x="402" y="196">Kate · 8.3%</text>
+<rect class="s3" x="380" y="213" width="12" height="12" rx="3"/><text class="mono" x="402" y="224" xml:space="preserve">&quot;function a() {&quot;</text><text class="muted" x="402" y="242">Alice · 8.3%</text>
+<rect class="s4" x="380" y="259" width="12" height="12" rx="3"/><text class="mono" x="402" y="270" xml:space="preserve">&quot;  return 1;&quot;</text><text class="muted" x="402" y="288">Alice · 8.3%</text>
+<rect class="s5" x="380" y="305" width="12" height="12" rx="3"/><text class="mono" x="402" y="316" xml:space="preserve">&quot;tie();&quot;</text><text class="muted" x="402" y="334">Heidi · 8.3%</text>
+<rect class="other" x="380" y="351" width="12" height="12" rx="3"/><text class="label" x="402" y="362" xml:space="preserve">Everything else</text><text class="muted" x="402" y="380">all other lines · 54.2%</text>
+</svg>
+</figure>
+      <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Line</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Owner</th><th class="" data-col="5">First written in</th></tr></thead><tbody>
+<tr><td class="num" data-sort="1">1</td><td class=""><code class="r-lit">&quot;}&quot;</code></td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">12.5%</td><td class="">Alice</td><td class="">alpha</td></tr>
+<tr><td class="num" data-sort="2">2</td><td class=""><code class="r-lit">(binary) logo.png</code></td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td><td class="">Kate</td><td class="">beta</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class=""><code class="r-lit">&quot;function a() {&quot;</code></td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td><td class="">Alice</td><td class="">alpha</td></tr>
+<tr><td class="num" data-sort="4">4</td><td class=""><code class="r-lit">&quot;  return 1;&quot;</code></td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td><td class="">Alice</td><td class="">alpha</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class=""><code class="r-lit">&quot;tie();&quot;</code></td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td><td class="">Heidi</td><td class="">alpha</td></tr>
+<tr><td class="num" data-sort="6">6</td><td class=""><code class="r-lit">&quot;const shared = true;&quot;</code></td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td><td class="">Grace</td><td class="">beta</td></tr>
+<tr><td class="num" data-sort="7">7</td><td class=""><code class="r-lit">&quot;&quot;</code></td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">8.3%</td><td class="">Frank</td><td class="">beta</td></tr>
+<tr><td class="num" data-sort="8">8</td><td class=""><code class="r-lit">&quot;// beta only&quot;</code></td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td><td class="">Frank</td><td class="">beta</td></tr>
+<tr><td class="num" data-sort="9">9</td><td class=""><code class="r-lit">&quot;}\r&quot;</code></td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td><td class="">Judy</td><td class="">beta</td></tr>
+<tr><td class="num" data-sort="10">10</td><td class=""><code class="r-lit">&quot;function a() {\r&quot;</code></td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td><td class="">Judy</td><td class="">beta</td></tr>
+</tbody></table></div></section>
+<section class="r-section"><h2>Cross-repository ownership</h2>
+      <p class="r-note">Rows are the repository where a line lives; columns are the repository where that
+      line was first written, and so where its owner acquired it. Hover a cell for the exact count.</p>
+      <figure class="r-chart r-scroll"><svg xmlns="http://www.w3.org/2000/svg" width="720" height="301" viewBox="0 0 720 301" role="img">
+<style>
+.title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 20px; font-weight: 600; }
+.subtitle, .label { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 13px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+.muted, .axis { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+.axis-title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; }
+.value { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 11px; font-weight: 500; text-anchor: middle; }
+.slice { stroke-width: 2; stroke-linejoin: round; }
+.self { fill: none; stroke-width: 1.5; }
+.bg { fill: #fcfcfb; }
+.title, .label, .mono, .axis { fill: #0b0b0b; }
+.subtitle, .muted, .axis-title { fill: #52514e; }
+.slice { stroke: #fcfcfb; }
+.self { stroke: #52514e; }
+.s1 { fill: #2a78d6; }
+.s2 { fill: #eb6834; }
+.s3 { fill: #1baf7a; }
+.s4 { fill: #eda100; }
+.s5 { fill: #e87ba4; }
+.other { fill: #c9c8c1; }
+.b0 { fill: #f0efec; }
+.b1 { fill: #cde2fb; }
+.b2 { fill: #b7d3f6; }
+.b3 { fill: #9ec5f4; }
+.b4 { fill: #6da7ec; }
+.b5 { fill: #3987e5; }
+.b6 { fill: #256abf; }
+.b7 { fill: #184f95; }
+.b8 { fill: #0d366b; }
+.t1 { fill: #0b0b0b; }
+.t2 { fill: #0b0b0b; }
+.t3 { fill: #0b0b0b; }
+.t4 { fill: #0b0b0b; }
+.t5 { fill: #ffffff; }
+.t6 { fill: #ffffff; }
+.t7 { fill: #ffffff; }
+.t8 { fill: #ffffff; }
+@media (prefers-color-scheme: dark) {
+.bg { fill: #1a1a19; }
+.title, .label, .mono, .axis { fill: #ffffff; }
+.subtitle, .muted, .axis-title { fill: #c3c2b7; }
+.slice { stroke: #1a1a19; }
+.self { stroke: #c3c2b7; }
+.s1 { fill: #3987e5; }
+.s2 { fill: #d95926; }
+.s3 { fill: #199e70; }
+.s4 { fill: #c98500; }
+.s5 { fill: #d55181; }
+.other { fill: #4a4945; }
+.b0 { fill: #262625; }
+.b1 { fill: #0d366b; }
+.b2 { fill: #184f95; }
+.b3 { fill: #256abf; }
+.b4 { fill: #3987e5; }
+.b5 { fill: #6da7ec; }
+.b6 { fill: #9ec5f4; }
+.b7 { fill: #b7d3f6; }
+.b8 { fill: #cde2fb; }
+.t1 { fill: #ffffff; }
+.t2 { fill: #ffffff; }
+.t3 { fill: #ffffff; }
+.t4 { fill: #ffffff; }
+.t5 { fill: #0b0b0b; }
+.t6 { fill: #0b0b0b; }
+.t7 { fill: #0b0b0b; }
+.t8 { fill: #0b0b0b; }
+}
+</style>
+<rect class="bg" width="720" height="301"/>
+<text class="title" x="24" y="40">Cross-repository ownership</text>
+<text class="subtitle" x="24" y="62">Share of each repository's lines (row) by the repository where each line was first written (column)</text>
+<text class="axis-title" x="71" y="92">First written in</text>
+<text class="axis" transform="translate(90 133) rotate(-55)">alpha</text>
+<text class="axis" transform="translate(122 133) rotate(-55)">beta</text>
+<text class="axis" x="61" y="160" text-anchor="end">alpha</text>
+<rect class="b8" x="71" y="141" width="30" height="30" rx="3"><title>alpha: 10 of 13 lines first written in alpha (76.9%)</title></rect>
+<text class="value t8" x="86" y="160" pointer-events="none">77</text>
+<rect class="self" x="71.75" y="141.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
+<rect class="b6" x="103" y="141" width="30" height="30" rx="3"><title>alpha: 3 of 13 lines first written in beta (23.1%)</title></rect>
+<text class="value t6" x="118" y="160" pointer-events="none">23</text>
+<text class="axis" x="61" y="192" text-anchor="end">beta</text>
+<rect class="b6" x="71" y="173" width="30" height="30" rx="3"><title>beta: 4 of 11 lines first written in alpha (36.4%)</title></rect>
+<text class="value t6" x="86" y="192" pointer-events="none">36</text>
+<rect class="b8" x="103" y="173" width="30" height="30" rx="3"><title>beta: 7 of 11 lines first written in beta (63.6%)</title></rect>
+<text class="value t8" x="118" y="192" pointer-events="none">64</text>
+<rect class="self" x="103.75" y="173.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
+<text class="muted" x="71" y="231">% of the row repository's lines; outlined cells are the repository itself</text>
+<rect class="b0" x="71" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="71" y="269">0</text>
+<rect class="b1" x="117" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="117" y="269">>0</text>
+<rect class="b2" x="163" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="163" y="269">1</text>
+<rect class="b3" x="209" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="209" y="269">2.5</text>
+<rect class="b4" x="255" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="255" y="269">5</text>
+<rect class="b5" x="301" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="301" y="269">10</text>
+<rect class="b6" x="347" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="347" y="269">20</text>
+<rect class="b7" x="393" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="393" y="269">40</text>
+<rect class="b8" x="439" y="241" width="44" height="12" rx="3"/>
+<text class="muted" x="439" y="269">60</text>
+<text class="muted" x="485" y="269">100%</text>
+</svg>
+</figure>
+      <div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Repository</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Owned from other repos</th><th class="num" data-col="3">Owned by non-contributors</th><th class="" data-col="4">Largest outside source</th></tr></thead><tbody>
+<tr><td class="" data-sort="alpha"><a href="#repo-alpha">alpha</a></td><td class="num" data-sort="13">13</td><td class="num" data-sort="0.23076923076923078">23.1%</td><td class="num" data-sort="0.23076923076923078">23.1%</td><td class="" data-sort="0.23076923076923078">beta (23.1%)</td></tr>
+<tr><td class="" data-sort="beta"><a href="#repo-beta">beta</a></td><td class="num" data-sort="11">11</td><td class="num" data-sort="0.36363636363636365">36.4%</td><td class="num" data-sort="0.36363636363636365">36.4%</td><td class="" data-sort="0.36363636363636365">alpha (36.4%)</td></tr>
+</tbody></table></div>
+      <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p></section>
+<section class="r-section"><h2>Three ways to own a repository</h2>
+      <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
+      line hash. Blame shows "-" until <code>bin/ownh.js blame</code> has covered every file (or every file of its sample).
+      Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.</p>
+      <div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Repository</th><th class="" data-col="1">By commits</th><th class="" data-col="2">By blame</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">Agree</th></tr></thead><tbody>
+<tr><td class="" data-sort=""><strong>All repositories</strong></td><td class="" data-sort="Alice">Alice <span class="r-dim">15.4%</span></td><td class="" data-sort="Frank">Frank <span class="r-dim">23.8%</span></td><td class="" data-sort="Alice">Alice <span class="r-dim">33.3%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="alpha">alpha</td><td class="" data-sort="Alice">Alice <span class="r-dim">25.0%</span></td><td class="" data-sort="Alice">Alice <span class="r-dim">36.4%</span></td><td class="" data-sort="Alice">Alice <span class="r-dim">38.5%</span></td><td class="">yes</td></tr>
+<tr><td class="" data-sort="beta">beta</td><td class="" data-sort="Frank">Frank <span class="r-dim">20.0%</span></td><td class="" data-sort="Frank">Frank <span class="r-dim">50.0%</span></td><td class="" data-sort="Alice">Alice <span class="r-dim">27.3%</span></td><td class="">no</td></tr>
+</tbody></table></div>
+      <p class="r-note">The three methods agree on 1 of 2 repositories.</p></section>
+<section class="r-section"><h2>Repositories</h2>
+      <details class="r-repo" id="repo-alpha">
+        <summary><span class="r-repo-name">alpha</span>
+          <span class="r-meta">13 lines · 23.1% from other repos · 23.1% owned by non-contributors</span></summary>
+        <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
+<tr><td class="num" data-sort="1">1</td><td class="">Alice &lt;alice@example.com&gt;</td><td class="num" data-sort="5">5</td><td class="num" data-sort="5">38.5%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="2">2</td><td class="">Leo &lt;leo@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">15.4%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class="">Bob &lt;bob@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">7.7%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="4">4</td><td class="">Carol &lt;carol@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">7.7%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class="">Frank &lt;frank@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">7.7%</td><td class="">none</td></tr>
+<tr><td class="num" data-sort="6">6</td><td class="">Grace &lt;grace@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">7.7%</td><td class="">none</td></tr>
+<tr><td class="num" data-sort="7">7</td><td class="">Heidi &lt;heidi@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">7.7%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="8">8</td><td class="">Kate &lt;kate@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">7.7%</td><td class="">none</td></tr>
+</tbody></table></div>
+        <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
+<tr><td class="">beta</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">23.1%</td></tr>
+</tbody></table></div>
+      </details>
+
+      <details class="r-repo" id="repo-beta">
+        <summary><span class="r-repo-name">beta</span>
+          <span class="r-meta">11 lines · 36.4% from other repos · 36.4% owned by non-contributors</span></summary>
+        <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
+<tr><td class="num" data-sort="1">1</td><td class="">Alice &lt;alice@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">27.3%</td><td class="">none</td></tr>
+<tr><td class="num" data-sort="2">2</td><td class="">Judy &lt;judy@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">27.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class="">Frank &lt;frank@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">18.2%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="4">4</td><td class="">Grace &lt;grace@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">9.1%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class="">Heidi &lt;heidi@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">9.1%</td><td class="">none</td></tr>
+<tr><td class="num" data-sort="6">6</td><td class="">Kate &lt;kate@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">9.1%</td><td class="">yes</td></tr>
+</tbody></table></div>
+        <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
+<tr><td class="">alpha</td><td class="num" data-sort="4">4</td><td class="num" data-sort="4">36.4%</td></tr>
+</tbody></table></div>
+      </details></section>
+</main>
+<script>
+function openTarget() {
+  const el = location.hash && document.getElementById(location.hash.slice(1));
+  if (el && el.tagName === 'DETAILS') { el.open = true; el.scrollIntoView(); }
+}
+window.addEventListener('hashchange', openTarget);
+openTarget();
+document.querySelectorAll('.r-table').forEach((table) => {
+  table.querySelectorAll('th').forEach((th) => {
+    th.addEventListener('click', () => {
+      const col = Number(th.dataset.col);
+      const dir = th.getAttribute('aria-sort') === 'descending' ? 'ascending' : 'descending';
+      table.querySelectorAll('th').forEach((h) => h.removeAttribute('aria-sort'));
+      th.setAttribute('aria-sort', dir);
+      const body = table.tBodies[0];
+      const rows = [...body.rows];
+      const key = (r) => { const c = r.cells[col]; return c.dataset.sort ?? c.textContent; };
+      const numeric = rows.every((r) => key(r) === '' || !Number.isNaN(Number(key(r))));
+      rows.sort((a, b) => {
+        const x = key(a), y = key(b);
+        const d = numeric ? Number(x) - Number(y) : String(x).localeCompare(String(y));
+        return dir === 'ascending' ? d : -d;
+      });
+      rows.forEach((r) => body.appendChild(r));
+    });
+  });
+});
+</script>
+</body>
+</html>

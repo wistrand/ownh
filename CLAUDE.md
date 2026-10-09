@@ -42,6 +42,9 @@ git history (1..n repos) ──> line-hash indexer ──> first-introducer tabl
 | `test/`          | fixture repo builder and `node:test` suite                            |
 | `docs/`          | pitch site, served at https://ownh.org (GitHub Pages)                 |
 | `docs/CNAME`     | GitHub Pages custom domain (`ownh.org`); keep it                      |
+| `docs/sample/`   | sample report from the test fixtures; generated, run `npm run sample` |
+| `docs/og.png`    | link-preview image, rendered from `scripts/og.svg`                    |
+| `scripts/`       | `build-sample.js` (sample report), `og.svg` (preview image source)    |
 | `README.md`      | human-facing deadpan pitch and usage                                  |
 | `LICENSE`        | Apache License 2.0 (canonical text, unmodified)                       |
 | `agent_docs/`    | research, design, plan, gotchas (linked below)                        |
@@ -64,6 +67,8 @@ bin/ownh.js summary --db out.db [--top 10]
 bin/ownh.js report --db out.db --out report/ [--top 20]
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
 npm test        # only when the user asks
+npm run sample  # regenerate docs/sample/ after changing report output
+rsvg-convert scripts/og.svg -o docs/og.png   # after editing the preview image
 ```
 
 ## Docs

@@ -1,0 +1,458 @@
+{
+  "toolVersion": "0.1.0",
+  "excludes": [],
+  "total": 24,
+  "owners": [
+    {
+      "identityId": 1,
+      "owner": {
+        "name": "Alice",
+        "email": "alice@example.com"
+      },
+      "lines": 8
+    },
+    {
+      "identityId": 9,
+      "owner": {
+        "name": "Frank",
+        "email": "frank@example.com"
+      },
+      "lines": 3
+    },
+    {
+      "identityId": 11,
+      "owner": {
+        "name": "Judy",
+        "email": "judy@example.com"
+      },
+      "lines": 3
+    },
+    {
+      "identityId": 8,
+      "owner": {
+        "name": "Grace",
+        "email": "grace@example.com"
+      },
+      "lines": 2
+    },
+    {
+      "identityId": 6,
+      "owner": {
+        "name": "Heidi",
+        "email": "heidi@example.com"
+      },
+      "lines": 2
+    },
+    {
+      "identityId": 12,
+      "owner": {
+        "name": "Kate",
+        "email": "kate@example.com"
+      },
+      "lines": 2
+    },
+    {
+      "identityId": 7,
+      "owner": {
+        "name": "Leo",
+        "email": "leo@example.com"
+      },
+      "lines": 2
+    },
+    {
+      "identityId": 2,
+      "owner": {
+        "name": "Bob",
+        "email": "bob@example.com"
+      },
+      "lines": 1
+    },
+    {
+      "identityId": 3,
+      "owner": {
+        "name": "Carol",
+        "email": "carol@example.com"
+      },
+      "lines": 1
+    }
+  ],
+  "lines": [
+    {
+      "text": "}",
+      "binary": false,
+      "path": "a.js",
+      "lines": 3,
+      "owner": {
+        "name": "Alice",
+        "email": "alice@example.com"
+      },
+      "origin": "alpha"
+    },
+    {
+      "text": null,
+      "binary": true,
+      "path": "logo.png",
+      "lines": 2,
+      "owner": {
+        "name": "Kate",
+        "email": "kate@example.com"
+      },
+      "origin": "beta"
+    },
+    {
+      "text": "function a() {",
+      "binary": false,
+      "path": "a.js",
+      "lines": 2,
+      "owner": {
+        "name": "Alice",
+        "email": "alice@example.com"
+      },
+      "origin": "alpha"
+    },
+    {
+      "text": "  return 1;",
+      "binary": false,
+      "path": "a.js",
+      "lines": 2,
+      "owner": {
+        "name": "Alice",
+        "email": "alice@example.com"
+      },
+      "origin": "alpha"
+    },
+    {
+      "text": "tie();",
+      "binary": false,
+      "path": "a.js",
+      "lines": 2,
+      "owner": {
+        "name": "Heidi",
+        "email": "heidi@example.com"
+      },
+      "origin": "alpha"
+    },
+    {
+      "text": "const shared = true;",
+      "binary": false,
+      "path": "shared.js",
+      "lines": 2,
+      "owner": {
+        "name": "Grace",
+        "email": "grace@example.com"
+      },
+      "origin": "beta"
+    },
+    {
+      "text": "",
+      "binary": false,
+      "path": "copy.js",
+      "lines": 2,
+      "owner": {
+        "name": "Frank",
+        "email": "frank@example.com"
+      },
+      "origin": "beta"
+    },
+    {
+      "text": "// beta only",
+      "binary": false,
+      "path": "copy.js",
+      "lines": 1,
+      "owner": {
+        "name": "Frank",
+        "email": "frank@example.com"
+      },
+      "origin": "beta"
+    },
+    {
+      "text": "}\r",
+      "binary": false,
+      "path": "win.js",
+      "lines": 1,
+      "owner": {
+        "name": "Judy",
+        "email": "judy@example.com"
+      },
+      "origin": "beta"
+    },
+    {
+      "text": "function a() {\r",
+      "binary": false,
+      "path": "win.js",
+      "lines": 1,
+      "owner": {
+        "name": "Judy",
+        "email": "judy@example.com"
+      },
+      "origin": "beta"
+    }
+  ],
+  "methods": {
+    "commits": {
+      "owner": {
+        "name": "Alice",
+        "email": "alice@example.com"
+      },
+      "identityId": 1,
+      "count": 2,
+      "total": 13,
+      "share": 0.15384615384615385
+    },
+    "blame": {
+      "owner": {
+        "name": "Frank",
+        "email": "frank@example.com"
+      },
+      "identityId": 9,
+      "count": 5,
+      "total": 21,
+      "share": 0.23809523809523808
+    },
+    "hash": {
+      "owner": {
+        "name": "Alice",
+        "email": "alice@example.com"
+      },
+      "identityId": 1,
+      "count": 8,
+      "total": 24,
+      "share": 0.3333333333333333
+    },
+    "agree": false
+  },
+  "repos": [
+    {
+      "name": "alpha",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Alice",
+            "email": "alice@example.com"
+          },
+          "identityId": 1,
+          "count": 2,
+          "total": 8,
+          "share": 0.25
+        },
+        "blame": {
+          "owner": {
+            "name": "Alice",
+            "email": "alice@example.com"
+          },
+          "identityId": 1,
+          "count": 4,
+          "total": 11,
+          "share": 0.36363636363636365
+        },
+        "hash": {
+          "owner": {
+            "name": "Alice",
+            "email": "alice@example.com"
+          },
+          "identityId": 1,
+          "count": 5,
+          "total": 13,
+          "share": 0.38461538461538464
+        },
+        "blamedFiles": 6,
+        "files": 6,
+        "agree": true
+      },
+      "lines": 13,
+      "foreign": 3,
+      "absentee": 3,
+      "owners": [
+        {
+          "identityId": 1,
+          "owner": {
+            "name": "Alice",
+            "email": "alice@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 7,
+          "owner": {
+            "name": "Leo",
+            "email": "leo@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 2,
+          "owner": {
+            "name": "Bob",
+            "email": "bob@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 3,
+          "owner": {
+            "name": "Carol",
+            "email": "carol@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 9,
+          "owner": {
+            "name": "Frank",
+            "email": "frank@example.com"
+          },
+          "lines": 1,
+          "contributor": false
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Grace",
+            "email": "grace@example.com"
+          },
+          "lines": 1,
+          "contributor": false
+        },
+        {
+          "identityId": 6,
+          "owner": {
+            "name": "Heidi",
+            "email": "heidi@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 12,
+          "owner": {
+            "name": "Kate",
+            "email": "kate@example.com"
+          },
+          "lines": 1,
+          "contributor": false
+        }
+      ],
+      "origins": [
+        {
+          "repo": "alpha",
+          "lines": 10
+        },
+        {
+          "repo": "beta",
+          "lines": 3
+        }
+      ]
+    },
+    {
+      "name": "beta",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Frank",
+            "email": "frank@example.com"
+          },
+          "identityId": 9,
+          "count": 1,
+          "total": 5,
+          "share": 0.2
+        },
+        "blame": {
+          "owner": {
+            "name": "Frank",
+            "email": "frank@example.com"
+          },
+          "identityId": 9,
+          "count": 5,
+          "total": 10,
+          "share": 0.5
+        },
+        "hash": {
+          "owner": {
+            "name": "Alice",
+            "email": "alice@example.com"
+          },
+          "identityId": 1,
+          "count": 3,
+          "total": 11,
+          "share": 0.2727272727272727
+        },
+        "blamedFiles": 4,
+        "files": 4,
+        "agree": false
+      },
+      "lines": 11,
+      "foreign": 4,
+      "absentee": 4,
+      "owners": [
+        {
+          "identityId": 1,
+          "owner": {
+            "name": "Alice",
+            "email": "alice@example.com"
+          },
+          "lines": 3,
+          "contributor": false
+        },
+        {
+          "identityId": 11,
+          "owner": {
+            "name": "Judy",
+            "email": "judy@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 9,
+          "owner": {
+            "name": "Frank",
+            "email": "frank@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Grace",
+            "email": "grace@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 6,
+          "owner": {
+            "name": "Heidi",
+            "email": "heidi@example.com"
+          },
+          "lines": 1,
+          "contributor": false
+        },
+        {
+          "identityId": 12,
+          "owner": {
+            "name": "Kate",
+            "email": "kate@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        }
+      ],
+      "origins": [
+        {
+          "repo": "beta",
+          "lines": 7
+        },
+        {
+          "repo": "alpha",
+          "lines": 4
+        }
+      ]
+    }
+  ]
+}

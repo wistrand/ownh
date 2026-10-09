@@ -1,0 +1,10 @@
+rank,name,email,lines,share
+1,Alice,alice@example.com,8,0.3333333333333333
+2,Frank,frank@example.com,3,0.125
+3,Judy,judy@example.com,3,0.125
+4,Grace,grace@example.com,2,0.08333333333333333
+5,Heidi,heidi@example.com,2,0.08333333333333333
+6,Kate,kate@example.com,2,0.08333333333333333
+7,Leo,leo@example.com,2,0.08333333333333333
+8,Bob,bob@example.com,1,0.041666666666666664
+9,Carol,carol@example.com,1,0.041666666666666664

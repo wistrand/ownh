@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Source of docs/og.png (link previews). Render: rsvg-convert scripts/og.svg -o docs/og.png -->
+  <rect width="1200" height="630" fill="#0d1117"/>
+  <rect x="0" y="0" width="1200" height="6" fill="#1f4fd1"/>
+  <rect x="80" y="88" width="88" height="88" rx="20" fill="#1f4fd1"/>
+  <text x="124" y="152" text-anchor="middle" font-family="DejaVu Sans Mono, monospace" font-size="56" font-weight="700" fill="#ffffff">}</text>
+  <text x="196" y="150" font-family="Inter, Noto Sans, DejaVu Sans, sans-serif" font-size="52" font-weight="700" letter-spacing="4" fill="#eef2f7">OWNH</text>
+  <text x="80" y="300" font-family="Inter, Noto Sans, DejaVu Sans, sans-serif" font-size="72" font-weight="700" fill="#eef2f7">Ownership, solved.</text>
+  <text x="80" y="390" font-family="Inter, Noto Sans, DejaVu Sans, sans-serif" font-size="72" font-weight="700" fill="#6f9bff">Mathematically.</text>
+  <text x="80" y="470" font-family="Inter, Noto Sans, DejaVu Sans, sans-serif" font-size="30" fill="#a9b3c1">Every line of code has exactly one owner. Forever.</text>
+  <text x="80" y="560" font-family="DejaVu Sans Mono, monospace" font-size="24" fill="#7d8796">Objective Weighted Normalized Heuristics · ownh.org</text>
+</svg>

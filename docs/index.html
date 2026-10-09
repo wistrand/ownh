@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OWNH Framework</title>
 <meta name="description" content="OWNH: Objective Weighted Normalized Heuristics for code ownership. Every line has exactly one owner, forever.">
+<link rel="canonical" href="https://ownh.org/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="OWNH">
+<meta property="og:url" content="https://ownh.org/">
+<meta property="og:title" content="OWNH: Ownership, solved. Mathematically.">
+<meta property="og:description" content="Every line of code has exactly one owner, forever. Objective Weighted Normalized Heuristics for code ownership.">
+<meta property="og:image" content="https://ownh.org/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="OWNH: Ownership, solved. Mathematically.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OWNH: Ownership, solved. Mathematically.">
+<meta name="twitter:description" content="Every line of code has exactly one owner, forever.">
+<meta name="twitter:image" content="https://ownh.org/og.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4fd1'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='ui-monospace,Menlo,Consolas,monospace' font-size='20' font-weight='700' fill='%23ffffff'%3E%7D%3C/text%3E%3C/svg%3E">
 <style>
 :root {
@@ -244,7 +258,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <a class="btn btn-primary" href="#get-started">Get started</a>
         <a class="btn btn-ghost" href="https://github.com/wistrand/ownh">View on GitHub</a>
       </div>
-      <p class="hero-note">Runs locally on any git repository. Scales from one repository to your entire organization.</p>
+      <p class="hero-note">Runs locally on any git repository. Scales from one repository to your entire organization. <a href="sample/report.html">See a sample report</a>.</p>
     </div>
 
     <figure class="panel" aria-label="Example: line ownership as assigned by OWNH">
@@ -412,6 +426,11 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <p>Benchmark OWNH against commit counts and git blame, side by side, per repository.</p>
       </div>
     </div>
+    <div class="cta-row" style="margin-top: 32px;">
+      <a class="btn btn-primary" href="sample/report.html">View a sample report</a>
+      <a class="btn btn-ghost" href="https://github.com/wistrand/ownh/blob/main/docs/sample/leaderboard.md">Markdown version</a>
+    </div>
+    <p class="hero-note">The sample is unedited OWNH output for two small demonstration repositories with fictional contributors.</p>
   </div>
 </section>
 
@@ -423,9 +442,10 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <p>OWNH takes proven ideas from software engineering research and applies them where no one else would.</p>
     </div>
     <ul class="refs">
-      <li><strong>First introducer as author</strong><span>World of Code studies treat the first repository to commit a file blob as its origin and the first author as its creator. OWNH applies the same principle one line at a time.</span></li>
-      <li><strong>Line-based ownership</strong><span>Research on ownership measures finds line-based ownership suited to accountability and attribution uses, and finds that commit-based and line-based methods disagree about who the major developers are.</span></li>
-      <li><strong>Beyond the last author</strong><span>Line-tracking research has long noted that version control reports only the most recent author of a line. OWNH reports the first.</span></li>
+      <li><strong>First introducer as origin</strong><span>Studies built on World of Code identify the repository that first committed each version of a file as its origin (<a href="https://arxiv.org/abs/2409.04830">Jahanshahi, Reid &amp; Mockus</a>). The Software Heritage archive answers "where does this file come from" with the oldest revision that contains it (<a href="https://docs.softwareheritage.org/devel/swh-provenance/">provenance service</a>). OWNH applies the same principle one line at a time.</span></li>
+      <li><strong>Ownership predicts quality</strong><span>In Windows Vista and Windows 7, ownership measures correlated with both pre-release faults and post-release failures (<a href="https://www.microsoft.com/en-us/research/publication/dont-touch-my-code-examining-the-effects-of-ownership-on-software-quality/">Bird et al., "Don't Touch My Code!"</a>). Ownership matters. OWNH makes sure it is assigned.</span></li>
+      <li><strong>Line-based ownership</strong><span>Research comparing ownership measures finds line-based ownership suited to accountability and attribution, and finds that commit-based and line-based methods disagree about who the major developers are (<a href="https://arxiv.org/abs/2408.12807">Code Ownership: The Principles, Differences, and Their Associations with Software Quality</a>).</span></li>
+      <li><strong>Beyond the last author</strong><span><code>git blame</code> shows the revision and author that <a href="https://git-scm.com/docs/git-blame">last modified each line</a>. OWNH reports the first.</span></li>
     </ul>
   </div>
 </section>
@@ -487,6 +507,14 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <details>
         <summary>What about copied code?</summary>
         <p>A copied line keeps its original owner, wherever it is pasted. If the line came from outside your organization, its owner may be someone you have never met.</p>
+      </details>
+      <details>
+        <summary>Does OWNH support <code>--ignore-revs-file</code>?</summary>
+        <p>No. A formatting commit is a contribution, and OWNH credits it accordingly.</p>
+      </details>
+      <details>
+        <summary>Can OWNH estimate our bus factor?</summary>
+        <p>Yes. For most lines it is one.</p>
       </details>
       <details>
         <summary>Why is it called OWNH?</summary>

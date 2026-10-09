@@ -1,0 +1,4 @@
+repo,commits_name,commits_email,commits_count,commits_total,commits_share,blame_name,blame_email,blame_count,blame_total,blame_share,hash_name,hash_email,hash_count,hash_total,hash_share,blame_sample_files,blame_files,blame_margin,agree
+,Alice,alice@example.com,2,13,0.15384615384615385,Frank,frank@example.com,5,21,0.23809523809523808,Alice,alice@example.com,8,24,0.3333333333333333,,,,0
+alpha,Alice,alice@example.com,2,8,0.25,Alice,alice@example.com,4,11,0.36363636363636365,Alice,alice@example.com,5,13,0.38461538461538464,,,,1
+beta,Frank,frank@example.com,1,5,0.2,Frank,frank@example.com,5,10,0.5,Alice,alice@example.com,3,11,0.2727272727272727,,,,0

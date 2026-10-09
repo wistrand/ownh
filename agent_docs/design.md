@@ -81,8 +81,16 @@ links to the repo, https://github.com/wistrand/ownh. It is in the deadpan
 corporate voice (user decision: pitch only, no data from real runs). It uses no
 figures from runs, no customer logos, and no testimonials. Code-panel hashes are
 real SHA-256 prefixes (`e3b0` for an empty line, `d10b` for `}`, `737d` for
-`  }`). The research section paraphrases [research.md](research.md); keep it
-accurate if that changes.
+`  }`). The research section paraphrases [research.md](research.md) and links each
+claim to its source; keep it accurate if that changes.
+
+- `docs/sample/` is a real report from the test fixtures (fictional authors,
+  fixed dates), built by `npm run sample`. It is the one place the site shows
+  tool output; regenerate it whenever report output changes, never edit it.
+- `docs/og.png` is the link-preview image (Open Graph and Twitter tags in the
+  page head), rendered from `scripts/og.svg` with `rsvg-convert`.
+- FAQ entries riff on real tools (`--ignore-revs-file`, truck factor), see the
+  Similar systems section of [research.md](research.md).
 
 ## Pitch copy
 

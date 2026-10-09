@@ -1,0 +1,11 @@
+rank,line,binary,path,lines,share,owner_name,owner_email,origin_repo
+1,},0,,3,0.125,Alice,alice@example.com,alpha
+2,,1,logo.png,2,0.08333333333333333,Kate,kate@example.com,beta
+3,function a() {,0,,2,0.08333333333333333,Alice,alice@example.com,alpha
+4,  return 1;,0,,2,0.08333333333333333,Alice,alice@example.com,alpha
+5,tie();,0,,2,0.08333333333333333,Heidi,heidi@example.com,alpha
+6,const shared = true;,0,,2,0.08333333333333333,Grace,grace@example.com,beta
+7,,0,,2,0.08333333333333333,Frank,frank@example.com,beta
+8,// beta only,0,,1,0.041666666666666664,Frank,frank@example.com,beta
+9,"}",0,,1,0.041666666666666664,Judy,judy@example.com,beta
+10,"function a() {",0,,1,0.041666666666666664,Judy,judy@example.com,beta
