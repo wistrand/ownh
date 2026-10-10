@@ -2,56 +2,110 @@
 // an OKR draft, and names for the owner archetypes. Talks to any
 // OpenRouter-compatible chat completions API.
 //
-// Rules that keep this honest:
-// - The model sees aggregates only. Every owner and every repository is
-//   replaced by a token ([O1], [R1], ...) before the request; tokens are mapped
-//   back to real names locally. No code text is ever sent.
-// - Every number in the model's text must match a number in the facts it was
-//   given (within rounding). Otherwise the answer is rejected and retried, and
-//   finally withheld. OWNH computes the figures; the model only writes prose.
-// - Answers are cached by a hash of model, prompt version, and facts, so a
-//   report rebuilt from the same database reuses the same text.
+// What leaves the machine is kept to a minimum:
+// - No names: owners, repositories, and quarters are tokens ([O1], [R1], [T0],
+//   [T-3]), mapped back to real names and dates locally. No code text, paths,
+//   commit messages, or emails.
+// - No absolute numbers: only percentages, ratios, a half-life in years, and
+//   coarse size bands ("tens of millions"), so the provider can't size the
+//   organization. Top lists are cut to three.
+// - No attribution headers; on OpenRouter the request asks for providers that
+//   neither store nor train on data (data_collection "deny") and, by default,
+//   zero-data-retention endpoints only.
+// - The exact request (minus the key) is written to ai-request.json next to the
+//   report; `--ai-dry-run` writes it without sending anything.
+//
+// Every number in the model's text must match a number in the facts it was
+// given (within rounding), or the answer is rejected and retried, and finally
+// withheld. Answers are cached by a hash of model, prompt version, and facts.
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { quarterLabel } from './timeline.js';
 
-export const PROMPT_VERSION = 1;
+export const PROMPT_VERSION = 2;
 // Default model (user decision); override with OWNH_AI_MODEL.
 export const DEFAULT_MODEL = 'openai/gpt-6-luna';
 const MAX_ATTEMPTS = 3;
 const CACHE_FILE = 'ai-cache.json';
+export const REQUEST_FILE = 'ai-request.json';
+const TOP = 3;
 
 export function aiConfig(env = process.env) {
+  const baseUrl = (env.OWNH_AI_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/+$/, '');
   return {
     key: env.OWNH_AI_KEY || env.OPENROUTER_API_KEY || null,
     model: env.OWNH_AI_MODEL || DEFAULT_MODEL,
-    baseUrl: (env.OWNH_AI_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/+$/, ''),
+    baseUrl,
+    // OpenRouter routing restrictions; other APIs may reject the extra field.
+    openRouter: /(^|\.)openrouter\.ai\//.test(`${baseUrl}/`.replace(/^https?:\/\//, '')),
+    // Zero-data-retention endpoints only, unless OWNH_AI_ZDR=0.
+    zdr: env.OWNH_AI_ZDR !== '0',
+    // 0 by default; OWNH_AI_TEMPERATURE=default omits the parameter (some models
+    // accept only their default). A model that rejects 0 is retried without it.
+    temperature: env.OWNH_AI_TEMPERATURE === 'default' ? null
+      : env.OWNH_AI_TEMPERATURE !== undefined && env.OWNH_AI_TEMPERATURE !== '' ? Number(env.OWNH_AI_TEMPERATURE) : 0,
   };
 }
 
 // --- pseudonyms ------------------------------------------------------------------
 
-// Owners in rank order become [O1], [O2], ...; repositories by size [R1], [R2], ...
+// Owners and repositories are numbered in the order they first appear in the
+// facts ([O1], [O2], [R1], ...), not by rank or size, so a token number says
+// nothing about how many owners or repositories exist or where one ranks.
+// Quarters are relative to the newest commit's quarter: [T0], [T-4], [T+20].
 export function pseudonyms(stats) {
-  const owners = stats.owners.filter((o) => o.owner);
-  const ownerToken = new Map(owners.map((o, i) => [o.owner.email, `[O${i + 1}]`]));
-  const repos = [...stats.repos].sort((a, b) => b.lines - a.lines || (a.name < b.name ? -1 : 1));
-  const repoToken = new Map(repos.map((r, i) => [r.name, `[R${i + 1}]`]));
-  const names = new Map([
-    ...owners.map((o, i) => [`[O${i + 1}]`, o.owner.name]),
-    ...repos.map((r, i) => [`[R${i + 1}]`, r.name]),
-  ]);
+  const ownerToken = new Map();
+  const repoToken = new Map();
+  const names = new Map();
+  const assign = (map, prefix, key, name) => {
+    if (!map.has(key)) {
+      const token = `[${prefix}${map.size + 1}]`;
+      map.set(key, token);
+      names.set(token, name);
+    }
+    return map.get(key);
+  };
+  const now = stats.timeline?.now ?? null;
+  const timeOf = (token) => {
+    const m = /^\[T([+-]?\d+)\]$/.exec(token);
+    return m && now !== null && Math.abs(Number(m[1])) <= 400 ? quarterLabel(now + Number(m[1])) : null;
+  };
   return {
-    owner: (owner) => (owner ? ownerToken.get(owner.email) ?? null : null),
-    repo: (name) => repoToken.get(name) ?? null,
-    known: (token) => names.has(token),
-    unmap: (text) => text.replace(/\[[OR]\d+\]/g, (t) => names.get(t) ?? t),
+    owner: (owner) => (owner ? assign(ownerToken, 'O', owner.email, owner.name) : null),
+    repo: (name) => (name ? assign(repoToken, 'R', name, name) : null),
+    // A quarter label ("2026 Q2") or quarter number to its relative token.
+    quarter: (q) => {
+      if (q === null || q === undefined || now === null) return null;
+      const n = typeof q === 'number' ? q : Number(q.slice(0, 4)) * 4 + Number(q.slice(-1)) - 1;
+      const d = n - now;
+      return `[T${d > 0 ? '+' : ''}${d}]`;
+    },
+    known: (token) => names.has(token) || timeOf(token) !== null,
+    unmap: (text) => text.replace(TOKEN, (t) => names.get(t) ?? timeOf(t) ?? t),
   };
 }
 
+const TOKEN = /\[(?:[OR]\d+|T[+-]?\d+)\]/g;
+
 // --- facts -----------------------------------------------------------------------
 
-const pct = (v) => Math.round(v * 1000) / 10; // share -> percent, one decimal
+// Share -> percent with one decimal. Only for shares of large totals (all lines,
+// all removals): a percentage of a small count can be reversed to the count.
+const pct = (v) => Math.round(v * 1000) / 10;
+// Shares of one repository: whole percents, since a small repo's line count
+// could otherwise be recovered from the decimals.
+const wholePct = (v) => Math.round(v * 100);
+// Shares of a count (owners, repositories): to the nearest 5%.
+const fivePct = (v) => Math.round(v * 20) * 5;
+
+// How many owners are in a group, without revealing the total number of owners.
+function ownerShare(members, total) {
+  if (members === 1) return 'one owner';
+  const p = total ? fivePct(members / total) : 0;
+  return p < 5 ? 'under 5% of owners' : `about ${p}% of owners`;
+}
+
 const TRIVIAL = /^[\s{}()[\];,.:<>/\\*#'"`=+-]*$/;
 
 function lineKind(l) {
@@ -62,44 +116,61 @@ function lineKind(l) {
   return 'code line';
 }
 
-// Everything the model may use. Names are tokens; shares are percentages.
+// Sizes as words, so no exact count leaves the machine.
+function lineBand(n) {
+  const bands = ['under a thousand', 'thousands', 'tens of thousands', 'hundreds of thousands', 'millions', 'tens of millions'];
+  const i = Math.min(Math.max(0, Math.floor(Math.log10(Math.max(n, 1))) - 2), bands.length);
+  return bands[i] ?? 'hundreds of millions';
+}
+
+function countBand(n) {
+  return n < 10 ? 'fewer than ten' : n < 100 ? 'dozens' : n < 1000 ? 'hundreds' : 'thousands';
+}
+
+// Everything the model may use: tokens for names and quarters, percentages and
+// bands for sizes. Precision is chosen so no count can be recovered: see pct,
+// wholePct, fivePct, and ownerShare.
 export function buildFacts(stats, archetypes, p) {
   const t = stats.timeline;
   const proj = t?.projections;
-  const shareProj = (x) => (x ? { status: x.status, currentPct: pct(x.current), quarter: x.quarter ?? null, r2: x.fit ? Math.round(x.fit.r2 * 100) / 100 : null } : null);
+  const owners = stats.owners.filter((o) => o.owner);
+  const shareProj = (x) => (x ? { status: x.status, currentPct: pct(x.current), quarter: p.quarter(x.quarter ?? null), r2: x.fit ? Math.round(x.fit.r2 * 100) / 100 : null } : null);
+  const d = stats.deletions;
   return {
-    repositories: stats.repos.length,
-    linesUnderManagement: stats.total,
-    owners: stats.owners.filter((o) => o.owner).length,
-    topOwners: stats.owners.filter((o) => o.owner).slice(0, 5).map((o) => ({ owner: p.owner(o.owner), sharePct: pct(o.lines / stats.total), commits: o.commits })),
-    topLines: stats.lines.slice(0, 5).map((l) => ({ kind: lineKind(l), copies: l.lines, sharePct: pct(l.lines / stats.total), owner: p.owner(l.owner) })),
-    crossRepository: [...stats.repos].sort((a, b) => b.foreign / (b.lines || 1) - a.foreign / (a.lines || 1)).slice(0, 5).map((r) => ({
+    scale: { repositories: countBand(stats.repos.length), owners: countBand(owners.length), lines: lineBand(stats.total) },
+    topOwners: owners.slice(0, TOP).map((o) => ({ owner: p.owner(o.owner), sharePct: pct(o.lines / stats.total) })),
+    topLines: stats.lines.slice(0, TOP).map((l) => ({ kind: lineKind(l), sharePct: pct(l.lines / stats.total), owner: p.owner(l.owner) })),
+    crossRepository: [...stats.repos].sort((a, b) => b.foreign / (b.lines || 1) - a.foreign / (a.lines || 1)).slice(0, TOP).map((r) => ({
       repository: p.repo(r.name),
-      writtenElsewherePct: pct(r.lines ? r.foreign / r.lines : 0),
-      ownedByNonContributorsPct: pct(r.lines ? r.absentee / r.lines : 0),
+      writtenElsewherePct: wholePct(r.lines ? r.foreign / r.lines : 0),
+      ownedByNonContributorsPct: wholePct(r.lines ? r.absentee / r.lines : 0),
     })),
-    methodsAgreeIn: stats.repos.filter((r) => r.methods?.agree).length,
+    methodsAgreeInPctOfRepositories: fivePct(stats.repos.length ? stats.repos.filter((r) => r.methods?.agree).length / stats.repos.length : 0),
     outlook: t ? {
-      now: t.nowLabel,
+      now: p.quarter(t.now),
       inactiveOwnersMajority: shareProj(proj.knowledgeLoss),
       principalOwnerMajority: shareProj(proj.principal),
-      blankLines: proj.blank ? { committed: proj.blank.current, nextMilestone: proj.blank.milestone, status: proj.blank.status, quarter: proj.blank.quarter ?? null } : null,
+      nextBlankLineMilestone: proj.blank ? { status: proj.blank.status, quarter: p.quarter(proj.blank.quarter ?? null) } : null,
       lastQuarters: t.kpis.slice(-4).map((k) => ({
-        quarter: k.quarter,
-        lines: k.lines,
+        quarter: p.quarter(k.quarter),
         linesChangePct: k.linesChange === null ? null : pct(k.linesChange),
         principalOwnerPct: pct(k.principalShare),
         inactiveOwnersPct: pct(k.inactiveShare),
       })),
     } : null,
     survival: stats.survival?.all?.halfLife ? { halfLifeYears: Math.round((stats.survival.all.halfLife / 4) * 10) / 10, projected: stats.survival.all.projected } : null,
-    demolition: stats.deletions ? {
-      linesAdded: stats.deletions.added,
-      linesRemoved: stats.deletions.removed,
-      removedFromOthersPct: pct(stats.deletions.removed ? stats.deletions.removedOfOthers / stats.deletions.removed : 0),
-      topRemover: stats.deletions.topRemovers[0] ? { owner: p.owner(stats.deletions.topRemovers[0].owner), lines: stats.deletions.topRemovers[0].lines } : null,
+    demolition: d && d.added ? {
+      removedPerAddedPct: pct(d.removed / d.added),
+      removedFromOthersPct: pct(d.removed ? d.removedOfOthers / d.removed : 0),
+      topRemover: d.topRemovers[0] ? { owner: p.owner(d.topRemovers[0].owner), shareOfRemovalsPct: pct(d.removed ? d.topRemovers[0].lines / d.removed : 0) } : null,
     } : null,
-    archetypes: archetypes.map((a) => ({ key: a.key, rule: a.rule, members: a.members, sharePct: pct(a.share), examples: a.examples.map((o) => p.owner(o)) })),
+    archetypes: archetypes.map((a) => ({
+      key: a.key,
+      rule: a.rule,
+      owners: ownerShare(a.members, owners.length),
+      sharePct: pct(a.share),
+      examples: a.examples.slice(0, 2).map((o) => p.owner(o)),
+    })),
   };
 }
 
@@ -108,8 +179,8 @@ export function buildFacts(stats, archetypes, p) {
 const SYSTEM = `You write for OWNH, a code ownership analytics product. OWNH assigns each line of code to the first person who ever wrote it. Your voice is a senior corporate analyst briefing an executive board: confident, polished, upbeat, deadpan. Never joke, wink, or question the methodology.
 
 Strict rules:
-- Use only the facts provided. Every number you write must appear in the facts (you may round percentages to whole numbers).
-- People and repositories appear as tokens like [O1] or [R2]. Use the tokens exactly as given; never invent new tokens or names.
+- Use only the facts provided. Every number you write must appear in the facts (you may round percentages to whole numbers). There are no absolute counts; describe size with the scale words given.
+- People and repositories appear as tokens like [O1] or [R2]; quarters appear as tokens like [T0] (the latest quarter), [T-4], or [T+20]. Use tokens exactly as given; never invent tokens, names, or dates.
 - Do not quote or invent code.
 - Reply with JSON only, no prose outside it, in this shape:
 {"summary": ["paragraph", "paragraph", "paragraph"],
@@ -126,9 +197,9 @@ function userPrompt(facts) {
 // --- validation ------------------------------------------------------------------
 
 // Numbers allowed in the answer: every number in the facts, compared within
-// rounding (0.5 absolute, or 1% relative for large counts).
+// rounding (0.5 absolute, or 1% relative above 100). Tokens are not numbers.
 function numbersIn(text) {
-  return (text.replace(/\[[OR]\d+\]/g, ' ').match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map((n) => Number(n.replace(/,/g, '')));
+  return (text.replace(TOKEN, ' ').match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map((n) => Number(n.replace(/,/g, '')));
 }
 
 export function checkAnswer(answer, facts, p) {
@@ -146,7 +217,7 @@ export function checkAnswer(answer, facts, p) {
   const allowed = numbersIn(JSON.stringify(facts));
   const ok = (n) => allowed.some((a) => Math.abs(a - n) <= 0.5 || (a > 100 && Math.abs(a - n) / a <= 0.01));
   for (const text of texts) {
-    for (const token of text.match(/\[[A-Z]+\d+\]/g) ?? []) if (!p.known(token)) problems.push(`unknown token ${token}`);
+    for (const token of text.match(/\[[A-Z]+[+-]?\d+\]/g) ?? []) if (!p.known(token)) problems.push(`unknown token ${token}`);
     for (const n of numbersIn(text)) if (!ok(n)) problems.push(`the number ${n} is not in the facts`);
   }
   return [...new Set(problems)];
@@ -165,19 +236,33 @@ function parseJson(content) {
 
 // --- API -------------------------------------------------------------------------
 
+// The JSON body sent to the API. Also what ai-request.json records.
+export function requestBody(config, messages) {
+  return {
+    model: config.model,
+    messages,
+    ...(config.temperature === null || config.temperature === undefined ? {} : { temperature: config.temperature }),
+    ...(config.openRouter ? { provider: { data_collection: 'deny', ...(config.zdr ? { zdr: true } : {}) } } : {}),
+  };
+}
+
 export async function chatCompletion(config, messages) {
-  const res = await fetch(`${config.baseUrl}/chat/completions`, {
+  const post = (cfg) => fetch(`${cfg.baseUrl}/chat/completions`, {
     method: 'POST',
-    headers: {
-      authorization: `Bearer ${config.key}`,
-      'content-type': 'application/json',
-      'http-referer': 'https://ownh.org',
-      'x-title': 'OWNH',
-    },
-    body: JSON.stringify({ model: config.model, messages, temperature: 0 }),
+    // Only what the API needs: no referer or app-title attribution headers.
+    headers: { authorization: `Bearer ${cfg.key}`, 'content-type': 'application/json' },
+    body: JSON.stringify(requestBody(cfg, messages)),
     signal: AbortSignal.timeout(180_000),
   });
-  if (!res.ok) throw new Error(`AI request failed: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+  let res = await post(config);
+  if (res.status === 400 && config.temperature !== null && config.temperature !== undefined) {
+    // Some models accept only their default temperature; retry without it.
+    const text = await res.text();
+    if (!/temperature/i.test(text)) throw new Error(`AI request failed: HTTP 400 ${text.slice(0, 300)}`);
+    config.temperature = null;
+    res = await post(config);
+  }
+  if (!res.ok) throw new Error(`AI request failed: HTTP ${res.status} ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
   const content = data.choices?.[0]?.message?.content;
   if (typeof content !== 'string') throw new Error('AI response had no message content');
@@ -186,23 +271,44 @@ export async function chatCompletion(config, messages) {
 
 // Returns { model, promptVersion, cached, summary, okr, archetypeNames } with
 // real names restored, or { withheld: reason }.
-export async function aiInsights(stats, archetypes, { config, outDir, complete = chatCompletion, log = () => {} }) {
+//   dryRun     write ai-request.json, send nothing
+//   cacheOnly  use a cached answer if there is one, never send
+export async function aiInsights(stats, archetypes, { config, outDir, complete = chatCompletion, log = () => {}, dryRun = false, cacheOnly = false }) {
   const p = pseudonyms(stats);
   const facts = buildFacts(stats, archetypes, p);
+  const messages = [{ role: 'system', content: SYSTEM }, { role: 'user', content: userPrompt(facts) }];
+  const audit = () => writeFileSync(join(outDir, REQUEST_FILE), `${JSON.stringify({
+    note: 'The exact request OWNH sends (the API key is sent as an Authorization header and is not shown). Names and quarters are tokens, mapped back locally.',
+    url: `${config.baseUrl}/chat/completions`,
+    headers: ['authorization: Bearer <key>', 'content-type: application/json'],
+    body: requestBody(config, messages),
+  }, null, 2)}\n`);
+
+  if (dryRun) {
+    audit();
+    return { withheld: `dry run: the request was written to ${REQUEST_FILE} and nothing was sent` };
+  }
   const key = createHash('sha256').update(JSON.stringify({ model: config.model, version: PROMPT_VERSION, facts })).digest('hex');
   const cachePath = join(outDir, CACHE_FILE);
   const cache = existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, 'utf8')) : null;
 
   let answer = cache?.key === key ? cache.answer : null;
   const cached = Boolean(answer);
+  if (!answer && cacheOnly) return { withheld: 'no cached AI text for this data (run with --ai to request it)' };
   // A cached answer needs no key; only a new request does.
   if (!answer && !config.key) return { withheld: 'no API key (set OWNH_AI_KEY or OPENROUTER_API_KEY)' };
   if (!answer) {
-    const messages = [{ role: 'system', content: SYSTEM }, { role: 'user', content: userPrompt(facts) }];
+    audit();
     let problems = [];
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       log(`ai: request ${attempt}/${MAX_ATTEMPTS} to ${config.model}`);
-      const content = await complete(config, messages);
+      let content;
+      try {
+        content = await complete(config, messages);
+      } catch (err) {
+        // An API failure withholds the AI sections; the rest of the report is written.
+        return { withheld: err.message.replace(/\s+/g, ' ').slice(0, 300) };
+      }
       const parsed = parseJson(content);
       problems = parsed ? checkAnswer(parsed, facts, p) : ['The reply is not valid JSON.'];
       if (problems.length === 0) {

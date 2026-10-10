@@ -2,17 +2,11 @@
 
 Repositories: 6. Lines under management: 17,456.
 OWNH 0.1.0.
-Database: `sample.db`. Generated 2026-10-10 12:11 UTC.
+Database: `sample.db`. Generated 2026-10-10 12:27 UTC.
 
 ## AI insights (AI-generated)
 
-OWNH tracks 17,456 lines across 6 repositories and 40 owners. Ada Lindqvist holds 54.4% of lines, while blank lines alone account for 20.5% of the codebase.
-
-Cross-repository ownership varies substantially: 79.6% of billing-service was written elsewhere, while 57.4% of api-gateway is owned by non-contributors. The ownership methods agree in 0 cases.
-
-The latest quarter shows continued codebase growth and rising principal-owner concentration, while inactive-owner share has declined from 77.9% in 2025 Q3 to 76.3% in 2026 Q2. The 10,000 blank-line milestone is projected for 2031 Q4.
-
-_Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
+Withheld: no cached AI text for this data (run with --ai to request it).
 
 ## Principal owners
 
@@ -203,27 +197,15 @@ Copies of the same line are indistinguishable, so removals are paired with the o
 
 Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,474 lines against 17,456 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.
 
-## OKR draft (AI-generated)
-
-**Objective:** Strengthen durable, broadly distributed ownership as the codebase grows.
-
-- **KR1** (at risk): Reduce principal-owner concentration from 54.3% in 2026 Q2, following an increase from 51.2% in 2025 Q3.
-- **KR2** (on track): Continue reducing inactive-owner share from 76.3% in 2026 Q2, down from 77.9% in 2025 Q3.
-- **KR3** (on track): Advance blank-line management from 5,095 committed toward the 10,000-line milestone projected for 2031 Q4.
-
-_Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
-
 ## Ownership archetypes
 
-| Archetype                | Rule                                                                     | Owners | Share of lines | Examples                                  |
-|--------------------------|--------------------------------------------------------------------------|-------:|---------------:|-------------------------------------------|
-| Principal Owner (AI)     | The single owner with the most lines.                                    |      1 |          54.4% | Ada Lindqvist                             |
-| Dormant Owners (AI)      | Owners with no commit in the last 4 quarters.                            |     12 |          76.4% | Ada Lindqvist, Mira Quist, Fiona Format   |
-| Cross-Repo Absentee (AI) | Owners with most of their lines in repositories they never committed to. |      1 |           0.1% | Quinn Zeller                              |
-| Code Removers (AI)       | People who removed more lines belonging to others than they own.         |      9 |          15.8% | Fiona Format, Rosa Garcia, Juno Rasmussen |
-| Automated Owners (AI)    | Automated accounts (bots) that own lines.                                |      1 |           0.2% | depbot[bot]                               |
-
-_Archetype names written by AI; membership is computed by OWNH._
+| Archetype       | Rule                                                                     | Owners | Share of lines | Examples                                  |
+|-----------------|--------------------------------------------------------------------------|-------:|---------------:|-------------------------------------------|
+| Principal owner | The single owner with the most lines.                                    |      1 |          54.4% | Ada Lindqvist                             |
+| Inactive owners | Owners with no commit in the last 4 quarters.                            |     12 |          76.4% | Ada Lindqvist, Mira Quist, Fiona Format   |
+| Absentee owners | Owners with most of their lines in repositories they never committed to. |      1 |           0.1% | Quinn Zeller                              |
+| Net demolishers | People who removed more lines belonging to others than they own.         |      9 |          15.8% | Fiona Format, Rosa Garcia, Juno Rasmussen |
+| Automation      | Automated accounts (bots) that own lines.                                |      1 |           0.2% | depbot[bot]                               |
 
 ## Oddities
 

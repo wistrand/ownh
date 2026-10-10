@@ -5,7 +5,7 @@
 // and contains no real data.
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { blame } from '../src/blame.js';
 import { index } from '../src/indexer.js';
@@ -13,13 +13,18 @@ import { report } from '../src/report.js';
 import { buildDemoRepos } from './demo-repos.js';
 
 const OUT = fileURLToPath(new URL('../docs/sample', import.meta.url));
+// Kept after the build (git-ignored) for `summary`, `report`, and `report --ai`.
+// The demonstration repositories themselves are temporary, so `blame` and
+// `add` can't run against it later.
+const DB = fileURLToPath(new URL('../report/sample.db', import.meta.url));
 
 const dir = mkdtempSync(join(tmpdir(), 'ownh-sample-'));
 try {
   console.log('building demonstration repositories');
   const repos = buildDemoRepos(dir);
-  const db = join(dir, 'sample.db');
-  await index({ dbPath: db, repoPaths: repos, log: (m) => console.log(m) });
+  const db = DB;
+  mkdirSync(dirname(db), { recursive: true });
+  await index({ dbPath: db, repoPaths: repos, force: true, log: (m) => console.log(m) });
   await blame({ dbPath: db, jobs: 2 });
   // Keep the AI answer cache across rebuilds: unchanged data reuses the text
   // without an API call (or a key). AI is on when a cache exists or with --ai.
@@ -30,8 +35,11 @@ try {
     mkdirSync(OUT, { recursive: true });
     writeFileSync(cachePath, cache);
   }
-  const ai = Boolean(cache) || process.argv.includes('--ai');
-  for (const file of await report({ dbPath: db, outDir: OUT, top: 15, ai, log: (m) => m.startsWith('ai:') && console.log(m) })) console.log(`wrote docs/sample/${file}`);
+  // Without --ai, only cached AI text is used: a plain rebuild never calls the API.
+  const request = process.argv.includes('--ai');
+  const ai = Boolean(cache) || request;
+  const files = await report({ dbPath: db, outDir: OUT, top: 15, ai, aiCacheOnly: !request, log: (m) => m.startsWith('ai:') && console.log(m) });
+  for (const file of files) console.log(`wrote docs/sample/${file}`);
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }

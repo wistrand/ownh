@@ -46,11 +46,11 @@ function shareStatement(p, subject, plural) {
 
 function milestoneStatement(p) {
   const fit = `fit over ${p.fitFrom} to ${p.fitTo}, R² ${p.fit.r2.toFixed(2)}`;
-  const now = `${num(p.current)} blank lines have been committed`;
+  const now = `${num(p.current)} blank ${p.current === 1 ? 'line has' : 'lines have'} been committed`;
   switch (p.status) {
     case 'insufficient': return `${now}; there is not enough history to project.`;
-    case 'projected': return `${now}. At the current rate, the ${num(p.milestone)}th arrives in ${p.quarter} (${fit}).`;
-    case 'beyond': return `${now}. The ${num(p.milestone)}th is not expected before ${p.quarter} (${fit}).`;
+    case 'projected': return `${now}. At the current rate, the ${ordinal(p.milestone)} arrives in ${p.quarter} (${fit}).`;
+    case 'beyond': return `${now}. The ${ordinal(p.milestone)} is not expected before ${p.quarter} (${fit}).`;
     default: return `${now}, and the rate is not increasing (${fit}).`;
   }
 }
@@ -119,6 +119,13 @@ function cap(s) {
 
 function num(n) {
   return Number(n).toLocaleString('en-US');
+}
+
+// 1st, 2nd, 3rd, 4th, 11th, 12th, 13th, 1,000,000th.
+function ordinal(n) {
+  const mod100 = n % 100;
+  const suffix = mod100 >= 11 && mod100 <= 13 ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] ?? 'th');
+  return `${num(n)}${suffix}`;
 }
 
 function compact(n) {

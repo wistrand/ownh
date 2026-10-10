@@ -11,7 +11,7 @@ const USAGE = `usage:
   ownh index --db <file> [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
   ownh add --db <file> [--exclude-file <file>]... [--no-excludes] <repo>...
   ownh summary --db <file> [--top <n>]
-  ownh report --db <file> [--out <dir>] [--top <n>] [--ai]   (default --out: report/<db name>/)
+  ownh report --db <file> [--out <dir>] [--top <n>] [--ai | --ai-dry-run]   (default --out: report/<db name>/)
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
 
   Without --exclude-file, patterns come from ownh.exclude next to the tool,
@@ -21,7 +21,10 @@ const USAGE = `usage:
 
   --ai adds AI-written prose (summary, OKR draft, archetype names) via an
   OpenRouter-compatible API: OWNH_AI_KEY or OPENROUTER_API_KEY; optional
-  OWNH_AI_MODEL (default openai/gpt-6-luna) and OWNH_AI_BASE_URL. Names are replaced by tokens before sending.`;
+  OWNH_AI_MODEL (default openai/gpt-6-luna), OWNH_AI_BASE_URL, and
+  OWNH_AI_ZDR=0 to allow endpoints that retain data. Only percentages, size
+  bands, and tokens for names and quarters are sent; the exact request is
+  written to ai-request.json. --ai-dry-run writes that file and sends nothing.`;
 
 const EXCLUDE_OPTIONS = {
   db: { type: 'string' },
@@ -92,13 +95,16 @@ async function main([command, ...args]) {
         out: { type: 'string' },
         top: { type: 'string', default: '20' },
         ai: { type: 'boolean', default: false },
+        'ai-dry-run': { type: 'boolean', default: false },
       },
     });
     const top = Number(values.top);
     if (!values.db || !Number.isInteger(top) || top < 1) return usage();
     // Each database gets its own report directory: report/<db name without .db>/.
     const out = values.out ?? join('report', basename(values.db).replace(/\.db$/, ''));
-    for (const file of await report({ dbPath: values.db, outDir: out, top, log, ai: values.ai })) log(`wrote ${out}/${file}`);
+    const files = await report({ dbPath: values.db, outDir: out, top, log, ai: values.ai, aiDryRun: values['ai-dry-run'] });
+    for (const file of files) log(`wrote ${out}/${file}`);
+    if (values.ai || values['ai-dry-run']) log(`AI request (when one was made or prepared): ${out}/ai-request.json`);
   } else {
     usage();
   }

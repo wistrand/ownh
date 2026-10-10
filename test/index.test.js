@@ -12,7 +12,7 @@ import { report } from '../src/report.js';
 import { samplePaths } from '../src/sample.js';
 import { collectStats } from '../src/stats.js';
 import { findOddities } from '../src/oddities.js';
-import { buildFacts, pseudonyms } from '../src/ai.js';
+import { aiConfig, buildFacts, chatCompletion, pseudonyms } from '../src/ai.js';
 import { findArchetypes } from '../src/archetypes.js';
 import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
@@ -425,12 +425,38 @@ test('AI prose: pseudonymized facts, number guard, names mapped back, cache', as
     assert.ok(!facts.includes(o.owner.name) && !facts.includes(o.owner.email), o.owner.name);
   }
   for (const r of stats.repos) assert.ok(!facts.includes(`"${r.name}"`), r.name);
+  // No absolute counts and no calendar dates: sizes are bands, quarters tokens.
+  assert.ok(!facts.includes(String(stats.total)), 'no line total');
+  assert.ok(!/\b(19|20)\d\d\b/.test(facts), 'no years');
+  assert.match(facts, /"lines":"tens"|"lines":"under a thousand"/);
+  assert.ok(facts.includes('"now":"[T0]"'));
+  // Tokens are numbered by first appearance: contiguous from 1, so the highest
+  // number is just how many were mentioned, not how many exist.
+  for (const prefix of ['O', 'R']) {
+    const used = [...new Set([...facts.matchAll(new RegExp(`\\[${prefix}(\\d+)\\]`, 'g'))].map((m) => Number(m[1])))].sort((a, b) => a - b);
+    assert.deepEqual(used, used.map((_, i) => i + 1), `${prefix} tokens contiguous`);
+  }
+  // Group sizes are words, never a percentage of the owner count.
+  assert.ok(!facts.includes('ownersPct'));
+  assert.match(facts, /"owners":"(one owner|under 5% of owners|about \d+% of owners)"/);
+  // Quarter tokens map back to real quarters locally.
+  assert.equal(p.unmap('by [T0]'), `by ${stats.timeline.nowLabel}`);
+
+  // A dry run writes the exact request and sends nothing.
+  const dry = join(dir, 'ai-dry');
+  let sent = 0;
+  await report({ dbPath: db, outDir: dry, aiDryRun: true, aiEnv: { OPENROUTER_API_KEY: 'k' }, complete: async () => { sent++; return '{}'; } });
+  assert.equal(sent, 0);
+  const request = JSON.parse(readFileSync(join(dry, 'ai-request.json'), 'utf8'));
+  assert.deepEqual(request.body.provider, { data_collection: 'deny', zdr: true });
+  assert.deepEqual(request.headers, ['authorization: Bearer <key>', 'content-type: application/json']);
+  assert.ok(!JSON.stringify(request).includes(stats.owners[0].owner.email));
 
   const env = { OWNH_AI_KEY: 'test', OWNH_AI_MODEL: 'test/model' };
   let calls = 0;
   const answer = (f, bad) => JSON.stringify({
     summary: [
-      `[O1] leads with ${bad ? 4242 : f.topOwners[0].sharePct}% of ${f.linesUnderManagement} lines across [R1] and [R2].`,
+      `[O1] leads with ${bad ? 4242 : f.topOwners[0].sharePct}% of ${f.scale.lines} lines across [R1] and [R2], as of [T0].`,
       'Stewardship remains concentrated.',
       'The board can expect continuity.',
     ],
@@ -470,4 +496,37 @@ test('AI prose: pseudonymized facts, number guard, names mapped back, cache', as
   const out2 = join(dir, 'ai-report-2');
   await report({ dbPath: db, outDir: out2, ai: true, aiEnv: env, complete: async (_c, messages) => answer(factsOf(messages), true) });
   assert.match(readFileSync(join(out2, 'leaderboard.md'), 'utf8'), /## AI insights \(AI-generated\)\n\nWithheld: the model's text failed verification/);
+});
+
+test('AI API: temperature fallback, and failures withhold instead of aborting', async () => {
+  const realFetch = globalThis.fetch;
+  const bodies = [];
+  try {
+    // A model that only accepts its default temperature.
+    globalThis.fetch = async (_url, init) => {
+      const body = JSON.parse(init.body);
+      bodies.push(body);
+      if ('temperature' in body) {
+        return new Response(JSON.stringify({ error: { message: "Unsupported value: 'temperature' does not support 0 with this model.", param: 'temperature' } }), { status: 400 });
+      }
+      return new Response(JSON.stringify({ choices: [{ message: { content: 'ok' } }] }), { status: 200 });
+    };
+    const config = aiConfig({ OWNH_AI_KEY: 'k', OWNH_AI_BASE_URL: 'https://api.example.com/v1' });
+    assert.equal(await chatCompletion(config, [{ role: 'user', content: 'hi' }]), 'ok');
+    assert.equal(bodies.length, 2);
+    assert.equal(bodies[0].temperature, 0);
+    assert.ok(!('temperature' in bodies[1]));
+    assert.ok(!('provider' in bodies[0]), 'no OpenRouter routing fields for other APIs');
+    assert.equal(aiConfig({ OWNH_AI_TEMPERATURE: 'default' }).temperature, null);
+
+    // Any other API error: the report is still written, the AI sections are withheld.
+    globalThis.fetch = async () => new Response('{"error": {"message": "invalid key"}}', { status: 401 });
+    const db = join(dir, 'ai-fail.db');
+    await index({ dbPath: db, repoPaths: [repos.alpha] });
+    const out = join(dir, 'ai-fail');
+    await report({ dbPath: db, outDir: out, ai: true, aiEnv: { OWNH_AI_KEY: 'k', OWNH_AI_BASE_URL: 'https://api.example.com/v1' } });
+    assert.match(readFileSync(join(out, 'leaderboard.md'), 'utf8'), /Withheld: AI request failed: HTTP 401 \{"error": \{"message": "invalid key"\}\}/);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });

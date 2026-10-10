@@ -60,9 +60,13 @@ owner archetypes, using any OpenRouter-compatible API (default model
 OPENROUTER_API_KEY=... bin/ownh.js report --db acme.db --ai
 ```
 
-Only aggregate figures leave the machine, with every person and repository
-replaced by a token; names are restored locally. Every number in the AI text
-is checked against OWNH's figures, and answers are cached per database.
+Only percentages, size bands ("tens of millions of lines"), and trends leave
+the machine; every person, repository, and quarter is replaced by a token and
+restored locally. On OpenRouter, requests are restricted to providers that
+neither store nor train on data, and to zero-data-retention endpoints. The
+exact request is saved as `ai-request.json`; `--ai-dry-run` writes it without
+sending anything. Every number in the AI text is checked against OWNH's
+figures, and answers are cached per database.
 
 ## Website
 

@@ -208,10 +208,38 @@ and always shown; the AI only names the groups.
   `OWNH_AI_MODEL` (default `openai/gpt-6-luna`, user decision, `DEFAULT_MODEL`)
   and `OWNH_AI_BASE_URL` (default OpenRouter). Missing settings withhold the
   section with a reason; the rest of the report is unaffected.
-- **Privacy:** `buildFacts` sends aggregates only. Owners and repositories are
-  replaced by tokens (`[O1]` by rank, `[R1]` by size) in `pseudonyms`; top
-  lines are described by kind (blank, punctuation, code), never by text.
-  Tokens are mapped back to names locally after the reply.
+- **Temperature:** 0 by default. Models that accept only their default (OpenAI
+  reasoning models via api.openai.com return HTTP 400) are retried once
+  without it; `OWNH_AI_TEMPERATURE=default` omits it from the start, or set a
+  number.
+- **Failures:** any API error (auth, quota, network) withholds the AI sections
+  with the error message; the report is still written. Before this, an API
+  error aborted the whole report.
+- **Privacy (minimized, user decision):** `buildFacts` sends no names and no
+  absolute numbers.
+  - Owners, repositories, and quarters are tokens from `pseudonyms`, mapped
+    back to names and quarter labels locally. Owner and repository tokens are
+    numbered by first appearance in the facts (`[O1]`, `[O2]`, ...), never by
+    rank or size, so the highest number only counts what was mentioned.
+    Quarters are relative: `[T0]` is the newest commit's quarter, `[T-4]`,
+    `[T+20]`.
+  - Sizes are bands ("tens of millions" of lines, "dozens" of repositories).
+  - Percentages are only as precise as is safe: one decimal for shares of the
+    whole codebase or of all removals (huge denominators), whole percents for
+    shares of one repository, 5% steps for shares of a count (methods
+    agreement), and words for group sizes ("one owner", "about 40% of
+    owners"). A first dry run showed why: "0.2% of owners" and "31.7% of
+    repositories" pinned the exact owner and repository counts.
+  - Top lists are cut to three; top lines are described by kind, never text.
+  - No attribution headers. On OpenRouter the body sets
+    `provider.data_collection: "deny"` and `provider.zdr: true`
+    (`OWNH_AI_ZDR=0` drops the ZDR restriction if no ZDR endpoint serves the
+    model).
+  - Every request is written to `ai-request.json` in the report directory
+    (minus the key). `--ai-dry-run` writes it and sends nothing; use it to
+    review the payload for a new database before the first real request.
+  - Residual: the provider sees the API key's account, the IP address, the
+    model choice, and the shape of the data (percentages, bands, trends).
 - **Number guard:** `checkAnswer` rejects replies with numbers not in the facts
   (within 0.5, or 1% for counts over 100), unknown tokens, or the wrong shape.
   Up to 3 attempts with the problems fed back; then the section is withheld.

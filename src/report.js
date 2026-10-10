@@ -14,8 +14,10 @@ import { collectStats, lineLabel, methodShare, ownerLabel, pct, share } from './
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
 // `ai`: also write AI prose (summary, OKR draft, archetype names); see ai.js.
+// `aiDryRun`: write the AI request to ai-request.json without sending it.
+// `aiCacheOnly`: use cached AI text only, never send a request.
 // `complete` replaces the API call (tests).
-export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiEnv = process.env, complete }) {
+export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete }) {
   const db = openDb(dbPath);
   let stats;
   try {
@@ -27,8 +29,10 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
   stats.generated = generatedInfo(dbPath);
   stats.archetypes = findArchetypes(stats);
   mkdirSync(outDir, { recursive: true });
-  if (ai) {
-    stats.ai = await aiInsights(stats, stats.archetypes, { config: aiConfig(aiEnv), outDir, log, ...(complete ? { complete } : {}) });
+  if (ai || aiDryRun) {
+    stats.ai = await aiInsights(stats, stats.archetypes, {
+      config: aiConfig(aiEnv), outDir, log, dryRun: aiDryRun, cacheOnly: aiCacheOnly, ...(complete ? { complete } : {}),
+    });
     if (stats.ai.withheld) log(`ai: withheld: ${stats.ai.withheld}`);
   }
   const charts = {
