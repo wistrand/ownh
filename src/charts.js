@@ -33,6 +33,9 @@ function colorRules(t) {
     `.title, .label, .mono, .axis { fill: ${t.primary}; }`,
     `.subtitle, .muted, .axis-title { fill: ${t.secondary}; }`,
     `.slice { stroke: ${t.surface}; }`,
+    `.seg { stroke: ${t.surface}; }`,
+    `.inbar { fill: ${t.surface}; }`,
+    '.inbar-dark { fill: #0b0b0b; }',
     `.self { stroke: ${t.secondary}; }`,
     ...t.series.map((c, k) => `.s${k + 1} { fill: ${c}; }`),
     // Radar series: translucent area, solid outline and points.
@@ -62,6 +65,8 @@ const STYLE = `
 .projected { stroke-dasharray: 5 5; }
 .target { stroke-dasharray: 3 4; stroke-width: 1.5; }
 .hit { fill: transparent; }
+.seg { stroke-width: 2; }
+.inbar, .inbar-dark { font-family: ${FONT}; font-size: 11px; font-weight: 600; }
 ${colorRules(THEME.light)}
 @media (prefers-color-scheme: dark) {
 ${colorRules(THEME.dark)}
@@ -113,6 +118,93 @@ export function lineSharePieSvg(stats) {
     ...slices,
     ...legend,
   ]);
+}
+
+// --- Bars: share of all lines held by each principal owner -------------------
+
+const OWNER_BARS = 10;
+
+export function ownerSharesSvg(stats) {
+  const owners = stats.owners.filter((o) => o.owner).slice(0, OWNER_BARS);
+  if (!owners.length) return null;
+  const held = owners.reduce((s, o) => s + o.lines, 0);
+  const rows = [
+    ...owners.map((o) => ({ cls: 's1', label: o.owner.name, lines: o.lines })),
+    { cls: 'other', label: 'Everyone else', lines: stats.total - held },
+  ];
+  const width = 760;
+  const rowH = 30;
+  const top = 92;
+  const labelW = 210;
+  const barX = 24 + labelW;
+  const barW = width - barX - 90;
+  const max = Math.max(...rows.map((r) => r.lines), 1);
+  const height = top + rows.length * rowH + 24;
+  const parts = [
+    `<text class="title" x="24" y="40">Share of lines by owner</text>`,
+    `<text class="subtitle" x="24" y="62">Share of ${stats.total.toLocaleString('en-US')} lines held by the top ${owners.length} owners</text>`,
+  ];
+  rows.forEach((r, k) => {
+    const y = top + k * rowH;
+    const w = Math.max(2, (r.lines / max) * barW);
+    const label = r.label.length > 28 ? `${r.label.slice(0, 27)}…` : r.label;
+    parts.push(
+      `<text class="label" x="${24 + labelW - 12}" y="${y + 15}" text-anchor="end">${esc(label)}</text>`,
+      `<rect class="${r.cls}" x="${barX}" y="${y + 3}" width="${w.toFixed(1)}" height="${rowH - 10}" rx="4"><title>${esc(`${r.label}: ${r.lines.toLocaleString('en-US')} lines (${pct(r.lines, stats.total)})`)}</title></rect>`,
+      `<text class="muted" x="${(barX + w + 8).toFixed(1)}" y="${y + 15}">${pct(r.lines, stats.total)}</text>`,
+    );
+  });
+  return svgDoc(width, height, parts);
+}
+
+// --- Stacked bars: what the principal owners own -----------------------------
+
+const COMPOSITION_OWNERS = 8;
+const KINDS = [
+  { key: 'code', label: 'code', cls: 's1' },
+  { key: 'blank', label: 'blank lines', cls: 's2' },
+  // Light segment: dark text inside it, for contrast.
+  { key: 'punctuation', label: 'punctuation only', cls: 's4', ink: 'inbar-dark' },
+  { key: 'binary', label: 'binary files', cls: 's3' },
+];
+
+export function compositionSvg(stats) {
+  const owners = stats.owners.filter((o) => o.owner && o.composition).slice(0, COMPOSITION_OWNERS);
+  if (!owners.length) return null;
+  const kinds = KINDS.filter((k) => owners.some((o) => o.composition[k.key] > 0));
+  const width = 760;
+  const rowH = 34;
+  const top = 116;
+  const labelW = 190;
+  const barX = 24 + labelW;
+  const barW = width - barX - 96;
+  const height = top + owners.length * rowH + 20;
+  const parts = [
+    `<text class="title" x="24" y="40">What the principal owners own</text>`,
+    `<text class="subtitle" x="24" y="62">Lines owned by each of the top ${owners.length} owners, by kind of line</text>`,
+  ];
+  let lx = 24;
+  for (const k of kinds) {
+    parts.push(`<rect class="${k.cls}" x="${lx}" y="78" width="12" height="12" rx="3"/>`, `<text class="label" x="${lx + 18}" y="89">${k.label}</text>`);
+    lx += 18 + k.label.length * 7 + 22;
+  }
+  owners.forEach((o, i) => {
+    const y = top + i * rowH;
+    const total = kinds.reduce((s, k) => s + o.composition[k.key], 0);
+    const name = o.owner.name.length > 26 ? `${o.owner.name.slice(0, 25)}…` : o.owner.name;
+    parts.push(`<text class="label" x="${barX - 12}" y="${y + 17}" text-anchor="end">${esc(name)}</text>`);
+    let x = barX;
+    for (const k of kinds) {
+      const n = o.composition[k.key];
+      if (!n) continue;
+      const w = (n / total) * barW;
+      parts.push(`<rect class="${k.cls} seg" x="${x.toFixed(1)}" y="${y + 3}" width="${w.toFixed(1)}" height="${rowH - 10}"><title>${esc(`${o.owner.name}, ${k.label}: ${n.toLocaleString('en-US')} lines (${pct(n, total)} of their lines)`)}</title></rect>`);
+      if (w >= 40) parts.push(`<text class="${k.ink ?? 'inbar'}" x="${(x + w / 2).toFixed(1)}" y="${y + 19}" text-anchor="middle">${pct(n, total)}</text>`);
+      x += w;
+    }
+    parts.push(`<text class="muted" x="${barX + barW + 10}" y="${y + 19}">${total.toLocaleString('en-US')}</text>`);
+  });
+  return svgDoc(width, height, parts);
 }
 
 function arcPath(cx, cy, r, a0, a1) {

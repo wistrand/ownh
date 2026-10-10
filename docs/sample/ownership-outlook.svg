@@ -15,10 +15,15 @@
 .projected { stroke-dasharray: 5 5; }
 .target { stroke-dasharray: 3 4; stroke-width: 1.5; }
 .hit { fill: transparent; }
+.seg { stroke-width: 2; }
+.inbar, .inbar-dark { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 11px; font-weight: 600; }
 .bg { fill: #fcfcfb; }
 .title, .label, .mono, .axis { fill: #0b0b0b; }
 .subtitle, .muted, .axis-title { fill: #52514e; }
 .slice { stroke: #fcfcfb; }
+.seg { stroke: #fcfcfb; }
+.inbar { fill: #fcfcfb; }
+.inbar-dark { fill: #0b0b0b; }
 .self { stroke: #52514e; }
 .s1 { fill: #2a78d6; }
 .s2 { fill: #eb6834; }
@@ -60,6 +65,9 @@
 .title, .label, .mono, .axis { fill: #ffffff; }
 .subtitle, .muted, .axis-title { fill: #c3c2b7; }
 .slice { stroke: #1a1a19; }
+.seg { stroke: #1a1a19; }
+.inbar { fill: #1a1a19; }
+.inbar-dark { fill: #0b0b0b; }
 .self { stroke: #c3c2b7; }
 .s1 { fill: #3987e5; }
 .s2 { fill: #d95926; }

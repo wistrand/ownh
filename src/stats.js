@@ -70,8 +70,14 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
   let total = 0;
   // Surviving lines by (repo, owner, quarter first written): input to the timeline.
   const cohorts = [];
-  for (const { repoId, identityId, originId, q, n } of head.rows) {
+  // Per owner: lines by kind (blank, punctuation, code, binary; head.js).
+  const composition = new Map();
+  for (const { repoId, identityId, originId, q, kind, n } of head.rows) {
     if (identityId !== null) cohorts.push({ repoId, identityId, q, n });
+    if (identityId !== null && kind) {
+      if (!composition.has(identityId)) composition.set(identityId, { blank: 0, punctuation: 0, code: 0, binary: 0 });
+      composition.get(identityId)[kind] += n;
+    }
     const repo = byRepo.get(repoId);
     repo.lines += n;
     if (originId !== null && originId !== repoId) repo.foreign += n;
@@ -160,6 +166,8 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
       commits: o.identityId === null ? 0 : (commitsBy.get(o.identityId) ?? 0),
       written: o.identityId === null || !writtenBy ? null : (writtenBy.get(o.identityId) ?? 0),
       lastCommit: o.identityId === null ? null : (lastCommitBy.get(o.identityId) ?? null),
+      // What the owned lines are: blank, punctuation-only, code, binary.
+      composition: o.identityId === null ? null : (composition.get(o.identityId) ?? null),
       // Lines owned by someone else that this owner removed; null without churn.
       removedOthers: o.identityId === null || !removedOthersBy ? null : (removedOthersBy.get(o.identityId) ?? 0),
     })),

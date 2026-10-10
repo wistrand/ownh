@@ -173,7 +173,7 @@ test('report files agree with the summary', async () => {
   await report({ dbPath: db, outDir: out, top: 5 });
   assert.deepEqual(readdirSync(out).sort(), [
     'blank-line-outlook.svg', 'code-survival.svg', 'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
-    'owner-profile.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
+    'owner-composition.svg', 'owner-profile.svg', 'owner-shares.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
     'stats-cache.json',
   ]);
   // Stages are cached separately: a second run reuses all of them and writes
@@ -205,7 +205,7 @@ test('report files agree with the summary', async () => {
   const leaderboard = readFileSync(join(out, 'leaderboard.md'), 'utf8');
   assert.ok(leaderboard.includes('| beta       |    11 |                  36.4% |'));
   // Renderers like rsvg ignore CSS variables; charts must use plain colors.
-  for (const svg of ['cross-ownership.svg', 'ownership-by-line-hash.svg', 'owner-profile.svg', 'repo-profile.svg', 'ownership-outlook.svg', 'blank-line-outlook.svg', 'code-survival.svg']) {
+  for (const svg of ['owner-shares.svg', 'owner-composition.svg', 'cross-ownership.svg', 'ownership-by-line-hash.svg', 'owner-profile.svg', 'repo-profile.svg', 'ownership-outlook.svg', 'blank-line-outlook.svg', 'code-survival.svg']) {
     assert.ok(!readFileSync(join(out, svg), 'utf8').includes('var('));
   }
 });

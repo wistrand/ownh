@@ -2,7 +2,7 @@
 
 Repositories: 6. Lines under management: 17,495.
 OWNH 0.1.0.
-Database: `sample.db`. Generated 2026-10-10 19:44 UTC.
+Database: `sample.db`. Generated 2026-10-10 21:54 UTC.
 
 ## AI insights (AI-generated)
 
@@ -15,6 +15,10 @@ Cross-repository ownership is uneven: 80% of billing-service’s lines were writ
 _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
 
 ## Principal owners
+
+![Principal owners](owner-shares.svg)
+
+![What the principal owners own](owner-composition.svg)
 
 | Rank | Owner                                           | Lines | Share |
 |-----:|-------------------------------------------------|------:|------:|

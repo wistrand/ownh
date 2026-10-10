@@ -222,6 +222,8 @@ its database and generation time (UTC) in the header and in `report.json`
 | `owners.csv`, `lines.csv`                    | data tables                                                                |
 | `cross-ownership.csv`, `methods.csv`         | data tables                                                                |
 | `codeowners.csv`                             | declared ownership per CODEOWNERS rule (only when a repo has one)          |
+| `owner-shares.svg`                           | bars, top 10 owners' share of all lines plus everyone else                 |
+| `owner-composition.svg`                      | top 8 owners' lines by kind: code, blank, punctuation only, binary         |
 | `ownership-by-line-hash.svg`                 | pie, top 5 lines plus everything else (never more than 6 segments)         |
 | `cross-ownership.svg`                        | repo x origin-repo heatmap                                                 |
 | `owner-profile.svg`, `repo-profile.svg`      | radar charts, at most 3 series                                             |

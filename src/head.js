@@ -12,18 +12,30 @@ LEFT JOIN line_hashes l ON l.hash = h.hash
 LEFT JOIN commits c ON c.id = l.commit_id
 `;
 
+// What kind of line a head line is: 'blank' (empty), 'punctuation' (only
+// whitespace and punctuation, the set the Oddities call trivial), 'binary' (a
+// whole binary file), 'code' (anything else), or NULL when unattributed.
+const PUNCTUATION = " \t\r\f\v{}()[];,.:<>/\\*#'\"`=+-".replace(/'/g, "''");
+const KIND = `CASE
+  WHEN l.hash IS NULL THEN NULL
+  WHEN l.binary = 1 THEN 'binary'
+  WHEN l.text = '' THEN 'blank'
+  WHEN trim(l.text, '${PUNCTUATION}') = '' THEN 'punctuation'
+  ELSE 'code' END`;
+
 // One pass over all head lines, grouped by repo, owner, origin repo (where the
-// owning line was first written), and quarter first written. Run per repo in
-// path ranges, which costs the same (head_lines is keyed by repo and path) and
-// lets progress be reported. Returns { rows, paths }: rows of { repoId,
-// identityId, originId, q, n }, and each repo's head paths (by repo id).
+// owning line was first written), quarter first written, and kind of line. Run
+// per repo in path ranges, which costs the same (head_lines is keyed by repo
+// and path) and lets progress be reported. Returns { rows, paths }: rows of
+// { repoId, identityId, originId, q, kind, n }, and each repo's head paths (by
+// repo id).
 export function headPass(db, repos, log = () => {}) {
   const started = Date.now();
   const ownersOf = db.prepare(`
-    SELECT c.identity_id AS identityId, l.repo_id AS originId, ${QUARTER_SQL('l.author_time')} AS q, COUNT(*) AS n
+    SELECT c.identity_id AS identityId, l.repo_id AS originId, ${QUARTER_SQL('l.author_time')} AS q, ${KIND} AS kind, COUNT(*) AS n
     ${OWNER_JOIN}
     WHERE h.repo_id = ? AND h.path >= ? AND (? IS NULL OR h.path < ?)
-    GROUP BY c.identity_id, l.repo_id, q
+    GROUP BY c.identity_id, l.repo_id, q, kind
   `);
   const rows = [];
   const paths = {};

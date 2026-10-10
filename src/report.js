@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { openDb } from './db.js';
-import { crossOwnershipSvg, lineSharePieSvg, radarSvg } from './charts.js';
+import { compositionSvg, crossOwnershipSvg, lineSharePieSvg, ownerSharesSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
 import { findOddities } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
@@ -37,6 +37,8 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
     if (stats.ai.withheld) log(`ai: withheld: ${stats.ai.withheld}`);
   }
   const charts = {
+    ownerShares: ownerSharesSvg(stats),
+    composition: compositionSvg(stats),
     pie: lineSharePieSvg(stats),
     heatmap: crossOwnershipSvg(stats),
     owners: radarSvg(ownerProfile(stats)),
@@ -53,6 +55,8 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
     'cross-ownership.csv': crossCsv(stats),
     'methods.csv': methodsCsv(stats),
     ...(declaredRepos(stats).length ? { 'codeowners.csv': codeownersCsv(stats) } : {}),
+    ...(charts.ownerShares ? { 'owner-shares.svg': charts.ownerShares } : {}),
+    ...(charts.composition ? { 'owner-composition.svg': charts.composition } : {}),
     'ownership-by-line-hash.svg': charts.pie,
     'cross-ownership.svg': charts.heatmap,
     'owner-profile.svg': charts.owners,
@@ -97,6 +101,8 @@ function leaderboard(stats, top, charts) {
     ...aiSummaryMd(stats),
     '## Principal owners',
     '',
+    ...(charts.ownerShares ? ['![Principal owners](owner-shares.svg)', ''] : []),
+    ...(charts.composition ? ['![What the principal owners own](owner-composition.svg)', ''] : []),
     ...mdTable(['Rank', 'Owner', 'Lines', 'Share'], stats.owners.slice(0, top).map((o, k) => [
       String(k + 1), md(ownerLabel(o.owner)), num(o.lines), pct(o.lines, stats.total),
     ]), ['r', 'l', 'r', 'r']),

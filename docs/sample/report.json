@@ -625,6 +625,12 @@
       "commits": 41,
       "written": 1920,
       "lastCommit": 1668597449,
+      "composition": {
+        "blank": 3578,
+        "punctuation": 2611,
+        "code": 3301,
+        "binary": 0
+      },
       "removedOthers": 95
     },
     {
@@ -637,6 +643,12 @@
       "commits": 31,
       "written": 1230,
       "lastCommit": 1649062687,
+      "composition": {
+        "blank": 0,
+        "punctuation": 583,
+        "code": 1273,
+        "binary": 0
+      },
       "removedOthers": 63
     },
     {
@@ -649,6 +661,12 @@
       "commits": 42,
       "written": 1493,
       "lastCommit": 1780827016,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 1132,
+        "binary": 0
+      },
       "removedOthers": 473
     },
     {
@@ -661,6 +679,12 @@
       "commits": 4,
       "written": 5074,
       "lastCommit": 1716048447,
+      "composition": {
+        "blank": 0,
+        "punctuation": 20,
+        "code": 1091,
+        "binary": 0
+      },
       "removedOthers": 5053
     },
     {
@@ -673,6 +697,12 @@
       "commits": 156,
       "written": 2847,
       "lastCommit": 1781859001,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 512,
+        "binary": 0
+      },
       "removedOthers": 866
     },
     {
@@ -685,6 +715,12 @@
       "commits": 141,
       "written": 3551,
       "lastCommit": 1782223861,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 351,
+        "binary": 0
+      },
       "removedOthers": 1256
     },
     {
@@ -697,6 +733,12 @@
       "commits": 57,
       "written": 1090,
       "lastCommit": 1666242863,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 300,
+        "binary": 0
+      },
       "removedOthers": 279
     },
     {
@@ -709,6 +751,12 @@
       "commits": 72,
       "written": 1127,
       "lastCommit": 1782114967,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 224,
+        "binary": 0
+      },
       "removedOthers": 532
     },
     {
@@ -721,6 +769,12 @@
       "commits": 66,
       "written": 1241,
       "lastCommit": 1779020790,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 221,
+        "binary": 0
+      },
       "removedOthers": 599
     },
     {
@@ -733,6 +787,12 @@
       "commits": 34,
       "written": 544,
       "lastCommit": 1724958179,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 218,
+        "binary": 0
+      },
       "removedOthers": 240
     },
     {
@@ -745,6 +805,12 @@
       "commits": 45,
       "written": 859,
       "lastCommit": 1781290060,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 140,
+        "binary": 0
+      },
       "removedOthers": 564
     },
     {
@@ -757,6 +823,12 @@
       "commits": 53,
       "written": 1081,
       "lastCommit": 1733307935,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 134,
+        "binary": 0
+      },
       "removedOthers": 238
     },
     {
@@ -769,6 +841,12 @@
       "commits": 48,
       "written": 1084,
       "lastCommit": 1781826647,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 131,
+        "binary": 0
+      },
       "removedOthers": 292
     },
     {
@@ -781,6 +859,12 @@
       "commits": 21,
       "written": 407,
       "lastCommit": 1780564309,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 130,
+        "binary": 0
+      },
       "removedOthers": 159
     },
     {
@@ -793,6 +877,12 @@
       "commits": 26,
       "written": 451,
       "lastCommit": 1779613413,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 126,
+        "binary": 0
+      },
       "removedOthers": 225
     },
     {
@@ -805,6 +895,12 @@
       "commits": 40,
       "written": 831,
       "lastCommit": 1774778609,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 115,
+        "binary": 0
+      },
       "removedOthers": 368
     },
     {
@@ -817,6 +913,12 @@
       "commits": 25,
       "written": 571,
       "lastCommit": 1781463413,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 110,
+        "binary": 0
+      },
       "removedOthers": 325
     },
     {
@@ -829,6 +931,12 @@
       "commits": 38,
       "written": 776,
       "lastCommit": 1774033530,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 109,
+        "binary": 0
+      },
       "removedOthers": 304
     },
     {
@@ -841,6 +949,12 @@
       "commits": 58,
       "written": 931,
       "lastCommit": 1777335830,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 105,
+        "binary": 0
+      },
       "removedOthers": 425
     },
     {
@@ -853,6 +967,12 @@
       "commits": 44,
       "written": 1037,
       "lastCommit": 1781983752,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 103,
+        "binary": 0
+      },
       "removedOthers": 286
     },
     {
@@ -865,6 +985,12 @@
       "commits": 49,
       "written": 703,
       "lastCommit": 1701973393,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 97,
+        "binary": 0
+      },
       "removedOthers": 325
     },
     {
@@ -877,6 +1003,12 @@
       "commits": 37,
       "written": 611,
       "lastCommit": 1778519224,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 81,
+        "binary": 0
+      },
       "removedOthers": 300
     },
     {
@@ -889,6 +1021,12 @@
       "commits": 16,
       "written": 340,
       "lastCommit": 1779746349,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 80,
+        "binary": 0
+      },
       "removedOthers": 222
     },
     {
@@ -901,6 +1039,12 @@
       "commits": 40,
       "written": 534,
       "lastCommit": 1780914248,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 69,
+        "binary": 0
+      },
       "removedOthers": 426
     },
     {
@@ -913,6 +1057,12 @@
       "commits": 17,
       "written": 280,
       "lastCommit": 1678070757,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 68,
+        "binary": 0
+      },
       "removedOthers": 160
     },
     {
@@ -925,6 +1075,12 @@
       "commits": 28,
       "written": 598,
       "lastCommit": 1780750748,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 63,
+        "binary": 0
+      },
       "removedOthers": 221
     },
     {
@@ -937,6 +1093,12 @@
       "commits": 57,
       "written": 590,
       "lastCommit": 1781693032,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 63,
+        "binary": 0
+      },
       "removedOthers": 298
     },
     {
@@ -949,6 +1111,12 @@
       "commits": 8,
       "written": 241,
       "lastCommit": 1774576996,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 52,
+        "binary": 0
+      },
       "removedOthers": 161
     },
     {
@@ -961,6 +1129,12 @@
       "commits": 34,
       "written": 400,
       "lastCommit": 1778439496,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 45,
+        "binary": 0
+      },
       "removedOthers": 288
     },
     {
@@ -973,6 +1147,12 @@
       "commits": 6,
       "written": 39,
       "lastCommit": 1780308000,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 39,
+        "binary": 0
+      },
       "removedOthers": 0
     },
     {
@@ -985,6 +1165,12 @@
       "commits": 124,
       "written": 126,
       "lastCommit": 1781126034,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 35,
+        "binary": 0
+      },
       "removedOthers": 35
     },
     {
@@ -997,6 +1183,12 @@
       "commits": 15,
       "written": 199,
       "lastCommit": 1782039314,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 33,
+        "binary": 0
+      },
       "removedOthers": 116
     },
     {
@@ -1009,6 +1201,12 @@
       "commits": 16,
       "written": 225,
       "lastCommit": 1685683415,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 29,
+        "binary": 0
+      },
       "removedOthers": 29
     },
     {
@@ -1021,6 +1219,12 @@
       "commits": 4,
       "written": 117,
       "lastCommit": 1777942410,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 28,
+        "binary": 0
+      },
       "removedOthers": 27
     },
     {
@@ -1033,6 +1237,12 @@
       "commits": 31,
       "written": 320,
       "lastCommit": 1777282632,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 23,
+        "binary": 0
+      },
       "removedOthers": 370
     },
     {
@@ -1045,6 +1255,12 @@
       "commits": 8,
       "written": 110,
       "lastCommit": 1779748317,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 17,
+        "binary": 0
+      },
       "removedOthers": 19
     },
     {
@@ -1057,6 +1273,12 @@
       "commits": 15,
       "written": 132,
       "lastCommit": 1680121793,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 14,
+        "binary": 0
+      },
       "removedOthers": 116
     },
     {
@@ -1069,6 +1291,12 @@
       "commits": 3,
       "written": 42,
       "lastCommit": 1771226573,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 12,
+        "binary": 0
+      },
       "removedOthers": 66
     },
     {
@@ -1081,6 +1309,12 @@
       "commits": 9,
       "written": 163,
       "lastCommit": 1780123956,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 12,
+        "binary": 0
+      },
       "removedOthers": 59
     },
     {
@@ -1093,6 +1327,12 @@
       "commits": 8,
       "written": 209,
       "lastCommit": 1693395974,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 12,
+        "binary": 0
+      },
       "removedOthers": 14
     },
     {
@@ -1105,6 +1345,12 @@
       "commits": 1,
       "written": 9,
       "lastCommit": 1751140728,
+      "composition": {
+        "blank": 0,
+        "punctuation": 0,
+        "code": 5,
+        "binary": 0
+      },
       "removedOthers": 2
     }
   ],
@@ -4108,7 +4354,7 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 19:44 UTC"
+    "at": "2026-10-10 21:54 UTC"
   },
   "archetypes": [
     {

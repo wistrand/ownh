@@ -14,6 +14,8 @@ export function reportHtml(stats, top, charts) {
   const anchor = repoAnchors(stats.repos);
   const topOwner = stats.owners.find((o) => o.owner);
   const topLine = stats.lines[0];
+  const ownerFigures = [charts.ownerShares, charts.composition].filter(Boolean).map((c) => `<figure class="r-chart">${c}</figure>`).join('');
+  const ownerCharts = ownerFigures ? `<div class="r-pair">${ownerFigures}</div>` : '';
   const main = [
     `<header class="r-head">
       <h1>OWNH Ownership Report</h1>
@@ -27,7 +29,7 @@ export function reportHtml(stats, top, charts) {
       ${topOwner ? tile('Principal owner', esc(topOwner.owner.name), pct(topOwner.lines, stats.total)) : ''}
       ${topLine ? tile('Principal line', `<code class="r-lit">${esc(lineLabel(topLine, 24))}</code>`, pct(topLine.lines, stats.total)) : ''}
     </section>`,
-    section('Principal owners', table(
+    section('Principal owners', ownerCharts + table(
       ['Rank', 'Owner', 'Lines', 'Share'],
       stats.owners.slice(0, top).map((o, k) => [
         cell(k + 1, k + 1), cell(esc(ownerLabel(o.owner))), cell(num(o.lines), o.lines), cell(pct(o.lines, stats.total), o.lines),
