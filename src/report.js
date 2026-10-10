@@ -6,12 +6,16 @@ import { reportHtml } from './html.js';
 import { findOddities } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
 import { outlookCharts, outlookNote, outlookStatements } from './outlook.js';
+import { aiConfig, aiInsights } from './ai.js';
+import { ARCHETYPE_TITLES, findArchetypes } from './archetypes.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { collectStats, lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
-export function report({ dbPath, outDir, top = 20, log }) {
+// `ai`: also write AI prose (summary, OKR draft, archetype names); see ai.js.
+// `complete` replaces the API call (tests).
+export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiEnv = process.env, complete }) {
   const db = openDb(dbPath);
   let stats;
   try {
@@ -21,7 +25,12 @@ export function report({ dbPath, outDir, top = 20, log }) {
   }
   stats.oddities = findOddities(stats);
   stats.generated = generatedInfo(dbPath);
+  stats.archetypes = findArchetypes(stats);
   mkdirSync(outDir, { recursive: true });
+  if (ai) {
+    stats.ai = await aiInsights(stats, stats.archetypes, { config: aiConfig(aiEnv), outDir, log, ...(complete ? { complete } : {}) });
+    if (stats.ai.withheld) log(`ai: withheld: ${stats.ai.withheld}`);
+  }
   const charts = {
     pie: lineSharePieSvg(stats),
     heatmap: crossOwnershipSvg(stats),
@@ -58,6 +67,7 @@ function leaderboard(stats, top, charts) {
     `OWNH ${stats.toolVersion}.`,
     `Database: ${codeSpan(stats.generated.database)}. Generated ${stats.generated.at}.`,
     '',
+    ...aiSummaryMd(stats),
     '## Principal owners',
     '',
     ...mdTable(['Rank', 'Owner', 'Lines', 'Share'], stats.owners.slice(0, top).map((o, k) => [
@@ -124,6 +134,8 @@ function leaderboard(stats, top, charts) {
     ...demolitionMd(stats),
     ...survivalMd(stats, charts),
     ...outlookMd(stats, charts),
+    ...okrMd(stats),
+    ...archetypesMd(stats),
     '## Oddities',
     '',
     ...(stats.oddities.length
@@ -163,6 +175,49 @@ function generatedInfo(dbPath) {
   const epoch = process.env.SOURCE_DATE_EPOCH;
   const when = epoch && /^\d+$/.test(epoch) ? new Date(Number(epoch) * 1000) : new Date();
   return { database: basename(dbPath), at: `${when.toISOString().slice(0, 16).replace('T', ' ')} UTC` };
+}
+
+const AI_LABEL = (ai) => `Written by AI (${ai.model}) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine.`;
+
+function aiSummaryMd(stats) {
+  const ai = stats.ai;
+  if (!ai) return [];
+  if (ai.withheld) return ['## AI insights (AI-generated)', '', `Withheld: ${ai.withheld}.`, ''];
+  return ['## AI insights (AI-generated)', '', ...ai.summary.flatMap((p) => [p, '']), `_${AI_LABEL(ai)}_`, ''];
+}
+
+function okrMd(stats) {
+  const ai = stats.ai;
+  if (!ai || ai.withheld) return [];
+  return [
+    '## OKR draft (AI-generated)',
+    '',
+    `**Objective:** ${ai.okr.objective}`,
+    '',
+    ...ai.okr.keyResults.map((k, i) => `- **KR${i + 1}** (${k.status}): ${k.text}`),
+    '',
+    `_${AI_LABEL(ai)}_`,
+    '',
+  ];
+}
+
+function archetypesMd(stats) {
+  if (!stats.archetypes?.length) return [];
+  const names = stats.ai?.archetypeNames ?? {};
+  return [
+    '## Ownership archetypes',
+    '',
+    ...mdTable(['Archetype', 'Rule', 'Owners', 'Share of lines', 'Examples'], stats.archetypes.map((a) => [
+      // AI-written names carry an "(AI)" marker; Markdown has no icon.
+      escapeCell(names[a.key] ? `${names[a.key]} (AI)` : ARCHETYPE_TITLES[a.key]),
+      escapeCell(a.rule),
+      num(a.members),
+      pct(a.lines, stats.total),
+      escapeCell(a.examples.map((o) => o.name).join(', ')),
+    ]), ['l', 'l', 'r', 'r', 'l']),
+    '',
+    ...(stats.ai && !stats.ai.withheld ? ['_Archetype names written by AI; membership is computed by OWNH._', ''] : []),
+  ];
 }
 
 function leverageMd(stats) {

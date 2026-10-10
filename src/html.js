@@ -6,6 +6,7 @@
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
 import { outlookNote, outlookStatements } from './outlook.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements } from './sections.js';
+import { ARCHETYPE_TITLES } from './archetypes.js';
 import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
@@ -17,6 +18,7 @@ export function reportHtml(stats, top, charts) {
       <p class="r-meta">${stats.repos.length} repositories · ${num(stats.total)} lines under management · OWNH ${esc(stats.toolVersion)}</p>
       ${stats.generated ? `<p class="r-meta">Database <code>${esc(stats.generated.database)}</code> · generated ${esc(stats.generated.at)}</p>` : ''}
     </header>`,
+    ...aiSummaryHtml(stats),
     `<section class="r-tiles">
       ${tile('Repositories', num(stats.repos.length))}
       ${tile('Lines under management', num(stats.total))}
@@ -83,6 +85,8 @@ export function reportHtml(stats, top, charts) {
       ${charts.survival ? `<figure class="r-chart">${charts.survival}</figure>` : ''}
       <p class="r-note">${esc(SURVIVAL_NOTE)}</p>`)] : []),
     ...(stats.timeline ? [section('Outlook', outlookHtml(stats, charts))] : []),
+    ...okrHtml(stats),
+    ...archetypesHtml(stats),
     section('Oddities', stats.oddities.length
       ? `<ul class="r-odd">${stats.oddities.map((o) => `<li><span class="r-odd-title">${esc(o.title)}.</span> <span class="r-odd-detail">${o.detail.map((p) => (p.code !== undefined ? `<code class="r-lit">${esc(p.code)}</code>` : esc(p.text))).join('')}</span></li>`).join('\n')}</ul>`
       : '<p class="r-note">None found.</p>'),
@@ -133,6 +137,43 @@ function methodRowHtml(name, m, strong = false) {
     return cell(`${esc(t.owner.name)} <span class="r-dim"${title}>${methodShare(t)}</span>`, t.owner.name);
   };
   return [cell(strong ? `<strong>${esc(name)}</strong>` : esc(name), strong ? '' : name), c(m.commits), c(m.blame), c(m.hash), cell(m.agree ? 'yes' : 'no')];
+}
+
+function aiLabel(ai) {
+  return `<p class="r-ai-label">${SPARKLE} Written by AI (${esc(ai.model)}) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine.</p>`;
+}
+
+function aiSummaryHtml(stats) {
+  const ai = stats.ai;
+  if (!ai) return [];
+  if (ai.withheld) return [section('AI insights', `<p class="r-note">Withheld: ${esc(ai.withheld)}.</p>`, { ai: true })];
+  return [section('AI insights', `<div class="r-ai">${ai.summary.map((p) => `<p>${esc(p)}</p>`).join('')}${aiLabel(ai)}</div>`, { ai: true })];
+}
+
+function okrHtml(stats) {
+  const ai = stats.ai;
+  if (!ai || ai.withheld) return [];
+  const cls = { 'on track': 'r-on', 'at risk': 'r-risk', 'off track': 'r-off' };
+  return [section('OKR draft', `<div class="r-ai">
+    <p><b>Objective:</b> ${esc(ai.okr.objective)}</p>
+    <ul class="r-outlook">${ai.okr.keyResults.map((k, i) => `<li><b>KR${i + 1}</b> <span class="r-status ${cls[k.status]}">${esc(k.status)}</span> ${esc(k.text)}</li>`).join('')}</ul>
+    ${aiLabel(ai)}</div>`, { ai: true })];
+}
+
+function archetypesHtml(stats) {
+  if (!stats.archetypes?.length) return [];
+  const names = stats.ai?.archetypeNames ?? {};
+  return [section('Ownership archetypes', `${table(
+    ['Archetype', 'Rule', 'Owners', 'Share of lines', 'Examples'],
+    stats.archetypes.map((a) => [
+      cell(names[a.key] ? `${SPARKLE} <b>${esc(names[a.key])}</b>` : `<b>${esc(ARCHETYPE_TITLES[a.key])}</b>`, names[a.key] ?? ARCHETYPE_TITLES[a.key]),
+      cell(esc(a.rule)),
+      cell(num(a.members), a.members),
+      cell(pct(a.lines, stats.total), a.share),
+      cell(esc(a.examples.map((o) => o.name).join(', '))),
+    ]),
+    ['', '', 'num', 'num', ''],
+  )}${stats.ai && !stats.ai.withheld ? '<p class="r-note">Archetype names written by AI; membership is computed by OWNH.</p>' : ''}`)];
 }
 
 function leverageHtml(stats) {
@@ -213,9 +254,17 @@ function tile(label, value, sub = '') {
 
 // Each section gets an id from its title (e.g. #outlook, #code-survival) so
 // other pages can link to it.
-function section(title, body) {
-  return `<section class="r-section" id="${slug(title)}"><h2>${title}</h2>${body}</section>`;
+function section(title, body, { ai = false } = {}) {
+  return `<section class="r-section" id="${slug(title)}"><h2>${ai ? `${SPARKLE} ` : ''}${title}</h2>${body}</section>`;
 }
+
+// Marks AI-written content: section headings, archetype names, and labels.
+// Inline SVG (no emoji, no external file); a solid violet that reads in light
+// and dark mode, and no gradient, so repeated icons don't repeat element ids.
+const SPARKLE = `<svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg>`;
 
 // A cell is { html, sort }; sort is the value the column sorts by.
 function cell(html, sort) {
@@ -272,6 +321,15 @@ a { color: var(--r-accent); }
 code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
 .r-lit { background: var(--r-code); padding: 1px 6px; border-radius: 4px; white-space: pre; }
 .r-dim { color: var(--r-text-2); }
+.r-ai { border-left: 3px solid var(--r-accent); padding: 4px 0 4px 16px; max-width: 900px; }
+.r-ai p { margin: 0 0 12px; }
+.r-ai-label { color: var(--r-text-2); font-size: 13px; font-style: italic; }
+.r-sparkle { width: 1em; height: 1em; vertical-align: -0.12em; flex: none; }
+h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
+.r-status { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin-right: 6px; }
+.r-on { background: #d9f2e6; color: #1a7a4c; }
+.r-risk { background: #fde8d4; color: #b35a10; }
+.r-off { background: #fadcdc; color: #b83232; }
 .r-pair { display: grid; gap: 16px; }
 @media (min-width: 1100px) { .r-pair { grid-template-columns: 1fr 1fr; } }
 .r-odd { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 900px; }

@@ -12,6 +12,8 @@ import { report } from '../src/report.js';
 import { samplePaths } from '../src/sample.js';
 import { collectStats } from '../src/stats.js';
 import { findOddities } from '../src/oddities.js';
+import { buildFacts, pseudonyms } from '../src/ai.js';
+import { findArchetypes } from '../src/archetypes.js';
 import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
 import { catBlobs, log } from '../src/git.js';
@@ -165,7 +167,7 @@ test('report files agree with the summary', async () => {
   const db = join(dir, 'report.db');
   const out = join(dir, 'report');
   await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
-  report({ dbPath: db, outDir: out, top: 5 });
+  await report({ dbPath: db, outDir: out, top: 5 });
   assert.deepEqual(readdirSync(out).sort(), [
     'blank-line-outlook.svg', 'code-survival.svg', 'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
     'owner-profile.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
@@ -410,4 +412,62 @@ test('merge authors own the lines they wrote while merging', async () => {
   const stats = withDb(db, (conn) => collectStats(conn));
   assert.equal(stats.owners.find((x) => x.owner?.email === 'merger@example.com').commits, 0);
   assert.equal(stats.repos[0].methods.commits.total, 3);
+});
+
+test('AI prose: pseudonymized facts, number guard, names mapped back, cache', async () => {
+  const db = join(dir, 'ai.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  const stats = withDb(db, (conn) => collectStats(conn));
+  const p = pseudonyms(stats);
+  const facts = JSON.stringify(buildFacts(stats, findArchetypes(stats), p));
+  // No owner name, email, or repository name leaves the machine.
+  for (const o of stats.owners.filter((x) => x.owner)) {
+    assert.ok(!facts.includes(o.owner.name) && !facts.includes(o.owner.email), o.owner.name);
+  }
+  for (const r of stats.repos) assert.ok(!facts.includes(`"${r.name}"`), r.name);
+
+  const env = { OWNH_AI_KEY: 'test', OWNH_AI_MODEL: 'test/model' };
+  let calls = 0;
+  const answer = (f, bad) => JSON.stringify({
+    summary: [
+      `[O1] leads with ${bad ? 4242 : f.topOwners[0].sharePct}% of ${f.linesUnderManagement} lines across [R1] and [R2].`,
+      'Stewardship remains concentrated.',
+      'The board can expect continuity.',
+    ],
+    okr: {
+      objective: 'Consolidate code ownership.',
+      keyResults: [
+        { text: `Hold [O1] above ${f.topOwners[0].sharePct}%.`, status: 'on track' },
+        { text: 'Grow stewardship in [R2].', status: 'at risk' },
+        { text: 'Reduce absentee ownership.', status: 'off track' },
+      ],
+    },
+    archetypes: Object.fromEntries(f.archetypes.map((a) => [a.key, `The ${a.key} guild`])),
+  });
+  const factsOf = (messages) => JSON.parse(messages[1].content.replace(/^Facts \(JSON\):\n/, ''));
+
+  // First reply has a number that is not in the facts: rejected, then fixed.
+  const out = join(dir, 'ai-report');
+  await report({ dbPath: db, outDir: out, ai: true, aiEnv: env, complete: async (_c, messages) => answer(factsOf(messages), ++calls === 1) });
+  assert.equal(calls, 2);
+  const md = readFileSync(join(out, 'leaderboard.md'), 'utf8');
+  const top = stats.owners.find((o) => o.owner).owner.name;
+  assert.ok(md.includes(`## AI insights`) && md.includes(`${top} leads with`), 'tokens mapped back to names');
+  assert.ok(!/\[[OR]\d+\]/.test(md), 'no tokens left');
+  assert.ok(md.includes('## OKR draft (AI-generated)') && md.includes('The principal guild (AI)'));
+  // AI-written parts are marked: sparkle icon on both AI headings and every AI archetype name.
+  const html = readFileSync(join(out, 'report.html'), 'utf8');
+  for (const id of ['ai-insights', 'okr-draft']) {
+    assert.match(html, new RegExp(`id="${id}"><h2><svg class="r-sparkle"`));
+  }
+  assert.ok(html.includes('</svg> <b>The principal guild</b>'), 'AI archetype name has the sparkle icon');
+
+  // Same data again: answered from the cache, no request.
+  await report({ dbPath: db, outDir: out, ai: true, aiEnv: env, complete: async () => { calls++; return '{}'; } });
+  assert.equal(calls, 2);
+
+  // A model that never gets the numbers right is withheld, not printed.
+  const out2 = join(dir, 'ai-report-2');
+  await report({ dbPath: db, outDir: out2, ai: true, aiEnv: env, complete: async (_c, messages) => answer(factsOf(messages), true) });
+  assert.match(readFileSync(join(out2, 'leaderboard.md'), 'utf8'), /## AI insights \(AI-generated\)\n\nWithheld: the model's text failed verification/);
 });

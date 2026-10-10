@@ -11,13 +11,17 @@ const USAGE = `usage:
   ownh index --db <file> [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
   ownh add --db <file> [--exclude-file <file>]... [--no-excludes] <repo>...
   ownh summary --db <file> [--top <n>]
-  ownh report --db <file> [--out <dir>] [--top <n>]   (default --out: report/<db name>/)
+  ownh report --db <file> [--out <dir>] [--top <n>] [--ai]   (default --out: report/<db name>/)
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
 
   Without --exclude-file, patterns come from ownh.exclude next to the tool,
   if it exists.
   --no-excludes indexes everything. add requires the same exclude list the
-  .db was built with.`;
+  .db was built with.
+
+  --ai adds AI-written prose (summary, OKR draft, archetype names) via an
+  OpenRouter-compatible API: OWNH_AI_KEY or OPENROUTER_API_KEY; optional
+  OWNH_AI_MODEL (default openai/gpt-6-luna) and OWNH_AI_BASE_URL. Names are replaced by tokens before sending.`;
 
 const EXCLUDE_OPTIONS = {
   db: { type: 'string' },
@@ -87,13 +91,14 @@ async function main([command, ...args]) {
         db: { type: 'string' },
         out: { type: 'string' },
         top: { type: 'string', default: '20' },
+        ai: { type: 'boolean', default: false },
       },
     });
     const top = Number(values.top);
     if (!values.db || !Number.isInteger(top) || top < 1) return usage();
     // Each database gets its own report directory: report/<db name without .db>/.
     const out = values.out ?? join('report', basename(values.db).replace(/\.db$/, ''));
-    for (const file of report({ dbPath: values.db, outDir: out, top, log })) log(`wrote ${out}/${file}`);
+    for (const file of await report({ dbPath: values.db, outDir: out, top, log, ai: values.ai })) log(`wrote ${out}/${file}`);
   } else {
     usage();
   }

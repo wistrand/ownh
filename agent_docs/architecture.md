@@ -13,6 +13,7 @@ in [gotchas.md](gotchas.md); global invariants in [CLAUDE.md](../CLAUDE.md).
 - Blame
 - Statistics
 - Reports
+- AI prose
 - Sample report and site
 - Decisions
 - Verification
@@ -195,6 +196,35 @@ survival, outlook, oddities, repositories, excluded patterns.
 - Oddities (`src/oddities.js`) are facts derived from the stats; each claim is
   checked by the code that prints it.
 
+## AI prose
+
+`src/ai.js`, enabled with `report --ai` (user request, opt-in). Writes three
+things with any OpenRouter-compatible chat completions API: an executive
+summary (top of the report), an OKR draft (after the Outlook), and names for
+the owner archetypes. Archetype membership is rule-based (`src/archetypes.js`)
+and always shown; the AI only names the groups.
+
+- **Configuration:** `OWNH_AI_KEY` or `OPENROUTER_API_KEY`; optional
+  `OWNH_AI_MODEL` (default `openai/gpt-6-luna`, user decision, `DEFAULT_MODEL`)
+  and `OWNH_AI_BASE_URL` (default OpenRouter). Missing settings withhold the
+  section with a reason; the rest of the report is unaffected.
+- **Privacy:** `buildFacts` sends aggregates only. Owners and repositories are
+  replaced by tokens (`[O1]` by rank, `[R1]` by size) in `pseudonyms`; top
+  lines are described by kind (blank, punctuation, code), never by text.
+  Tokens are mapped back to names locally after the reply.
+- **Number guard:** `checkAnswer` rejects replies with numbers not in the facts
+  (within 0.5, or 1% for counts over 100), unknown tokens, or the wrong shape.
+  Up to 3 attempts with the problems fed back; then the section is withheld.
+- **Cache:** `ai-cache.json` in the report directory, keyed by a hash of model,
+  `PROMPT_VERSION`, and facts. Same data and model: no request, same text.
+  Bump `PROMPT_VERSION` when the prompt changes.
+- **Labeling:** every AI section says it was written by AI and names the model.
+  In `report.html` a sparkle icon (`SPARKLE` in `src/html.js`, inline SVG, not
+  an emoji) marks the AI section headings, each AI-written archetype name, and
+  the AI disclaimer lines; Markdown uses "(AI-generated)" on headings and "(AI)"
+  after archetype names. Anything rule-based (archetype membership) is unmarked.
+- **Tests:** a fake `complete` function; nothing calls the network.
+
 ## Sample report and site
 
 - `docs/index.html` is the hand-written pitch site (see [design.md](design.md)).
@@ -233,6 +263,7 @@ survival, outlook, oddities, repositories, excluded patterns.
 | Stats            | One module (`collectStats`) feeds `summary` and `report`; reports read only from the `.db`, so new reports need no indexer changes.                                                                               |
 | Charts           | Pies stay at 6 segments or fewer; radar charts at most 3 series; plain hex colors, no CSS variables.                                                                                                              |
 | Projections      | Least-squares slope of the last 12 quarters continued from the latest value, R² stated; relative to the newest commit.                                                                                            |
+| AI prose         | Opt-in `--ai`; aggregates and tokens only; every number verified; cached; labeled (user decision).                                                                                                                |
 
 ## Verification
 

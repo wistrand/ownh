@@ -132,6 +132,9 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   });
   if (timeline) timeline.headLines = total;
 
+  // Newest non-merge commit per author (unix seconds), for activity checks.
+  const lastCommitBy = new Map(db.prepare(`SELECT identity_id AS id, MAX(author_time) AS t FROM commits ${NON_MERGE} GROUP BY identity_id`).all().map((r) => [r.id, r.t]));
+
   // Lines written (added, including hand-written merge lines) per author.
   const writtenBy = commitColumns.has('added_lines')
     ? new Map(db.prepare('SELECT identity_id AS id, SUM(added_lines) AS n FROM commits GROUP BY identity_id').all().map((r) => [r.id, r.n]))
@@ -162,6 +165,7 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
       ...o,
       commits: o.identityId === null ? 0 : (commitsBy.get(o.identityId) ?? 0),
       written: o.identityId === null || !writtenBy ? null : (writtenBy.get(o.identityId) ?? 0),
+      lastCommit: o.identityId === null ? null : (lastCommitBy.get(o.identityId) ?? null),
     })),
     lines,
     methods: methods.overall,

@@ -232,7 +232,7 @@ function unattributed(stats) {
   }];
 }
 
-function isBot(owner) {
+export function isBot(owner) {
   return BOT.test(owner.name) || BOT.test(owner.email);
 }
 

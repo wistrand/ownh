@@ -112,6 +112,11 @@
 - **`firefox --screenshot` captures before scripts draw.** Anything rendered
   asynchronously after load is missing from plain screenshots. Use
   `node scripts/screenshot.mjs <url> <out.png> [waitMs]`.
+- **AI number guard tolerance.** Numbers within 0.5 of a fact pass (rounding
+  54.4% to 54% must work), so a wrong figure near a real one (99.9 vs a real
+  100) also passes. The guard catches invented figures, not near-misses.
+- **The AI cache lives in the report directory.** Deleting `report/<db>/`
+  deletes it; the next `--ai` run calls the API again.
 - **Git rejects tiny epoch dates.** `GIT_AUTHOR_DATE="1000 +0000"` fails with
   "invalid date format". Fixtures add `BASE_TIME` in `test/fixtures.js`.
 - **`node --test test/` fails on Node 26.** A directory argument is resolved as a

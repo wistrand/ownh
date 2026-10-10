@@ -33,6 +33,15 @@ a { color: var(--r-accent); }
 code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
 .r-lit { background: var(--r-code); padding: 1px 6px; border-radius: 4px; white-space: pre; }
 .r-dim { color: var(--r-text-2); }
+.r-ai { border-left: 3px solid var(--r-accent); padding: 4px 0 4px 16px; max-width: 900px; }
+.r-ai p { margin: 0 0 12px; }
+.r-ai-label { color: var(--r-text-2); font-size: 13px; font-style: italic; }
+.r-sparkle { width: 1em; height: 1em; vertical-align: -0.12em; flex: none; }
+h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
+.r-status { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin-right: 6px; }
+.r-on { background: #d9f2e6; color: #1a7a4c; }
+.r-risk { background: #fde8d4; color: #b35a10; }
+.r-off { background: #fadcdc; color: #b83232; }
 .r-pair { display: grid; gap: 16px; }
 @media (min-width: 1100px) { .r-pair { grid-template-columns: 1fr 1fr; } }
 .r-odd { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 900px; }
@@ -71,8 +80,15 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <header class="r-head">
       <h1>OWNH Ownership Report</h1>
       <p class="r-meta">6 repositories · 17,456 lines under management · OWNH 0.1.0</p>
-      <p class="r-meta">Database <code>sample.db</code> · generated 2026-10-10 11:50 UTC</p>
+      <p class="r-meta">Database <code>sample.db</code> · generated 2026-10-10 12:11 UTC</p>
     </header>
+<section class="r-section" id="ai-insights"><h2><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> AI insights</h2><div class="r-ai"><p>OWNH tracks 17,456 lines across 6 repositories and 40 owners. Ada Lindqvist holds 54.4% of lines, while blank lines alone account for 20.5% of the codebase.</p><p>Cross-repository ownership varies substantially: 79.6% of billing-service was written elsewhere, while 57.4% of api-gateway is owned by non-contributors. The ownership methods agree in 0 cases.</p><p>The latest quarter shows continued codebase growth and rising principal-owner concentration, while inactive-owner share has declined from 77.9% in 2025 Q3 to 76.3% in 2026 Q2. The 10,000 blank-line milestone is projected for 2031 Q4.</p><p class="r-ai-label"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine.</p></div></section>
 <section class="r-tiles">
       <div class="r-tile"><div class="r-tile-label">Repositories</div><div class="r-tile-value">6</div></div>
       <div class="r-tile"><div class="r-tile-label">Lines under management</div><div class="r-tile-value">17,456</div></div>
@@ -1393,6 +1409,38 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="" data-sort="2026 Q2">2026 Q2</td><td class="num" data-sort="17474">17,474</td><td class="num" data-sort="0.04403417577821589"><span class="r-up">▲ +4.4%</span></td><td class="num" data-sort="0">0</td><td class="num" data-sort="0.5425203158979055">54.3%</td><td class="num" data-sort="0.1303078860020602">13.0%</td><td class="num" data-sort="0.7627904314982259">76.3%</td><td class="num" data-sort="5095">5,095</td></tr>
 </tbody></table></div>
     <p class="r-note">Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,474 lines against 17,456 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. &quot;Inactive&quot; means no commit in the current or previous three quarters. &quot;Now&quot; is the quarter of the newest commit analyzed.</p></section>
+<section class="r-section" id="okr-draft"><h2><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> OKR draft</h2><div class="r-ai">
+    <p><b>Objective:</b> Strengthen durable, broadly distributed ownership as the codebase grows.</p>
+    <ul class="r-outlook"><li><b>KR1</b> <span class="r-status r-risk">at risk</span> Reduce principal-owner concentration from 54.3% in 2026 Q2, following an increase from 51.2% in 2025 Q3.</li><li><b>KR2</b> <span class="r-status r-on">on track</span> Continue reducing inactive-owner share from 76.3% in 2026 Q2, down from 77.9% in 2025 Q3.</li><li><b>KR3</b> <span class="r-status r-on">on track</span> Advance blank-line management from 5,095 committed toward the 10,000-line milestone projected for 2031 Q4.</li></ul>
+    <p class="r-ai-label"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine.</p></div></section>
+<section class="r-section" id="ownership-archetypes"><h2>Ownership archetypes</h2><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Archetype</th><th class="" data-col="1">Rule</th><th class="num" data-col="2">Owners</th><th class="num" data-col="3">Share of lines</th><th class="" data-col="4">Examples</th></tr></thead><tbody>
+<tr><td class="" data-sort="Principal Owner"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Principal Owner</b></td><td class="">The single owner with the most lines.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.5436526122823098">54.4%</td><td class="">Ada Lindqvist</td></tr>
+<tr><td class="" data-sort="Dormant Owners"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Dormant Owners</b></td><td class="">Owners with no commit in the last 4 quarters.</td><td class="num" data-sort="12">12</td><td class="num" data-sort="0.7638634280476627">76.4%</td><td class="">Ada Lindqvist, Mira Quist, Fiona Format</td></tr>
+<tr><td class="" data-sort="Cross-Repo Absentee"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Cross-Repo Absentee</b></td><td class="">Owners with most of their lines in repositories they never committed to.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.000687442713107241">0.1%</td><td class="">Quinn Zeller</td></tr>
+<tr><td class="" data-sort="Code Removers"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Code Removers</b></td><td class="">People who removed more lines belonging to others than they own.</td><td class="num" data-sort="9">9</td><td class="num" data-sort="0.1578826764436297">15.8%</td><td class="">Fiona Format, Rosa Garcia, Juno Rasmussen</td></tr>
+<tr><td class="" data-sort="Automated Owners"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
+<path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Automated Owners</b></td><td class="">Automated accounts (bots) that own lines.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.0020050412465627866">0.2%</td><td class="">depbot[bot]</td></tr>
+</tbody></table></div><p class="r-note">Archetype names written by AI; membership is computed by OWNH.</p></section>
 <section class="r-section" id="oddities"><h2>Oddities</h2><ul class="r-odd"><li><span class="r-odd-title">The most-owned line has no letters or digits.</span> <span class="r-odd-detail"><code class="r-lit">&quot;&quot;</code> appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform.</span></li>
 <li><span class="r-odd-title">6 of the top 15 lines are whitespace or punctuation.</span> <span class="r-odd-detail">Together they hold 38.8% of all lines: <code class="r-lit">&quot;&quot;</code>, <code class="r-lit">&quot;}&quot;</code>, <code class="r-lit">&quot;  }&quot;</code>, <code class="r-lit">&quot;    }&quot;</code>, <code class="r-lit">&quot;/*&quot;</code>, and 1 more.</span></li>
 <li><span class="r-odd-title">web-frontend was mostly written somewhere else.</span> <span class="r-odd-detail">66.9% of its lines were first written in platform; 21.8% in web-frontend itself.</span></li>

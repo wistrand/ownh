@@ -88,8 +88,11 @@ real SHA-256 prefixes (`e3b0` for an empty line, `d10b` for `}`, `737d` for
 `  }`). The research section paraphrases [research.md](research.md) and links each
 claim to its source; keep it accurate if that changes.
 
-- `docs/sample/` is a real report from the test fixtures (fictional authors,
-  fixed dates), built by `npm run sample`. It is the one place the site shows
+- `docs/sample/` is a real report of six generated demonstration repositories
+  (`scripts/demo-repos.js`, fictional authors, seeded history), built by
+  `npm run sample`. Its AI sections come from `docs/sample/ai-cache.json`
+  (rebuilds reuse them without a key; `node scripts/build-sample.js --ai` after
+  data changes). It is the one place the site shows
   tool output; regenerate it whenever report output changes, never edit it.
 - `docs/og.png` is the link-preview image (Open Graph and Twitter tags in the
   page head), rendered from `scripts/og.svg` with `rsvg-convert`.

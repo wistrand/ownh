@@ -50,6 +50,20 @@ For comparison with conventional methods, `bin/ownh.js blame --db acme.db` runs
 report an estimate instead. Reports then show the top owner of each repository
 by commit count, by blame, and by line hash.
 
+### AI insights
+
+`--ai` adds an AI-written executive summary, an OKR draft, and names for the
+owner archetypes, using any OpenRouter-compatible API (default model
+`openai/gpt-6-luna`; set `OWNH_AI_MODEL` to use another):
+
+```bash
+OPENROUTER_API_KEY=... bin/ownh.js report --db acme.db --ai
+```
+
+Only aggregate figures leave the machine, with every person and repository
+replaced by a token; names are restored locally. Every number in the AI text
+is checked against OWNH's figures, and answers are cached per database.
+
 ## Website
 
 The site at [ownh.org](https://ownh.org) is `docs/index.html`, served by GitHub

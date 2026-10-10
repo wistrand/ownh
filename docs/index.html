@@ -115,6 +115,10 @@ code, pre { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Conso
 h1 { font-size: clamp(38px, 6vw, 60px); line-height: 1.05; letter-spacing: -0.025em; margin: 20px 0 20px; }
 .lead { font-size: 19px; color: var(--text-2); max-width: 36em; margin: 0 0 32px; }
 .cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.ai-badge { display: flex; width: fit-content; align-items: center; gap: 8px; margin: 12px 0 0; font-size: 13px; font-weight: 500; color: var(--text-2);
+  border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px 4px 4px; background: var(--surface); vertical-align: middle; }
+.ai-badge:hover { text-decoration: none; border-color: var(--text-3); }
+.ai-badge span { background: linear-gradient(90deg, #6d4de6, #1f4fd1); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; }
 .hero-note { margin-top: 20px; font-size: 14px; color: var(--text-3); }
 
 /* Code panel */
@@ -272,6 +276,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   <div class="wrap">
     <div>
       <span class="eyebrow">Objective Weighted Normalized Heuristics</span>
+      <a class="ai-badge" href="#reports"><span>New</span> Now with AI-powered insights</a>
       <h1>Ownership, solved. Mathematically.</h1>
       <p class="lead">OWNH assigns every line of code to exactly one owner, using nothing but its content hash and your version history. No interviews, no context, no feelings. Just cryptographic truth.</p>
       <div class="cta-row">
@@ -474,7 +479,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <a class="btn btn-primary" href="sample/report.html">View a sample report</a>
       <a class="btn btn-ghost" href="https://github.com/wistrand/ownh/blob/main/docs/sample/leaderboard.md">Markdown version</a>
     </div>
-    <p class="hero-note">The sample is unedited OWNH output for two small demonstration repositories with fictional contributors.</p>
+    <p class="hero-note">The sample is unedited OWNH output for six demonstration repositories with fictional contributors.</p>
   </div>
 </section>
 
@@ -489,23 +494,23 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <div class="okr-card">
         <p class="objective">Example objective</p>
         <h3>Consolidate code ownership.</h3>
-        <div class="kr"><b>KR1</b><p>Raise the principal owner&rsquo;s share by five points per quarter. <span class="status at-risk">At risk</span></p><small>Sample: 53.3% to 33.3% over four quarters.</small></div>
-        <div class="kr"><b>KR2</b><p>Extend the median code half-life past two years. <span class="status on-track">On track</span></p><small>Sample: projected half-life of 7.9 years.</small></div>
-        <div class="kr"><b>KR3</b><p>Reach the next blank-line milestone ahead of projection. <span class="status off-track">Off track</span></p><small>Sample: the 5th blank line is projected for 2033 Q2.</small></div>
+        <div class="kr"><b>KR1</b><p>Raise the principal owner&rsquo;s share by five points per quarter. <span class="status at-risk">At risk</span></p><small>Sample: 51.2% to 54.3% over four quarters.</small></div>
+        <div class="kr"><b>KR2</b><p>Extend the median code half-life past two years. <span class="status at-risk">At risk</span></p><small>Sample: half-life of exactly 2.0 years.</small></div>
+        <div class="kr"><b>KR3</b><p>Reach the next blank-line milestone ahead of projection. <span class="status off-track">Off track</span></p><small>Sample: the 10,000th blank line is projected for 2031 Q4.</small></div>
       </div>
       <div>
         <div class="table-wrap">
           <table class="kpi">
             <thead><tr><th>Quarter</th><th class="num">Lines under management</th><th class="num">QoQ</th><th class="num">Principal owner</th><th class="num">Inactive owners</th></tr></thead>
             <tbody>
-              <tr><td>2025 Q3</td><td class="num">15</td><td class="num up">&#9650; +7.1%</td><td class="num">53.3%</td><td class="num">46.7%</td></tr>
-              <tr><td>2025 Q4</td><td class="num">17</td><td class="num up">&#9650; +13.3%</td><td class="num">47.1%</td><td class="num">41.2%</td></tr>
-              <tr><td>2026 Q1</td><td class="num">20</td><td class="num up">&#9650; +17.6%</td><td class="num">40.0%</td><td class="num">35.0%</td></tr>
-              <tr><td>2026 Q2</td><td class="num">24</td><td class="num up">&#9650; +20.0%</td><td class="num">33.3%</td><td class="num">29.2%</td></tr>
+              <tr><td>2025 Q3</td><td class="num">15,506</td><td class="num up">&#9650; +4.9%</td><td class="num">51.2%</td><td class="num">77.9%</td></tr>
+              <tr><td>2025 Q4</td><td class="num">15,709</td><td class="num up">&#9650; +1.3%</td><td class="num">52.4%</td><td class="num">78.3%</td></tr>
+              <tr><td>2026 Q1</td><td class="num">16,737</td><td class="num up">&#9650; +6.5%</td><td class="num">53.6%</td><td class="num">77.0%</td></tr>
+              <tr><td>2026 Q2</td><td class="num">17,474</td><td class="num up">&#9650; +4.4%</td><td class="num">54.3%</td><td class="num">76.3%</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="hero-note">Examples use the <a href="sample/report.html#outlook">sample report</a>: two small demonstration repositories with fictional contributors. Every number is unedited OWNH output.</p>
+        <p class="hero-note">Examples use the <a href="sample/report.html#outlook">sample report</a>: six demonstration repositories with fictional contributors. Every number is unedited OWNH output.</p>
       </div>
     </div>
   </div>

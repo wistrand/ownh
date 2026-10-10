@@ -1,0 +1,36 @@
+{
+  "key": "c380ef1c02b18d03c65f33fa3430706988b707441dd9d9ea780b4a43b8148511",
+  "model": "openai/gpt-6-luna",
+  "promptVersion": 1,
+  "answer": {
+    "summary": [
+      "OWNH tracks 17,456 lines across 6 repositories and 40 owners. [O1] holds 54.4% of lines, while blank lines alone account for 20.5% of the codebase.",
+      "Cross-repository ownership varies substantially: 79.6% of [R5] was written elsewhere, while 57.4% of [R3] is owned by non-contributors. The ownership methods agree in 0 cases.",
+      "The latest quarter shows continued codebase growth and rising principal-owner concentration, while inactive-owner share has declined from 77.9% in 2025 Q3 to 76.3% in 2026 Q2. The 10,000 blank-line milestone is projected for 2031 Q4."
+    ],
+    "okr": {
+      "objective": "Strengthen durable, broadly distributed ownership as the codebase grows.",
+      "keyResults": [
+        {
+          "text": "Reduce principal-owner concentration from 54.3% in 2026 Q2, following an increase from 51.2% in 2025 Q3.",
+          "status": "at risk"
+        },
+        {
+          "text": "Continue reducing inactive-owner share from 76.3% in 2026 Q2, down from 77.9% in 2025 Q3.",
+          "status": "on track"
+        },
+        {
+          "text": "Advance blank-line management from 5,095 committed toward the 10,000-line milestone projected for 2031 Q4.",
+          "status": "on track"
+        }
+      ]
+    },
+    "archetypes": {
+      "principal": "Principal Owner",
+      "inactive": "Dormant Owners",
+      "absentee": "Cross-Repo Absentee",
+      "demolition": "Code Removers",
+      "automation": "Automated Owners"
+    }
+  }
+}
