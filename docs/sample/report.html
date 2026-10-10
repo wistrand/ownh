@@ -78,7 +78,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
       <div class="r-tile"><div class="r-tile-label">Principal owner</div><div class="r-tile-value">Alice</div><div class="r-tile-sub">33.3%</div></div>
       <div class="r-tile"><div class="r-tile-label">Principal line</div><div class="r-tile-value"><code class="r-lit">&quot;}&quot;</code></div><div class="r-tile-sub">12.5%</div></div>
     </section>
-<section class="r-section"><h2>Principal owners</h2><div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th></tr></thead><tbody>
+<section class="r-section" id="principal-owners"><h2>Principal owners</h2><div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th></tr></thead><tbody>
 <tr><td class="num" data-sort="1">1</td><td class="">Alice &lt;alice@example.com&gt;</td><td class="num" data-sort="8">8</td><td class="num" data-sort="8">33.3%</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Frank &lt;frank@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">12.5%</td></tr>
 <tr><td class="num" data-sort="3">3</td><td class="">Judy &lt;judy@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">12.5%</td></tr>
@@ -89,7 +89,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="num" data-sort="8">8</td><td class="">Bob &lt;bob@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td></tr>
 <tr><td class="num" data-sort="9">9</td><td class="">Carol &lt;carol@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td></tr>
 </tbody></table></div></section>
-<section class="r-section"><h2>Ownership profiles</h2>
+<section class="r-section" id="ownership-profiles"><h2>Ownership profiles</h2>
       <p class="r-note">Hover a point for the exact value.</p>
       <div class="r-pair"><figure class="r-chart"><svg xmlns="http://www.w3.org/2000/svg" width="800" height="570" viewBox="0 0 800 570" role="img">
 <style>
@@ -373,7 +373,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <text class="label" x="129.5" y="540">beta</text>
 </svg>
 </figure></div></section>
-<section class="r-section"><h2>Principal lines</h2>
+<section class="r-section" id="principal-lines"><h2>Principal lines</h2>
       <figure class="r-chart"><svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" role="img">
 <style>
 .title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 20px; font-weight: 600; }
@@ -503,7 +503,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="num" data-sort="9">9</td><td class=""><code class="r-lit">&quot;}\r&quot;</code></td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td><td class="">Judy</td><td class="">beta</td></tr>
 <tr><td class="num" data-sort="10">10</td><td class=""><code class="r-lit">&quot;function a() {\r&quot;</code></td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">4.2%</td><td class="">Judy</td><td class="">beta</td></tr>
 </tbody></table></div></section>
-<section class="r-section"><h2>Cross-repository ownership</h2>
+<section class="r-section" id="cross-repository-ownership"><h2>Cross-repository ownership</h2>
       <p class="r-note">Rows are the repository where a line lives; columns are the repository where that
       line was first written, and so where its owner acquired it. Hover a cell for the exact count.</p>
       <figure class="r-chart r-scroll"><svg xmlns="http://www.w3.org/2000/svg" width="720" height="301" viewBox="0 0 720 301" role="img">
@@ -651,7 +651,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="" data-sort="beta"><a href="#repo-beta">beta</a></td><td class="num" data-sort="11">11</td><td class="num" data-sort="0.36363636363636365">36.4%</td><td class="num" data-sort="0.36363636363636365">36.4%</td><td class="" data-sort="0.36363636363636365">alpha (36.4%)</td></tr>
 </tbody></table></div>
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p></section>
-<section class="r-section"><h2>Three ways to own a repository</h2>
+<section class="r-section" id="three-ways-to-own-a-repository"><h2>Three ways to own a repository</h2>
       <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
       line hash. Blame shows "-" until <code>bin/ownh.js blame</code> has covered every file (or every file of its sample).
       Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.</p>
@@ -661,7 +661,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="" data-sort="beta">beta</td><td class="" data-sort="Frank">Frank <span class="r-dim">20.0%</span></td><td class="" data-sort="Frank">Frank <span class="r-dim">50.0%</span></td><td class="" data-sort="Alice">Alice <span class="r-dim">27.3%</span></td><td class="">no</td></tr>
 </tbody></table></div>
       <p class="r-note">The three methods agree on 1 of 2 repositories.</p></section>
-<section class="r-section"><h2>Leverage</h2>
+<section class="r-section" id="leverage"><h2>Leverage</h2>
     <p class="r-note">Lines owned today for every line written. Identical lines are owned by whoever wrote them first, so one line written can be many lines owned.</p>
     <h4>Highest leverage</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Owner</th><th class="num" data-col="1">Lines written</th><th class="num" data-col="2">Lines owned</th><th class="num" data-col="3">Owned per line written</th></tr></thead><tbody>
 <tr><td class="">Grace &lt;grace@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">2.00</td></tr>
@@ -683,7 +683,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="">Heidi &lt;heidi@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">2.00</td></tr>
 <tr><td class="">Leo &lt;leo@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">2.00</td></tr>
 </tbody></table></div></section>
-<section class="r-section"><h2>Code demolition</h2>
+<section class="r-section" id="code-demolition"><h2>Code demolition</h2>
     <p class="r-note">28 lines added and 4 removed in total; 4 of the removed lines (100.0%) belonged to someone other than the person removing them.</p>
     <h4>Most lines removed that belonged to others</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Remover</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Own lines removed</th></tr></thead><tbody>
 <tr><td class="num" data-sort="1">1</td><td class="">Carol &lt;carol@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="0">0</td></tr>
@@ -696,7 +696,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="num" data-sort="3">3</td><td class="">Dave &lt;dave@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0">0</td></tr>
 </tbody></table></div>
     <p class="r-note">Removals inside merge commits are not counted: they are relative to git's re-run of the merge, not to a parent.</p></section>
-<section class="r-section"><h2>Code survival</h2>
+<section class="r-section" id="code-survival"><h2>Code survival</h2>
       <ul class="r-outlook"><li>All code: half-life of 7.9 years (projected; 82.0% of lines survive after 2.3 years).</li><li>Alice: half-life of 13.2 years (projected; 88.9% of lines survive after 2.3 years).</li><li>Frank: no lines have been deleted.</li><li>Judy: no lines have been deleted.</li></ul>
       <figure class="r-chart"><svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img">
 <style>
@@ -866,7 +866,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 </svg>
 </figure>
       <p class="r-note">Copies of the same line are indistinguishable, so removals are paired with the oldest surviving copies of that line first. Lines still present count as surviving at their current age. A half-life marked projected extends an exponential decay through the last point.</p></section>
-<section class="r-section"><h2>Outlook</h2>
+<section class="r-section" id="outlook"><h2>Outlook</h2>
     <ul class="r-outlook"><li><b>Knowledge retention:</b> At the current rate, contributors with no commit in the past year will own the majority of the codebase by 2027 Q2 (now 29.2%; fit over 2024 Q1 to 2026 Q2, R² 0.26).</li><li><b>Principal owner:</b> Alice owns 33.3% of the codebase, and the trend is flat or falling (fit over 2024 Q1 to 2026 Q2, R² 0.61).</li><li><b>Blank lines:</b> 2 blank lines have been committed. At the current rate, the 5th arrives in 2033 Q2 (fit over 2024 Q1 to 2026 Q2, R² 0.27).</li></ul>
     <div class="r-pair">
       <figure class="r-chart"><svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img">
@@ -1192,7 +1192,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="" data-sort="2026 Q2">2026 Q2</td><td class="num" data-sort="24">24</td><td class="num" data-sort="0.19999999999999996"><span class="r-up">▲ +20.0%</span></td><td class="num" data-sort="2">2</td><td class="num" data-sort="0.3333333333333333">33.3%</td><td class="num" data-sort="0.2916666666666667">29.2%</td><td class="num" data-sort="0.2916666666666667">29.2%</td><td class="num" data-sort="2">2</td></tr>
 </tbody></table></div>
     <p class="r-note">Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 24 lines against 24 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. &quot;Inactive&quot; means no commit in the current or previous three quarters. &quot;Now&quot; is the quarter of the newest commit analyzed.</p></section>
-<section class="r-section"><h2>Oddities</h2><ul class="r-odd"><li><span class="r-odd-title">The most-owned line has no letters or digits.</span> <span class="r-odd-detail"><code class="r-lit">&quot;}&quot;</code> appears 3 times (12.5% of all lines) and belongs to Alice, who wrote it first in alpha.</span></li>
+<section class="r-section" id="oddities"><h2>Oddities</h2><ul class="r-odd"><li><span class="r-odd-title">The most-owned line has no letters or digits.</span> <span class="r-odd-detail"><code class="r-lit">&quot;}&quot;</code> appears 3 times (12.5% of all lines) and belongs to Alice, who wrote it first in alpha.</span></li>
 <li><span class="r-odd-title">3 of the top 10 lines are whitespace or punctuation.</span> <span class="r-odd-detail">Together they hold 25.0% of all lines: <code class="r-lit">&quot;}&quot;</code>, <code class="r-lit">&quot;&quot;</code>, <code class="r-lit">&quot;}\r&quot;</code>.</span></li>
 <li><span class="r-odd-title">The same line, owned twice.</span> <span class="r-odd-detail"><code class="r-lit">&quot;}&quot;</code> belongs to Alice and <code class="r-lit">&quot;}\r&quot;</code> (Windows line ending) to Judy.</span></li>
 <li><span class="r-odd-title">The same line, owned twice.</span> <span class="r-odd-detail"><code class="r-lit">&quot;function a() {&quot;</code> belongs to Alice and <code class="r-lit">&quot;function a() {\r&quot;</code> (Windows line ending) to Judy.</span></li>
@@ -1200,7 +1200,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <li><span class="r-odd-title">1 of 2 repositories is owned by someone who never committed to it.</span> <span class="r-odd-detail">beta (Alice, 27.3%).</span></li>
 <li><span class="r-odd-title">Carol has removed 2 lines that belonged to others.</span> <span class="r-odd-detail">More than anyone else, against 0 of their own.</span></li>
 <li><span class="r-odd-title">1 line was added again after being deleted.</span> <span class="r-odd-detail">Each went straight back to its original owner (1 distinct line).</span></li></ul></section>
-<section class="r-section"><h2>Repositories</h2>
+<section class="r-section" id="repositories"><h2>Repositories</h2>
       <details class="r-repo" id="repo-alpha">
         <summary><span class="r-repo-name">alpha</span>
           <span class="r-meta">13 lines · 23.1% from other repos · 23.1% owned by non-contributors</span></summary>
@@ -1234,7 +1234,7 @@ code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-si
 <tr><td class="">alpha</td><td class="num" data-sort="4">4</td><td class="num" data-sort="4">36.4%</td></tr>
 </tbody></table></div>
       </details></section>
-<section class="r-section"><h2>Excluded patterns</h2><p class="r-note">None. Every file was analyzed.</p></section>
+<section class="r-section" id="excluded-patterns"><h2>Excluded patterns</h2><p class="r-note">None. Every file was analyzed.</p></section>
 </main>
 <script>
 function openTarget() {

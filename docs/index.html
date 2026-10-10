@@ -192,6 +192,25 @@ th.c { text-align: center; }
   display: grid; place-items: center; overflow: hidden; }
 .thumb svg { width: 100%; height: 100%; }
 
+/* OKRs */
+.okr { display: grid; gap: 24px; align-items: start; }
+@media (min-width: 960px) { .okr { grid-template-columns: 1fr 1.25fr; } }
+.okr-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 26px; box-shadow: var(--shadow); }
+.okr-card .objective { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin: 0 0 6px; }
+.okr-card h3 { font-size: 20px; margin: 0 0 18px; }
+.kr { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; padding: 14px 0; border-top: 1px solid var(--border); }
+.kr b { font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: var(--brand); padding-top: 2px; }
+.kr p { margin: 0; }
+.kr small { grid-column: 2; color: var(--text-3); font-size: 13px; }
+.status { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+.on-track { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.at-risk { background: color-mix(in srgb, #e0701f 18%, transparent); color: #c25a12; }
+.off-track { background: color-mix(in srgb, #d23f3f 16%, transparent); color: #c03636; }
+.kpi td.num, .kpi th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.kpi td { white-space: nowrap; }
+.up { color: var(--accent); }
+.down { color: #c03636; }
+
 /* Research */
 .refs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 .refs li { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
@@ -238,6 +257,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <a href="#method">Method</a>
       <a href="#benefits">Benefits</a>
       <a href="#comparison">Comparison</a>
+      <a href="#okrs">OKRs</a>
       <a href="#research">Research</a>
       <a href="#faq">FAQ</a>
       <a href="https://github.com/wistrand/ownh">GitHub</a>
@@ -258,7 +278,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <a class="btn btn-primary" href="#get-started">Get started</a>
         <a class="btn btn-ghost" href="https://github.com/wistrand/ownh">View on GitHub</a>
       </div>
-      <p class="hero-note">Runs locally on any git repository. Scales from one repository to your entire organization. <a href="sample/report.html">See a sample report</a>.</p>
+      <p class="hero-note">Runs locally on any git repository. Scales from one repository to your entire organization. <a href="sample/report.html#outlook">See a sample outlook</a>.</p>
     </div>
 
     <figure class="panel" aria-label="Example: line ownership as assigned by OWNH">
@@ -350,8 +370,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       </div>
       <div class="card">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h13"/></svg></div>
-        <h3>Formatter-agnostic</h3>
-        <p>Just kidding. Run Prettier and see what happens.</p>
+        <h3>Formatter-aware</h3>
+        <p>Every formatting commit is recognized as the contribution it is. Run Prettier and see your ownership consolidate.</p>
       </div>
       <div class="card">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="8.5" y="14" width="7" height="7" rx="1.5"/><path d="M6.5 11v1.5h11V11M12 12.5V14"/></svg></div>
@@ -387,6 +407,10 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
           <tr><td>Assigns an owner to blank lines</td><td class="c no">No</td><td class="c yes">Yes</td><td class="c ownh yes">Yes, one</td></tr>
           <tr><td>Recognizes the first person to type <code>}</code></td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
           <tr><td>Treats a revert as a return to rightful ownership</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Projects the quarter former contributors will own the majority of your code</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Reports ownership leverage</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Reports a code half-life, per engineer</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
+          <tr><td>Spider charts</td><td class="c no">No</td><td class="c no">No</td><td class="c ownh yes">Yes</td></tr>
         </tbody>
       </table>
     </div>
@@ -425,12 +449,65 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <h3>Three ways to own</h3>
         <p>Benchmark OWNH against commit counts and git blame, side by side, per repository.</p>
       </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><line x1="20" y1="60" x2="180" y2="60" stroke="var(--text-3)" stroke-dasharray="3 4"/><path d="M20 98 L45 92 L70 86 L95 80 L120 70" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round"/><path d="M120 70 L150 56 L180 42" fill="none" stroke="var(--brand)" stroke-width="3" stroke-dasharray="6 6" stroke-linecap="round"/><line x1="120" y1="20" x2="120" y2="106" stroke="var(--border)"/></svg></div>
+        <h3>Outlook</h3>
+        <p>Know the quarter your codebase will be owned by people who no longer commit.</p>
+      </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><line x1="20" y1="62" x2="180" y2="62" stroke="var(--text-3)" stroke-dasharray="3 4"/><path d="M20 22 C60 30, 80 58, 110 72 S160 92, 180 96" fill="none" stroke="var(--chip-c)" stroke-width="3" stroke-linecap="round"/><path d="M20 22 C70 26, 110 40, 180 62" fill="none" stroke="var(--chip-b)" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <h3>Code half-life</h3>
+        <p>How long your code survives, per owner, with Kaplan-Meier rigor.</p>
+      </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><rect x="44" y="84" width="34" height="14" rx="3" fill="var(--chip-b)"/><rect x="118" y="20" width="34" height="78" rx="3" fill="var(--brand)"/><g font-family="ui-monospace, Menlo, monospace" font-size="10" fill="var(--text-2)"><text x="40" y="112">written</text><text x="120" y="112">owned</text></g></svg></div>
+        <h3>Leverage</h3>
+        <p>Lines owned per line written. Identify your highest-leverage engineers.</p>
+      </div>
+      <div class="card">
+        <div class="thumb" aria-hidden="true"><svg viewBox="0 0 200 120"><polygon points="100,14 146,40 146,86 100,110 54,86 54,40" fill="none" stroke="var(--border)"/><polygon points="100,38 125,50 125,74 100,86 75,74 75,50" fill="none" stroke="var(--border)"/><polygon points="100,18 140,46 118,78 100,96 70,70 62,44" fill="var(--brand)" fill-opacity="0.18" stroke="var(--brand)" stroke-width="2"/><polygon points="100,52 132,44 136,82 100,74 80,80 74,52" fill="var(--chip-b)" fill-opacity="0.18" stroke="var(--chip-b)" stroke-width="2"/></svg></div>
+        <h3>Ownership profiles</h3>
+        <p>Spider charts of your principal owners and largest repositories, normalized for executive review.</p>
+      </div>
     </div>
     <div class="cta-row" style="margin-top: 32px;">
       <a class="btn btn-primary" href="sample/report.html">View a sample report</a>
       <a class="btn btn-ghost" href="https://github.com/wistrand/ownh/blob/main/docs/sample/leaderboard.md">Markdown version</a>
     </div>
     <p class="hero-note">The sample is unedited OWNH output for two small demonstration repositories with fictional contributors.</p>
+  </div>
+</section>
+
+<section id="okrs">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">OKR-ready</span>
+      <h2>Objectives your code can be held to.</h2>
+      <p>Every OWNH metric comes with a quarterly series, a trend, and a projection, ready to drop into your planning cycle.</p>
+    </div>
+    <div class="okr">
+      <div class="okr-card">
+        <p class="objective">Example objective</p>
+        <h3>Consolidate code ownership.</h3>
+        <div class="kr"><b>KR1</b><p>Raise the principal owner&rsquo;s share by five points per quarter. <span class="status at-risk">At risk</span></p><small>Sample: 53.3% to 33.3% over four quarters.</small></div>
+        <div class="kr"><b>KR2</b><p>Extend the median code half-life past two years. <span class="status on-track">On track</span></p><small>Sample: projected half-life of 7.9 years.</small></div>
+        <div class="kr"><b>KR3</b><p>Reach the next blank-line milestone ahead of projection. <span class="status off-track">Off track</span></p><small>Sample: the 5th blank line is projected for 2033 Q2.</small></div>
+      </div>
+      <div>
+        <div class="table-wrap">
+          <table class="kpi">
+            <thead><tr><th>Quarter</th><th class="num">Lines under management</th><th class="num">QoQ</th><th class="num">Principal owner</th><th class="num">Inactive owners</th></tr></thead>
+            <tbody>
+              <tr><td>2025 Q3</td><td class="num">15</td><td class="num up">&#9650; +7.1%</td><td class="num">53.3%</td><td class="num">46.7%</td></tr>
+              <tr><td>2025 Q4</td><td class="num">17</td><td class="num up">&#9650; +13.3%</td><td class="num">47.1%</td><td class="num">41.2%</td></tr>
+              <tr><td>2026 Q1</td><td class="num">20</td><td class="num up">&#9650; +17.6%</td><td class="num">40.0%</td><td class="num">35.0%</td></tr>
+              <tr><td>2026 Q2</td><td class="num">24</td><td class="num up">&#9650; +20.0%</td><td class="num">33.3%</td><td class="num">29.2%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="hero-note">Examples use the <a href="sample/report.html#outlook">sample report</a>: two small demonstration repositories with fictional contributors. Every number is unedited OWNH output.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -515,6 +592,18 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       <details>
         <summary>Can OWNH estimate our bus factor?</summary>
         <p>Yes. For most lines it is one.</p>
+      </details>
+      <details>
+        <summary>Can OWNH forecast ownership?</summary>
+        <p>Yes. Every projection comes with an R&sup2;.</p>
+      </details>
+      <details>
+        <summary>What is a good code half-life?</summary>
+        <p>Longer than your reorg cycle.</p>
+      </details>
+      <details>
+        <summary>Who owns deleted code?</summary>
+        <p>The person who wrote it first.</p>
       </details>
       <details>
         <summary>Why is it called OWNH?</summary>

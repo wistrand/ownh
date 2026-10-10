@@ -93,6 +93,10 @@ claim to its source; keep it accurate if that changes.
   tool output; regenerate it whenever report output changes, never edit it.
 - `docs/og.png` is the link-preview image (Open Graph and Twitter tags in the
   page head), rendered from `scripts/og.svg` with `rsvg-convert`.
+- The OKR section's figures (KR sample lines and the KPI table) are copied by
+  hand from `docs/sample/report.json`. After every `npm run sample`, check
+  them against `timeline.kpis`, `timeline.projections.blank`, and
+  `survival.all`; they drifted once already.
 - FAQ entries riff on real tools (`--ignore-revs-file`, truck factor), see the
   Similar systems section of [research.md](research.md).
 
@@ -126,7 +130,8 @@ before use (see the invariants in CLAUDE.md).
 > - Refactor-aware governance. Changing a line changes its hash, which changes its
 >   owner. Ownership flows naturally to whoever touched it first, exactly as it
 >   should.
-> - Formatter-agnostic. Just kidding. Run Prettier and see what happens.
+> - Formatter-aware. Every formatting commit is recognized as the contribution
+>   it is. Run Prettier and see your ownership consolidate.
 > - Cross-repository synergy. Identical lines across services share one owner, so
 >   a single trusted engineer can be responsible for thousands of closing braces.
 >
@@ -136,5 +141,6 @@ before use (see the invariants in CLAUDE.md).
 >
 > OWNH: because someone has to own it.
 
-Note: "Formatter-agnostic. Just kidding." is the one deliberate wink. Keep it or
-cut it; don't add more.
+Note: the pitch has no winks. An earlier "Formatter-agnostic. Just kidding." was
+replaced with the deadpan "Formatter-aware" line (user decision); keep it that
+way.

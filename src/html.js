@@ -210,8 +210,10 @@ function tile(label, value, sub = '') {
   return `<div class="r-tile"><div class="r-tile-label">${label}</div><div class="r-tile-value">${value}</div>${sub ? `<div class="r-tile-sub">${sub}</div>` : ''}</div>`;
 }
 
+// Each section gets an id from its title (e.g. #outlook, #code-survival) so
+// other pages can link to it.
 function section(title, body) {
-  return `<section class="r-section"><h2>${title}</h2>${body}</section>`;
+  return `<section class="r-section" id="${slug(title)}"><h2>${title}</h2>${body}</section>`;
 }
 
 // A cell is { html, sort }; sort is the value the column sorts by.
