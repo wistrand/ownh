@@ -37,12 +37,13 @@ list instead, or `--no-excludes` to include everything.
 ## Reports
 
 ```bash
-bin/ownh.js report --db acme.db --out report/
+bin/ownh.js report --db acme.db
 ```
 
-Writes `report.html` (open it in a browser), `leaderboard.md`, two charts
-(`ownership-by-line-hash.svg`, `cross-ownership.svg`), and the underlying data
-as JSON and CSV.
+Writes into `report/acme/` (one directory per database; `--out` picks another):
+`report.html` (open it in a browser), `leaderboard.md`, SVG charts (ownership
+by line hash, cross-repository ownership, ownership profiles, outlook, code
+survival), and the underlying data as JSON and CSV.
 
 For comparison with conventional methods, `bin/ownh.js blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add

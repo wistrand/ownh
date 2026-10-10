@@ -57,7 +57,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `scripts/`          | `build-sample.js` (sample report), `og.svg` (preview image source), `screenshot.mjs` (render-then-capture via headless Firefox) |
 | `README.md`         | human-facing deadpan pitch and usage                                                                                            |
 | `LICENSE`           | Apache License 2.0 (canonical text, unmodified)                                                                                 |
-| `agent_docs/`       | research, design, plan, gotchas (linked below)                                                                                  |
+| `agent_docs/`       | architecture, research, design, gotchas (linked below)                                                                          |
 | `AGENTS.md`         | symlink to this file                                                                                                            |
 
 The pitch site is `docs/index.html`, published by GitHub Pages from `docs/` on the
