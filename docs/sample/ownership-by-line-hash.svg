@@ -8,6 +8,13 @@
 .value { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 11px; font-weight: 500; text-anchor: middle; }
 .slice { stroke-width: 2; stroke-linejoin: round; }
 .self { fill: none; stroke-width: 1.5; }
+.grid { fill: none; stroke-width: 1; }
+.area { fill-opacity: 0.12; stroke-width: 2; stroke-linejoin: round; }
+.point { stroke-width: 2; }
+.trend { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.projected { stroke-dasharray: 5 5; }
+.target { stroke-dasharray: 3 4; stroke-width: 1.5; }
+.hit { fill: transparent; }
 .bg { fill: #fcfcfb; }
 .title, .label, .mono, .axis { fill: #0b0b0b; }
 .subtitle, .muted, .axis-title { fill: #52514e; }
@@ -18,6 +25,18 @@
 .s3 { fill: #1baf7a; }
 .s4 { fill: #eda100; }
 .s5 { fill: #e87ba4; }
+.ra1 { fill: #2a78d6; stroke: #2a78d6; } .rp1 { fill: #2a78d6; stroke: #fcfcfb; }
+.ra2 { fill: #eb6834; stroke: #eb6834; } .rp2 { fill: #eb6834; stroke: #fcfcfb; }
+.ra3 { fill: #1baf7a; stroke: #1baf7a; } .rp3 { fill: #1baf7a; stroke: #fcfcfb; }
+.ra4 { fill: #eda100; stroke: #eda100; } .rp4 { fill: #eda100; stroke: #fcfcfb; }
+.ra5 { fill: #e87ba4; stroke: #e87ba4; } .rp5 { fill: #e87ba4; stroke: #fcfcfb; }
+.grid { stroke: #dcdbd5; }
+.ln1 { stroke: #2a78d6; }
+.ln2 { stroke: #eb6834; }
+.ln3 { stroke: #1baf7a; }
+.ln4 { stroke: #eda100; }
+.ln5 { stroke: #e87ba4; }
+.target, .key { stroke: #52514e; }
 .other { fill: #c9c8c1; }
 .b0 { fill: #f0efec; }
 .b1 { fill: #cde2fb; }
@@ -47,6 +66,18 @@
 .s3 { fill: #199e70; }
 .s4 { fill: #c98500; }
 .s5 { fill: #d55181; }
+.ra1 { fill: #3987e5; stroke: #3987e5; } .rp1 { fill: #3987e5; stroke: #1a1a19; }
+.ra2 { fill: #d95926; stroke: #d95926; } .rp2 { fill: #d95926; stroke: #1a1a19; }
+.ra3 { fill: #199e70; stroke: #199e70; } .rp3 { fill: #199e70; stroke: #1a1a19; }
+.ra4 { fill: #c98500; stroke: #c98500; } .rp4 { fill: #c98500; stroke: #1a1a19; }
+.ra5 { fill: #d55181; stroke: #d55181; } .rp5 { fill: #d55181; stroke: #1a1a19; }
+.grid { stroke: #3a3a37; }
+.ln1 { stroke: #3987e5; }
+.ln2 { stroke: #d95926; }
+.ln3 { stroke: #199e70; }
+.ln4 { stroke: #c98500; }
+.ln5 { stroke: #d55181; }
+.target, .key { stroke: #c3c2b7; }
 .other { fill: #4a4945; }
 .b0 { fill: #262625; }
 .b1 { fill: #0d366b; }

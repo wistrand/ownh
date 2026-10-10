@@ -69,7 +69,11 @@ repo actually exhibits.
 
 - Ownership leaderboard where #1 is "Initial import" and #2 set up the linter.
 - Pie chart "Ownership by line hash" with `}` as the largest slice.
-- Cross-repository ownership heatmap: most repos are largely "owned" from `main`.
+- Cross-repository ownership heatmap: most repos are largely "owned" from the largest one.
+- Spider charts, because every manager loves spider charts. The owner profile
+  is "Normalized" (to the highest value shown), which finally gives the N in
+  OWNH something to do.
+- An "Oddities" section that states the absurd findings flatly.
 - Punchline slide: the three-way comparison (commits / blame / hash).
 - Deliver deadpan under the OWNH name, then reveal the leaderboard.
 

@@ -43,22 +43,22 @@ Runtime: Node.js.
 
 Defaults chosen when Phase 1 was built. Each can be revisited.
 
-| Question             | Decision                                                                                                                                                                                                                             |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Normalization        | None (user decision). Lines are the exact text between `\n`s, so indentation, trailing spaces, and CRLF `\r` all make a different line.                                                                                              |
-| Blank lines          | A line like any other (user decision). `""` and `"\r"` are different lines.                                                                                                                                                          |
-| Merge commits        | Skipped (`--no-merges`). Lines that exist only in a merge resolution are unattributed.                                                                                                                                               |
-| Renames              | `-M`; a pure rename adds no lines. Copies count as new additions, owned by the first introducer.                                                                                                                                     |
-| Binary files         | One line per file: SHA-256 of the full content (user decision). Git decides what is binary: "Binary files differ" in history, `diff --numstat` against the empty tree at HEAD.                                                       |
-| Submodules           | Skipped (mode 160000).                                                                                                                                                                                                               |
-| Cross-repo timestamp | Author date. Tiebreak by repo name, then topo index within the repo.                                                                                                                                                                 |
-| Repo name            | Directory basename (minus `.git`). Duplicate names are an error.                                                                                                                                                                     |
-| Input form           | Repo paths as CLI positionals.                                                                                                                                                                                                       |
-| Reruns               | `index` always rebuilds (`--force` to overwrite). `add` appends new repos to an existing `.db` in one transaction; refuses a different exclude list or an existing repo name. Updating a repo already in the `.db` is not supported. |
-| Identity             | Lowercased email after `--use-mailmap`. Display name is the name on the most commits for that email across the `.db`, ties to the smallest name (user decision). Recomputed after every run from `commits.author_name`.              |
-| Line text encoding   | Decoded as UTF-8; invalid bytes become U+FFFD in both diff and HEAD paths, so they still match.                                                                                                                                      |
-| Excluded files       | Exclude file(s), gitignore-like patterns (user decision). Default `ownh.exclude` (`dist/`, two generated shoreline files, maze embeddings JSON). Applied as git exclude pathspecs to history and HEAD.                               |
-| Progress             | Every 5 s per phase to stderr (history commits n/total, HEAD files n/total).                                                                                                                                                         |
+| Question             | Decision                                                                                                                                                                                                                                                                                        |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Normalization        | None (user decision). Lines are the exact text between `\n`s, so indentation, trailing spaces, and CRLF `\r` all make a different line.                                                                                                                                                         |
+| Blank lines          | A line like any other (user decision). `""` and `"\r"` are different lines.                                                                                                                                                                                                                     |
+| Merge commits        | Walked with `--diff-merges=remerge` (user decision): a merge's added lines are what its author wrote by hand, so conflict resolutions get an owner. Merges are flagged (`commits.is_merge`) and excluded from commit counts, activity, and contributor checks; their removals are not recorded. |
+| Renames              | `-M`; a pure rename adds no lines. Copies count as new additions, owned by the first introducer.                                                                                                                                                                                                |
+| Binary files         | One line per file: SHA-256 of the full content (user decision). Git decides what is binary: "Binary files differ" in history, `diff --numstat` against the empty tree at HEAD.                                                                                                                  |
+| Submodules           | Skipped (mode 160000).                                                                                                                                                                                                                                                                          |
+| Cross-repo timestamp | Author date. Tiebreak by repo name, then topo index within the repo.                                                                                                                                                                                                                            |
+| Repo name            | Directory basename (minus `.git`). Duplicate names are an error.                                                                                                                                                                                                                                |
+| Input form           | Repo paths as CLI positionals.                                                                                                                                                                                                                                                                  |
+| Reruns               | `index` always rebuilds (`--force` to overwrite). `add` appends new repos to an existing `.db` in one transaction; refuses a different exclude list or an existing repo name. Updating a repo already in the `.db` is not supported.                                                            |
+| Identity             | Lowercased email after `--use-mailmap`. Display name is the name on the most commits for that email across the `.db`, ties to the smallest name (user decision). Recomputed after every run from `commits.author_name`.                                                                         |
+| Line text encoding   | Decoded as UTF-8; invalid bytes become U+FFFD in both diff and HEAD paths, so they still match.                                                                                                                                                                                                 |
+| Excluded files       | Exclude file(s), gitignore-like patterns (user decision). Default `ownh.exclude` (optional, git-ignored, project-specific). Applied as git exclude pathspecs to history and HEAD.                                                                                          |
+| Progress             | Every 5 s per phase to stderr (history commits n/total, HEAD files n/total).                                                                                                                                                                                                                    |
 
 Inferred, not verified: reading diffs is cheaper than hashing every blob at every
 commit, and gives the same first-introducer result.
@@ -115,8 +115,8 @@ script with known history and expected ownership, for the user to run.
 - [x] Multi-repo input with one shared table (min-key upsert instead of a merged timeline)
 - [x] HEAD scoring and per-owner / per-hash aggregation (overall and per repo), plain-text output (`ownh summary`)
 - [x] `npm test` passes (4 tests)
-- [x] Smoke run: 4 sibling repos (~1.8k commits, ~1.1M HEAD lines) index in about 15 s, summary in about 8 s, zero unattributed lines. The `.db` is about 500 MB.
-- [x] Large run: 7 repos including `main` (342k commits, 11.7M HEAD lines), 12.5M HEAD lines total. Index about 12.5 min, summary about 2 min, `.db` about 11.9 GB.
+- [x] Smoke run: 4 repos (~1.8k commits, ~1.1M HEAD lines) index in about 15 s, summary in about 8 s, zero unattributed lines. The `.db` is about 500 MB.
+- [x] Large run: 7 repos, one of them with 342k commits and 11.7M HEAD lines, 12.5M HEAD lines total. Index about 12.5 min, summary about 2 min, `.db` about 11.9 GB.
 
 **Verify:** fixture repos give the expected owner for each scripted line,
 including a line first written in repo A and later copied into repo B;
@@ -140,11 +140,36 @@ two runs produce identical output regardless of the order repos are passed in.
       per-repo sections; checked by eye in headless Firefox
 - [x] Progress on stderr: owner pass per repo, large repos split into ~1M-line
       path ranges; top lines counted per hash range (16 ranges). About 85 s on
-      the 22-repo `.db`, almost all of it `main`.
+      a 22-repo database, almost all of it in the largest repo.
+- [x] Oddities section (user request, `src/oddities.js`): facts derived from
+      the stats only, never guesses: trivial top lines, CRLF twins, duplicated
+      binaries, repos mostly written elsewhere, absentee top owners,
+      non-contributor majorities, bots as top committer, three-way splits,
+      extreme lines per commit, unattributed lines. Each claim must be checked
+      by the code that prints it.
+- [x] Radar charts (user request, "every manager loves spider charts";
+      `radarSvg` in `src/charts.js`, data in `src/profiles.js`): owner profile
+      (6 axes, normalized to the highest value shown) and governance profile of
+      the largest repos (5 shares). At most 3 series.
+- [x] Outlook section (user request, "strengthen any OKR story";
+      `src/timeline.js`, `src/outlook.js`): knowledge-loss date (share owned by
+      people with no commit in four quarters), principal-owner trajectory,
+      quarterly KPI table, blank-line milestone. Projections continue the
+      least-squares slope of the last 12 quarters from the latest value and
+      state R². Relative to the newest commit, not the clock.
+- [x] Oddities moved after the Outlook, lighter styling (user request).
+- [x] Deleted lines (user request): the walk records added and removed lines
+      per (hash, repo, quarter, author) in `churn`. Gives a true ownership
+      history for the Outlook (added minus removed, checked against HEAD), a
+      Code demolition section (who removes whose lines, the most-removed line,
+      lines restored after deletion), and Code survival: per-owner Kaplan-Meier
+      curves and half-lives, pairing removals with the oldest copies of a line
+      first. Leverage (lines owned per line written) uses `commits.added_lines`.
+- [x] Reports default to `report/<db name>/` (user preference).
 - Dropped (user decision): generated CODEOWNERS.
 
 **Verify:** `report files agree with the summary` test; charts rendered with
-`rsvg-convert` and checked by eye on the 22-repo `.db`.
+`rsvg-convert` and checked by eye on a 22-repo database.
 
 ### Phase 3: three-way comparison
 
@@ -154,16 +179,16 @@ two runs produce identical output regardless of the order repos are passed in.
 - [x] Blame ownership: `ownh blame` (`src/blame.js`) fills
       `head_lines.blame_identity_id` from `git blame --porcelain` at each repo's
       stored head. Opt-in and separate because it is slow (about 0.7 s per file in
-      `main`, run in parallel, `--jobs` defaults to CPU count). Resumable:
+      a 342k-commit repo, run in parallel, `--jobs` defaults to CPU count). Resumable:
       finished files are recorded in `blame_files`, committed every 200 files.
       Binary files are skipped. A repo's blame answer appears only when every
       file is done.
 - [x] Blame speed: each repo is blamed in a throwaway bare `--shared` clone
       (system temp dir) with a commit-graph and changed-path Bloom filters for
       the stored head (`blameClone` in `src/git.js`). Measured about 6x faster
-      on `main` (20 files: 28.7 s without, 4.5 s with). The user's repos are not
+      on a 342k-commit repo (20 files: 28.7 s without, 4.5 s with). The user's repos are not
       modified.
-- [x] Blame sampling (`--sample N`, user decision for `main`): repos with more
+- [x] Blame sampling (`--sample N`, user decision for the largest repo): repos with more
       than N files blame a fixed pseudo-random sample (`samplePaths` in
       `src/sample.js`: the N paths with the smallest SHA-256). The report shows
       an estimate with a 95% margin from the ratio estimator over files
@@ -183,9 +208,10 @@ two runs produce identical output regardless of the order repos are passed in.
 
 ## Open questions
 
-- `parent.db` predates the `--full-history` fix (see gotchas, Findings): 35
-  commits in `main`, `escalation`, and `portal` were skipped. Rebuild with
-  `index` and rerun `blame` for exact results.
+- Databases built before the `--full-history` fix (see gotchas, Findings), the
+  per-commit added-line counters, merge walking, or the `churn` table give
+  incomplete or slightly wrong results, and `add` refuses them. Rebuild with
+  `index` and rerun `blame`.
 
 - `ownh update` for repos already in a `.db` (new commits since the stored
   `head`): feasible with the same min-key upsert plus replacing that repo's
@@ -193,9 +219,8 @@ two runs produce identical output regardless of the order repos are passed in.
 
 - Phase 1 decisions above are defaults unless marked as a user decision. Most
   likely to change: whether merge-only lines should go to the merger.
-- Which generated/vendored files to add to `ownh.exclude` beyond `dist/` and the
-  shoreline stats page (maze's `conf/tql-schema-embeddings.json` is the next
-  biggest outlier, about half the HEAD lines of the first smoke run).
+- Which generated/vendored files belong in an exclude list beyond `dist/`. In
+  real runs a single generated data file was about half of all HEAD lines.
 - `.db` size: about 450 bytes per HEAD line on the smoke run. Storing hashes as
   32-byte BLOBs and interning paths would shrink it if size becomes a problem.
 - Generated files dominate real repos: in the smoke run one JSON embeddings file

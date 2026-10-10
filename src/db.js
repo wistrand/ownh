@@ -38,6 +38,13 @@ CREATE TABLE commits (
   author_time INTEGER NOT NULL,
   identity_id INTEGER NOT NULL REFERENCES identities (id),
   author_name TEXT NOT NULL,
+  -- Text lines this commit added (every occurrence, before per-commit dedup),
+  -- and how many of them were blank. Used by the report's time outlook.
+  added_lines INTEGER NOT NULL DEFAULT 0,
+  added_blank INTEGER NOT NULL DEFAULT 0,
+  -- Merges are walked (their hand-written lines get an owner) but are not
+  -- "commits" for commit counts, activity, or contributor checks.
+  is_merge    INTEGER NOT NULL DEFAULT 0,
   UNIQUE (repo_id, sha)
 );
 
@@ -64,6 +71,19 @@ CREATE TABLE head_lines (
 ) WITHOUT ROWID;
 
 CREATE INDEX head_lines_hash ON head_lines (hash);
+
+-- Lines added and removed, per line hash, repo, quarter (of the commit's author
+-- date), and commit author. Removals inside merges are not recorded. Binary
+-- files count as one line. Used for ownership history and code survival.
+CREATE TABLE churn (
+  hash        TEXT NOT NULL,
+  repo_id     INTEGER NOT NULL REFERENCES repos (id),
+  q           INTEGER NOT NULL,
+  identity_id INTEGER NOT NULL REFERENCES identities (id),
+  added       INTEGER NOT NULL,
+  removed     INTEGER NOT NULL,
+  PRIMARY KEY (hash, repo_id, q, identity_id)
+) WITHOUT ROWID;
 `;
 
 // Wait for another ownh process's lock (a report reading while blame commits,

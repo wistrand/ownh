@@ -74,8 +74,8 @@
 - **Blame in a bare clone needs `mailmap.blob`.** A bare clone has no working
   tree `.mailmap`, so `blame()` passes `-c mailmap.blob=<head>:.mailmap`; a
   missing blob is ignored silently.
-- **Sampled blame ignores blamed files outside the sample.** `main` has files
-  blamed in path order from an interrupted full run; estimates only use files in
+- **Sampled blame ignores blamed files outside the sample.** A repo can have
+  files blamed in path order from an interrupted full run; estimates only use files in
   `samplePaths`, so that biased set never leaks into a number.
 - **Blame and line hash disagree by design.** A revert gives blame to the
   reverter and line-hash ownership back to the original author. That gap is
@@ -87,12 +87,28 @@
   every older line to the boundary commit's author.
 - **Interrupting `ownh blame` leaves a temp clone.** Ctrl-C skips cleanup of the
   `ownh-blame-*` directory in the system temp dir (refs plus commit-graph, tens
-  of MB for `main`). The database is fine; delete the directory by hand.
+  of MB for a 342k-commit repo). The database is fine; delete the directory by hand.
 - **`ownh.exclude` is optional and git-ignored.** It holds project-specific
   paths, so it is not committed; a fresh clone has none and indexes everything
   (the CLI says so on stderr). An explicit `--exclude-file` that is missing is
   still an error.
 - **Exclude patterns have no negation.** `!pattern` is taken literally.
+- **Churn makes databases larger.** One row per (hash, repo, quarter, author)
+  with additions or removals. Unmeasured on the largest repos; expect a sizable share of
+  `head_lines`.
+- **Removals in merges are not real removals.** With remerge, a merge's "-"
+  lines are relative to git's re-run of the merge (conflict markers, discarded
+  sides), so they are skipped. Additions on branches whose changes a merge
+  discarded are therefore never removed; the Outlook note reports the gap
+  against HEAD.
+- **Outlook series are cohorts of surviving lines, not snapshots.** (Only for
+  databases without `churn`; with it, they are a true added-minus-removed
+  history.) The value for
+  quarter Q counts today's lines first written by Q; deleted code is invisible.
+  A true history would need per-quarter HEAD snapshots. The report states this.
+- **Fixture times are scaled.** `TIME_SCALE` in `test/fixtures.js` spreads the
+  fixture history over about 2.5 years so the sample outlook has quarters;
+  order and same-second ties are unchanged.
 - **Git rejects tiny epoch dates.** `GIT_AUTHOR_DATE="1000 +0000"` fails with
   "invalid date format". Fixtures add `BASE_TIME` in `test/fixtures.js`.
 - **`node --test test/` fails on Node 26.** A directory argument is resolved as a
@@ -104,7 +120,7 @@
 ### Exclude pathspecs silently dropped side-branch commits
 
 - **Symptom:** none visible. Found in review: with any exclude list, `git log`
-  and `rev-list` skipped 35 commits across `main`, `escalation`, and `portal`.
+  and `rev-list` skipped 35 commits across three repos.
 - **Diagnosis:** any pathspec, even exclude-only, turns on git's default history
   simplification. A merge that is TREESAME to one parent is followed through that
   parent only, so commits on the other side vanish even when they touch no

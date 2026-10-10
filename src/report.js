@@ -1,8 +1,12 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { openDb } from './db.js';
-import { crossOwnershipSvg, lineSharePieSvg } from './charts.js';
+import { crossOwnershipSvg, lineSharePieSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
+import { findOddities } from './oddities.js';
+import { ownerProfile, repoProfile } from './profiles.js';
+import { outlookCharts, outlookNote, outlookStatements } from './outlook.js';
+import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { collectStats, lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
@@ -15,11 +19,19 @@ export function report({ dbPath, outDir, top = 20, log }) {
   } finally {
     db.close();
   }
+  stats.oddities = findOddities(stats);
   mkdirSync(outDir, { recursive: true });
-  const charts = { pie: lineSharePieSvg(stats), heatmap: crossOwnershipSvg(stats) };
+  const charts = {
+    pie: lineSharePieSvg(stats),
+    heatmap: crossOwnershipSvg(stats),
+    owners: radarSvg(ownerProfile(stats)),
+    repos: radarSvg(repoProfile(stats)),
+    ...outlookCharts(stats.timeline),
+    survival: survivalSvg(stats),
+  };
   const files = {
     'report.html': reportHtml(stats, top, charts),
-    'leaderboard.md': leaderboard(stats, top),
+    'leaderboard.md': leaderboard(stats, top, charts),
     'report.json': `${JSON.stringify(stats, null, 2)}\n`,
     'owners.csv': ownersCsv(stats),
     'lines.csv': linesCsv(stats),
@@ -27,17 +39,21 @@ export function report({ dbPath, outDir, top = 20, log }) {
     'methods.csv': methodsCsv(stats),
     'ownership-by-line-hash.svg': charts.pie,
     'cross-ownership.svg': charts.heatmap,
+    'owner-profile.svg': charts.owners,
+    'repo-profile.svg': charts.repos,
+    ...(charts.shares ? { 'ownership-outlook.svg': charts.shares } : {}),
+    ...(charts.blank ? { 'blank-line-outlook.svg': charts.blank } : {}),
+    ...(charts.survival ? { 'code-survival.svg': charts.survival } : {}),
   };
   for (const [name, content] of Object.entries(files)) writeFileSync(join(outDir, name), content);
   return Object.keys(files);
 }
 
-function leaderboard(stats, top) {
+function leaderboard(stats, top, charts) {
   const out = [
     '# OWNH Ownership Report',
     '',
     `Repositories: ${stats.repos.length}. Lines under management: ${stats.total.toLocaleString('en-US')}.`,
-    `Excluded patterns: ${stats.excludes.length ? stats.excludes.map(code).join(', ') : 'none'}.`,
     `OWNH ${stats.toolVersion}.`,
     '',
     '## Principal owners',
@@ -45,6 +61,12 @@ function leaderboard(stats, top) {
     ...mdTable(['Rank', 'Owner', 'Lines', 'Share'], stats.owners.slice(0, top).map((o, k) => [
       String(k + 1), escapeCell(ownerLabel(o.owner)), num(o.lines), pct(o.lines, stats.total),
     ]), ['r', 'l', 'r', 'r']),
+    '',
+    '## Ownership profiles',
+    '',
+    '![Ownership profile: principal owners](owner-profile.svg)',
+    '',
+    '![Governance profile: largest repositories](repo-profile.svg)',
     '',
     '## Principal lines',
     '',
@@ -96,6 +118,16 @@ function leaderboard(stats, top) {
     '',
     `The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.`,
     '',
+    ...leverageMd(stats),
+    ...demolitionMd(stats),
+    ...survivalMd(stats, charts),
+    ...outlookMd(stats, charts),
+    '## Oddities',
+    '',
+    ...(stats.oddities.length
+      ? stats.oddities.map((o) => `- ${o.title}. ${o.detail.map((p) => (p.code !== undefined ? codeSpan(p.code) : p.text)).join('')}`)
+      : ['None found.']),
+    '',
     '## Repositories',
   ];
   for (const r of stats.repos) {
@@ -112,7 +144,100 @@ function leaderboard(stats, top) {
       ]), ['r', 'l', 'r', 'r', 'l']),
     );
   }
+  out.push(
+    '',
+    '## Excluded patterns',
+    '',
+    stats.excludes.length
+      ? `Files matching these patterns were left out of history and the current tree: ${stats.excludes.map(codeSpan).join(', ')}.`
+      : 'None. Every file was analyzed.',
+  );
   return `${out.join('\n')}\n`;
+}
+
+function leverageMd(stats) {
+  const lev = leverage(stats);
+  if (!lev) return [];
+  const rows = (list) => list.map((r) => [escapeCell(ownerLabel(r.owner)), num(r.written), num(r.owned), ratio(r.ratio)]);
+  const head = ['Owner', 'Lines written', 'Lines owned', 'Owned per line written'];
+  return [
+    '## Leverage',
+    '',
+    'Lines owned today for every line written. Identical lines are owned by whoever wrote them first, so one',
+    'line written can be many lines owned.',
+    '',
+    '### Highest leverage',
+    '',
+    ...mdTable(head, rows(lev.highest), ['l', 'r', 'r', 'r']),
+    '',
+    '### Lowest retention among the most prolific writers',
+    '',
+    ...mdTable(head, rows(lev.lowest), ['l', 'r', 'r', 'r']),
+    '',
+  ];
+}
+
+function demolitionMd(stats) {
+  const d = stats.deletions;
+  if (!d) return [];
+  const head = (label) => ['Rank', label, 'Lines', 'Own lines removed'];
+  const rows = (list) => list.map((r, k) => [String(k + 1), escapeCell(ownerLabel(r.owner)), num(r.lines), num(r.ownRemoved)]);
+  return [
+    '## Code demolition',
+    '',
+    `${num(d.added)} lines added and ${num(d.removed)} removed in total; ${num(d.removedOfOthers)} of the removed lines (${pct(d.removedOfOthers, d.removed)}) belonged to someone other than the person removing them.`,
+    '',
+    '### Most lines removed that belonged to others',
+    '',
+    ...mdTable(head('Remover'), rows(d.topRemovers), ['r', 'l', 'r', 'r']),
+    '',
+    '### Most lines lost to others',
+    '',
+    ...mdTable(head('Owner'), rows(d.mostRemovedOwners), ['r', 'l', 'r', 'r']),
+    '',
+    DEMOLITION_NOTE,
+    '',
+  ];
+}
+
+function survivalMd(stats, charts) {
+  if (!stats.survival) return [];
+  return [
+    '## Code survival',
+    '',
+    ...survivalStatements(stats).map((s) => `- ${s}`),
+    '',
+    ...(charts.survival ? ['![Code survival](code-survival.svg)', ''] : []),
+    SURVIVAL_NOTE,
+    '',
+  ];
+}
+
+function ratio(r) {
+  return r >= 10 ? num(Math.round(r)) : r.toFixed(2);
+}
+
+function outlookMd(stats, charts) {
+  const t = stats.timeline;
+  if (!t) return [];
+  const pctOrDash = (v) => (v === null ? '-' : `${(v * 100).toFixed(1)}%`);
+  const signed = (v) => (v === null ? '-' : `${v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%`);
+  return [
+    '## Outlook',
+    '',
+    ...outlookStatements(t).map((s) => `- **${s.label}:** ${s.text}`),
+    '',
+    ...(charts.shares ? ['![Ownership outlook](ownership-outlook.svg)', ''] : []),
+    ...(charts.blank ? ['![Blank line outlook](blank-line-outlook.svg)', ''] : []),
+    ...mdTable(
+      ['Quarter', 'Lines under management', 'QoQ', 'New owners', t.principal ? escapeCell(t.principal.name) : 'Principal owner', 'Non-contributors', 'Inactive owners', 'Blank lines committed'],
+      t.kpis.map((k) => [k.quarter, num(k.lines), signed(k.linesChange), num(k.newOwners), pctOrDash(k.principalShare), pctOrDash(k.nonContributorShare), pctOrDash(k.inactiveShare), k.blank === null ? '-' : num(k.blank)]),
+      ['l', 'r', 'r', 'r', 'r', 'r', 'r', 'r'],
+    ),
+    '',
+    outlookNote(t),
+    '',
+  ];
 }
 
 function methodCells(name, m) {
@@ -166,10 +291,16 @@ function mdTable(header, rows, align) {
   return [line(header), rule, ...rows.map(line)];
 }
 
+// A code span for a table cell.
 function code(s) {
+  return escapeCell(codeSpan(s));
+}
+
+// A code span for prose; a fence of two backticks when the text has one.
+function codeSpan(s) {
   const fence = s.includes('`') ? '``' : '`';
   const pad = s.startsWith('`') || s.endsWith('`') ? ' ' : '';
-  return escapeCell(`${fence}${pad}${s}${pad}${fence}`);
+  return `${fence}${pad}${s}${pad}${fence}`;
 }
 
 function escapeCell(s) {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { basename, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { blame } from '../src/blame.js';
 import { readDefaultExcludes, readExcludeFile } from '../src/exclude.js';
@@ -10,7 +11,7 @@ const USAGE = `usage:
   ownh index --db <file> [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
   ownh add --db <file> [--exclude-file <file>]... [--no-excludes] <repo>...
   ownh summary --db <file> [--top <n>]
-  ownh report --db <file> --out <dir> [--top <n>]
+  ownh report --db <file> [--out <dir>] [--top <n>]   (default --out: report/<db name>/)
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
 
   Without --exclude-file, patterns come from ownh.exclude next to the tool,
@@ -89,8 +90,10 @@ async function main([command, ...args]) {
       },
     });
     const top = Number(values.top);
-    if (!values.db || !values.out || !Number.isInteger(top) || top < 1) return usage();
-    for (const file of report({ dbPath: values.db, outDir: values.out, top, log })) log(`wrote ${values.out}/${file}`);
+    if (!values.db || !Number.isInteger(top) || top < 1) return usage();
+    // Each database gets its own report directory: report/<db name without .db>/.
+    const out = values.out ?? join('report', basename(values.db).replace(/\.db$/, ''));
+    for (const file of report({ dbPath: values.db, outDir: out, top, log })) log(`wrote ${out}/${file}`);
   } else {
     usage();
   }

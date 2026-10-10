@@ -12,14 +12,14 @@ const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
 // ignore var(). Dark values override inside the prefers-color-scheme block.
 const THEME = {
   light: {
-    surface: '#fcfcfb', primary: '#0b0b0b', secondary: '#52514e',
+    surface: '#fcfcfb', primary: '#0b0b0b', secondary: '#52514e', grid: '#dcdbd5',
     series: ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4'], other: '#c9c8c1',
     // Bin 0 = no lines; bins 1-8 = blue ramp, lightest near zero.
     bins: ['#f0efec', '#cde2fb', '#b7d3f6', '#9ec5f4', '#6da7ec', '#3987e5', '#256abf', '#184f95', '#0d366b'],
     binText: [null, '#0b0b0b', '#0b0b0b', '#0b0b0b', '#0b0b0b', '#ffffff', '#ffffff', '#ffffff', '#ffffff'],
   },
   dark: {
-    surface: '#1a1a19', primary: '#ffffff', secondary: '#c3c2b7',
+    surface: '#1a1a19', primary: '#ffffff', secondary: '#c3c2b7', grid: '#3a3a37',
     series: ['#3987e5', '#d95926', '#199e70', '#c98500', '#d55181'], other: '#4a4945',
     // Reversed so near-zero recedes toward the dark surface.
     bins: ['#262625', '#0d366b', '#184f95', '#256abf', '#3987e5', '#6da7ec', '#9ec5f4', '#b7d3f6', '#cde2fb'],
@@ -35,6 +35,11 @@ function colorRules(t) {
     `.slice { stroke: ${t.surface}; }`,
     `.self { stroke: ${t.secondary}; }`,
     ...t.series.map((c, k) => `.s${k + 1} { fill: ${c}; }`),
+    // Radar series: translucent area, solid outline and points.
+    ...t.series.map((c, k) => `.ra${k + 1} { fill: ${c}; stroke: ${c}; } .rp${k + 1} { fill: ${c}; stroke: ${t.surface}; }`),
+    `.grid { stroke: ${t.grid}; }`,
+    ...t.series.map((c, k) => `.ln${k + 1} { stroke: ${c}; }`),
+    `.target, .key { stroke: ${t.secondary}; }`,
     `.other { fill: ${t.other}; }`,
     ...t.bins.map((c, k) => `.b${k} { fill: ${c}; }`),
     ...t.binText.map((c, k) => (c ? `.t${k} { fill: ${c}; }` : '')).filter(Boolean),
@@ -50,6 +55,13 @@ const STYLE = `
 .value { font-family: ${FONT}; font-size: 11px; font-weight: 500; text-anchor: middle; }
 .slice { stroke-width: 2; stroke-linejoin: round; }
 .self { fill: none; stroke-width: 1.5; }
+.grid { fill: none; stroke-width: 1; }
+.area { fill-opacity: 0.12; stroke-width: 2; stroke-linejoin: round; }
+.point { stroke-width: 2; }
+.trend { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.projected { stroke-dasharray: 5 5; }
+.target { stroke-dasharray: 3 4; stroke-width: 1.5; }
+.hit { fill: transparent; }
 ${colorRules(THEME.light)}
 @media (prefers-color-scheme: dark) {
 ${colorRules(THEME.dark)}
@@ -184,6 +196,132 @@ export function crossOwnershipSvg(stats) {
   }
   parts.push(`<text class="muted" x="${left + BIN_EDGES.length * (sw + 2)}" y="${ly + 28}">${BIN_END_LABEL}</text>`);
 
+  return svgDoc(width, height, parts);
+}
+
+// --- Radar ("spider") charts --------------------------------------------------
+
+// Three series at most: overlapping areas need the palette slots that stay
+// distinguishable all-pairs (see the dataviz palette notes), and a radar with
+// more is unreadable anyway.
+const RADAR_SERIES = 3;
+
+// axes: [{ label }]; series: [{ name, values: [0..1 per axis], raw: [text per axis] }]
+export function radarSvg({ title, subtitle, axes, series }) {
+  series = series.slice(0, RADAR_SERIES);
+  // Room for axis labels on both sides (up to about 34 characters).
+  const width = 800;
+  const cx = 400;
+  const cy = 300;
+  const r = 170;
+  const n = axes.length;
+  const angle = (i) => -Math.PI / 2 + (2 * Math.PI * i) / n;
+  const at = (i, v) => [cx + r * v * Math.cos(angle(i)), cy + r * v * Math.sin(angle(i))];
+  const pts = (vals) => vals.map((v, i) => at(i, v).map((x) => x.toFixed(1)).join(',')).join(' ');
+
+  const parts = [
+    `<text class="title" x="24" y="40">${esc(title)}</text>`,
+    `<text class="subtitle" x="24" y="62">${esc(subtitle)}</text>`,
+  ];
+  for (const ring of [0.25, 0.5, 0.75, 1]) {
+    parts.push(`<polygon class="grid" points="${pts(axes.map(() => ring))}"/>`);
+  }
+  axes.forEach((a, i) => {
+    const [x, y] = at(i, 1);
+    parts.push(`<line class="grid" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`);
+    const [lx, ly] = at(i, 1.12);
+    const anchor = Math.abs(lx - cx) < 8 ? 'middle' : lx > cx ? 'start' : 'end';
+    parts.push(`<text class="axis" x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" text-anchor="${anchor}">${esc(a.label)}</text>`);
+  });
+  series.forEach((s, k) => {
+    parts.push(`<polygon class="area ra${k + 1}" points="${pts(s.values)}"><title>${esc(s.name)}</title></polygon>`);
+  });
+  series.forEach((s, k) => {
+    s.values.forEach((v, i) => {
+      const [x, y] = at(i, v);
+      parts.push(`<circle class="point rp${k + 1}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5"><title>${esc(`${s.name}, ${axes[i].label}: ${s.raw[i]}`)}</title></circle>`);
+    });
+  });
+  // Legend, one row below the chart.
+  let lx = 24;
+  const ly = cy + r + 70;
+  series.forEach((s, k) => {
+    parts.push(`<rect class="s${k + 1}" x="${lx}" y="${ly - 11}" width="12" height="12" rx="3"/>`);
+    parts.push(`<text class="label" x="${lx + 20}" y="${ly}">${esc(s.name)}</text>`);
+    lx += 20 + s.name.length * 7.5 + 28;
+  });
+  return svgDoc(width, ly + 30, parts);
+}
+
+// --- Line chart with projection ------------------------------------------------
+
+// quarters: x values (integers) for the history part; series: [{ name, values
+// (same length as quarters), projection: [{ q, v }] | null }]; yMax: top of the
+// axis; yFormat: tick label; target: { value, label } | null. xTick returns the
+// label for an x value, or null for no tick (default: the year, at each Q1);
+// xFormat names an x value in tooltips; nowLine marks the last x value.
+const yearTick = (q) => (q % 4 === 0 ? String(Math.floor(q / 4)) : null);
+const quarterName = (q) => `${Math.floor(q / 4)} Q${(q % 4) + 1}`;
+
+export function trendSvg({ title, subtitle, quarters, series, yMax, yFormat, target = null, label, xTick = yearTick, xFormat = quarterName, nowLine = true }) {
+  const width = 800;
+  const height = 420;
+  const left = 72;
+  const right = 170;
+  const top = 92;
+  const bottom = 56;
+  const q0 = quarters[0];
+  const q1 = Math.max(quarters[quarters.length - 1], ...series.flatMap((s) => (s.projection ?? []).map((p) => p.q)));
+  const x = (q) => left + ((q - q0) / Math.max(1, q1 - q0)) * (width - left - right);
+  const y = (v) => top + (1 - Math.min(Math.max(v / yMax, 0), 1)) * (height - top - bottom);
+  const path = (pts) => pts.map((p, i) => `${i ? 'L' : 'M'} ${x(p.q).toFixed(1)} ${y(p.v).toFixed(1)}`).join(' ');
+
+  const parts = [
+    `<text class="title" x="24" y="40">${esc(title)}</text>`,
+    `<text class="subtitle" x="24" y="62">${esc(subtitle)}</text>`,
+  ];
+  for (const f of [0, 0.25, 0.5, 0.75, 1]) {
+    const v = yMax * f;
+    parts.push(`<line class="grid" x1="${left}" x2="${width - right}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/>`);
+    parts.push(`<text class="muted" x="${left - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${esc(yFormat(v))}</text>`);
+  }
+  for (let q = q0; q <= q1; q++) {
+    const tick = xTick(q);
+    if (tick === null) continue;
+    parts.push(`<text class="muted" x="${x(q).toFixed(1)}" y="${height - bottom + 20}" text-anchor="middle">${esc(tick)}</text>`);
+  }
+  if (nowLine) {
+    const now = quarters[quarters.length - 1];
+    parts.push(`<line class="grid" x1="${x(now).toFixed(1)}" x2="${x(now).toFixed(1)}" y1="${top}" y2="${height - bottom}"/>`);
+    parts.push(`<text class="muted" x="${(x(now) + 4).toFixed(1)}" y="${height - bottom - 6}">${esc(label ?? 'now')}</text>`);
+  }
+  if (target) {
+    parts.push(`<line class="target" x1="${left}" x2="${width - right}" y1="${y(target.value).toFixed(1)}" y2="${y(target.value).toFixed(1)}"/>`);
+    parts.push(`<text class="muted" x="${width - right + 8}" y="${(y(target.value) + 4).toFixed(1)}">${esc(target.label)}</text>`);
+  }
+  series.forEach((s, k) => {
+    // A series may be shorter than quarters (it ends where its data ends).
+    const pts = quarters.map((q, i) => ({ q, v: s.values[i] })).filter((p) => p.v !== undefined && p.v !== null);
+    parts.push(`<path class="trend ln${k + 1}" d="${path(pts)}"/>`);
+    if (s.projection) parts.push(`<path class="trend projected ln${k + 1}" d="${path(s.projection)}"/>`);
+    for (const p of pts) {
+      parts.push(`<circle class="hit" cx="${x(p.q).toFixed(1)}" cy="${y(p.v).toFixed(1)}" r="6"><title>${esc(`${s.name}, ${xFormat(p.q)}: ${yFormat(p.v)}`)}</title></circle>`);
+    }
+    const last = pts[pts.length - 1];
+    parts.push(`<circle class="point rp${k + 1}" cx="${x(last.q).toFixed(1)}" cy="${y(last.v).toFixed(1)}" r="4.5"/>`);
+  });
+  // Legend under the plot.
+  let lx = left;
+  const ly = height - 12;
+  series.forEach((s, k) => {
+    parts.push(`<line class="trend ln${k + 1}" x1="${lx}" x2="${lx + 18}" y1="${ly - 4}" y2="${ly - 4}"/>`);
+    parts.push(`<text class="label" x="${lx + 24}" y="${ly}">${esc(s.name)}</text>`);
+    lx += 24 + s.name.length * 7.5 + 28;
+  });
+  if (series.some((s) => s.projection)) {
+    parts.push(`<line class="trend projected key" x1="${lx}" x2="${lx + 18}" y1="${ly - 4}" y2="${ly - 4}"/>`);
+    parts.push(`<text class="muted" x="${lx + 24}" y="${ly}">projection</text>`);
+  }
   return svgDoc(width, height, parts);
 }
 

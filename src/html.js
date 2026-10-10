@@ -4,6 +4,8 @@
 //
 // The inlined SVGs carry their own <style> with short class names (.title,
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
+import { outlookNote, outlookStatements } from './outlook.js';
+import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements } from './sections.js';
 import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
@@ -13,7 +15,6 @@ export function reportHtml(stats, top, charts) {
     `<header class="r-head">
       <h1>OWNH Ownership Report</h1>
       <p class="r-meta">${stats.repos.length} repositories · ${num(stats.total)} lines under management · OWNH ${esc(stats.toolVersion)}</p>
-      <p class="r-meta">Excluded patterns: ${stats.excludes.length ? stats.excludes.map((e) => `<code>${esc(e)}</code>`).join(', ') : 'none'}</p>
     </header>`,
     `<section class="r-tiles">
       ${tile('Repositories', num(stats.repos.length))}
@@ -28,6 +29,9 @@ export function reportHtml(stats, top, charts) {
       ]),
       ['num', '', 'num', 'num'],
     )),
+    section('Ownership profiles', `
+      <p class="r-note">Hover a point for the exact value.</p>
+      <div class="r-pair"><figure class="r-chart">${charts.owners}</figure><figure class="r-chart">${charts.repos}</figure></div>`),
     section('Principal lines', `
       <figure class="r-chart">${charts.pie}</figure>
       ${table(
@@ -71,6 +75,16 @@ export function reportHtml(stats, top, charts) {
         ['', '', '', '', ''],
       )}
       <p class="r-note">The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.</p>`),
+    ...leverageHtml(stats),
+    ...demolitionHtml(stats),
+    ...(stats.survival ? [section('Code survival', `
+      <ul class="r-outlook">${survivalStatements(stats).map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+      ${charts.survival ? `<figure class="r-chart">${charts.survival}</figure>` : ''}
+      <p class="r-note">${esc(SURVIVAL_NOTE)}</p>`)] : []),
+    ...(stats.timeline ? [section('Outlook', outlookHtml(stats, charts))] : []),
+    section('Oddities', stats.oddities.length
+      ? `<ul class="r-odd">${stats.oddities.map((o) => `<li><span class="r-odd-title">${esc(o.title)}.</span> <span class="r-odd-detail">${o.detail.map((p) => (p.code !== undefined ? `<code class="r-lit">${esc(p.code)}</code>` : esc(p.text))).join('')}</span></li>`).join('\n')}</ul>`
+      : '<p class="r-note">None found.</p>'),
     section('Repositories', stats.repos.map((r) => `
       <details class="r-repo" id="repo-${slug(r.name)}">
         <summary><span class="r-repo-name">${esc(r.name)}</span>
@@ -101,6 +115,9 @@ export function reportHtml(stats, top, charts) {
 <body>
 <main class="r-page">
 ${main.join('\n')}
+${section('Excluded patterns', stats.excludes.length
+    ? `<p class="r-note">Files matching these patterns were left out of history and the current tree: ${stats.excludes.map((e) => `<code>${esc(e)}</code>`).join(', ')}.</p>`
+    : '<p class="r-note">None. Every file was analyzed.</p>')}
 </main>
 <script>${SORT_SCRIPT}</script>
 </body>
@@ -115,6 +132,68 @@ function methodRowHtml(name, m, strong = false) {
     return cell(`${esc(t.owner.name)} <span class="r-dim"${title}>${methodShare(t)}</span>`, t.owner.name);
   };
   return [cell(strong ? `<strong>${esc(name)}</strong>` : esc(name), strong ? '' : name), c(m.commits), c(m.blame), c(m.hash), cell(m.agree ? 'yes' : 'no')];
+}
+
+function leverageHtml(stats) {
+  const lev = leverage(stats);
+  if (!lev) return [];
+  const ratio = (r) => (r >= 10 ? num(Math.round(r)) : r.toFixed(2));
+  const tbl = (list) => table(
+    ['Owner', 'Lines written', 'Lines owned', 'Owned per line written'],
+    list.map((r) => [cell(esc(ownerLabel(r.owner))), cell(num(r.written), r.written), cell(num(r.owned), r.owned), cell(ratio(r.ratio), r.ratio)]),
+    ['', 'num', 'num', 'num'],
+  );
+  return [section('Leverage', `
+    <p class="r-note">Lines owned today for every line written. Identical lines are owned by whoever wrote them first, so one line written can be many lines owned.</p>
+    <h4>Highest leverage</h4>${tbl(lev.highest)}
+    <h4>Lowest retention among the most prolific writers</h4>${tbl(lev.lowest)}`)];
+}
+
+function demolitionHtml(stats) {
+  const d = stats.deletions;
+  if (!d) return [];
+  const tbl = (label, list) => table(
+    ['Rank', label, 'Lines', 'Own lines removed'],
+    list.map((r, k) => [cell(k + 1, k + 1), cell(esc(ownerLabel(r.owner))), cell(num(r.lines), r.lines), cell(num(r.ownRemoved), r.ownRemoved)]),
+    ['num', '', 'num', 'num'],
+  );
+  return [section('Code demolition', `
+    <p class="r-note">${num(d.added)} lines added and ${num(d.removed)} removed in total; ${num(d.removedOfOthers)} of the removed lines (${pct(d.removedOfOthers, d.removed)}) belonged to someone other than the person removing them.</p>
+    <h4>Most lines removed that belonged to others</h4>${tbl('Remover', d.topRemovers)}
+    <h4>Most lines lost to others</h4>${tbl('Owner', d.mostRemovedOwners)}
+    <p class="r-note">${esc(DEMOLITION_NOTE)}</p>`)];
+}
+
+function outlookHtml(stats, charts) {
+  const t = stats.timeline;
+  const pctOrDash = (v) => (v === null ? '-' : pct(v, 1));
+  const change = (v) => {
+    if (v === null) return cell('-', '');
+    const cls = v > 0 ? 'r-up' : v < 0 ? 'r-down' : '';
+    const arrow = v > 0 ? '\u25B2 ' : v < 0 ? '\u25BC ' : '';
+    return cell(`<span class="${cls}">${arrow}${v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%</span>`, v);
+  };
+  return `
+    <ul class="r-outlook">${outlookStatements(t).map((s) => `<li><b>${esc(s.label)}:</b> ${esc(s.text)}</li>`).join('')}</ul>
+    <div class="r-pair">
+      ${charts.shares ? `<figure class="r-chart">${charts.shares}</figure>` : ''}
+      ${charts.blank ? `<figure class="r-chart">${charts.blank}</figure>` : ''}
+    </div>
+    ${table(
+      ['Quarter', 'Lines under management', 'QoQ', 'New owners', t.principal ? esc(t.principal.name) : 'Principal owner', 'Non-contributors', 'Inactive owners', 'Blank lines committed'],
+      t.kpis.map((k) => [
+        cell(esc(k.quarter), k.quarter),
+        cell(num(k.lines), k.lines),
+        change(k.linesChange),
+        cell(num(k.newOwners), k.newOwners),
+        cell(pctOrDash(k.principalShare), k.principalShare),
+        cell(pctOrDash(k.nonContributorShare), k.nonContributorShare),
+        cell(pctOrDash(k.inactiveShare), k.inactiveShare),
+        cell(k.blank === null ? '-' : num(k.blank), k.blank ?? ''),
+      ]),
+      ['', 'num', 'num', 'num', 'num', 'num', 'num', 'num'],
+    )}
+    <p class="r-note">${esc(outlookNote(t))}</p>`;
 }
 
 function originsTable(r) {
@@ -190,6 +269,16 @@ a { color: var(--r-accent); }
 code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
 .r-lit { background: var(--r-code); padding: 1px 6px; border-radius: 4px; white-space: pre; }
 .r-dim { color: var(--r-text-2); }
+.r-pair { display: grid; gap: 16px; }
+@media (min-width: 1100px) { .r-pair { grid-template-columns: 1fr 1fr; } }
+.r-odd { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 900px; }
+.r-odd li { line-height: 1.55; }
+.r-odd-title { font-weight: 500; }
+.r-odd-detail { color: var(--r-text-2); }
+.r-outlook { margin: 0 0 20px; padding-left: 20px; display: grid; gap: 8px; max-width: 900px; }
+.r-outlook b { font-weight: 600; }
+.r-up { color: #1a8a5a; }
+.r-down { color: #c2412d; }
 .r-meta, .r-note { color: var(--r-text-2); margin: 4px 0; font-size: 14px; }
 .r-section { margin-top: 48px; }
 .r-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }

@@ -2,6 +2,370 @@
   "toolVersion": "0.1.0",
   "excludes": [],
   "total": 24,
+  "timeline": {
+    "mode": "history",
+    "now": 8105,
+    "nowLabel": "2026 Q2",
+    "principal": {
+      "name": "Alice",
+      "email": "alice@example.com"
+    },
+    "series": {
+      "quarters": [
+        8096,
+        8097,
+        8098,
+        8099,
+        8100,
+        8101,
+        8102,
+        8103,
+        8104,
+        8105
+      ],
+      "total": [
+        5,
+        14,
+        14,
+        14,
+        14,
+        14,
+        15,
+        17,
+        20,
+        24
+      ],
+      "principalShare": [
+        0.8,
+        0.5,
+        0.5714285714285714,
+        0.5,
+        0.5714285714285714,
+        0.5714285714285714,
+        0.5333333333333333,
+        0.47058823529411764,
+        0.4,
+        0.3333333333333333
+      ],
+      "nonContributorShare": [
+        0,
+        0.2857142857142857,
+        0.2857142857142857,
+        0.2857142857142857,
+        0.2857142857142857,
+        0.2857142857142857,
+        0.3333333333333333,
+        0.35294117647058826,
+        0.3,
+        0.2916666666666667
+      ],
+      "inactiveShare": [
+        0,
+        0,
+        0,
+        0,
+        0.6428571428571429,
+        0.9285714285714286,
+        0.4666666666666667,
+        0.4117647058823529,
+        0.35,
+        0.2916666666666667
+      ],
+      "newOwners": [
+        2,
+        2,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2
+      ],
+      "blank": [
+        0,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2
+      ]
+    },
+    "kpis": [
+      {
+        "quarter": "2024 Q3",
+        "lines": 14,
+        "linesChange": 0,
+        "newOwners": 1,
+        "principalShare": 0.5714285714285714,
+        "nonContributorShare": 0.2857142857142857,
+        "inactiveShare": 0,
+        "blank": 2
+      },
+      {
+        "quarter": "2024 Q4",
+        "lines": 14,
+        "linesChange": 0,
+        "newOwners": 1,
+        "principalShare": 0.5,
+        "nonContributorShare": 0.2857142857142857,
+        "inactiveShare": 0,
+        "blank": 2
+      },
+      {
+        "quarter": "2025 Q1",
+        "lines": 14,
+        "linesChange": 0,
+        "newOwners": 0,
+        "principalShare": 0.5714285714285714,
+        "nonContributorShare": 0.2857142857142857,
+        "inactiveShare": 0.6428571428571429,
+        "blank": 2
+      },
+      {
+        "quarter": "2025 Q2",
+        "lines": 14,
+        "linesChange": 0,
+        "newOwners": 0,
+        "principalShare": 0.5714285714285714,
+        "nonContributorShare": 0.2857142857142857,
+        "inactiveShare": 0.9285714285714286,
+        "blank": 2
+      },
+      {
+        "quarter": "2025 Q3",
+        "lines": 15,
+        "linesChange": 0.0714285714285714,
+        "newOwners": 0,
+        "principalShare": 0.5333333333333333,
+        "nonContributorShare": 0.3333333333333333,
+        "inactiveShare": 0.4666666666666667,
+        "blank": 2
+      },
+      {
+        "quarter": "2025 Q4",
+        "lines": 17,
+        "linesChange": 0.1333333333333333,
+        "newOwners": 1,
+        "principalShare": 0.47058823529411764,
+        "nonContributorShare": 0.35294117647058826,
+        "inactiveShare": 0.4117647058823529,
+        "blank": 2
+      },
+      {
+        "quarter": "2026 Q1",
+        "lines": 20,
+        "linesChange": 0.17647058823529416,
+        "newOwners": 1,
+        "principalShare": 0.4,
+        "nonContributorShare": 0.3,
+        "inactiveShare": 0.35,
+        "blank": 2
+      },
+      {
+        "quarter": "2026 Q2",
+        "lines": 24,
+        "linesChange": 0.19999999999999996,
+        "newOwners": 2,
+        "principalShare": 0.3333333333333333,
+        "nonContributorShare": 0.2916666666666667,
+        "inactiveShare": 0.2916666666666667,
+        "blank": 2
+      }
+    ],
+    "projections": {
+      "knowledgeLoss": {
+        "target": 0.5,
+        "current": 0.2916666666666667,
+        "fit": {
+          "slope": 0.053451744334097266,
+          "intercept": -432.67670231729045,
+          "r2": 0.25770385370697935
+        },
+        "fitFrom": "2024 Q1",
+        "fitTo": "2026 Q2",
+        "status": "projected",
+        "quarter": "2027 Q2"
+      },
+      "principal": {
+        "target": 0.5,
+        "current": 0.3333333333333333,
+        "fit": {
+          "slope": -0.03214667685255921,
+          "intercept": 260.92930990578054,
+          "r2": 0.6145355079615551
+        },
+        "fitFrom": "2024 Q1",
+        "fitTo": "2026 Q2",
+        "status": "not-on-track"
+      },
+      "blank": {
+        "current": 2,
+        "milestone": 5,
+        "fit": {
+          "slope": 0.10909090909090909,
+          "intercept": -881.8909090909091,
+          "r2": 0.27272727272727265
+        },
+        "fitFrom": "2024 Q1",
+        "fitTo": "2026 Q2",
+        "status": "projected",
+        "quarter": "2033 Q2"
+      }
+    },
+    "headLines": 24
+  },
+  "deletions": {
+    "added": 28,
+    "removed": 4,
+    "removedOfOthers": 4,
+    "topRemovers": [
+      {
+        "owner": {
+          "name": "Carol",
+          "email": "carol@example.com"
+        },
+        "lines": 2,
+        "ownRemoved": 0
+      },
+      {
+        "owner": {
+          "name": "Dave",
+          "email": "dave@example.com"
+        },
+        "lines": 1,
+        "ownRemoved": 0
+      },
+      {
+        "owner": {
+          "name": "Erin",
+          "email": "erin@example.com"
+        },
+        "lines": 1,
+        "ownRemoved": 0
+      }
+    ],
+    "mostRemovedOwners": [
+      {
+        "owner": {
+          "name": "Bob",
+          "email": "bob@example.com"
+        },
+        "lines": 2,
+        "ownRemoved": 0
+      },
+      {
+        "owner": {
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "lines": 1,
+        "ownRemoved": 0
+      },
+      {
+        "owner": {
+          "name": "Dave",
+          "email": "dave@example.com"
+        },
+        "lines": 1,
+        "ownRemoved": 0
+      }
+    ],
+    "mostRemovedLine": {
+      "text": "    }",
+      "binary": false,
+      "path": "b.js",
+      "lines": 1,
+      "owner": {
+        "name": "Bob",
+        "email": "bob@example.com"
+      }
+    },
+    "restored": {
+      "hashes": 1,
+      "lines": 1
+    }
+  },
+  "survival": {
+    "all": {
+      "curve": [
+        1,
+        0.875,
+        0.875,
+        0.8203125,
+        0.8203125,
+        0.8203125,
+        0.8203125,
+        0.8203125,
+        0.8203125,
+        0.8203125
+      ],
+      "halfLife": 31.49556894608688,
+      "projected": true,
+      "lines": 28
+    },
+    "owners": [
+      {
+        "owner": {
+          "name": "Alice",
+          "email": "alice@example.com"
+        },
+        "curve": [
+          1,
+          1,
+          1,
+          0.8888888888888888,
+          0.8888888888888888,
+          0.8888888888888888,
+          0.8888888888888888,
+          0.8888888888888888,
+          0.8888888888888888,
+          0.8888888888888888
+        ],
+        "halfLife": 52.964542731255435,
+        "projected": true,
+        "lines": 9
+      },
+      {
+        "owner": {
+          "name": "Frank",
+          "email": "frank@example.com"
+        },
+        "curve": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "halfLife": null,
+        "projected": false,
+        "lines": 3
+      },
+      {
+        "owner": {
+          "name": "Judy",
+          "email": "judy@example.com"
+        },
+        "curve": [
+          1,
+          1
+        ],
+        "halfLife": null,
+        "projected": false,
+        "lines": 3
+      }
+    ]
+  },
   "owners": [
     {
       "identityId": 1,
@@ -9,7 +373,9 @@
         "name": "Alice",
         "email": "alice@example.com"
       },
-      "lines": 8
+      "lines": 8,
+      "commits": 2,
+      "written": 5
     },
     {
       "identityId": 9,
@@ -17,7 +383,9 @@
         "name": "Frank",
         "email": "frank@example.com"
       },
-      "lines": 3
+      "lines": 3,
+      "commits": 1,
+      "written": 5
     },
     {
       "identityId": 11,
@@ -25,7 +393,9 @@
         "name": "Judy",
         "email": "judy@example.com"
       },
-      "lines": 3
+      "lines": 3,
+      "commits": 1,
+      "written": 3
     },
     {
       "identityId": 8,
@@ -33,7 +403,9 @@
         "name": "Grace",
         "email": "grace@example.com"
       },
-      "lines": 2
+      "lines": 2,
+      "commits": 1,
+      "written": 1
     },
     {
       "identityId": 6,
@@ -41,7 +413,9 @@
         "name": "Heidi",
         "email": "heidi@example.com"
       },
-      "lines": 2
+      "lines": 2,
+      "commits": 1,
+      "written": 1
     },
     {
       "identityId": 12,
@@ -49,7 +423,9 @@
         "name": "Kate",
         "email": "kate@example.com"
       },
-      "lines": 2
+      "lines": 2,
+      "commits": 1,
+      "written": 0
     },
     {
       "identityId": 7,
@@ -57,7 +433,9 @@
         "name": "Leo",
         "email": "leo@example.com"
       },
-      "lines": 2
+      "lines": 2,
+      "commits": 1,
+      "written": 1
     },
     {
       "identityId": 2,
@@ -65,7 +443,9 @@
         "name": "Bob",
         "email": "bob@example.com"
       },
-      "lines": 1
+      "lines": 1,
+      "commits": 1,
+      "written": 4
     },
     {
       "identityId": 3,
@@ -73,7 +453,9 @@
         "name": "Carol",
         "email": "carol@example.com"
       },
-      "lines": 1
+      "lines": 1,
+      "commits": 1,
+      "written": 2
     }
   ],
   "lines": [
@@ -451,6 +833,125 @@
         {
           "repo": "alpha",
           "lines": 4
+        }
+      ]
+    }
+  ],
+  "oddities": [
+    {
+      "kind": "trivial-top-line",
+      "title": "The most-owned line has no letters or digits",
+      "detail": [
+        {
+          "code": "\"}\""
+        },
+        {
+          "text": " appears 3 times (12.5% of all lines) and belongs to Alice, who wrote it first in alpha."
+        }
+      ]
+    },
+    {
+      "kind": "trivial-lines",
+      "title": "3 of the top 10 lines are whitespace or punctuation",
+      "detail": [
+        {
+          "text": "Together they hold 25.0% of all lines: "
+        },
+        {
+          "code": "\"}\""
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "\"\""
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "\"}\\r\""
+        },
+        {
+          "text": "."
+        }
+      ]
+    },
+    {
+      "kind": "crlf-twin",
+      "title": "The same line, owned twice",
+      "detail": [
+        {
+          "code": "\"}\""
+        },
+        {
+          "text": " belongs to Alice and "
+        },
+        {
+          "code": "\"}\\r\""
+        },
+        {
+          "text": " (Windows line ending) to Judy."
+        }
+      ]
+    },
+    {
+      "kind": "crlf-twin",
+      "title": "The same line, owned twice",
+      "detail": [
+        {
+          "code": "\"function a() {\""
+        },
+        {
+          "text": " belongs to Alice and "
+        },
+        {
+          "code": "\"function a() {\\r\""
+        },
+        {
+          "text": " (Windows line ending) to Judy."
+        }
+      ]
+    },
+    {
+      "kind": "binary-duplicate",
+      "title": "A binary file is one of the most-owned lines",
+      "detail": [
+        {
+          "text": "The file first committed as "
+        },
+        {
+          "code": "logo.png"
+        },
+        {
+          "text": " exists 2 times with identical content. Each copy is one line, owned by Kate."
+        }
+      ]
+    },
+    {
+      "kind": "absentee-owner",
+      "title": "1 of 2 repositories is owned by someone who never committed to it",
+      "detail": [
+        {
+          "text": "beta (Alice, 27.3%)."
+        }
+      ]
+    },
+    {
+      "kind": "demolition",
+      "title": "Carol has removed 2 lines that belonged to others",
+      "detail": [
+        {
+          "text": "More than anyone else, against 0 of their own."
+        }
+      ]
+    },
+    {
+      "kind": "restored",
+      "title": "1 line was added again after being deleted",
+      "detail": [
+        {
+          "text": "Each went straight back to its original owner (1 distinct line)."
         }
       ]
     }

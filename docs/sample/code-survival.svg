@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img">
+<style>
+.title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 20px; font-weight: 600; }
+.subtitle, .label { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 13px; }
+.mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 13px; }
+.muted, .axis { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+.axis-title { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; }
+.value { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 11px; font-weight: 500; text-anchor: middle; }
+.slice { stroke-width: 2; stroke-linejoin: round; }
+.self { fill: none; stroke-width: 1.5; }
+.grid { fill: none; stroke-width: 1; }
+.area { fill-opacity: 0.12; stroke-width: 2; stroke-linejoin: round; }
+.point { stroke-width: 2; }
+.trend { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.projected { stroke-dasharray: 5 5; }
+.target { stroke-dasharray: 3 4; stroke-width: 1.5; }
+.hit { fill: transparent; }
+.bg { fill: #fcfcfb; }
+.title, .label, .mono, .axis { fill: #0b0b0b; }
+.subtitle, .muted, .axis-title { fill: #52514e; }
+.slice { stroke: #fcfcfb; }
+.self { stroke: #52514e; }
+.s1 { fill: #2a78d6; }
+.s2 { fill: #eb6834; }
+.s3 { fill: #1baf7a; }
+.s4 { fill: #eda100; }
+.s5 { fill: #e87ba4; }
+.ra1 { fill: #2a78d6; stroke: #2a78d6; } .rp1 { fill: #2a78d6; stroke: #fcfcfb; }
+.ra2 { fill: #eb6834; stroke: #eb6834; } .rp2 { fill: #eb6834; stroke: #fcfcfb; }
+.ra3 { fill: #1baf7a; stroke: #1baf7a; } .rp3 { fill: #1baf7a; stroke: #fcfcfb; }
+.ra4 { fill: #eda100; stroke: #eda100; } .rp4 { fill: #eda100; stroke: #fcfcfb; }
+.ra5 { fill: #e87ba4; stroke: #e87ba4; } .rp5 { fill: #e87ba4; stroke: #fcfcfb; }
+.grid { stroke: #dcdbd5; }
+.ln1 { stroke: #2a78d6; }
+.ln2 { stroke: #eb6834; }
+.ln3 { stroke: #1baf7a; }
+.ln4 { stroke: #eda100; }
+.ln5 { stroke: #e87ba4; }
+.target, .key { stroke: #52514e; }
+.other { fill: #c9c8c1; }
+.b0 { fill: #f0efec; }
+.b1 { fill: #cde2fb; }
+.b2 { fill: #b7d3f6; }
+.b3 { fill: #9ec5f4; }
+.b4 { fill: #6da7ec; }
+.b5 { fill: #3987e5; }
+.b6 { fill: #256abf; }
+.b7 { fill: #184f95; }
+.b8 { fill: #0d366b; }
+.t1 { fill: #0b0b0b; }
+.t2 { fill: #0b0b0b; }
+.t3 { fill: #0b0b0b; }
+.t4 { fill: #0b0b0b; }
+.t5 { fill: #ffffff; }
+.t6 { fill: #ffffff; }
+.t7 { fill: #ffffff; }
+.t8 { fill: #ffffff; }
+@media (prefers-color-scheme: dark) {
+.bg { fill: #1a1a19; }
+.title, .label, .mono, .axis { fill: #ffffff; }
+.subtitle, .muted, .axis-title { fill: #c3c2b7; }
+.slice { stroke: #1a1a19; }
+.self { stroke: #c3c2b7; }
+.s1 { fill: #3987e5; }
+.s2 { fill: #d95926; }
+.s3 { fill: #199e70; }
+.s4 { fill: #c98500; }
+.s5 { fill: #d55181; }
+.ra1 { fill: #3987e5; stroke: #3987e5; } .rp1 { fill: #3987e5; stroke: #1a1a19; }
+.ra2 { fill: #d95926; stroke: #d95926; } .rp2 { fill: #d95926; stroke: #1a1a19; }
+.ra3 { fill: #199e70; stroke: #199e70; } .rp3 { fill: #199e70; stroke: #1a1a19; }
+.ra4 { fill: #c98500; stroke: #c98500; } .rp4 { fill: #c98500; stroke: #1a1a19; }
+.ra5 { fill: #d55181; stroke: #d55181; } .rp5 { fill: #d55181; stroke: #1a1a19; }
+.grid { stroke: #3a3a37; }
+.ln1 { stroke: #3987e5; }
+.ln2 { stroke: #d95926; }
+.ln3 { stroke: #199e70; }
+.ln4 { stroke: #c98500; }
+.ln5 { stroke: #d55181; }
+.target, .key { stroke: #c3c2b7; }
+.other { fill: #4a4945; }
+.b0 { fill: #262625; }
+.b1 { fill: #0d366b; }
+.b2 { fill: #184f95; }
+.b3 { fill: #256abf; }
+.b4 { fill: #3987e5; }
+.b5 { fill: #6da7ec; }
+.b6 { fill: #9ec5f4; }
+.b7 { fill: #b7d3f6; }
+.b8 { fill: #cde2fb; }
+.t1 { fill: #ffffff; }
+.t2 { fill: #ffffff; }
+.t3 { fill: #ffffff; }
+.t4 { fill: #ffffff; }
+.t5 { fill: #0b0b0b; }
+.t6 { fill: #0b0b0b; }
+.t7 { fill: #0b0b0b; }
+.t8 { fill: #0b0b0b; }
+}
+</style>
+<rect class="bg" width="800" height="420"/>
+<text class="title" x="24" y="40">Code survival</text>
+<text class="subtitle" x="24" y="62">Share of lines still present, by age, for lines owned by each owner (Kaplan-Meier)</text>
+<line class="grid" x1="72" x2="630" y1="364.0" y2="364.0"/>
+<text class="muted" x="64" y="368.0" text-anchor="end">0%</text>
+<line class="grid" x1="72" x2="630" y1="296.0" y2="296.0"/>
+<text class="muted" x="64" y="300.0" text-anchor="end">25%</text>
+<line class="grid" x1="72" x2="630" y1="228.0" y2="228.0"/>
+<text class="muted" x="64" y="232.0" text-anchor="end">50%</text>
+<line class="grid" x1="72" x2="630" y1="160.0" y2="160.0"/>
+<text class="muted" x="64" y="164.0" text-anchor="end">75%</text>
+<line class="grid" x1="72" x2="630" y1="92.0" y2="92.0"/>
+<text class="muted" x="64" y="96.0" text-anchor="end">100%</text>
+<text class="muted" x="72.0" y="384" text-anchor="middle">0y</text>
+<text class="muted" x="320.0" y="384" text-anchor="middle">1y</text>
+<text class="muted" x="568.0" y="384" text-anchor="middle">2y</text>
+<line class="target" x1="72" x2="630" y1="228.0" y2="228.0"/>
+<text class="muted" x="638" y="232.0">half-life</text>
+<path class="trend ln1" d="M 72.0 92.0 L 134.0 126.0 L 196.0 126.0 L 258.0 140.9 L 320.0 140.9 L 382.0 140.9 L 444.0 140.9 L 506.0 140.9 L 568.0 140.9 L 630.0 140.9"/>
+<circle class="hit" cx="72.0" cy="92.0" r="6"><title>All code, 0 quarters: 100%</title></circle>
+<circle class="hit" cx="134.0" cy="126.0" r="6"><title>All code, 1 quarters: 88%</title></circle>
+<circle class="hit" cx="196.0" cy="126.0" r="6"><title>All code, 2 quarters: 88%</title></circle>
+<circle class="hit" cx="258.0" cy="140.9" r="6"><title>All code, 3 quarters: 82%</title></circle>
+<circle class="hit" cx="320.0" cy="140.9" r="6"><title>All code, 4 quarters: 82%</title></circle>
+<circle class="hit" cx="382.0" cy="140.9" r="6"><title>All code, 5 quarters: 82%</title></circle>
+<circle class="hit" cx="444.0" cy="140.9" r="6"><title>All code, 6 quarters: 82%</title></circle>
+<circle class="hit" cx="506.0" cy="140.9" r="6"><title>All code, 7 quarters: 82%</title></circle>
+<circle class="hit" cx="568.0" cy="140.9" r="6"><title>All code, 8 quarters: 82%</title></circle>
+<circle class="hit" cx="630.0" cy="140.9" r="6"><title>All code, 9 quarters: 82%</title></circle>
+<circle class="point rp1" cx="630.0" cy="140.9" r="4.5"/>
+<path class="trend ln2" d="M 72.0 92.0 L 134.0 92.0 L 196.0 92.0 L 258.0 122.2 L 320.0 122.2 L 382.0 122.2 L 444.0 122.2 L 506.0 122.2 L 568.0 122.2 L 630.0 122.2"/>
+<circle class="hit" cx="72.0" cy="92.0" r="6"><title>Alice, 0 quarters: 100%</title></circle>
+<circle class="hit" cx="134.0" cy="92.0" r="6"><title>Alice, 1 quarters: 100%</title></circle>
+<circle class="hit" cx="196.0" cy="92.0" r="6"><title>Alice, 2 quarters: 100%</title></circle>
+<circle class="hit" cx="258.0" cy="122.2" r="6"><title>Alice, 3 quarters: 89%</title></circle>
+<circle class="hit" cx="320.0" cy="122.2" r="6"><title>Alice, 4 quarters: 89%</title></circle>
+<circle class="hit" cx="382.0" cy="122.2" r="6"><title>Alice, 5 quarters: 89%</title></circle>
+<circle class="hit" cx="444.0" cy="122.2" r="6"><title>Alice, 6 quarters: 89%</title></circle>
+<circle class="hit" cx="506.0" cy="122.2" r="6"><title>Alice, 7 quarters: 89%</title></circle>
+<circle class="hit" cx="568.0" cy="122.2" r="6"><title>Alice, 8 quarters: 89%</title></circle>
+<circle class="hit" cx="630.0" cy="122.2" r="6"><title>Alice, 9 quarters: 89%</title></circle>
+<circle class="point rp2" cx="630.0" cy="122.2" r="4.5"/>
+<path class="trend ln3" d="M 72.0 92.0 L 134.0 92.0 L 196.0 92.0 L 258.0 92.0 L 320.0 92.0 L 382.0 92.0 L 444.0 92.0 L 506.0 92.0 L 568.0 92.0"/>
+<circle class="hit" cx="72.0" cy="92.0" r="6"><title>Frank, 0 quarters: 100%</title></circle>
+<circle class="hit" cx="134.0" cy="92.0" r="6"><title>Frank, 1 quarters: 100%</title></circle>
+<circle class="hit" cx="196.0" cy="92.0" r="6"><title>Frank, 2 quarters: 100%</title></circle>
+<circle class="hit" cx="258.0" cy="92.0" r="6"><title>Frank, 3 quarters: 100%</title></circle>
+<circle class="hit" cx="320.0" cy="92.0" r="6"><title>Frank, 4 quarters: 100%</title></circle>
+<circle class="hit" cx="382.0" cy="92.0" r="6"><title>Frank, 5 quarters: 100%</title></circle>
+<circle class="hit" cx="444.0" cy="92.0" r="6"><title>Frank, 6 quarters: 100%</title></circle>
+<circle class="hit" cx="506.0" cy="92.0" r="6"><title>Frank, 7 quarters: 100%</title></circle>
+<circle class="hit" cx="568.0" cy="92.0" r="6"><title>Frank, 8 quarters: 100%</title></circle>
+<circle class="point rp3" cx="568.0" cy="92.0" r="4.5"/>
+<path class="trend ln4" d="M 72.0 92.0 L 134.0 92.0"/>
+<circle class="hit" cx="72.0" cy="92.0" r="6"><title>Judy, 0 quarters: 100%</title></circle>
+<circle class="hit" cx="134.0" cy="92.0" r="6"><title>Judy, 1 quarters: 100%</title></circle>
+<circle class="point rp4" cx="134.0" cy="92.0" r="4.5"/>
+<line class="trend ln1" x1="72" x2="90" y1="404" y2="404"/>
+<text class="label" x="96" y="408">All code</text>
+<line class="trend ln2" x1="184" x2="202" y1="404" y2="404"/>
+<text class="label" x="208" y="408">Alice</text>
+<line class="trend ln3" x1="273.5" x2="291.5" y1="404" y2="404"/>
+<text class="label" x="297.5" y="408">Frank</text>
+<line class="trend ln4" x1="363" x2="381" y1="404" y2="404"/>
+<text class="label" x="387" y="408">Judy</text>
+</svg>

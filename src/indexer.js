@@ -4,6 +4,7 @@ import { createDb, openDbForWrite } from './db.js';
 import { toPathspecs } from './exclude.js';
 import { COMMIT_MARK, WALK_OPTIONS, binaryPaths, catBlobs, git, headFiles, isShallow, log } from './git.js';
 import { hashFile, hashLine } from './hash.js';
+import { quarterOf } from './timeline.js';
 
 const TOOL_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
@@ -30,10 +31,19 @@ WHERE excluded.author_time < line_hashes.author_time
          AND ? < (SELECT name FROM repos WHERE id = line_hashes.repo_id))))
 `;
 
+// Lines added and removed per (hash, repo, quarter, author), summed across
+// commits. Owners are resolved at report time through line_hashes.
+const UPSERT_CHURN = `
+INSERT INTO churn (hash, repo_id, q, identity_id, added, removed) VALUES (?, ?, ?, ?, ?, ?)
+ON CONFLICT (hash, repo_id, q, identity_id) DO UPDATE SET
+  added = added + excluded.added,
+  removed = removed + excluded.removed
+`;
+
 // Submodule entries show up in diffs as "+Subproject commit <sha>" lines.
 const SUBMODULE_HEADER = /^(?:new file mode|index [0-9a-f]+\.\.[0-9a-f]+) 160000$/;
-// With --full-index, the post-image blob id of a file diff.
-const INDEX_HEADER = /^index [0-9a-f]+\.\.([0-9a-f]+)/;
+// With --full-index, the pre- and post-image blob ids of a file diff.
+const INDEX_HEADER = /^index ([0-9a-f]+)\.\.([0-9a-f]+)/;
 const NULL_OID = /^0+$/;
 const PROGRESS_INTERVAL_MS = 5000;
 
@@ -71,8 +81,11 @@ export async function add({ dbPath, repoPaths, excludes = [], log: report = () =
   if (!existsSync(dbPath)) throw new Error(`${dbPath} does not exist; use index to create it`);
   const db = openDbForWrite(dbPath);
   try {
-    const hasNames = db.prepare("SELECT 1 FROM pragma_table_info('commits') WHERE name = 'author_name'").get();
-    if (!hasNames) throw new Error(`${dbPath} was built by an older ownh version; rebuild it with index`);
+    const columns = new Set(db.prepare("SELECT name FROM pragma_table_info('commits')").all().map((c) => c.name));
+    const hasChurn = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'churn'").get();
+    if (!columns.has('author_name') || !columns.has('added_blank') || !columns.has('is_merge') || !hasChurn) {
+      throw new Error(`${dbPath} was built by an older ownh version; rebuild it with index`);
+    }
     const stored = db.prepare('SELECT excludes FROM runs ORDER BY id LIMIT 1').get();
     if (!stored) throw new Error(`${dbPath} has no completed index run`);
     const storedExcludes = JSON.parse(stored.excludes);
@@ -175,28 +188,49 @@ function refreshDisplayNames(db) {
 }
 
 async function indexHistory(db, repo, pathspecs, identityId, report) {
-  const insertCommit = db.prepare('INSERT INTO commits (repo_id, sha, topo, author_time, identity_id, author_name) VALUES (?, ?, ?, ?, ?, ?)');
+  const insertCommit = db.prepare('INSERT INTO commits (repo_id, sha, topo, author_time, identity_id, author_name, is_merge) VALUES (?, ?, ?, ?, ?, ?, ?)');
   const upsertHash = db.prepare(UPSERT_HASH);
+  const setAdded = db.prepare('UPDATE commits SET added_lines = ?, added_blank = ? WHERE id = ?');
+  const upsertChurn = db.prepare(UPSERT_CHURN);
   let commit = null;
   let topo = 0;
   let added = 0;
   let seen = new Set();
+  // Per-commit churn: hash -> [added, removed]. Flushed when the next commit starts.
+  let churn = new Map();
   let path = null;
+  let oldOid = null;
   let newOid = null;
   let inHunk = false;
   let skipFile = false;
   // Binary diffs carry no content, only blob ids; their files are read and
-  // hashed after the walk.
+  // hashed after the walk, for ownership (added blobs) and churn (both sides).
   const binaries = [];
+  const removedBinaries = [];
   const total = Number(git(repo.path, ['rev-list', '--count', ...WALK_OPTIONS, repo.head, '--', ...pathspecs]).trim());
   const progress = throttled(() => report(`${repo.name}: history ${topo}/${total} commits, ${added} lines hashed`));
 
+  const count = (hash, column) => {
+    let entry = churn.get(hash);
+    if (!entry) churn.set(hash, (entry = [0, 0]));
+    entry[column]++;
+  };
+  const flushCommit = () => {
+    if (!commit) return;
+    if (commit.addedLines) setAdded.run(commit.addedLines, commit.addedBlank, commit.id);
+    for (const [hash, [a, r]] of churn) upsertChurn.run(hash, repo.id, commit.q, commit.identity, a, r);
+    churn = new Map();
+  };
+
   for await (const line of log(repo.path, repo.head, pathspecs)) {
     if (line.startsWith(COMMIT_MARK)) {
-      const [sha, time, name, email] = line.slice(COMMIT_MARK.length).split('\0');
+      flushCommit();
+      const [sha, time, name, email, parents] = line.slice(COMMIT_MARK.length).split('\0');
       const authorTime = Number(time);
-      const id = Number(insertCommit.run(repo.id, sha, topo, authorTime, identityId(name, email), name).lastInsertRowid);
-      commit = { id, topo, authorTime };
+      const isMerge = parents.trim().split(/\s+/).length > 1;
+      const identity = identityId(name, email);
+      const id = Number(insertCommit.run(repo.id, sha, topo, authorTime, identity, name, isMerge ? 1 : 0).lastInsertRowid);
+      commit = { id, topo, authorTime, identity, isMerge, q: quarterOf(authorTime), addedLines: 0, addedBlank: 0 };
       topo++;
       progress();
       seen = new Set();
@@ -205,6 +239,7 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
     }
     if (line.startsWith('diff --git ')) {
       path = null;
+      oldOid = null;
       newOid = null;
       inHunk = false;
       skipFile = false;
@@ -216,29 +251,48 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
       else if (line.startsWith('@@')) inHunk = true;
       else if (line.startsWith('Binary files ')) {
         if (!skipFile && newOid && !NULL_OID.test(newOid)) binaries.push({ oid: newOid, commit, path: binaryPath(line) });
+        if (!skipFile && !commit.isMerge && oldOid && !NULL_OID.test(oldOid)) removedBinaries.push({ oid: oldOid, commit });
       } else {
         const m = INDEX_HEADER.exec(line);
-        if (m) newOid = m[1];
+        if (m) {
+          oldOid = m[1];
+          newOid = m[2];
+        }
       }
       continue;
     }
     // With --unified=0 a hunk holds only "+", "-", "@@" and "\ No newline" lines.
-    if (skipFile || line.charCodeAt(0) !== 43) continue;
+    if (skipFile) continue;
+    const c0 = line.charCodeAt(0);
+    if (c0 === 45) {
+      // Removals inside a merge are relative to git's re-run merge, not to a
+      // parent, so they are not real removals.
+      if (!commit.isMerge) count(hashLine(line.slice(1)), 1);
+      continue;
+    }
+    if (c0 !== 43) continue;
     const text = line.slice(1);
+    commit.addedLines++;
+    if (text === '') commit.addedBlank++;
     const hash = hashLine(text);
+    count(hash, 0);
     if (seen.has(hash)) continue;
     seen.add(hash);
     upsertHash.run(hash, 0, text, commit.authorTime, repo.id, commit.topo, commit.id, path, repo.name);
     added++;
   }
+  flushCommit();
 
   const fileHashes = new Map();
-  const oids = [...new Set(binaries.map((b) => b.oid))];
+  const oids = [...new Set([...binaries, ...removedBinaries].map((b) => b.oid))];
   let k = 0;
   for await (const content of catBlobs(repo.path, oids)) fileHashes.set(oids[k++], hashFile(content));
   for (const { oid, commit: c, path: p } of binaries) {
-    upsertHash.run(fileHashes.get(oid), 1, null, c.authorTime, repo.id, c.topo, c.id, p, repo.name);
+    const hash = fileHashes.get(oid);
+    upsertHash.run(hash, 1, null, c.authorTime, repo.id, c.topo, c.id, p, repo.name);
+    upsertChurn.run(hash, repo.id, c.q, c.identity, 1, 0);
   }
+  for (const { oid, commit: c } of removedBinaries) upsertChurn.run(fileHashes.get(oid), repo.id, c.q, c.identity, 0, 1);
   report(`${repo.name}: ${topo} commits, ${added} added lines and ${binaries.length} binary files hashed`);
 }
 

@@ -1,4 +1,6 @@
 import { samplePaths } from './sample.js';
+import { QUARTER_SQL, buildTimeline } from './timeline.js';
+import { deletions, hasChurn, netByQuarter, survival } from './churn.js';
 
 // Every number shown by `summary` and `report` comes from collectStats, so the
 // text summary and the report files can't disagree.
@@ -22,9 +24,14 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   const identities = new Map(
     db.prepare('SELECT id, name, email FROM identities').all().map((i) => [i.id, { name: i.name, email: i.email }]),
   );
+  // Merges are walked but are not commits for counting; databases built before
+  // merges were walked have no is_merge column and only non-merge commits.
+  const commitColumns = new Set(db.prepare("SELECT name FROM pragma_table_info('commits')").all().map((c) => c.name));
+  const NON_MERGE = commitColumns.has('is_merge') ? 'WHERE is_merge = 0' : '';
+
   // (repo, identity) pairs with at least one commit: who has ever worked in a repo.
   const contributed = new Set(
-    db.prepare('SELECT DISTINCT repo_id, identity_id FROM commits').all().map((r) => `${r.repo_id}:${r.identity_id}`),
+    db.prepare(`SELECT DISTINCT repo_id, identity_id FROM commits ${NON_MERGE}`).all().map((r) => `${r.repo_id}:${r.identity_id}`),
   );
 
   // One pass over all head lines, grouped by repo, owner, and origin repo (the
@@ -36,10 +43,10 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   const overall = new Map();
   let total = 0;
   const ownersOf = db.prepare(`
-    SELECT c.identity_id AS identityId, l.repo_id AS originId, COUNT(*) AS n
+    SELECT c.identity_id AS identityId, l.repo_id AS originId, ${QUARTER_SQL('l.author_time')} AS q, COUNT(*) AS n
     ${OWNER_JOIN}
     WHERE h.repo_id = ? AND h.path >= ? AND (? IS NULL OR h.path < ?)
-    GROUP BY c.identity_id, l.repo_id
+    GROUP BY c.identity_id, l.repo_id, q
   `);
   const rows = [];
   const repoPaths = new Map();
@@ -52,7 +59,10 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
       log(`owners: ${k + 1}/${repos.length} repos (${r.name}${part}), ${elapsed()}`);
     });
   });
-  for (const { repoId, identityId, originId, n } of rows) {
+  // Surviving lines by (repo, owner, quarter first written): input to the timeline.
+  const cohorts = [];
+  for (const { repoId, identityId, originId, q, n } of rows) {
+    if (identityId !== null) cohorts.push({ repoId, identityId, q, n });
     const repo = byRepo.get(repoId);
     repo.lines += n;
     if (originId !== null && originId !== repoId) repo.foreign += n;
@@ -99,13 +109,60 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
 
   log(`top lines: done, ${elapsed()}`);
 
-  const methods = collectMethods(db, repos, repoPaths, byRepo, overall, identities, log);
+  const methods = collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_MERGE, log);
+
+  // Non-merge commits per identity across all repos, shown next to line counts.
+  const commitsBy = new Map(db.prepare(`SELECT identity_id AS id, COUNT(*) AS n FROM commits ${NON_MERGE} GROUP BY identity_id`).all().map((r) => [r.id, r.n]));
+
+  const ranked = rankOwners(overall, identities);
+  const churn = hasChurn(db);
+  // With churn data the timeline is a true history (lines added minus removed);
+  // without it, the surviving lines grouped by when they were first written.
+  if (churn) log('history: net lines by quarter');
+  const history = churn ? netByQuarter(db) : null;
+  const timeline = buildTimeline({
+    cohorts: history ?? cohorts,
+    mode: history ? 'history' : 'cohort',
+    commitQuarters: db.prepare(`SELECT identity_id AS identityId, ${QUARTER_SQL('author_time')} AS q FROM commits ${NON_MERGE} GROUP BY identity_id, q`).all(),
+    blankByQuarter: commitColumns.has('added_blank')
+      ? db.prepare(`SELECT ${QUARTER_SQL('author_time')} AS q, SUM(added_blank) AS n FROM commits GROUP BY q`).all()
+      : null,
+    contributed,
+    principal: ranked.find((o) => o.owner) ?? null,
+  });
+  if (timeline) timeline.headLines = total;
+
+  // Lines written (added, including hand-written merge lines) per author.
+  const writtenBy = commitColumns.has('added_lines')
+    ? new Map(db.prepare('SELECT identity_id AS id, SUM(added_lines) AS n FROM commits GROUP BY identity_id').all().map((r) => [r.id, r.n]))
+    : null;
+
+  let removal = null;
+  let survivalCurves = null;
+  if (churn) {
+    log('deletions');
+    removal = deletions(db, identities);
+    log('survival');
+    const top = ranked.filter((o) => o.owner).slice(0, 3);
+    const curves = survival(db, top.map((o) => o.identityId), timeline ? timeline.now : 0);
+    survivalCurves = {
+      all: curves.get('all'),
+      owners: top.map((o) => ({ owner: o.owner, ...curves.get(o.identityId) })),
+    };
+  }
 
   return {
     toolVersion: run.tool_version,
     excludes: JSON.parse(run.excludes),
     total,
-    owners: rankOwners(overall, identities),
+    timeline,
+    deletions: removal,
+    survival: survivalCurves,
+    owners: ranked.map((o) => ({
+      ...o,
+      commits: o.identityId === null ? 0 : (commitsBy.get(o.identityId) ?? 0),
+      written: o.identityId === null || !writtenBy ? null : (writtenBy.get(o.identityId) ?? 0),
+    })),
     lines,
     methods: methods.overall,
     repos: [...byRepo].map(([id, r]) => ({
@@ -134,11 +191,11 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
 // repo gives an estimate once every file in its sample is done (see
 // blameEstimate). The overall blame answer needs every repo and is an estimate
 // when any repo was sampled.
-function collectMethods(db, repos, repoPaths, byRepo, overall, identities, log) {
+function collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_MERGE, log) {
   const commits = new Map(repos.map((r) => [r.id, new Map()]));
   const allCommits = new Map();
   for (const { repoId, identityId, n } of db.prepare(
-    'SELECT repo_id AS repoId, identity_id AS identityId, COUNT(*) AS n FROM commits GROUP BY repo_id, identity_id',
+    `SELECT repo_id AS repoId, identity_id AS identityId, COUNT(*) AS n FROM commits ${NON_MERGE} GROUP BY repo_id, identity_id`,
   ).all()) {
     commits.get(repoId).set(identityId, n);
     allCommits.set(identityId, (allCommits.get(identityId) ?? 0) + n);

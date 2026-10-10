@@ -92,19 +92,24 @@ async function* gitLines(repo, args) {
 //                      did not keep, even when they touch no excluded file
 //   --diff-algorithm   diff.algorithm in user config changes which lines a diff
 //                      reports as added
-export const WALK_OPTIONS = ['--no-merges', '--full-history'];
+export const WALK_OPTIONS = ['--full-history'];
 
-// Full history of `rev`, oldest first, one patch per non-merge commit. Commit
-// headers start with COMMIT_MARK followed by NUL-separated sha, author time
-// (unix seconds), mailmapped author name and email.
+// Full history of `rev`, oldest first, one patch per commit. Commit headers
+// start with COMMIT_MARK followed by NUL-separated sha, author time (unix
+// seconds), mailmapped author name and email, and parent shas.
+//
+// Merges are diffed with --diff-merges=remerge: git redoes the automatic merge
+// and diffs it against the recorded result, so a merge's added lines are exactly
+// what its author wrote by hand (conflict resolutions, changes no parent had).
+// Taking one side of a conflict unchanged adds nothing.
 export function log(repo, rev, pathspecs = []) {
   return gitLines(repo, [
-    'log', '--reverse', '--topo-order', ...WALK_OPTIONS, '--root',
+    'log', '--reverse', '--topo-order', ...WALK_OPTIONS, '--root', '--diff-merges=remerge',
     '-p', '-M', '--full-index', '--unified=0', '--diff-algorithm=myers',
     '--no-color', '--no-ext-diff', '--no-textconv',
     '--no-relative', '--no-notes', '--use-mailmap',
     '--src-prefix=a/', '--dst-prefix=b/',
-    `--format=${COMMIT_MARK}%H%x00%at%x00%aN%x00%aE`,
+    `--format=${COMMIT_MARK}%H%x00%at%x00%aN%x00%aE%x00%P`,
     rev, '--', ...pathspecs,
   ]);
 }

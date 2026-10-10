@@ -11,6 +11,8 @@ import { add, index } from '../src/indexer.js';
 import { report } from '../src/report.js';
 import { samplePaths } from '../src/sample.js';
 import { collectStats } from '../src/stats.js';
+import { findOddities } from '../src/oddities.js';
+import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
 import { catBlobs, log } from '../src/git.js';
 import { buildFixtures, commit, init } from './fixtures.js';
@@ -165,8 +167,8 @@ test('report files agree with the summary', async () => {
   await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
   report({ dbPath: db, outDir: out, top: 5 });
   assert.deepEqual(readdirSync(out).sort(), [
-    'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
-    'owners.csv', 'ownership-by-line-hash.svg', 'report.html', 'report.json',
+    'blank-line-outlook.svg', 'code-survival.svg', 'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
+    'owner-profile.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
   ]);
   const json = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
   assert.equal(json.total, 24);
@@ -179,7 +181,7 @@ test('report files agree with the summary', async () => {
   const leaderboard = readFileSync(join(out, 'leaderboard.md'), 'utf8');
   assert.ok(leaderboard.includes('| beta       |    11 |                  36.4% |'));
   // Renderers like rsvg ignore CSS variables; charts must use plain colors.
-  for (const svg of ['cross-ownership.svg', 'ownership-by-line-hash.svg']) {
+  for (const svg of ['cross-ownership.svg', 'ownership-by-line-hash.svg', 'owner-profile.svg', 'repo-profile.svg', 'ownership-outlook.svg', 'blank-line-outlook.svg', 'code-survival.svg']) {
     assert.ok(!readFileSync(join(out, svg), 'utf8').includes('var('));
   }
 });
@@ -319,4 +321,91 @@ test('catBlobs returns large blobs intact', async () => {
   assert.ok(got[0].equals(big));
   assert.equal(got[1].toString(), 'small\n');
   assert.ok(got[2].equals(big));
+});
+
+test('oddities are derived from the stats', async () => {
+  const db = join(dir, 'odd.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  await blame({ dbPath: db });
+  const odd = findOddities(withDb(db, (conn) => collectStats(conn, { topLines: 10 })));
+  const kinds = odd.map((o) => o.kind);
+  assert.deepEqual(kinds, ['trivial-top-line', 'trivial-lines', 'crlf-twin', 'crlf-twin', 'binary-duplicate', 'absentee-owner', 'demolition', 'restored']);
+  // carol's reindent removed two of bob's lines; erin's revert brought alice's line back
+  assert.match(odd.find((o) => o.kind === 'demolition').title, /^Carol has removed 2 lines that belonged to others$/);
+  assert.match(odd.find((o) => o.kind === 'restored').title, /^1 line was added again after being deleted$/);
+  // beta's top line-hash owner is Alice, who never committed to beta
+  assert.equal(odd.find((o) => o.kind === 'absentee-owner').title, '1 of 2 repositories is owned by someone who never committed to it');
+  const text = (o) => o.detail.map((p) => p.code ?? p.text).join('');
+  assert.match(text(odd.find((o) => o.kind === 'crlf-twin')), /"}" belongs to Alice and "}\\r" .* to Judy/);
+});
+
+test('timeline math: fit, milestones, projections', () => {
+  const fit = fitLine([0, 1, 2, 3], [1, 3, 5, 7]);
+  assert.equal(fit.slope, 2);
+  assert.equal(fit.intercept, 1);
+  assert.equal(fit.r2, 1);
+  assert.deepEqual([0, 1, 999, 1000, 4999].map(nextRound), [1, 2, 1000, 2000, 5000]);
+  assert.equal(quarterLabel(2026 * 4 + 2), '2026 Q3');
+
+  // Twelve quarters; the principal writes 1 of every 4 new lines at first and
+  // more each quarter, so the share climbs steadily toward a majority.
+  const q0 = 2024 * 4;
+  const cohorts = [];
+  const commitQuarters = [];
+  for (let i = 0; i < 12; i++) {
+    cohorts.push({ repoId: 1, identityId: 1, q: q0 + i, n: 10 + 3 * i });
+    cohorts.push({ repoId: 1, identityId: 2, q: q0 + i, n: 30 });
+    commitQuarters.push({ identityId: 1, q: q0 + i }, { identityId: 2, q: q0 + i });
+  }
+  const t = buildTimeline({
+    cohorts,
+    commitQuarters,
+    blankByQuarter: commitQuarters.filter((c) => c.identityId === 1).map(({ q }) => ({ q, n: 100 })),
+    contributed: new Set(['1:1', '1:2']),
+    principal: { identityId: 1, owner: { name: 'P', email: 'p@example.com' } },
+  });
+  assert.equal(t.nowLabel, '2026 Q4');
+  assert.equal(t.projections.principal.status, 'projected');
+  assert.ok(t.projections.principal.fit.slope > 0);
+  assert.equal(t.projections.knowledgeLoss.current, 0); // everyone committed this quarter
+  assert.equal(t.projections.blank.current, 1200);
+  assert.equal(t.projections.blank.milestone, 2000);
+  assert.equal(t.projections.blank.quarter, '2028 Q4'); // 100 per quarter: 2000th in quarter 20
+  assert.equal(t.kpis.length, 8);
+  assert.equal(t.kpis.at(-1).lines, cohorts.reduce((a, c) => a + c.n, 0));
+});
+
+test('merge authors own the lines they wrote while merging', async () => {
+  const repo = init(dir, 'merging');
+  const env = (name, time) => ({
+    ...process.env,
+    GIT_AUTHOR_NAME: name, GIT_AUTHOR_EMAIL: `${name}@example.com`, GIT_AUTHOR_DATE: `${1_700_000_000 + time} +0000`,
+    GIT_COMMITTER_NAME: name, GIT_COMMITTER_EMAIL: `${name}@example.com`, GIT_COMMITTER_DATE: `${1_700_000_000 + time} +0000`,
+  });
+  const git = (args, name = 'base', time = 0) =>
+    execFileSync('git', ['-C', repo, '-c', 'commit.gpgsign=false', '-c', 'merge.ff=false', ...args], { stdio: 'ignore', env: env(name, time) });
+  commit(repo, ['base', 'base@example.com'], 0, { 'f.txt': 'a\nb\nc\n', 'g.txt': 'x\n', 'h.txt': 'k\n' });
+  git(['checkout', '-q', '-b', 'feat']);
+  commit(repo, ['fiona', 'fiona@example.com'], 100, { 'f.txt': 'a\nFEAT\nc\n', 'g.txt': 'y\n' });
+  git(['checkout', '-q', 'main']);
+  commit(repo, ['mark', 'mark@example.com'], 200, { 'f.txt': 'a\nMAIN\nc\n', 'g.txt': 'z\n' });
+  try { git(['merge', '-q', 'feat'], 'merger', 300); } catch { /* conflicts are expected */ }
+  writeFileSync(join(repo, 'f.txt'), 'a\nRESOLVED BY HAND\nc\n'); // a new line written in the merge
+  writeFileSync(join(repo, 'g.txt'), 'y\n'); // fiona's side taken unchanged
+  writeFileSync(join(repo, 'h.txt'), 'k\nEVIL\n'); // a change no parent had
+  git(['add', '-A'], 'merger', 300);
+  git(['commit', '-q', '-m', 'merge'], 'merger', 300);
+
+  const db = join(dir, 'merging.db');
+  await index({ dbPath: db, repoPaths: [repo] });
+  const o = owners(db);
+  assert.equal(o['merging/f.txt:2'], 'merger@example.com');
+  assert.equal(o['merging/h.txt:2'], 'merger@example.com');
+  assert.equal(o['merging/g.txt:1'], 'fiona@example.com');
+  assert.ok(!Object.values(o).includes(null)); // nothing unattributed
+
+  // The merge is not a commit for counting purposes.
+  const stats = withDb(db, (conn) => collectStats(conn));
+  assert.equal(stats.owners.find((x) => x.owner?.email === 'merger@example.com').commits, 0);
+  assert.equal(stats.repos[0].methods.commits.total, 3);
 });
