@@ -2,7 +2,7 @@
 
 Repositories: 6. Lines under management: 17,495.
 OWNH 0.1.0.
-Database: `sample.db`. Generated 2026-10-10 18:59 UTC.
+Database: `sample.db`. Generated 2026-10-10 19:44 UTC.
 
 ## AI insights (AI-generated)
 
@@ -104,7 +104,7 @@ What CODEOWNERS declares, next to the top owner of the same lines by line hash a
 
 ### api-gateway
 
-CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.
+CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules decide lines; 2 rules match no file, and 1 rule is overridden by later rules for every file it matches.
 
 | Pattern         | Declared owners                   | Lines | By line hash           | By blame               |
 |-----------------|-----------------------------------|------:|------------------------|------------------------|
@@ -114,7 +114,7 @@ CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no 
 
 ### billing-service
 
-CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.
+CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules decide lines; 2 rules match no file, and 1 rule is overridden by later rules for every file it matches.
 
 | Pattern         | Declared owners                   | Lines | By line hash           | By blame               |
 |-----------------|-----------------------------------|------:|------------------------|------------------------|
@@ -124,7 +124,7 @@ CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no 
 
 ### data-pipeline
 
-CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 2 rules match lines; 3 rules match nothing.
+CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 2 rules decide lines; 2 rules match no file, and 1 rule is overridden by later rules for every file it matches.
 
 | Pattern         | Declared owners                   | Lines | By line hash           | By blame               |
 |-----------------|-----------------------------------|------:|------------------------|------------------------|
@@ -133,7 +133,7 @@ CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no 
 
 ### infra-config
 
-CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 2 rules match lines; 2 rules match nothing.
+CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 2 rules decide lines; 2 rules match no file, and 0 rules are overridden by later rules for every file they match.
 
 | Pattern         | Declared owners                   | Lines | By line hash           | By blame               |
 |-----------------|-----------------------------------|------:|------------------------|------------------------|
@@ -142,7 +142,7 @@ CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no 
 
 ### platform
 
-CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.
+CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules decide lines; 2 rules match no file, and 1 rule is overridden by later rules for every file it matches.
 
 | Pattern         | Declared owners                   | Lines | By line hash           | By blame               |
 |-----------------|-----------------------------------|------:|------------------------|------------------------|
@@ -152,7 +152,7 @@ CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no 
 
 ### web-frontend
 
-CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.
+CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules decide lines; 2 rules match no file, and 1 rule is overridden by later rules for every file it matches.
 
 | Pattern         | Declared owners                   | Lines | By line hash           | By blame               |
 |-----------------|-----------------------------------|------:|------------------------|------------------------|
@@ -302,7 +302,8 @@ _Archetype names written by AI; membership is computed by OWNH._
 - The most-deleted line. `"  }"` has been removed 1,562 times. It belongs to Ada Lindqvist.
 - 22,013 lines were added again after being deleted. Each went straight back to its original owner (983 distinct lines).
 - 8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year. Together they cover 17,424 lines. Largest: `*.js` in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%; `*.js` in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%; `*.js` in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%; `*.py` in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%; `*.js` in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%; and 3 more.
-- 17 CODEOWNERS rules match no file, in 6 repositories. `/src/` (api-gateway), `/legacy/` (api-gateway), `/docs/` (api-gateway), `/src/` (billing-service), `/legacy/` (billing-service), and 12 more.
+- 12 CODEOWNERS rules match no file, in 6 repositories. `/legacy/` (api-gateway), `/docs/` (api-gateway), `/legacy/` (billing-service), `/docs/` (billing-service), `/legacy/` (data-pipeline), and 7 more.
+- 5 CODEOWNERS rules are overridden by later rules for every file they match, in 5 repositories. `/src/` (api-gateway), `/src/` (billing-service), `/data_pipeline/` (data-pipeline), `/src/` (platform), `/src/` (web-frontend).
 
 ## Repositories
 

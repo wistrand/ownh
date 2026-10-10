@@ -755,6 +755,7 @@ test('declared ownership: CODEOWNERS next to line hash and blame', async () => {
   assert.equal(d.noRule, 0);
   assert.equal(d.unmatchedRules, 1, '/vendor/ matches nothing');
   assert.deepEqual(d.unmatched, ['/vendor/']);
+  assert.deepEqual(d.shadowed, []);
   const unmatched = findOddities(stats).find((o) => o.kind === 'declared-unmatched');
   assert.match(unmatched.title, /^1 CODEOWNERS rule matches no file, in 1 repository$/);
   assert.deepEqual(unmatched.detail.filter((p) => p.code).map((p) => p.code), ['/vendor/']);
@@ -766,6 +767,15 @@ test('declared ownership: CODEOWNERS next to line hash and blame', async () => {
   assert.match(md, /\| `src\/` +\| @org\/src +\| +5 \| Ada Lindqvist \(60\.0%\) +\| Ada Lindqvist \(60\.0%\) +\|/);
   assert.ok(readdirSync(out).includes('codeowners.csv'));
   assert.match(readFileSync(join(out, 'report.html'), 'utf8'), /id="declared-ownership"/);
+  // A rule a later rule overrides everywhere is not "no file".
+  const shadowRepo = init(dir, 'declared-shadow');
+  commit(shadowRepo, A, 100, { CODEOWNERS: '* @org/first\n* @org/second\n. @org/dot\n', 'x.js': 'x();\n' });
+  const sdb = join(dir, 'declared-shadow.db');
+  await index({ dbPath: sdb, repoPaths: [shadowRepo] });
+  const sd = withDb(sdb, (conn) => collectStats(conn)).repos[0].declared;
+  assert.deepEqual(sd.shadowed, ['*']);
+  assert.deepEqual(sd.unmatched, ['.']);
+  assert.deepEqual(sd.rules.map((r) => r.owners), [['@org/second']]);
   // Paths and team names never reach the AI facts.
   assert.ok(!JSON.stringify(buildFacts(stats, findArchetypes(stats), pseudonyms(stats))).includes('@org'));
 });

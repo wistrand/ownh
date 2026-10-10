@@ -66,9 +66,17 @@ function declaredInactive(stats) {
   }];
 }
 
-// CODEOWNERS rules that match no file at head.
+// CODEOWNERS rules that decide no line at head: rules whose pattern matches no
+// file, and rules that a later rule overrides for every file they match.
 function declaredUnmatched(stats) {
-  const hits = stats.repos.flatMap((r) => (r.declared?.unmatched ?? []).map((pattern) => ({ repo: r.name, pattern })));
+  return [
+    ...idleRules(stats, 'unmatched', 'declared-unmatched', (n) => `${n === 1 ? 'rule matches' : 'rules match'} no file`),
+    ...idleRules(stats, 'shadowed', 'declared-shadowed', (n) => `${n === 1 ? 'rule is' : 'rules are'} overridden by later rules for every file ${n === 1 ? 'it matches' : 'they match'}`),
+  ];
+}
+
+function idleRules(stats, field, kind, phrase) {
+  const hits = stats.repos.flatMap((r) => (r.declared?.[field] ?? []).map((pattern) => ({ repo: r.name, pattern })));
   if (!hits.length) return [];
   const repos = new Set(hits.map((h) => h.repo)).size;
   const detail = [];
@@ -78,8 +86,8 @@ function declaredUnmatched(stats) {
   });
   detail.push({ text: hits.length > MAX_NAMES ? `, and ${hits.length - MAX_NAMES} more.` : '.' });
   return [{
-    kind: 'declared-unmatched',
-    title: `${hits.length} CODEOWNERS ${hits.length === 1 ? 'rule matches' : 'rules match'} no file, in ${repos} ${repos === 1 ? 'repository' : 'repositories'}`,
+    kind,
+    title: `${hits.length} CODEOWNERS ${phrase(hits.length)}, in ${repos} ${repos === 1 ? 'repository' : 'repositories'}`,
     detail,
   }];
 }

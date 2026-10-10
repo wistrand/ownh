@@ -90,10 +90,21 @@ export function declaredOwnership(db, repo, { blameFull, identities }) {
     noRule,
     unowned,
     rules: out.filter((r) => r.lines > 0).sort((a, b) => b.lines - a.lines || a.line - b.line),
-    unmatchedRules: out.filter((r) => r.lines === 0).length,
-    // Patterns of the rules that match no file at head, in file order.
-    unmatched: out.filter((r) => r.lines === 0).map((r) => r.pattern),
+    // Rules that decide no line, in file order, split by why: `unmatched`
+    // patterns match no file at head; `shadowed` ones match files, but a later
+    // rule wins for every one of them (last match wins).
+    ...idleRules(rules, out, [...ruleOf.keys()]),
   };
+}
+
+function idleRules(rules, out, paths) {
+  const unmatched = [];
+  const shadowed = [];
+  out.forEach((r, i) => {
+    if (r.lines > 0) return;
+    (paths.some((p) => rules[i].regex.test(p)) ? shadowed : unmatched).push(r.pattern);
+  });
+  return { unmatched, shadowed, unmatchedRules: unmatched.length, shadowedRules: shadowed.length };
 }
 
 export function parseCodeowners(text) {

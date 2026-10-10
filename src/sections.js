@@ -97,8 +97,9 @@ export function declaredSummary(r) {
   const covered = d.lines - d.noRule;
   const shown = Math.min(DECLARED_ROWS, d.rules.length);
   return `${d.file}: ${share(covered, d.lines)} of lines are covered by a rule, ${share(d.unowned, d.lines)} by a rule ` +
-    `that names no owner, and ${share(d.noRule, d.lines)} by no rule. ${d.rules.length} ${d.rules.length === 1 ? 'rule matches' : 'rules match'} lines` +
-    `${shown < d.rules.length ? ` (largest ${shown} shown)` : ''}; ${d.unmatchedRules} ${d.unmatchedRules === 1 ? 'rule matches' : 'rules match'} nothing.`;
+    `that names no owner, and ${share(d.noRule, d.lines)} by no rule. ${d.rules.length} ${d.rules.length === 1 ? 'rule decides' : 'rules decide'} lines` +
+    `${shown < d.rules.length ? ` (largest ${shown} shown)` : ''}; ${d.unmatchedRules} ${d.unmatchedRules === 1 ? 'rule matches' : 'rules match'} no file, ` +
+    `and ${d.shadowedRules ?? 0} ${(d.shadowedRules ?? 0) === 1 ? 'rule is' : 'rules are'} overridden by later rules for every file ${(d.shadowedRules ?? 0) === 1 ? 'it matches' : 'they match'}.`;
 }
 
 export function declaredOwners(rule) {

@@ -1437,12 +1437,15 @@
             }
           }
         ],
-        "unmatchedRules": 3,
         "unmatched": [
-          "/src/",
           "/legacy/",
           "/docs/"
-        ]
+        ],
+        "shadowed": [
+          "/src/"
+        ],
+        "unmatchedRules": 2,
+        "shadowedRules": 1
       },
       "lines": 3535,
       "foreign": 2336,
@@ -1884,12 +1887,15 @@
             }
           }
         ],
-        "unmatchedRules": 3,
         "unmatched": [
-          "/src/",
           "/legacy/",
           "/docs/"
-        ]
+        ],
+        "shadowed": [
+          "/src/"
+        ],
+        "unmatchedRules": 2,
+        "shadowedRules": 1
       },
       "lines": 2096,
       "foreign": 1667,
@@ -2339,12 +2345,15 @@
             }
           }
         ],
-        "unmatchedRules": 3,
         "unmatched": [
-          "/data_pipeline/",
           "/legacy/",
           "/docs/"
-        ]
+        ],
+        "shadowed": [
+          "/data_pipeline/"
+        ],
+        "unmatchedRules": 2,
+        "shadowedRules": 1
       },
       "lines": 3195,
       "foreign": 990,
@@ -2692,11 +2701,13 @@
             }
           }
         ],
-        "unmatchedRules": 2,
         "unmatched": [
           "/legacy/",
           "/docs/"
-        ]
+        ],
+        "shadowed": [],
+        "unmatchedRules": 2,
+        "shadowedRules": 0
       },
       "lines": 370,
       "foreign": 63,
@@ -3008,12 +3019,15 @@
             }
           }
         ],
-        "unmatchedRules": 3,
         "unmatched": [
-          "/src/",
           "/legacy/",
           "/docs/"
-        ]
+        ],
+        "shadowed": [
+          "/src/"
+        ],
+        "unmatchedRules": 2,
+        "shadowedRules": 1
       },
       "lines": 4558,
       "foreign": 913,
@@ -3464,12 +3478,15 @@
             }
           }
         ],
-        "unmatchedRules": 3,
         "unmatched": [
-          "/src/",
           "/legacy/",
           "/docs/"
-        ]
+        ],
+        "shadowed": [
+          "/src/"
+        ],
+        "unmatchedRules": 2,
+        "shadowedRules": 1
       },
       "lines": 3741,
       "foreign": 2924,
@@ -3988,17 +4005,8 @@
     },
     {
       "kind": "declared-unmatched",
-      "title": "17 CODEOWNERS rules match no file, in 6 repositories",
+      "title": "12 CODEOWNERS rules match no file, in 6 repositories",
       "detail": [
-        {
-          "code": "/src/"
-        },
-        {
-          "text": " (api-gateway)"
-        },
-        {
-          "text": ", "
-        },
         {
           "code": "/legacy/"
         },
@@ -4018,7 +4026,16 @@
           "text": ", "
         },
         {
-          "code": "/src/"
+          "code": "/legacy/"
+        },
+        {
+          "text": " (billing-service)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/docs/"
         },
         {
           "text": " (billing-service)"
@@ -4030,17 +4047,68 @@
           "code": "/legacy/"
         },
         {
+          "text": " (data-pipeline)"
+        },
+        {
+          "text": ", and 7 more."
+        }
+      ]
+    },
+    {
+      "kind": "declared-shadowed",
+      "title": "5 CODEOWNERS rules are overridden by later rules for every file they match, in 5 repositories",
+      "detail": [
+        {
+          "code": "/src/"
+        },
+        {
+          "text": " (api-gateway)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/src/"
+        },
+        {
           "text": " (billing-service)"
         },
         {
-          "text": ", and 12 more."
+          "text": ", "
+        },
+        {
+          "code": "/data_pipeline/"
+        },
+        {
+          "text": " (data-pipeline)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/src/"
+        },
+        {
+          "text": " (platform)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/src/"
+        },
+        {
+          "text": " (web-frontend)"
+        },
+        {
+          "text": "."
         }
       ]
     }
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 18:59 UTC"
+    "at": "2026-10-10 19:44 UTC"
   },
   "archetypes": [
     {
