@@ -1,4 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { openDb } from './db.js';
 import { crossOwnershipSvg, lineSharePieSvg, radarSvg } from './charts.js';
@@ -17,18 +18,13 @@ import { collectStats, lineLabel, methodShare, ownerLabel, pct, share } from './
 // `aiDryRun`: write the AI request to ai-request.json without sending it.
 // `aiCacheOnly`: use cached AI text only, never send a request.
 // `complete` replaces the API call (tests).
-export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete }) {
-  const db = openDb(dbPath);
-  let stats;
-  try {
-    stats = collectStats(db, { topLines: top, log });
-  } finally {
-    db.close();
-  }
+// `cache`: reuse collectStats output from outDir/stats-cache.json (see cachedStats).
+export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete, cache = true }) {
+  mkdirSync(outDir, { recursive: true });
+  const stats = cachedStats({ dbPath, outDir, top, log, cache });
   stats.oddities = findOddities(stats);
   stats.generated = generatedInfo(dbPath);
   stats.archetypes = findArchetypes(stats);
-  mkdirSync(outDir, { recursive: true });
   if (ai || aiDryRun) {
     stats.ai = await aiInsights(stats, stats.archetypes, {
       config: aiConfig(aiEnv), outDir, log, dryRun: aiDryRun, cacheOnly: aiCacheOnly, ...(complete ? { complete } : {}),
@@ -61,6 +57,44 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
   };
   for (const [name, content] of Object.entries(files)) writeFileSync(join(outDir, name), content);
   return Object.keys(files);
+}
+
+// collectStats is nearly all of a report's run time; everything after it is
+// rendering. The cache key covers what collectStats reads: the database file
+// (size and mtime; any index, add, or blame writes it), the --top value, and
+// the source of the modules that compute the stats. Editing rendering code
+// reuses the cache; editing a STATS_SOURCES file recomputes.
+const STATS_SOURCES = ['stats.js', 'churn.js', 'timeline.js', 'sample.js'];
+const STATS_CACHE = 'stats-cache.json';
+
+function cachedStats({ dbPath, outDir, top, log, cache }) {
+  const path = join(outDir, STATS_CACHE);
+  const { size, mtimeMs } = statSync(dbPath);
+  const sources = createHash('sha256');
+  for (const file of STATS_SOURCES) sources.update(readFileSync(new URL(file, import.meta.url)));
+  const key = JSON.stringify({ size, mtimeMs, top, sources: sources.digest('hex') });
+  if (cache) {
+    try {
+      const saved = JSON.parse(readFileSync(path, 'utf8'));
+      if (saved.key === key) {
+        log(`stats: reused ${path}`);
+        return saved.stats;
+      }
+    } catch {
+      // Missing or unreadable cache: recompute.
+    }
+  }
+  const db = openDb(dbPath);
+  let stats;
+  try {
+    stats = collectStats(db, { topLines: top, log });
+  } finally {
+    db.close();
+  }
+  // Round-trip through JSON so a fresh run renders exactly what a cached run would.
+  const text = JSON.stringify({ key, stats });
+  writeFileSync(path, text);
+  return JSON.parse(text).stats;
 }
 
 function leaderboard(stats, top, charts) {

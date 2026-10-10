@@ -38,7 +38,7 @@ try {
   // Without --ai, only cached AI text is used: a plain rebuild never calls the API.
   const request = process.argv.includes('--ai');
   const ai = Boolean(cache) || request;
-  const files = await report({ dbPath: db, outDir: OUT, top: 15, ai, aiCacheOnly: !request, log: (m) => m.startsWith('ai:') && console.log(m) });
+  const files = await report({ dbPath: db, outDir: OUT, top: 15, ai, aiCacheOnly: !request, cache: false, log: (m) => m.startsWith('ai:') && console.log(m) });
   for (const file of files) console.log(`wrote docs/sample/${file}`);
 } finally {
   rmSync(dir, { recursive: true, force: true });

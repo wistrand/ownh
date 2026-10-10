@@ -195,6 +195,14 @@ survival, outlook, oddities, repositories, excluded patterns.
   (`src/sections.js`); radar data in `src/profiles.js`.
 - Oddities (`src/oddities.js`) are facts derived from the stats; each claim is
   checked by the code that prints it.
+- Stats cache (`cachedStats` in `src/report.js`): `collectStats` is nearly all
+  of a report's run time, so its output is kept in `stats-cache.json` in the
+  report directory. The key is the database file's size and mtime, `--top`, and
+  a hash of `STATS_SOURCES` (the modules that compute stats). Edits to rendering
+  code reuse the cache; a new module that `collectStats` imports must be added
+  to `STATS_SOURCES`. Fresh stats are round-tripped through JSON too, so cached
+  and fresh runs render identically. `--no-cache` recomputes; the sample build
+  never caches.
 
 ## AI prose
 

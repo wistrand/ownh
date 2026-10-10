@@ -171,7 +171,20 @@ test('report files agree with the summary', async () => {
   assert.deepEqual(readdirSync(out).sort(), [
     'blank-line-outlook.svg', 'code-survival.svg', 'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
     'owner-profile.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
+    'stats-cache.json',
   ]);
+  // A second run reuses the computed stats and writes the same files; another
+  // --top or --no-cache recomputes.
+  const owners = readFileSync(join(out, 'owners.csv'), 'utf8');
+  const runLog = async (opts) => {
+    const lines = [];
+    await report({ dbPath: db, outDir: out, top: 5, log: (m) => lines.push(m), ...opts });
+    return lines.some((m) => m.startsWith('stats: reused'));
+  };
+  assert.equal(await runLog({}), true);
+  assert.equal(readFileSync(join(out, 'owners.csv'), 'utf8'), owners);
+  assert.equal(await runLog({ cache: false }), false);
+  assert.equal(await runLog({ top: 4 }), false);
   const json = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
   assert.equal(json.generated.database, 'report.db');
   assert.match(json.generated.at, /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$/);
