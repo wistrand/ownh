@@ -68,14 +68,14 @@ across repositories. The closest analogues work at file or blob level.
 
 ### Ownership and expertise tools (blame- or churn-based)
 
-| Tool                     | Ownership rule                                                                     | Relation to OWNH                                                                   |
-|--------------------------|------------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
-| git-fame                 | Lines per author from `git blame`; excludes, date limits, person-month estimates   | Latest editor per line, one repo. OWNH: first writer of the content, any repo.    |
-| git-who                  | Most significant contributor per repo, directory, file, or revision range          | Same family as git-fame, with a tree view.                                        |
-| Hercules (src-d)         | Mines full history incl. merges; ownership and burndown outputs; merges repos      | Closest in scope (multi-repo, full history). Its v4 notes say the full-history walk made `git/git` go from under 4 minutes to 2 h 45 min. |
-| truckfactor (PyPI)       | File owned by whoever edited the most lines; greedy removal of authors             | Bus factor, not line ownership.                                                   |
-| CodeScene                | Knowledge maps, "former contributor" knowledge loss, off-boarding simulation       | Commercial version of the same question; warns against use for performance evaluation. |
-| git-of-theseus           | Surviving lines by year added (cohorts), Kaplan-Meier survival curves              | Measures age of code, not owners. A cohort chart of surviving lines is a possible OWNH report. |
+| Tool                    | Ownership rule                                                                   | Relation to OWNH                                                                                                     |
+|-------------------------|----------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| git-fame [26]           | Lines per author from `git blame`; excludes, date limits, person-month estimates | Latest editor per line, one repo. OWNH: first writer of the content, any repo.                                       |
+| git-who [27]            | Most significant contributor per repo, directory, file, or revision range        | Same family as git-fame, with a tree view.                                                                           |
+| Hercules (src-d) [22]   | Mines full history incl. merges; ownership and burndown outputs; merges repos    | Closest in scope (multi-repo, full history). Full-history walk: `git/git` from under 4 min to 2 h 45 min (v4 notes). |
+| truckfactor (PyPI) [25] | File owned by whoever edited the most lines; greedy removal of authors           | Bus factor, not line ownership.                                                                                      |
+| CodeScene [24]          | Knowledge maps, "former contributor" knowledge loss, off-boarding simulation     | Commercial version of the same question; warns against use for performance evaluation.                               |
+| git-of-theseus [23]     | Surviving lines by year added (cohorts), Kaplan-Meier survival curves            | Measures age of code, not owners. A cohort chart of surviving lines is a possible OWNH report.                       |
 
 ### Research on ownership metrics
 
@@ -123,9 +123,8 @@ is legitimate on its own; the combination is the joke.
 
 ## Observed in runs: subtree syncs and the repository-name tiebreak
 
-Not from the literature: observed on a public programming-language project
-analyzed with its tool repositories (formatter, linter, IDE server, interpreter,
-package manager, installer, book). No source; reproduce by indexing a main
+Not from the literature: observed on a large public project analyzed together
+with several of its tool repositories. No source; reproduce by indexing a main
 repository together with repositories that are subtree-synced into it.
 
 - **Mechanism.** Subtree syncs (git subtree, or josh-style tools) import a
@@ -137,8 +136,8 @@ repository together with repositories that are subtree-synced into it.
   first.
 - **Result.** Tools whose names sort after the main repository's name lost
   their own code to it: three tool repositories each had 99.7% to 99.9% of their
-  lines "written elsewhere", nearly all credited to the main repository. The
-  interpreter, whose name sorts before it, kept 57.6% of its lines as its own
+  lines "written elsewhere", nearly all credited to the main repository. One
+  tool whose name sorts before it kept 57.6% of its lines as its own
   and was credited with 1.6% of the main repository. Which repository "owns" a
   whole tool is decided by alphabetical order.
 - **Why it stays.** The tiebreak exists so that results do not depend on the
@@ -154,21 +153,21 @@ repository together with repositories that are subtree-synced into it.
 
 ## Sources
 
-1. Code Ownership: Principles, Differences... arXiv 2408.12807
+1. Code Ownership: The Principles, Differences, and Their Associations with Software Quality, arXiv 2408.12807 https://arxiv.org/abs/2408.12807
 2. Canfora et al., Identifying Changed Source Code Lines, MSR'07
 3. Meng et al., Mining Software Repositories for Accurate Authorship
 4. cregit token-level blame (Linux.com)
 5. Token-based authorship information from Git (LWN)
-6. Beyond Dependencies: Copy-Based Reuse, arXiv 2409.04830
+6. Jahanshahi, Reid, Mockus, Beyond Dependencies: Copy-Based Reuse, arXiv 2409.04830 https://arxiv.org/abs/2409.04830
 7. Hackathon Code Creation and Reuse (NSF PAR)
 8. Efficient Prior Publication Identification, arXiv 2207.11057
 9. Code provenance review patent US8307351
 10. Git AI (GitHub)
 11. Entire attribution FAQ
-12. Kosli: git blame guide
+12. Kosli: git blame guide (background reading; not cited above)
 13. Avelino et al., What is the Truck Factor of popular GitHub applications? https://peerj.com/preprints/1233
 14. Avelino, Identifying key developers using code authorship metrics (PhD thesis, UFMG 2018) https://homepages.dcc.ufmg.br/~mtov/diss/2018-guilherme-avelino.pdf
-15. Bird et al., Don't Touch My Code! (ESEC/FSE 2011) https://www.microsoft.com/en-us/research/?p=161465
+15. Bird et al., Don't Touch My Code! (ESEC/FSE 2011) https://www.microsoft.com/en-us/research/publication/dont-touch-my-code-examining-the-effects-of-ownership-on-software-quality/ (the URL cited on the site and in the whitepaper; also reachable as https://www.microsoft.com/en-us/research/?p=161465)
 16. Examining Ownership Models in Software Teams (SLR and replication) https://arxiv.org/pdf/2405.15665
 17. Software Heritage provenance docs https://docs.softwareheritage.org/devel/swh-provenance
 18. git-blame manual https://git-scm.com/docs/git-blame
@@ -179,7 +178,9 @@ repository together with repositories that are subtree-synced into it.
 23. git-of-theseus https://github.com/erikbern/git-of-theseus
 24. CodeScene knowledge distribution https://codescene.io/docs/guides/social/knowledge-distribution.html
 25. truckfactor https://pypi.org/project/truckfactor
-26. Beyond Dependencies: Copy-Based Reuse (also [6]) https://arxiv.org/abs/2409.04830
+26. git-fame https://github.com/casperdcl/git-fame
+27. git-who https://github.com/sinclairtarget/git-who
 
-URLs for sources 1-12 were not recorded with the original research (except [6],
-see [26]). Open question: add them before citing in public copy.
+URLs for sources 2-5 and 7-12 were not recorded with the original research.
+Open question: add them before citing any of those in public copy. Sources [1],
+[6], [13], [15], [17], and [18] are the ones the site and whitepaper cite.

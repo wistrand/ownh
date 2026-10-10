@@ -119,76 +119,76 @@
 <text class="muted" x="603.4" y="384" text-anchor="middle">5y</text>
 <line class="target" x1="72" x2="630" y1="228.0" y2="228.0"/>
 <text class="muted" x="638" y="232.0">half-life</text>
-<path class="trend ln1" d="M 72.0 96.3 L 98.6 107.3 L 125.1 124.9 L 151.7 142.3 L 178.3 159.0 L 204.9 177.1 L 231.4 198.7 L 258.0 216.6 L 284.6 232.2 L 311.1 246.6 L 337.7 257.7 L 364.3 266.7 L 390.9 274.6 L 417.4 280.9 L 444.0 298.8 L 470.6 316.8 L 497.1 322.9 L 523.7 326.6 L 550.3 331.3 L 576.9 333.2 L 603.4 336.7 L 630.0 341.4"/>
-<circle class="hit" cx="72.0" cy="96.3" r="6"><title>All code, 0 quarters: 98%</title></circle>
-<circle class="hit" cx="98.6" cy="107.3" r="6"><title>All code, 1 quarters: 94%</title></circle>
-<circle class="hit" cx="125.1" cy="124.9" r="6"><title>All code, 2 quarters: 88%</title></circle>
-<circle class="hit" cx="151.7" cy="142.3" r="6"><title>All code, 3 quarters: 81%</title></circle>
-<circle class="hit" cx="178.3" cy="159.0" r="6"><title>All code, 4 quarters: 75%</title></circle>
-<circle class="hit" cx="204.9" cy="177.1" r="6"><title>All code, 5 quarters: 69%</title></circle>
-<circle class="hit" cx="231.4" cy="198.7" r="6"><title>All code, 6 quarters: 61%</title></circle>
-<circle class="hit" cx="258.0" cy="216.6" r="6"><title>All code, 7 quarters: 54%</title></circle>
-<circle class="hit" cx="284.6" cy="232.2" r="6"><title>All code, 8 quarters: 48%</title></circle>
-<circle class="hit" cx="311.1" cy="246.6" r="6"><title>All code, 9 quarters: 43%</title></circle>
-<circle class="hit" cx="337.7" cy="257.7" r="6"><title>All code, 10 quarters: 39%</title></circle>
-<circle class="hit" cx="364.3" cy="266.7" r="6"><title>All code, 11 quarters: 36%</title></circle>
-<circle class="hit" cx="390.9" cy="274.6" r="6"><title>All code, 12 quarters: 33%</title></circle>
-<circle class="hit" cx="417.4" cy="280.9" r="6"><title>All code, 13 quarters: 31%</title></circle>
-<circle class="hit" cx="444.0" cy="298.8" r="6"><title>All code, 14 quarters: 24%</title></circle>
-<circle class="hit" cx="470.6" cy="316.8" r="6"><title>All code, 15 quarters: 17%</title></circle>
-<circle class="hit" cx="497.1" cy="322.9" r="6"><title>All code, 16 quarters: 15%</title></circle>
-<circle class="hit" cx="523.7" cy="326.6" r="6"><title>All code, 17 quarters: 14%</title></circle>
-<circle class="hit" cx="550.3" cy="331.3" r="6"><title>All code, 18 quarters: 12%</title></circle>
-<circle class="hit" cx="576.9" cy="333.2" r="6"><title>All code, 19 quarters: 11%</title></circle>
-<circle class="hit" cx="603.4" cy="336.7" r="6"><title>All code, 20 quarters: 10%</title></circle>
-<circle class="hit" cx="630.0" cy="341.4" r="6"><title>All code, 21 quarters: 8%</title></circle>
-<circle class="point rp1" cx="630.0" cy="341.4" r="4.5"/>
-<path class="trend ln2" d="M 72.0 93.0 L 98.6 97.2 L 125.1 113.7 L 151.7 130.1 L 178.3 145.9 L 204.9 165.8 L 231.4 191.8 L 258.0 210.4 L 284.6 226.8 L 311.1 242.9 L 337.7 254.3 L 364.3 264.0 L 390.9 272.2 L 417.4 278.6 L 444.0 300.9 L 470.6 325.5 L 497.1 334.6 L 523.7 336.6 L 550.3 342.0 L 576.9 342.0 L 603.4 343.3 L 630.0 346.9"/>
-<circle class="hit" cx="72.0" cy="93.0" r="6"><title>Ada Lindqvist, 0 quarters: 100%</title></circle>
-<circle class="hit" cx="98.6" cy="97.2" r="6"><title>Ada Lindqvist, 1 quarters: 98%</title></circle>
-<circle class="hit" cx="125.1" cy="113.7" r="6"><title>Ada Lindqvist, 2 quarters: 92%</title></circle>
-<circle class="hit" cx="151.7" cy="130.1" r="6"><title>Ada Lindqvist, 3 quarters: 86%</title></circle>
-<circle class="hit" cx="178.3" cy="145.9" r="6"><title>Ada Lindqvist, 4 quarters: 80%</title></circle>
-<circle class="hit" cx="204.9" cy="165.8" r="6"><title>Ada Lindqvist, 5 quarters: 73%</title></circle>
-<circle class="hit" cx="231.4" cy="191.8" r="6"><title>Ada Lindqvist, 6 quarters: 63%</title></circle>
-<circle class="hit" cx="258.0" cy="210.4" r="6"><title>Ada Lindqvist, 7 quarters: 56%</title></circle>
-<circle class="hit" cx="284.6" cy="226.8" r="6"><title>Ada Lindqvist, 8 quarters: 50%</title></circle>
-<circle class="hit" cx="311.1" cy="242.9" r="6"><title>Ada Lindqvist, 9 quarters: 45%</title></circle>
-<circle class="hit" cx="337.7" cy="254.3" r="6"><title>Ada Lindqvist, 10 quarters: 40%</title></circle>
-<circle class="hit" cx="364.3" cy="264.0" r="6"><title>Ada Lindqvist, 11 quarters: 37%</title></circle>
-<circle class="hit" cx="390.9" cy="272.2" r="6"><title>Ada Lindqvist, 12 quarters: 34%</title></circle>
-<circle class="hit" cx="417.4" cy="278.6" r="6"><title>Ada Lindqvist, 13 quarters: 31%</title></circle>
-<circle class="hit" cx="444.0" cy="300.9" r="6"><title>Ada Lindqvist, 14 quarters: 23%</title></circle>
-<circle class="hit" cx="470.6" cy="325.5" r="6"><title>Ada Lindqvist, 15 quarters: 14%</title></circle>
-<circle class="hit" cx="497.1" cy="334.6" r="6"><title>Ada Lindqvist, 16 quarters: 11%</title></circle>
-<circle class="hit" cx="523.7" cy="336.6" r="6"><title>Ada Lindqvist, 17 quarters: 10%</title></circle>
-<circle class="hit" cx="550.3" cy="342.0" r="6"><title>Ada Lindqvist, 18 quarters: 8%</title></circle>
-<circle class="hit" cx="576.9" cy="342.0" r="6"><title>Ada Lindqvist, 19 quarters: 8%</title></circle>
-<circle class="hit" cx="603.4" cy="343.3" r="6"><title>Ada Lindqvist, 20 quarters: 8%</title></circle>
-<circle class="hit" cx="630.0" cy="346.9" r="6"><title>Ada Lindqvist, 21 quarters: 6%</title></circle>
-<circle class="point rp2" cx="630.0" cy="346.9" r="4.5"/>
-<path class="trend ln3" d="M 72.0 92.8 L 98.6 102.8 L 125.1 122.7 L 151.7 141.7 L 178.3 157.9 L 204.9 168.7 L 231.4 183.0 L 258.0 206.2 L 284.6 220.6 L 311.1 240.0 L 337.7 257.0 L 364.3 258.9 L 390.9 266.3 L 417.4 277.1 L 444.0 284.0 L 470.6 288.7 L 497.1 288.7 L 523.7 288.7 L 550.3 293.1 L 576.9 293.1"/>
-<circle class="hit" cx="72.0" cy="92.8" r="6"><title>Mira Quist, 0 quarters: 100%</title></circle>
-<circle class="hit" cx="98.6" cy="102.8" r="6"><title>Mira Quist, 1 quarters: 96%</title></circle>
-<circle class="hit" cx="125.1" cy="122.7" r="6"><title>Mira Quist, 2 quarters: 89%</title></circle>
-<circle class="hit" cx="151.7" cy="141.7" r="6"><title>Mira Quist, 3 quarters: 82%</title></circle>
-<circle class="hit" cx="178.3" cy="157.9" r="6"><title>Mira Quist, 4 quarters: 76%</title></circle>
-<circle class="hit" cx="204.9" cy="168.7" r="6"><title>Mira Quist, 5 quarters: 72%</title></circle>
-<circle class="hit" cx="231.4" cy="183.0" r="6"><title>Mira Quist, 6 quarters: 67%</title></circle>
-<circle class="hit" cx="258.0" cy="206.2" r="6"><title>Mira Quist, 7 quarters: 58%</title></circle>
-<circle class="hit" cx="284.6" cy="220.6" r="6"><title>Mira Quist, 8 quarters: 53%</title></circle>
-<circle class="hit" cx="311.1" cy="240.0" r="6"><title>Mira Quist, 9 quarters: 46%</title></circle>
-<circle class="hit" cx="337.7" cy="257.0" r="6"><title>Mira Quist, 10 quarters: 39%</title></circle>
-<circle class="hit" cx="364.3" cy="258.9" r="6"><title>Mira Quist, 11 quarters: 39%</title></circle>
-<circle class="hit" cx="390.9" cy="266.3" r="6"><title>Mira Quist, 12 quarters: 36%</title></circle>
-<circle class="hit" cx="417.4" cy="277.1" r="6"><title>Mira Quist, 13 quarters: 32%</title></circle>
-<circle class="hit" cx="444.0" cy="284.0" r="6"><title>Mira Quist, 14 quarters: 29%</title></circle>
-<circle class="hit" cx="470.6" cy="288.7" r="6"><title>Mira Quist, 15 quarters: 28%</title></circle>
-<circle class="hit" cx="497.1" cy="288.7" r="6"><title>Mira Quist, 16 quarters: 28%</title></circle>
-<circle class="hit" cx="523.7" cy="288.7" r="6"><title>Mira Quist, 17 quarters: 28%</title></circle>
-<circle class="hit" cx="550.3" cy="293.1" r="6"><title>Mira Quist, 18 quarters: 26%</title></circle>
-<circle class="hit" cx="576.9" cy="293.1" r="6"><title>Mira Quist, 19 quarters: 26%</title></circle>
-<circle class="point rp3" cx="576.9" cy="293.1" r="4.5"/>
+<path class="trend ln1" d="M 72.0 100.2 L 98.6 117.2 L 125.1 131.7 L 151.7 146.8 L 178.3 163.4 L 204.9 180.3 L 231.4 198.6 L 258.0 212.1 L 284.6 229.7 L 311.1 239.2 L 337.7 255.8 L 364.3 267.4 L 390.9 275.8 L 417.4 283.0 L 444.0 291.2 L 470.6 294.6 L 497.1 300.0 L 523.7 306.7 L 550.3 314.0 L 576.9 321.5 L 603.4 337.9 L 630.0 342.5"/>
+<circle class="hit" cx="72.0" cy="100.2" r="6"><title>All code, 0 quarters: 97%</title></circle>
+<circle class="hit" cx="98.6" cy="117.2" r="6"><title>All code, 1 quarters: 91%</title></circle>
+<circle class="hit" cx="125.1" cy="131.7" r="6"><title>All code, 2 quarters: 85%</title></circle>
+<circle class="hit" cx="151.7" cy="146.8" r="6"><title>All code, 3 quarters: 80%</title></circle>
+<circle class="hit" cx="178.3" cy="163.4" r="6"><title>All code, 4 quarters: 74%</title></circle>
+<circle class="hit" cx="204.9" cy="180.3" r="6"><title>All code, 5 quarters: 68%</title></circle>
+<circle class="hit" cx="231.4" cy="198.6" r="6"><title>All code, 6 quarters: 61%</title></circle>
+<circle class="hit" cx="258.0" cy="212.1" r="6"><title>All code, 7 quarters: 56%</title></circle>
+<circle class="hit" cx="284.6" cy="229.7" r="6"><title>All code, 8 quarters: 49%</title></circle>
+<circle class="hit" cx="311.1" cy="239.2" r="6"><title>All code, 9 quarters: 46%</title></circle>
+<circle class="hit" cx="337.7" cy="255.8" r="6"><title>All code, 10 quarters: 40%</title></circle>
+<circle class="hit" cx="364.3" cy="267.4" r="6"><title>All code, 11 quarters: 36%</title></circle>
+<circle class="hit" cx="390.9" cy="275.8" r="6"><title>All code, 12 quarters: 32%</title></circle>
+<circle class="hit" cx="417.4" cy="283.0" r="6"><title>All code, 13 quarters: 30%</title></circle>
+<circle class="hit" cx="444.0" cy="291.2" r="6"><title>All code, 14 quarters: 27%</title></circle>
+<circle class="hit" cx="470.6" cy="294.6" r="6"><title>All code, 15 quarters: 26%</title></circle>
+<circle class="hit" cx="497.1" cy="300.0" r="6"><title>All code, 16 quarters: 24%</title></circle>
+<circle class="hit" cx="523.7" cy="306.7" r="6"><title>All code, 17 quarters: 21%</title></circle>
+<circle class="hit" cx="550.3" cy="314.0" r="6"><title>All code, 18 quarters: 18%</title></circle>
+<circle class="hit" cx="576.9" cy="321.5" r="6"><title>All code, 19 quarters: 16%</title></circle>
+<circle class="hit" cx="603.4" cy="337.9" r="6"><title>All code, 20 quarters: 10%</title></circle>
+<circle class="hit" cx="630.0" cy="342.5" r="6"><title>All code, 21 quarters: 8%</title></circle>
+<circle class="point rp1" cx="630.0" cy="342.5" r="4.5"/>
+<path class="trend ln2" d="M 72.0 98.2 L 98.6 110.2 L 125.1 123.8 L 151.7 136.5 L 178.3 150.3 L 204.9 169.3 L 231.4 189.9 L 258.0 204.2 L 284.6 222.5 L 311.1 233.5 L 337.7 253.3 L 364.3 266.5 L 390.9 275.3 L 417.4 282.8 L 444.0 291.5 L 470.6 294.6 L 497.1 301.0 L 523.7 307.6 L 550.3 315.5 L 576.9 323.0 L 603.4 338.8 L 630.0 343.3"/>
+<circle class="hit" cx="72.0" cy="98.2" r="6"><title>Ada Lindqvist, 0 quarters: 98%</title></circle>
+<circle class="hit" cx="98.6" cy="110.2" r="6"><title>Ada Lindqvist, 1 quarters: 93%</title></circle>
+<circle class="hit" cx="125.1" cy="123.8" r="6"><title>Ada Lindqvist, 2 quarters: 88%</title></circle>
+<circle class="hit" cx="151.7" cy="136.5" r="6"><title>Ada Lindqvist, 3 quarters: 84%</title></circle>
+<circle class="hit" cx="178.3" cy="150.3" r="6"><title>Ada Lindqvist, 4 quarters: 79%</title></circle>
+<circle class="hit" cx="204.9" cy="169.3" r="6"><title>Ada Lindqvist, 5 quarters: 72%</title></circle>
+<circle class="hit" cx="231.4" cy="189.9" r="6"><title>Ada Lindqvist, 6 quarters: 64%</title></circle>
+<circle class="hit" cx="258.0" cy="204.2" r="6"><title>Ada Lindqvist, 7 quarters: 59%</title></circle>
+<circle class="hit" cx="284.6" cy="222.5" r="6"><title>Ada Lindqvist, 8 quarters: 52%</title></circle>
+<circle class="hit" cx="311.1" cy="233.5" r="6"><title>Ada Lindqvist, 9 quarters: 48%</title></circle>
+<circle class="hit" cx="337.7" cy="253.3" r="6"><title>Ada Lindqvist, 10 quarters: 41%</title></circle>
+<circle class="hit" cx="364.3" cy="266.5" r="6"><title>Ada Lindqvist, 11 quarters: 36%</title></circle>
+<circle class="hit" cx="390.9" cy="275.3" r="6"><title>Ada Lindqvist, 12 quarters: 33%</title></circle>
+<circle class="hit" cx="417.4" cy="282.8" r="6"><title>Ada Lindqvist, 13 quarters: 30%</title></circle>
+<circle class="hit" cx="444.0" cy="291.5" r="6"><title>Ada Lindqvist, 14 quarters: 27%</title></circle>
+<circle class="hit" cx="470.6" cy="294.6" r="6"><title>Ada Lindqvist, 15 quarters: 26%</title></circle>
+<circle class="hit" cx="497.1" cy="301.0" r="6"><title>Ada Lindqvist, 16 quarters: 23%</title></circle>
+<circle class="hit" cx="523.7" cy="307.6" r="6"><title>Ada Lindqvist, 17 quarters: 21%</title></circle>
+<circle class="hit" cx="550.3" cy="315.5" r="6"><title>Ada Lindqvist, 18 quarters: 18%</title></circle>
+<circle class="hit" cx="576.9" cy="323.0" r="6"><title>Ada Lindqvist, 19 quarters: 15%</title></circle>
+<circle class="hit" cx="603.4" cy="338.8" r="6"><title>Ada Lindqvist, 20 quarters: 9%</title></circle>
+<circle class="hit" cx="630.0" cy="343.3" r="6"><title>Ada Lindqvist, 21 quarters: 8%</title></circle>
+<circle class="point rp2" cx="630.0" cy="343.3" r="4.5"/>
+<path class="trend ln3" d="M 72.0 100.2 L 98.6 120.1 L 125.1 131.4 L 151.7 148.1 L 178.3 170.6 L 204.9 179.5 L 231.4 191.0 L 258.0 200.8 L 284.6 219.0 L 311.1 225.9 L 337.7 249.3 L 364.3 251.3 L 390.9 259.2 L 417.4 268.5 L 444.0 275.9 L 470.6 280.9 L 497.1 280.9 L 523.7 280.9 L 550.3 284.9 L 576.9 284.9"/>
+<circle class="hit" cx="72.0" cy="100.2" r="6"><title>Mira Quist, 0 quarters: 97%</title></circle>
+<circle class="hit" cx="98.6" cy="120.1" r="6"><title>Mira Quist, 1 quarters: 90%</title></circle>
+<circle class="hit" cx="125.1" cy="131.4" r="6"><title>Mira Quist, 2 quarters: 86%</title></circle>
+<circle class="hit" cx="151.7" cy="148.1" r="6"><title>Mira Quist, 3 quarters: 79%</title></circle>
+<circle class="hit" cx="178.3" cy="170.6" r="6"><title>Mira Quist, 4 quarters: 71%</title></circle>
+<circle class="hit" cx="204.9" cy="179.5" r="6"><title>Mira Quist, 5 quarters: 68%</title></circle>
+<circle class="hit" cx="231.4" cy="191.0" r="6"><title>Mira Quist, 6 quarters: 64%</title></circle>
+<circle class="hit" cx="258.0" cy="200.8" r="6"><title>Mira Quist, 7 quarters: 60%</title></circle>
+<circle class="hit" cx="284.6" cy="219.0" r="6"><title>Mira Quist, 8 quarters: 53%</title></circle>
+<circle class="hit" cx="311.1" cy="225.9" r="6"><title>Mira Quist, 9 quarters: 51%</title></circle>
+<circle class="hit" cx="337.7" cy="249.3" r="6"><title>Mira Quist, 10 quarters: 42%</title></circle>
+<circle class="hit" cx="364.3" cy="251.3" r="6"><title>Mira Quist, 11 quarters: 41%</title></circle>
+<circle class="hit" cx="390.9" cy="259.2" r="6"><title>Mira Quist, 12 quarters: 39%</title></circle>
+<circle class="hit" cx="417.4" cy="268.5" r="6"><title>Mira Quist, 13 quarters: 35%</title></circle>
+<circle class="hit" cx="444.0" cy="275.9" r="6"><title>Mira Quist, 14 quarters: 32%</title></circle>
+<circle class="hit" cx="470.6" cy="280.9" r="6"><title>Mira Quist, 15 quarters: 31%</title></circle>
+<circle class="hit" cx="497.1" cy="280.9" r="6"><title>Mira Quist, 16 quarters: 31%</title></circle>
+<circle class="hit" cx="523.7" cy="280.9" r="6"><title>Mira Quist, 17 quarters: 31%</title></circle>
+<circle class="hit" cx="550.3" cy="284.9" r="6"><title>Mira Quist, 18 quarters: 29%</title></circle>
+<circle class="hit" cx="576.9" cy="284.9" r="6"><title>Mira Quist, 19 quarters: 29%</title></circle>
+<circle class="point rp3" cx="576.9" cy="284.9" r="4.5"/>
 <path class="trend ln4" d="M 72.0 98.4 L 98.6 117.5 L 125.1 122.3 L 151.7 129.2 L 178.3 136.6 L 204.9 144.9 L 231.4 165.9 L 258.0 183.8 L 284.6 198.8 L 311.1 215.1 L 337.7 237.8 L 364.3 254.3 L 390.9 267.1 L 417.4 279.7 L 444.0 313.8 L 470.6 313.8 L 497.1 313.8"/>
 <circle class="hit" cx="72.0" cy="98.4" r="6"><title>Umar Lindqvist, 0 quarters: 98%</title></circle>
 <circle class="hit" cx="98.6" cy="117.5" r="6"><title>Umar Lindqvist, 1 quarters: 91%</title></circle>

@@ -93,19 +93,19 @@
         0.18225636391022745,
         0.18530394121576485,
         0.17871888639849004,
-        0.1658405172413793,
-        0.16535511505129993,
-        0.16731266149870802,
-        0.08063660477453581,
-        0.11531174646916982,
-        0.12199211872222689,
-        0.1252612835797786,
-        0.12680577849117175,
-        0.12883809008521574,
-        0.12453243905584935,
-        0.12814310267999235,
-        0.12845790762980225,
-        0.1303078860020602
+        0.16573275862068965,
+        0.1652555035362088,
+        0.1672203765227021,
+        0.08054818744473917,
+        0.11522562866000689,
+        0.12190827534166178,
+        0.12518386622280717,
+        0.1267328177440537,
+        0.12877045854186392,
+        0.12446794789113891,
+        0.12807944490419504,
+        0.12809942044571906,
+        0.12985006295066956
       ],
       "inactiveShare": [
         0,
@@ -187,7 +187,7 @@
         "linesChange": 0.027127109886324385,
         "newOwners": 1,
         "principalShare": 0.4257566865096001,
-        "nonContributorShare": 0.12199211872222689,
+        "nonContributorShare": 0.12190827534166178,
         "inactiveShare": 0.6964869623543222,
         "blank": 3298
       },
@@ -197,7 +197,7 @@
         "linesChange": 0.08300494675945336,
         "newOwners": 3,
         "principalShare": 0.45722691027328327,
-        "nonContributorShare": 0.1252612835797786,
+        "nonContributorShare": 0.12518386622280717,
         "inactiveShare": 0.7147944569172409,
         "blank": 3534
       },
@@ -207,7 +207,7 @@
         "linesChange": 0.061082294650460556,
         "newOwners": 2,
         "principalShare": 0.4777469721289946,
-        "nonContributorShare": 0.12680577849117175,
+        "nonContributorShare": 0.1267328177440537,
         "inactiveShare": 0.7186633591127973,
         "blank": 3772
       },
@@ -217,7 +217,7 @@
         "linesChange": 0.07879760688749449,
         "newOwners": 2,
         "principalShare": 0.4974976328959827,
-        "nonContributorShare": 0.12883809008521574,
+        "nonContributorShare": 0.12877045854186392,
         "inactiveShare": 0.7707290680373327,
         "blank": 4098
       },
@@ -227,7 +227,7 @@
         "linesChange": 0.048694711213309816,
         "newOwners": 3,
         "principalShare": 0.5115439184831678,
-        "nonContributorShare": 0.12453243905584935,
+        "nonContributorShare": 0.12446794789113891,
         "inactiveShare": 0.7794402166903134,
         "blank": 4328
       },
@@ -237,7 +237,7 @@
         "linesChange": 0.013091706436218153,
         "newOwners": 0,
         "principalShare": 0.5235215481571074,
-        "nonContributorShare": 0.12814310267999235,
+        "nonContributorShare": 0.12807944490419504,
         "inactiveShare": 0.7829906423069578,
         "blank": 4525
       },
@@ -247,7 +247,7 @@
         "linesChange": 0.06544019351963848,
         "newOwners": 0,
         "principalShare": 0.5358785923403239,
-        "nonContributorShare": 0.12845790762980225,
+        "nonContributorShare": 0.12809942044571906,
         "inactiveShare": 0.76961223636255,
         "blank": 4843
       },
@@ -257,7 +257,7 @@
         "linesChange": 0.04403417577821589,
         "newOwners": 0,
         "principalShare": 0.5425203158979055,
-        "nonContributorShare": 0.1303078860020602,
+        "nonContributorShare": 0.12985006295066956,
         "inactiveShare": 0.7627904314982259,
         "blank": 5095
       }
@@ -492,28 +492,28 @@
   "survival": {
     "all": {
       "curve": [
-        0.9842200973778378,
-        0.9438837094695178,
-        0.878874285828292,
-        0.8149980743283883,
-        0.753763296429159,
-        0.6872696207715756,
-        0.6076975939410093,
-        0.5417593312188975,
-        0.4846547045509139,
-        0.4314935191075136,
-        0.39071501070834197,
-        0.35772992224551015,
-        0.3285395387652852,
-        0.30563141154951606,
-        0.2398510298071442,
-        0.17355768467658123,
-        0.1511489709588454,
-        0.13748578714335655,
-        0.120155645906799,
-        0.11308766673581082,
-        0.10052237043183183,
-        0.08304021905238282
+        0.9697600750865255,
+        0.9074308139578455,
+        0.8539302393887183,
+        0.798574398012246,
+        0.7375103247565417,
+        0.6752367136393376,
+        0.6079932234843828,
+        0.5582873996330346,
+        0.49383757692059144,
+        0.4588287418391826,
+        0.3976822920947269,
+        0.35509207018670297,
+        0.32411167645080013,
+        0.2977758609524333,
+        0.26753038910485166,
+        0.25511159055474447,
+        0.2354450075695253,
+        0.2106802125660234,
+        0.18378486628099913,
+        0.15625433975307618,
+        0.09588334484847856,
+        0.07896275458109998
       ],
       "halfLife": 8,
       "projected": false,
@@ -526,28 +526,28 @@
           "email": "ada.lindqvist@example.com"
         },
         "curve": [
-          0.9961645358532518,
-          0.9807923452134775,
-          0.9200748547957802,
-          0.8598318583508184,
-          0.8017678048887485,
-          0.7285615949131434,
-          0.633231895008355,
-          0.5645738535887306,
-          0.5042534857702493,
-          0.445141891465191,
-          0.4033173068735336,
-          0.3675586901214118,
-          0.3374498090595415,
-          0.3140428858877814,
-          0.23205139351313897,
-          0.1415686673111874,
-          0.10821479281378722,
-          0.10062077226545128,
-          0.08089120907614711,
-          0.08089120907614711,
-          0.07613290265990316,
-          0.06289239784948522
+          0.9773763201778766,
+          0.9329713144555094,
+          0.8829094390457015,
+          0.8365233965841342,
+          0.7856118485945413,
+          0.7158411562506598,
+          0.6401892847874969,
+          0.5876807541400759,
+          0.5203466242859046,
+          0.47967689247024553,
+          0.4070287324073245,
+          0.3582775943656251,
+          0.32610572874912,
+          0.29839984593920627,
+          0.2664445079879489,
+          0.2552845285957835,
+          0.2316205133046013,
+          0.20726271553834305,
+          0.17825648308386757,
+          0.1506392814793247,
+          0.09251861382194745,
+          0.07619179961807437
         ],
         "halfLife": 9,
         "projected": false,
@@ -559,28 +559,28 @@
           "email": "mira.quist@example.com"
         },
         "curve": [
-          0.9969811320754717,
-          0.960262243543355,
-          0.8870629702639544,
-          0.8174239016250403,
-          0.7575620502434086,
-          0.7181408138048608,
-          0.6653210365576192,
-          0.580119346207607,
-          0.5273077382853167,
-          0.45583851684543225,
-          0.3932153340200214,
-          0.38643575929553825,
-          0.35931746039760576,
-          0.3193932981312051,
-          0.29417803775242574,
-          0.2768734472964007,
-          0.2768734472964007,
-          0.2768734472964007,
-          0.26058677392602414,
-          0.26058677392602414
+          0.969811320754717,
+          0.8966132346491769,
+          0.855034868433582,
+          0.7938507738192727,
+          0.7110074388400833,
+          0.6783114763240795,
+          0.6361447613722373,
+          0.600091216961972,
+          0.5330253673104769,
+          0.507729248183878,
+          0.4215859746452528,
+          0.4143172509444726,
+          0.3852423561413517,
+          0.35099859115100934,
+          0.3239986995240086,
+          0.3054844881226367,
+          0.3054844881226367,
+          0.3054844881226367,
+          0.29093760773584443,
+          0.29093760773584443
         ],
-        "halfLife": 9,
+        "halfLife": 10,
         "projected": false,
         "lines": 3975
       },
@@ -624,7 +624,8 @@
       "lines": 9490,
       "commits": 41,
       "written": 1920,
-      "lastCommit": 1668597449
+      "lastCommit": 1668597449,
+      "removedOthers": 95
     },
     {
       "identityId": 1,
@@ -635,7 +636,8 @@
       "lines": 1856,
       "commits": 31,
       "written": 1230,
-      "lastCommit": 1649062687
+      "lastCommit": 1649062687,
+      "removedOthers": 63
     },
     {
       "identityId": 27,
@@ -646,7 +648,8 @@
       "lines": 1132,
       "commits": 42,
       "written": 1493,
-      "lastCommit": 1780827016
+      "lastCommit": 1780827016,
+      "removedOthers": 473
     },
     {
       "identityId": 23,
@@ -657,7 +660,8 @@
       "lines": 1111,
       "commits": 4,
       "written": 5074,
-      "lastCommit": 1716048447
+      "lastCommit": 1716048447,
+      "removedOthers": 5053
     },
     {
       "identityId": 22,
@@ -668,7 +672,8 @@
       "lines": 512,
       "commits": 156,
       "written": 2847,
-      "lastCommit": 1781859001
+      "lastCommit": 1781859001,
+      "removedOthers": 866
     },
     {
       "identityId": 6,
@@ -679,7 +684,8 @@
       "lines": 351,
       "commits": 141,
       "written": 3551,
-      "lastCommit": 1782223861
+      "lastCommit": 1782223861,
+      "removedOthers": 1256
     },
     {
       "identityId": 8,
@@ -690,7 +696,8 @@
       "lines": 300,
       "commits": 57,
       "written": 1090,
-      "lastCommit": 1666242863
+      "lastCommit": 1666242863,
+      "removedOthers": 279
     },
     {
       "identityId": 4,
@@ -701,7 +708,8 @@
       "lines": 224,
       "commits": 72,
       "written": 1127,
-      "lastCommit": 1782114967
+      "lastCommit": 1782114967,
+      "removedOthers": 532
     },
     {
       "identityId": 16,
@@ -712,7 +720,8 @@
       "lines": 221,
       "commits": 66,
       "written": 1241,
-      "lastCommit": 1779020790
+      "lastCommit": 1779020790,
+      "removedOthers": 599
     },
     {
       "identityId": 20,
@@ -723,7 +732,8 @@
       "lines": 218,
       "commits": 34,
       "written": 544,
-      "lastCommit": 1724958179
+      "lastCommit": 1724958179,
+      "removedOthers": 240
     },
     {
       "identityId": 14,
@@ -734,7 +744,8 @@
       "lines": 140,
       "commits": 45,
       "written": 859,
-      "lastCommit": 1781290060
+      "lastCommit": 1781290060,
+      "removedOthers": 564
     },
     {
       "identityId": 5,
@@ -745,7 +756,8 @@
       "lines": 134,
       "commits": 53,
       "written": 1081,
-      "lastCommit": 1733307935
+      "lastCommit": 1733307935,
+      "removedOthers": 238
     },
     {
       "identityId": 12,
@@ -756,7 +768,8 @@
       "lines": 131,
       "commits": 48,
       "written": 1084,
-      "lastCommit": 1781826647
+      "lastCommit": 1781826647,
+      "removedOthers": 292
     },
     {
       "identityId": 38,
@@ -767,7 +780,8 @@
       "lines": 130,
       "commits": 21,
       "written": 407,
-      "lastCommit": 1780564309
+      "lastCommit": 1780564309,
+      "removedOthers": 159
     },
     {
       "identityId": 37,
@@ -778,7 +792,8 @@
       "lines": 126,
       "commits": 26,
       "written": 451,
-      "lastCommit": 1779613413
+      "lastCommit": 1779613413,
+      "removedOthers": 225
     },
     {
       "identityId": 31,
@@ -789,7 +804,8 @@
       "lines": 115,
       "commits": 40,
       "written": 831,
-      "lastCommit": 1774778609
+      "lastCommit": 1774778609,
+      "removedOthers": 368
     },
     {
       "identityId": 25,
@@ -800,7 +816,8 @@
       "lines": 110,
       "commits": 25,
       "written": 571,
-      "lastCommit": 1781463413
+      "lastCommit": 1781463413,
+      "removedOthers": 325
     },
     {
       "identityId": 9,
@@ -811,7 +828,8 @@
       "lines": 109,
       "commits": 38,
       "written": 776,
-      "lastCommit": 1774033530
+      "lastCommit": 1774033530,
+      "removedOthers": 304
     },
     {
       "identityId": 18,
@@ -822,7 +840,8 @@
       "lines": 105,
       "commits": 58,
       "written": 931,
-      "lastCommit": 1777335830
+      "lastCommit": 1777335830,
+      "removedOthers": 425
     },
     {
       "identityId": 13,
@@ -833,7 +852,8 @@
       "lines": 103,
       "commits": 44,
       "written": 1037,
-      "lastCommit": 1781983752
+      "lastCommit": 1781983752,
+      "removedOthers": 286
     },
     {
       "identityId": 17,
@@ -844,7 +864,8 @@
       "lines": 97,
       "commits": 49,
       "written": 703,
-      "lastCommit": 1701973393
+      "lastCommit": 1701973393,
+      "removedOthers": 325
     },
     {
       "identityId": 19,
@@ -855,7 +876,8 @@
       "lines": 81,
       "commits": 37,
       "written": 611,
-      "lastCommit": 1778519224
+      "lastCommit": 1778519224,
+      "removedOthers": 300
     },
     {
       "identityId": 28,
@@ -866,7 +888,8 @@
       "lines": 80,
       "commits": 16,
       "written": 340,
-      "lastCommit": 1779746349
+      "lastCommit": 1779746349,
+      "removedOthers": 222
     },
     {
       "identityId": 35,
@@ -877,7 +900,8 @@
       "lines": 69,
       "commits": 40,
       "written": 534,
-      "lastCommit": 1780914248
+      "lastCommit": 1780914248,
+      "removedOthers": 426
     },
     {
       "identityId": 3,
@@ -888,7 +912,8 @@
       "lines": 68,
       "commits": 17,
       "written": 280,
-      "lastCommit": 1678070757
+      "lastCommit": 1678070757,
+      "removedOthers": 160
     },
     {
       "identityId": 26,
@@ -899,7 +924,8 @@
       "lines": 63,
       "commits": 28,
       "written": 598,
-      "lastCommit": 1780750748
+      "lastCommit": 1780750748,
+      "removedOthers": 221
     },
     {
       "identityId": 21,
@@ -910,7 +936,8 @@
       "lines": 63,
       "commits": 57,
       "written": 590,
-      "lastCommit": 1781693032
+      "lastCommit": 1781693032,
+      "removedOthers": 298
     },
     {
       "identityId": 40,
@@ -921,7 +948,8 @@
       "lines": 52,
       "commits": 8,
       "written": 241,
-      "lastCommit": 1774576996
+      "lastCommit": 1774576996,
+      "removedOthers": 161
     },
     {
       "identityId": 15,
@@ -932,7 +960,8 @@
       "lines": 45,
       "commits": 34,
       "written": 400,
-      "lastCommit": 1778439496
+      "lastCommit": 1778439496,
+      "removedOthers": 288
     },
     {
       "identityId": 2,
@@ -943,7 +972,8 @@
       "lines": 35,
       "commits": 124,
       "written": 126,
-      "lastCommit": 1781126034
+      "lastCommit": 1781126034,
+      "removedOthers": 35
     },
     {
       "identityId": 34,
@@ -954,7 +984,8 @@
       "lines": 33,
       "commits": 15,
       "written": 199,
-      "lastCommit": 1782039314
+      "lastCommit": 1782039314,
+      "removedOthers": 116
     },
     {
       "identityId": 33,
@@ -965,7 +996,8 @@
       "lines": 29,
       "commits": 16,
       "written": 225,
-      "lastCommit": 1685683415
+      "lastCommit": 1685683415,
+      "removedOthers": 29
     },
     {
       "identityId": 36,
@@ -976,7 +1008,8 @@
       "lines": 28,
       "commits": 4,
       "written": 117,
-      "lastCommit": 1777942410
+      "lastCommit": 1777942410,
+      "removedOthers": 27
     },
     {
       "identityId": 7,
@@ -987,7 +1020,8 @@
       "lines": 23,
       "commits": 31,
       "written": 320,
-      "lastCommit": 1777282632
+      "lastCommit": 1777282632,
+      "removedOthers": 370
     },
     {
       "identityId": 30,
@@ -998,7 +1032,8 @@
       "lines": 17,
       "commits": 8,
       "written": 110,
-      "lastCommit": 1779748317
+      "lastCommit": 1779748317,
+      "removedOthers": 19
     },
     {
       "identityId": 10,
@@ -1009,7 +1044,8 @@
       "lines": 14,
       "commits": 15,
       "written": 132,
-      "lastCommit": 1680121793
+      "lastCommit": 1680121793,
+      "removedOthers": 116
     },
     {
       "identityId": 29,
@@ -1020,7 +1056,8 @@
       "lines": 12,
       "commits": 3,
       "written": 42,
-      "lastCommit": 1771226573
+      "lastCommit": 1771226573,
+      "removedOthers": 66
     },
     {
       "identityId": 24,
@@ -1031,7 +1068,8 @@
       "lines": 12,
       "commits": 9,
       "written": 163,
-      "lastCommit": 1780123956
+      "lastCommit": 1780123956,
+      "removedOthers": 59
     },
     {
       "identityId": 11,
@@ -1042,7 +1080,8 @@
       "lines": 12,
       "commits": 8,
       "written": 209,
-      "lastCommit": 1693395974
+      "lastCommit": 1693395974,
+      "removedOthers": 14
     },
     {
       "identityId": 39,
@@ -1053,7 +1092,8 @@
       "lines": 5,
       "commits": 1,
       "written": 9,
-      "lastCommit": 1751140728
+      "lastCommit": 1751140728,
+      "removedOthers": 2
     }
   ],
   "lines": [
@@ -2487,7 +2527,7 @@
       },
       "lines": 4551,
       "foreign": 908,
-      "absentee": 12,
+      "absentee": 4,
       "owners": [
         {
           "identityId": 32,
@@ -2721,7 +2761,7 @@
             "email": "quinn.zeller@example.com"
           },
           "lines": 8,
-          "contributor": false
+          "contributor": true
         },
         {
           "identityId": 17,
@@ -3289,7 +3329,7 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 15:21 UTC"
+    "at": "2026-10-10 16:45 UTC"
   },
   "archetypes": [
     {
@@ -3329,26 +3369,12 @@
       ]
     },
     {
-      "key": "absentee",
-      "rule": "Owners with most of their lines in repositories they never committed to.",
-      "aiRule": "Owners with most of their lines in repositories they never committed to.",
-      "members": 1,
-      "lines": 12,
-      "share": 0.000687442713107241,
-      "examples": [
-        {
-          "name": "Quinn Zeller",
-          "email": "quinn.zeller@example.com"
-        }
-      ]
-    },
-    {
       "key": "demolition",
       "rule": "People who removed more lines belonging to others than they own.",
       "aiRule": "People who removed more lines belonging to others than they own.",
-      "members": 9,
-      "lines": 2756,
-      "share": 0.1578826764436297,
+      "members": 32,
+      "lines": 4581,
+      "share": 0.26243125572868925,
       "examples": [
         {
           "name": "Fiona Format",
@@ -3382,34 +3408,33 @@
   "ai": {
     "model": "openai/gpt-6-luna",
     "promptVersion": 2,
-    "cached": true,
+    "cached": false,
     "summary": [
-      "OWNH covers fewer than ten repositories, dozens of owners, and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.4% of lines, compared with 10.6% for Mira Quist and 6.5% for Umar Lindqvist.",
-      "At 2026 Q2, principal-owner share is 54.3%, up from 51.2% at 2025 Q3. Inactive-owner share is 76.3%, down from 77.9% over the same period; both majorities are already established. The next blank-line milestone is projected for 2031 Q4.",
-      "Cross-repository ownership remains uneven, and methods agree in no repositories. Removed lines equal 48.7% of added lines, with 95.6% of removals belonging to others; Fiona Format accounts for 30.4% of removals. Code survival has a two-year half-life, not a projection."
+      "OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.4%, compared with Mira Quist at 10.6% and Umar Lindqvist at 6.5%; blank lines account for 20.5% of lines, and the reported punctuation-only line categories account for 6.4% and 6.3%, all owned by Ada Lindqvist.",
+      "Cross-repository authorship is substantial: lines written elsewhere account for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Ownership by non-contributors ranges from 0% in web-frontend to 57% in api-gateway; ownership methods agree in no repositories.",
+      "At 2026 Q2, principal-owner share is 54.3%, up from 51.2% at 2025 Q3, while inactive-owner share is 76.3%, down from 77.9%; both majorities are established. The next blank-line milestone is projected for 2031 Q4, and line survival has a half-life of 2 years."
     ],
     "okr": {
-      "objective": "Build more balanced, current, and consistently measured code ownership across the portfolio.",
+      "objective": "Improve ownership resilience and measurement consistency across the portfolio.",
       "keyResults": [
         {
-          "text": "Reduce principal-owner concentration from its 2026 Q2 baseline of 54.3%, which has risen from 51.2% at 2025 Q3.",
+          "text": "Lower principal-owner concentration from the 2026 Q2 baseline of 54.3%, which rose from 51.2% at 2025 Q3.",
           "status": "at risk"
         },
         {
-          "text": "Reduce inactive-owner concentration from its 2026 Q2 baseline of 76.3%; it remains a majority despite declining from 77.9% at 2025 Q3.",
-          "status": "on track"
+          "text": "Reduce inactive-owner share from the 2026 Q2 baseline of 76.3%; it has eased from 77.9% at 2025 Q3 but remains a majority, held since 2023 Q4.",
+          "status": "at risk"
         },
         {
-          "text": "Establish cross-method agreement from a baseline of no repositories where methods agree.",
+          "text": "Increase ownership-method agreement from a baseline of no repositories at 2026 Q2.",
           "status": "off track"
         }
       ]
     },
     "archetypeNames": {
       "principal": "Lead Owner",
-      "inactive": "Dormant Stewards",
-      "absentee": "Cross-Repo Absentee",
-      "demolition": "Code Removers",
+      "inactive": "Dormant Contributors",
+      "demolition": "Aggressive Pruners",
       "automation": "Automated Steward"
     }
   }

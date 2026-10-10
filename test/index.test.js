@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -12,7 +12,8 @@ import { report } from '../src/report.js';
 import { samplePaths } from '../src/sample.js';
 import { collectStats, padText, textWidth } from '../src/stats.js';
 import { findOddities } from '../src/oddities.js';
-import { aiConfig, buildFacts, chatCompletion, pseudonyms } from '../src/ai.js';
+import { aiConfig, buildFacts, chatCompletion, checkAnswer, pseudonyms } from '../src/ai.js';
+import { survivalStatements } from '../src/sections.js';
 import { exampleLabels, findArchetypes } from '../src/archetypes.js';
 import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
@@ -612,4 +613,90 @@ test('the newest quarter is labeled in progress when the report is generated ins
     if (saved === undefined) delete process.env.SOURCE_DATE_EPOCH;
     else process.env.SOURCE_DATE_EPOCH = saved;
   }
+});
+
+test('indexing edge cases: raw bytes, binary/text switches, repo paths, submodules, odd paths', async () => {
+  const A = ['Fiona Format', 'fiona@example.com'];
+  const B = ['Ada Lindqvist', 'ada@example.com'];
+  const repo = init(dir, 'edges');
+  // Non-UTF-8 bytes: two Latin-1 lines that differ in one byte.
+  commit(repo, A, 100, { 'latin1-a.txt': Buffer.from('caf\xe9\n', 'latin1'), 'bin.dat': Buffer.from([1, 0, 2, 10]), 'gone.txt': 'p\nq\n', 'my file.txt': 'spaced\n' });
+  commit(repo, B, 200, { 'latin1-b.txt': Buffer.from('caf\xe8\n', 'latin1'), 'bin.dat': 'one\ntwo\n', 'gone.txt': Buffer.from([0, 1, 2]) });
+  // A gitlink (submodule entry) added, then deleted.
+  const env = (t) => ({ ...process.env, GIT_AUTHOR_NAME: B[0], GIT_AUTHOR_EMAIL: B[1], GIT_COMMITTER_NAME: B[0], GIT_COMMITTER_EMAIL: B[1], GIT_AUTHOR_DATE: `${1_700_000_000 + t} +0000`, GIT_COMMITTER_DATE: `${1_700_000_000 + t} +0000` });
+  const sha = execFileSync('git', ['-C', repo, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+  execFileSync('git', ['-C', repo, 'update-index', '--add', '--cacheinfo', `160000,${sha},sub`], { env: env(300) });
+  execFileSync('git', ['-C', repo, '-c', 'commit.gpgsign=false', 'commit', '-q', '-m', 'add gitlink'], { env: env(300) });
+  execFileSync('git', ['-C', repo, 'rm', '-q', '--cached', 'sub'], { env: env(400) });
+  execFileSync('git', ['-C', repo, '-c', 'commit.gpgsign=false', 'commit', '-q', '-m', 'drop gitlink'], { env: env(400) });
+  execFileSync('git', ['-C', repo, 'checkout', '-q', '--', '.']);
+  mkdirSync(join(repo, 'sub-dir'));
+
+  // Given as a subdirectory: the repo is still named for its root.
+  const db = join(dir, 'edges.db');
+  await index({ dbPath: db, repoPaths: [join(repo, 'sub-dir')] });
+  const own = owners(db);
+  assert.equal(own['edges/latin1-a.txt:1'], A[1]);
+  assert.equal(own['edges/latin1-b.txt:1'], B[1], 'a different non-UTF-8 byte is a different line');
+  assert.equal(own['edges/bin.dat:1'], B[1], 'binary rewritten as text: its lines get an owner');
+  assert.equal(own['edges/bin.dat:2'], B[1]);
+  withDb(db, (conn) => {
+    assert.equal(conn.prepare("SELECT COUNT(*) AS n FROM churn ch LEFT JOIN line_hashes l ON l.hash = ch.hash WHERE l.hash IS NULL").get().n, 0, 'no churn for unowned hashes (gitlinks)');
+    // Text rewritten as binary: its text lines count as removed.
+    const removed = conn.prepare("SELECT SUM(ch.removed) AS n FROM churn ch JOIN line_hashes l ON l.hash = ch.hash WHERE l.text IN ('p', 'q')").get().n;
+    assert.equal(removed, 2);
+    assert.equal(conn.prepare("SELECT COUNT(*) AS n FROM line_hashes WHERE path LIKE '%' || char(9)").get().n, 0, 'no trailing tab on paths with spaces');
+    assert.ok(conn.prepare("SELECT 1 FROM line_hashes WHERE path = 'my file.txt'").get());
+  });
+
+  // Given as its .git directory: same name, same result; --force replaces the .db.
+  await index({ dbPath: db, repoPaths: [join(repo, '.git')], force: true });
+  assert.deepEqual(owners(db), own);
+  assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith('edges.db.building')), []);
+
+  // blame on a missing .db fails without creating it.
+  await assert.rejects(blame({ dbPath: join(dir, 'typo.db') }), /does not exist/);
+  assert.ok(!readdirSync(dir).includes('typo.db'));
+});
+
+test('report fixes: full demolition rule, Markdown escaping, code spans, survival text', async () => {
+  // Net demolishers come from every owner's own count, not the top-10 list.
+  const fdb = join(dir, 'demolition.db');
+  await index({ dbPath: fdb, repoPaths: [repos.alpha, repos.beta] });
+  const stats = withDb(fdb, (conn) => collectStats(conn));
+  const expected = stats.owners.filter((o) => o.owner && (o.removedOthers ?? 0) > o.lines).length;
+  const demolition = findArchetypes(stats).find((a) => a.key === 'demolition');
+  assert.equal(demolition?.members ?? 0, expected);
+  assert.ok(stats.owners.every((o) => o.identityId === null || typeof o.removedOthers === 'number'));
+
+  // Untrusted names and line text cannot become Markdown markup.
+  const A = ['*Fiona* _Format_ [x](y)', 'fiona@example.com'];
+  const repo = init(dir, 'escapes');
+  commit(repo, A, 100, { 'e.js': 'a``b\na``b\na``b\n' });
+  const db = join(dir, 'escapes.db');
+  await index({ dbPath: db, repoPaths: [repo] });
+  const out = join(dir, 'escapes-report');
+  await report({ dbPath: db, outDir: out, cache: false });
+  const md = readFileSync(join(out, 'leaderboard.md'), 'utf8');
+  assert.ok(md.includes('\\*Fiona\\* \\_Format\\_ \\[x\\](y) \\<fiona@example.com\\>'));
+  assert.ok(!md.includes('| *Fiona*'));
+  assert.ok(md.includes('```"a``b"```'), 'a code span fence longer than any backtick run inside');
+
+  // Deletions with all history in one quarter: no claim that nothing was deleted.
+  const text = survivalStatements({ survival: { all: { lines: 10, curve: [0.9], halfLife: null, projected: false }, owners: [] } });
+  assert.match(text[0], /90\.0% of lines survive; not enough history/);
+  assert.match(survivalStatements({ survival: { all: { lines: 10, curve: [1, 1], halfLife: null, projected: false }, owners: [] } })[0], /no lines have been deleted/);
+});
+
+test('AI number guard: values only, and spelled-out numbers', () => {
+  const facts = { scale: { repositories: 'fewer than ten' }, outlook: { r2: 0.9 }, archetypes: [] };
+  const p = { known: () => true };
+  const answer = (s) => ({ summary: [s, 'b', 'c'], okr: { objective: 'o', keyResults: [{ text: 'k', status: 'on track' }, { text: 'k', status: 'on track' }, { text: 'k', status: 'on track' }] }, archetypes: {} });
+  assert.match(checkAnswer(answer('Growth of 2 points.'), facts, p).join(), /the number 2 is not in the facts/, 'key names like r2 are not facts');
+  assert.match(checkAnswer(answer('Twelve quarters ahead.'), facts, p).join(), /"Twelve" is not in the facts/);
+  assert.deepEqual(checkAnswer(answer('Fewer than ten repositories, R² 0.9.'), facts, p), []);
+  // A malformed key result is a problem to report, not a crash.
+  const bad = answer('x');
+  bad.okr.keyResults[1] = null;
+  assert.match(checkAnswer(bad, facts, p).join(), /each key result/);
 });

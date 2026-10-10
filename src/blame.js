@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { availableParallelism } from 'node:os';
 import { openDbForWrite } from './db.js';
 import { toPathspecs } from './exclude.js';
@@ -34,10 +35,14 @@ CREATE TABLE IF NOT EXISTS blame_repos (
 // Resumable: files recorded in blame_files are skipped. Binary files are
 // recorded as done without lines (blame has nothing meaningful for them).
 export async function blame({ dbPath, repoNames = [], jobs = availableParallelism(), sample, log = () => {} }) {
+  // openDbForWrite would create a missing file; a typo must not leave a stray .db.
+  if (!existsSync(dbPath)) throw new Error(`${dbPath} does not exist; create it with index`);
   const db = openDbForWrite(dbPath);
   try {
+    const hasRuns = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'runs'").get();
+    const run = hasRuns && db.prepare('SELECT excludes FROM runs WHERE finished_at IS NOT NULL ORDER BY id LIMIT 1').get();
+    if (!run) throw new Error(`${dbPath} has no completed index run`);
     db.exec(BLAME_SCHEMA);
-    const run = db.prepare('SELECT excludes FROM runs ORDER BY id LIMIT 1').get();
     const pathspecs = toPathspecs(JSON.parse(run.excludes));
     let repos = db.prepare('SELECT id, name, path, head FROM repos ORDER BY name').all();
     if (repoNames.length) {
@@ -145,12 +150,18 @@ async function blameRepo(db, repo, { pathspecs, identityId, jobs, sample }, repo
 }
 
 // Same identity rules as indexing: one identity per lowercased email. Blame can
-// name authors the history walk never saw (for example, merge commits); they get
-// an identity with the name blame reports.
+// name authors the history walk never saw (for example, with a different
+// mailmap); they get an identity named with the smallest name blame reports for
+// that email. Blame runs files in parallel, so "first seen" would depend on
+// timing; the smallest name does not. Identities with commits keep the name
+// indexing gave them.
 function identityResolver(db) {
   const insert = db.prepare('INSERT OR IGNORE INTO identities (email, name) VALUES (?, ?)');
   const select = db.prepare('SELECT id FROM identities WHERE email = ?');
+  const lower = db.prepare(`UPDATE identities SET name = ? WHERE id = ? AND name > ?
+    AND NOT EXISTS (SELECT 1 FROM commits c WHERE c.identity_id = identities.id)`);
   const ids = new Map();
+  const smallest = new Map();
   return (name, email) => {
     const key = email.toLowerCase();
     let id = ids.get(key);
@@ -158,6 +169,11 @@ function identityResolver(db) {
       insert.run(key, name);
       id = select.get(key).id;
       ids.set(key, id);
+    }
+    const min = smallest.get(key);
+    if (min === undefined || name < min) {
+      smallest.set(key, name);
+      lower.run(name, id, name);
     }
     return id;
   };

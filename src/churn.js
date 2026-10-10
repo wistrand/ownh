@@ -45,7 +45,12 @@ export function deletions(db, identities) {
       lostToOthers.set(owner, (lostToOthers.get(owner) ?? 0) + n);
     }
   }
-  const rank = (m) => [...m].sort((a, b) => b[1] - a[1] || a[0] - b[0]).slice(0, 10)
+  // Ties go to the smaller email, never the identity id: ids follow insertion
+  // order, which `add` does not keep, and the result must not depend on it.
+  const email = (id) => identities.get(id)?.email ?? '';
+  const rank = (m) => [...m]
+    .sort((a, b) => b[1] - a[1] || (email(a[0]) < email(b[0]) ? -1 : email(a[0]) > email(b[0]) ? 1 : 0))
+    .slice(0, 10)
     .map(([id, n]) => ({ owner: identities.get(id) ?? null, lines: n, ownRemoved: removedOwn.get(id) ?? 0 }));
 
   const mostRemoved = db.prepare(`
@@ -78,12 +83,15 @@ export function deletions(db, identities) {
       owner: identities.get(mostRemoved.owner) ?? null,
     } : null,
     restored,
+    // Every remover, not only the top 10: identity id -> lines of others
+    // removed. A Map for collectStats only; it is not part of the stats output.
+    removedOthersBy: removedOthers,
   };
 }
 
 // Survival of lines, per owner. Copies of the same line can't be told apart, so
-// within each hash removals are paired with the oldest surviving additions
-// first. Each paired line "dies" at its age in quarters; lines still present are
+// within each hash and repository removals are paired with the oldest surviving
+// additions first (a removal in one repo never ends a copy in another). Each paired line "dies" at its age in quarters; lines still present are
 // censored at their age now. Survival is the Kaplan-Meier estimate over those
 // ages, and the half-life is the first age at which it drops to 50% or below,
 // or, if it never does, an exponential extrapolation from the last point.
@@ -99,22 +107,25 @@ export function survival(db, groups, now) {
   };
 
   const rows = db.prepare(`
-    SELECT ch.hash AS hash, c.identity_id AS owner, ch.q AS q, SUM(ch.added) AS added, SUM(ch.removed) AS removed
+    SELECT ch.hash AS hash, ch.repo_id AS repoId, c.identity_id AS owner, ch.q AS q, SUM(ch.added) AS added, SUM(ch.removed) AS removed
     FROM churn ch ${OWNER_OF_HASH}
-    GROUP BY ch.hash, ch.q
-    ORDER BY ch.hash, ch.q
+    GROUP BY ch.hash, ch.repo_id, ch.q
+    ORDER BY ch.hash, ch.repo_id, ch.q
   `).iterate();
 
   let current = null;
   let owner = null;
   let queue = []; // [quarter added, count], oldest first
+  // Ages are clamped at 0: "now" is the newest commit's quarter, so nothing
+  // should be younger, but a negative age would never leave the at-risk set.
   const finish = () => {
-    for (const [q, n] of queue) if (n > 0) record(owner, 'censored', now - q, n);
+    for (const [q, n] of queue) if (n > 0) record(owner, 'censored', Math.max(0, now - q), n);
   };
   for (const row of rows) {
-    if (row.hash !== current) {
+    const key = `${row.hash}:${row.repoId}`;
+    if (key !== current) {
       if (current !== null) finish();
-      current = row.hash;
+      current = key;
       owner = row.owner;
       queue = [];
     }

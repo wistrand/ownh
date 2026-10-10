@@ -5,3 +5,11 @@ ownh.exclude
 .claude/
 local/
 *.db-journal
+*.db-wal
+*.db-shm
+*.db.building-*
+docs/sample/ai-request.json
+whitepaper/*.aux
+whitepaper/*.log
+whitepaper/*.out
+whitepaper/*.pdf

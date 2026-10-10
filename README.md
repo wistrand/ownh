@@ -70,11 +70,20 @@ OWNH_AI_BASE_URL=http://localhost:11434/v1 OWNH_AI_MODEL=<local model> bin/ownh.
 
 Only percentages, size bands ("tens of millions of lines"), and trends leave
 the machine; every person, repository, and quarter is replaced by a token and
-restored locally. On OpenRouter, requests are restricted to providers that
-neither store nor train on data, and to zero-data-retention endpoints. The
+restored locally. On OpenRouter, requests are always restricted to providers
+that neither store nor train on data, and by default to zero-data-retention
+endpoints (`OWNH_AI_ZDR=0` drops that second restriction). The
 exact request is saved as `ai-request.json`; `--ai-dry-run` writes it without
 sending anything. Every number in the AI text is checked against OWNH's
 figures, and answers are cached per database.
+
+| Variable                                | Meaning                                                                     |
+|-----------------------------------------|-----------------------------------------------------------------------------|
+| `OWNH_AI_KEY` or `OPENROUTER_API_KEY`   | API key; required for the default endpoint, optional with a custom base URL |
+| `OWNH_AI_BASE_URL`                      | OpenAI-compatible endpoint (default `https://openrouter.ai/api/v1`)         |
+| `OWNH_AI_MODEL`                         | model (default `openai/gpt-6-luna`)                                         |
+| `OWNH_AI_ZDR`                           | `0` drops the zero-data-retention requirement (OpenRouter only)             |
+| `OWNH_AI_TEMPERATURE`                   | a number (default 0), or `default` to send none                             |
 
 ## Website
 

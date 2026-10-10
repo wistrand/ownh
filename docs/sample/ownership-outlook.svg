@@ -168,7 +168,7 @@
 <circle class="hit" cx="444.0" cy="218.2" r="6"><title>Ada Lindqvist, 2026 Q1: 54%</title></circle>
 <circle class="hit" cx="464.7" cy="216.4" r="6"><title>Ada Lindqvist, 2026 Q2: 54%</title></circle>
 <circle class="point rp2" cx="464.7" cy="216.4" r="4.5"/>
-<path class="trend ln3" d="M 72.0 324.4 L 92.7 325.9 L 113.3 325.6 L 134.0 317.6 L 154.7 314.4 L 175.3 313.6 L 196.0 315.4 L 216.7 318.9 L 237.3 319.0 L 258.0 318.5 L 278.7 342.1 L 299.3 332.6 L 320.0 330.8 L 340.7 329.9 L 361.3 329.5 L 382.0 329.0 L 402.7 330.1 L 423.3 329.1 L 444.0 329.1 L 464.7 328.6"/>
+<path class="trend ln3" d="M 72.0 324.4 L 92.7 325.9 L 113.3 325.6 L 134.0 317.6 L 154.7 314.4 L 175.3 313.6 L 196.0 315.4 L 216.7 318.9 L 237.3 319.1 L 258.0 318.5 L 278.7 342.1 L 299.3 332.7 L 320.0 330.8 L 340.7 329.9 L 361.3 329.5 L 382.0 329.0 L 402.7 330.1 L 423.3 329.2 L 444.0 329.2 L 464.7 328.7"/>
 <circle class="hit" cx="72.0" cy="324.4" r="6"><title>Non-contributors, 2021 Q3: 15%</title></circle>
 <circle class="hit" cx="92.7" cy="325.9" r="6"><title>Non-contributors, 2021 Q4: 14%</title></circle>
 <circle class="hit" cx="113.3" cy="325.6" r="6"><title>Non-contributors, 2022 Q1: 14%</title></circle>
@@ -177,19 +177,19 @@
 <circle class="hit" cx="175.3" cy="313.6" r="6"><title>Non-contributors, 2022 Q4: 19%</title></circle>
 <circle class="hit" cx="196.0" cy="315.4" r="6"><title>Non-contributors, 2023 Q1: 18%</title></circle>
 <circle class="hit" cx="216.7" cy="318.9" r="6"><title>Non-contributors, 2023 Q2: 17%</title></circle>
-<circle class="hit" cx="237.3" cy="319.0" r="6"><title>Non-contributors, 2023 Q3: 17%</title></circle>
+<circle class="hit" cx="237.3" cy="319.1" r="6"><title>Non-contributors, 2023 Q3: 17%</title></circle>
 <circle class="hit" cx="258.0" cy="318.5" r="6"><title>Non-contributors, 2023 Q4: 17%</title></circle>
 <circle class="hit" cx="278.7" cy="342.1" r="6"><title>Non-contributors, 2024 Q1: 8%</title></circle>
-<circle class="hit" cx="299.3" cy="332.6" r="6"><title>Non-contributors, 2024 Q2: 12%</title></circle>
+<circle class="hit" cx="299.3" cy="332.7" r="6"><title>Non-contributors, 2024 Q2: 12%</title></circle>
 <circle class="hit" cx="320.0" cy="330.8" r="6"><title>Non-contributors, 2024 Q3: 12%</title></circle>
 <circle class="hit" cx="340.7" cy="329.9" r="6"><title>Non-contributors, 2024 Q4: 13%</title></circle>
 <circle class="hit" cx="361.3" cy="329.5" r="6"><title>Non-contributors, 2025 Q1: 13%</title></circle>
 <circle class="hit" cx="382.0" cy="329.0" r="6"><title>Non-contributors, 2025 Q2: 13%</title></circle>
 <circle class="hit" cx="402.7" cy="330.1" r="6"><title>Non-contributors, 2025 Q3: 12%</title></circle>
-<circle class="hit" cx="423.3" cy="329.1" r="6"><title>Non-contributors, 2025 Q4: 13%</title></circle>
-<circle class="hit" cx="444.0" cy="329.1" r="6"><title>Non-contributors, 2026 Q1: 13%</title></circle>
-<circle class="hit" cx="464.7" cy="328.6" r="6"><title>Non-contributors, 2026 Q2: 13%</title></circle>
-<circle class="point rp3" cx="464.7" cy="328.6" r="4.5"/>
+<circle class="hit" cx="423.3" cy="329.2" r="6"><title>Non-contributors, 2025 Q4: 13%</title></circle>
+<circle class="hit" cx="444.0" cy="329.2" r="6"><title>Non-contributors, 2026 Q1: 13%</title></circle>
+<circle class="hit" cx="464.7" cy="328.7" r="6"><title>Non-contributors, 2026 Q2: 13%</title></circle>
+<circle class="point rp3" cx="464.7" cy="328.7" r="4.5"/>
 <line class="trend ln1" x1="72" x2="90" y1="404" y2="404"/>
 <text class="label" x="96" y="408">Inactive owners</text>
 <line class="trend ln2" x1="236.5" x2="254.5" y1="404" y2="404"/>

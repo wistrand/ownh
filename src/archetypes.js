@@ -38,7 +38,6 @@ export function findArchetypes(stats) {
   for (const r of stats.repos) {
     for (const o of r.owners) if (o.owner && !o.contributor) absentee.set(o.identityId, (absentee.get(o.identityId) ?? 0) + o.lines);
   }
-  const removedOthers = new Map((stats.deletions?.topRemovers ?? []).filter((r) => r.owner).map((r) => [r.owner.email, r.lines]));
 
   const groups = [
     {
@@ -67,7 +66,8 @@ export function findArchetypes(stats) {
     {
       key: 'demolition',
       rule: 'People who removed more lines belonging to others than they own.',
-      members: owners.filter((o) => (removedOthers.get(o.owner.email) ?? 0) > o.lines),
+      // Every owner's own count (stats.js), not the top-10 removers list.
+      members: owners.filter((o) => (o.removedOthers ?? 0) > o.lines),
     },
     {
       key: 'automation',

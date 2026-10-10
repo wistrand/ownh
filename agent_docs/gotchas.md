@@ -36,16 +36,31 @@
   hashes from `git log -p` and hashes from HEAD blobs. Any change to decoding,
   binary classification, or line splitting must be made on both paths, or
   HEAD lines silently become unattributed.
-- **Never use our own binary check.** History learns a file is binary from git's
-  "Binary files differ" line, which honors `.gitattributes`. HEAD must ask git the
-  same question (`binaryPaths()` in `src/git.js`); a NUL-byte check of our own
-  would disagree for attribute-marked files and leave them unattributed.
-- **Unattributed lines are expected, in small numbers.** Lines written only during
-  a merge resolution have no non-merge commit adding them. A large unattributed
-  share means the two paths above disagree.
-- **User git config can change `git log` output.** `src/git.js` pins prefixes,
-  colors, signatures, notes, textconv, and relative paths. Add new overrides
-  there if a config option breaks parsing.
+- **Never invent a binary rule; use git's.** HEAD asks git (`binaryPaths()` in
+  `src/git.js`). History gets "Binary files differ" from git, but git prints it
+  when either side is binary, so each side is classified on its own with git's
+  two inputs: gitattributes for the path (`attrBinary`, `git check-attr diff`)
+  and git's content rule, a NUL in the first 8000 bytes (`looksBinary`).
+  Treating the whole pair as binary left HEAD lines unowned after a file went
+  from binary to text. Attributes come from the working tree in all three, so
+  they agree.
+- **Never decode a line before hashing it.** Decoding as UTF-8 turned invalid
+  bytes into U+FFFD, so two different Latin-1 lines got one hash. Lines stay
+  byte strings (`BYTES` in `src/git.js`) from git to `hashLine`; only names,
+  paths, and the display `text` are decoded (`utf8()`).
+- **Unattributed lines are expected, in small numbers.** Merge resolutions are
+  owned by the merge's author (remerge), so the remaining gaps are commits
+  remerge cannot redo, such as octopus merges. A large unattributed share means
+  history and HEAD disagree on splitting, classifying, or excluding.
+- **User git config can change `git log` output.** `CONFIG` in `src/git.js`
+  pins signatures, quoting, rename limits, merge rename handling, the indent
+  heuristic, and the log output encoding; `log()` pins prefixes, colors, notes,
+  textconv, relative paths, and the diff algorithm. A raised
+  `diff.renameLimit` alone changed a refactor commit from 3 to 153 added lines.
+  Add new overrides there if a config option changes parsing or results.
+- **A repo path can point inside the repo.** `rev-parse` works from a
+  subdirectory or the `.git` directory, which once named the repo `sub` or ""
+  and made anchored exclude patterns miss. `repoRoot` resolves the root first.
 - **Excludes must go through git pathspecs, on both paths.** `log()`, `headFiles()`,
   and `binaryPaths()` in `src/git.js` all take the same pathspecs. Filtering paths
   in JS on one side only would leave HEAD lines unattributed or let excluded
@@ -54,9 +69,14 @@
   touch only excluded files, so `commits.topo` and commit counts differ between
   runs with different exclude lists. Compare runs only with the same excludes;
   the list is stored in `runs.excludes`.
-- **Old `.db` files can't take `add`.** Files built before `commits.author_name`
-  existed are refused by `add` (display names need per-commit names). Rebuild
-  with `index`.
+- **Old `.db` files can't take `add`.** `add` refuses files missing the `churn`
+  table or the `commits` columns `author_name`, `added_blank`, or `is_merge`
+  (newer runs would write rows older ones lack). Rebuild with `index`.
+- **Hashing changed for non-UTF-8 lines.** Databases built before raw-byte
+  hashing store U+FFFD-mangled hashes for lines that are not valid UTF-8, and
+  older history walks treated a binary/text switch as one binary file.
+  Re-index to compare such a database with a new one; valid UTF-8 lines hash
+  the same either way.
 - **`add` needs the original exclude list.** The check compares against the first
   run in `runs`. If `ownh.exclude` changed since the `.db` was built, pass the old
   list with `--exclude-file` or rebuild.
@@ -87,15 +107,15 @@
   every older line to the boundary commit's author.
 - **Interrupting `ownh blame` leaves a temp clone.** Ctrl-C skips cleanup of the
   `ownh-blame-*` directory in the system temp dir (refs plus commit-graph, tens
-  of MB for a 342k-commit repo). The database is fine; delete the directory by hand.
+  of MB for a very large repo). The database is fine; delete the directory by hand.
 - **`ownh.exclude` is optional and git-ignored.** It holds project-specific
   paths, so it is not committed; a fresh clone has none and indexes everything
   (the CLI says so on stderr). An explicit `--exclude-file` that is missing is
   still an error.
 - **Exclude patterns have no negation.** `!pattern` is taken literally.
 - **Churn makes databases larger.** One row per (hash, repo, quarter, author)
-  with additions or removals. Unmeasured on the largest repos; expect a sizable share of
-  `head_lines`.
+  with additions or removals: measured at about 20% on a 4M-line database and
+  about 40% on the largest one (see Performance in architecture.md).
 - **Removals in merges are not real removals.** With remerge, a merge's "-"
   lines are relative to git's re-run of the merge (conflict markers, discarded
   sides), so they are skipped. Additions on branches whose changes a merge
@@ -107,8 +127,9 @@
   quarter Q counts today's lines first written by Q; deleted code is invisible.
   A true history would need per-quarter HEAD snapshots. The report states this.
 - **Fixture times are scaled.** `TIME_SCALE` in `test/fixtures.js` spreads the
-  fixture history over about 2.5 years so the sample outlook has quarters;
-  order and same-second ties are unchanged.
+  fixture history over about 2.5 years so the outlook tests have quarters;
+  order and same-second ties are unchanged. (The sample report uses its own
+  generated repos, `scripts/demo-repos.js`.)
 - **`firefox --screenshot` captures before scripts draw.** Anything rendered
   asynchronously after load is missing from plain screenshots. Use
   `node scripts/screenshot.mjs <url> <out.png> [waitMs]`.

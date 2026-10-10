@@ -1,14 +1,17 @@
 // Time series and projections for the report's "Outlook" section.
 //
-// Every series is built from lines that exist at HEAD today, grouped by the
-// quarter their owner first wrote them (a cohort view): the value for quarter Q
-// covers the surviving lines first written in Q or earlier. Lines deleted since
-// are invisible, so this is not a historical snapshot, and the report says so.
-// The blank-line series is the exception: it counts blank lines as committed,
-// from the per-commit counters recorded during indexing.
+// Two modes (`mode` in buildTimeline):
+//   history  databases with churn: lines added minus lines removed per owner and
+//            quarter, summed over all branches. Not a sequence of snapshots:
+//            removals inside merges are not counted, so the total can drift
+//            from the lines at HEAD; the report states the gap.
+//   cohort   older databases: lines that exist at HEAD today, grouped by the
+//            quarter their owner first wrote them. Deleted lines are invisible.
+// The blank-line series counts blank lines as committed, from the per-commit
+// counters recorded during indexing.
 //
-// "Now" is the quarter of the newest commit in the database, not the clock, so
-// a report built twice from the same database is identical.
+// "Now" is the quarter of the newest commit in the database (merges included),
+// not the clock, so a report built twice from the same database is identical.
 
 // Quarters are integers: year * 4 + (quarter - 1), in UTC.
 export function QUARTER_SQL(col) {

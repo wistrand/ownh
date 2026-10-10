@@ -132,17 +132,23 @@ function botCommitters(stats) {
     const top = r.methods?.commits;
     if (!top || !isBot(top.owner)) continue;
     const key = top.owner.email;
-    if (!byBot.has(key)) byBot.set(key, { name: top.owner.name, repos: [], topElsewhere: false });
+    if (!byBot.has(key)) byBot.set(key, { name: top.owner.name, repos: [], topElsewhere: false, blamed: true });
     const entry = byBot.get(key);
     entry.repos.push(`${r.name} (${pct(top.count, top.total)} of commits)`);
     // Whether blame or line hash also name it the top owner of this repo.
     if (r.methods.blame?.owner.email === key || r.methods.hash?.owner.email === key) entry.topElsewhere = true;
+    // Blame is only claimed when it was computed for every one of these repos.
+    if (!r.methods.blame) entry.blamed = false;
   }
-  return [...byBot.values()].sort((a, b) => b.repos.length - a.repos.length || cmp(a.name, b.name)).map((b) => ({
-    kind: 'bot-committer',
-    title: `${b.name} is the top committer in ${b.repos.length} ${b.repos.length === 1 ? 'repository' : 'repositories'}`,
-    detail: [{ text: `${names(b.repos)}.${b.topElsewhere ? '' : ` ${b.repos.length === 1 ? 'There' : 'In each of them'}, git blame and line hash both name someone else the top owner.`}` }],
-  }));
+  return [...byBot.values()].sort((a, b) => b.repos.length - a.repos.length || cmp(a.name, b.name)).map((b) => {
+    const where = b.repos.length === 1 ? 'There' : 'In each of them';
+    const others = b.blamed ? 'git blame and line hash both name' : 'line hash names';
+    return {
+      kind: 'bot-committer',
+      title: `${b.name} is the top committer in ${b.repos.length} ${b.repos.length === 1 ? 'repository' : 'repositories'}`,
+      detail: [{ text: `${names(b.repos)}.${b.topElsewhere ? '' : ` ${where}, ${others} someone else the top owner.`}` }],
+    };
+  });
 }
 
 // Repos where commit count, blame, and line hash name three different people.

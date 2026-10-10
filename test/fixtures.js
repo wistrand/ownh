@@ -56,8 +56,8 @@ const LEO = ['Leo', 'leo@example.com'];
 
 const BASE_TIME = 1_700_000_000;
 // Fixture times are small integers; scaling keeps their order and ties and
-// spreads the history over about 2.5 years, so the sample report's outlook has
-// quarters to work with.
+// spreads the history over about 2.5 years, so the outlook tests have quarters
+// to work with.
 const TIME_SCALE = 8640;
 const LOGO = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x0a, 0xff]);
 const A_JS = 'function a() {\n  return 1;\n}\n';

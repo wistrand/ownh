@@ -45,17 +45,17 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `src/churn.js`      | churn analyses: true ownership history, deletions, survival (Kaplan-Meier)                                                      |
 | `src/sections.js`   | leverage, code demolition, and code survival report pieces                                                                      |
 | `src/archetypes.js` | rule-based owner groups (principal, inactive, absentee, leverage, demolition, automation)                                       |
-| `src/ai.js`         | optional `--ai` prose: pseudonymized facts, OpenAI-compatible call (hosted or local), number guard, cache                              |
+| `src/ai.js`         | optional `--ai` prose: pseudonymized facts, OpenAI-compatible call (hosted or local), number guard, cache                       |
 | `src/html.js`       | self-contained report.html (inline charts, sortable tables)                                                                     |
 | `src/blame.js`      | `ownh blame`: git blame per HEAD file, parallel, resumable                                                                      |
 | `src/sample.js`     | deterministic blame file sample                                                                                                 |
 | `test/`             | fixture repo builder and `node:test` suite                                                                                      |
 | `docs/`             | pitch site, served at https://ownh.org (GitHub Pages)                                                                           |
 | `docs/CNAME`        | GitHub Pages custom domain (`ownh.org`); keep it                                                                                |
-| `docs/sample/`      | sample report from the test fixtures; generated, run `npm run sample`                                                           |
+| `docs/sample/`      | sample report of six generated demo repos (`scripts/demo-repos.js`); generated, run `npm run sample`                            |
 | `whitepaper/`       | LaTeX source of the method whitepaper; built to `docs/ownh-whitepaper.pdf`, never edit the PDF                                  |
 | `docs/og.png`       | link-preview image, rendered from `scripts/og.svg`                                                                              |
-| `scripts/`          | `build-sample.js` (sample report), `build-whitepaper.js`, `og.svg` (preview image source), `screenshot.mjs` (render-then-capture via headless Firefox) |
+| `scripts/`          | `build-sample.js`, `demo-repos.js` (sample), `build-whitepaper.js`, `og.svg` (preview), `screenshot.mjs` (headless Firefox)     |
 | `README.md`         | human-facing deadpan pitch and usage                                                                                            |
 | `LICENSE`           | Apache License 2.0 (canonical text, unmodified)                                                                                 |
 | `agent_docs/`       | architecture, research, design, gotchas (linked below)                                                                          |
@@ -75,7 +75,7 @@ per analysis; reports are generated from it.
 bin/ownh.js index --db out.db [--exclude-file f]... [--no-excludes] [--force] <repo>...
 bin/ownh.js add --db out.db [--exclude-file f]... [--no-excludes] <repo>...   # same excludes as the .db
 bin/ownh.js summary --db out.db [--top 10]
-bin/ownh.js report --db out.db [--top 20] [--ai] [--no-cache]   # writes report/out/ (always a subdirectory per database); reuses stats-cache.json there
+bin/ownh.js report --db out.db [--out dir] [--top 20] [--ai | --ai-dry-run] [--no-cache]   # default out: report/out/; reuses stats-cache.json there
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
 npm test        # only when the user asks
 npm run sample  # regenerate docs/sample/ after changing report output
@@ -87,17 +87,17 @@ npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing 
 
 - [agent_docs/research.md](agent_docs/research.md): prior art on line-level ownership and content hashing, with sources. Read before claiming anything about the literature.
 - [agent_docs/design.md](agent_docs/design.md): the satire concept, naming, the absurdities to surface, presentation ideas, the pitch copy, and the pitch site and whitepaper rules. Read before editing `docs/` or `whitepaper/`.
-- [agent_docs/architecture.md](agent_docs/architecture.md): how it works: history walk, database schema, blame, statistics, reports, sample; the decisions behind them, verification, performance, open questions. Read before changing `src/`. (Promoted from the former plan.md once all phases were built.)
+- [agent_docs/architecture.md](agent_docs/architecture.md): how it works: history walk, database schema, blame, statistics, reports, sample; the decisions behind them, verification, performance, open questions. Read before changing `src/`.
 - [agent_docs/gotchas.md](agent_docs/gotchas.md): traps in the hashing method and in the tone. Skim before writing algorithm code or any public copy.
 
 ## Invariants
 
 - Owner of a hash is the commit with the smallest `(author_time, repo name, topo)` key that adds it (`UPSERT_HASH` in `src/indexer.js`). Never compare `repos.id` for the tiebreak: ids follow insertion order and `add` appends.
 - `add` must give the same result as a full `index` of all repos. Anything order-dependent (tiebreaks, identity display names) breaks that.
-- No normalization. A line is the exact bytes between `\n` separators: whitespace, blank lines, and a trailing `\r` (CRLF) are all part of the line. A binary file is one line: the SHA-256 of its full content. Binary means whatever git decides (attributes plus content check), never our own heuristic. History and HEAD must split, classify, exclude, and hash identically (`src/hash.js`, `lines()` and `binaryPaths()` in `src/git.js`).
+- No normalization. A line is the exact bytes between `\n` separators: whitespace, blank lines, and a trailing `\r` (CRLF) are all part of the line. A binary file is one line: the SHA-256 of its full content. Binary means whatever git decides (attributes plus content check), never our own heuristic. Lines are hashed as raw bytes, never decoded first (`BYTES` in `src/git.js`). History and HEAD must split, classify, exclude, and hash identically (`src/hash.js`, `lines()` and `binaryPaths()` in `src/git.js`; each side of a "Binary files differ" diff is classified on its own in `src/indexer.js`).
 - One shared first-introducer table across all input repos. A single repo is the n=1 case, never a separate code path.
 - AI-written report text (`--ai`) may only state numbers OWNH computed; `checkAnswer` in `src/ai.js` enforces it. Never send names, emails, repository names, dates, absolute counts, or code text to the model: tokens, percentages, and size bands only (`buildFacts`). Review a new database's payload with `--ai-dry-run` before the first real request.
-- Never publish invented numbers. Every percentage, rank, or count in user-facing material comes from an actual run on a named repo. Placeholders are marked as placeholders.
+- Never publish invented numbers. Every percentage, rank, or count in user-facing material comes from a reproducible run on a real repo. Placeholders are marked as placeholders.
 - Never "fix" the absurdities. The algorithm stays faithfully naive (first introducer of a hash owns it); the satire is the output of an honest implementation of a bad idea.
 - Same repos, same output. Runs must be deterministic, independent of the order repos are passed in, so a reader can reproduce the leaderboard.
 - Public copy stays deadpan. Never wink, explain the joke, or add "satire" disclaimers inside the pitch itself. The reveal is the leaderboard.
@@ -107,7 +107,7 @@ npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing 
 
 - Never run tests unless the user asks; never run formatters or linters (user rule).
 - Never install packages; ask the user or write a script for them.
-- Never name the locally analyzed repositories, their paths, or local database files in docs (CLAUDE.md, README, agent_docs/, docs/). Describe them generically ("the largest repo", "three repos").
+- Never name the locally analyzed repositories, their paths, or local database files in docs (CLAUDE.md, README, agent_docs/, docs/, whitepaper/). Describe them generically ("the largest repo", "three repos").
 - Reports go in `report/<database name>/`, never directly in `report/`.
 - The name is always `OWNH` in prose; the expansion appears once, near the top of a piece.
 

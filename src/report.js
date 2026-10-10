@@ -114,7 +114,7 @@ function leaderboard(stats, top, charts) {
     '## Principal owners',
     '',
     ...mdTable(['Rank', 'Owner', 'Lines', 'Share'], stats.owners.slice(0, top).map((o, k) => [
-      String(k + 1), escapeCell(ownerLabel(o.owner)), num(o.lines), pct(o.lines, stats.total),
+      String(k + 1), md(ownerLabel(o.owner)), num(o.lines), pct(o.lines, stats.total),
     ]), ['r', 'l', 'r', 'r']),
     '',
     '## Ownership profiles',
@@ -132,8 +132,8 @@ function leaderboard(stats, top, charts) {
       l.binary === null ? '(unattributed)' : code(lineLabel(l, 60)),
       num(l.lines),
       pct(l.lines, stats.total),
-      l.owner ? escapeCell(l.owner.name) : '',
-      l.origin ?? '',
+      l.owner ? md(l.owner.name) : '',
+      md(l.origin ?? ''),
     ]), ['r', 'l', 'r', 'r', 'l', 'l']),
     '',
     '## Cross-repository ownership',
@@ -148,11 +148,11 @@ function leaderboard(stats, top, charts) {
       stats.repos.map((r) => {
         const outside = r.origins.find((o) => o.repo !== null && o.repo !== r.name);
         return [
-          r.name,
+          md(r.name),
           num(r.lines),
           pct(r.foreign, r.lines),
           pct(r.absentee, r.lines),
-          outside ? `${outside.repo} (${pct(outside.lines, r.lines)})` : '',
+          outside ? `${md(outside.repo)} (${pct(outside.lines, r.lines)})` : '',
         ];
       }),
       ['l', 'r', 'r', 'r', 'l'],
@@ -168,7 +168,7 @@ function leaderboard(stats, top, charts) {
     '',
     ...mdTable(['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'], [
       methodCells('**All repositories**', stats.methods),
-      ...stats.repos.map((r) => methodCells(r.name, r.methods)),
+      ...stats.repos.map((r) => methodCells(md(r.name), r.methods)),
     ], ['l', 'l', 'l', 'l', 'l']),
     '',
     `The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.`,
@@ -182,7 +182,7 @@ function leaderboard(stats, top, charts) {
     '## Oddities',
     '',
     ...(stats.oddities.length
-      ? stats.oddities.map((o) => `- ${o.title}. ${o.detail.map((p) => (p.code !== undefined ? codeSpan(p.code) : p.text)).join('')}`)
+      ? stats.oddities.map((o) => `- ${md(o.title)}. ${o.detail.map((p) => (p.code !== undefined ? codeSpan(p.code) : md(p.text))).join('')}`)
       : ['None found.']),
     '',
     '## Repositories',
@@ -190,11 +190,11 @@ function leaderboard(stats, top, charts) {
   for (const r of stats.repos) {
     out.push(
       '',
-      `### ${r.name}`,
+      `### ${md(r.name)}`,
       '',
       ...mdTable(['Rank', 'Owner', 'Lines', 'Share', 'Commits here'], r.owners.slice(0, top).map((o, k) => [
         String(k + 1),
-        escapeCell(ownerLabel(o.owner)),
+        md(ownerLabel(o.owner)),
         num(o.lines),
         pct(o.lines, r.lines),
         o.owner === null ? '' : o.contributor ? 'yes' : 'none',
@@ -228,8 +228,8 @@ const AI_LABEL = (ai) => `Written by AI (${ai.model}) from OWNH's figures; every
 function aiSummaryMd(stats) {
   const ai = stats.ai;
   if (!ai) return [];
-  if (ai.withheld) return ['## AI insights (AI-generated)', '', `Withheld: ${ai.withheld}.`, ''];
-  return ['## AI insights (AI-generated)', '', ...ai.summary.flatMap((p) => [p, '']), `_${AI_LABEL(ai)}_`, ''];
+  if (ai.withheld) return ['## AI insights (AI-generated)', '', `Withheld: ${md(ai.withheld)}.`, ''];
+  return ['## AI insights (AI-generated)', '', ...ai.summary.flatMap((p) => [md(p), '']), `_${AI_LABEL(ai)}_`, ''];
 }
 
 function okrMd(stats) {
@@ -238,9 +238,9 @@ function okrMd(stats) {
   return [
     '## OKR draft (AI-generated)',
     '',
-    `**Objective:** ${ai.okr.objective}`,
+    `**Objective:** ${md(ai.okr.objective)}`,
     '',
-    ...ai.okr.keyResults.map((k, i) => `- **KR${i + 1}** (${k.status}): ${k.text}`),
+    ...ai.okr.keyResults.map((k, i) => `- **KR${i + 1}** (${k.status}): ${md(k.text)}`),
     '',
     `_${AI_LABEL(ai)}_`,
     '',
@@ -255,11 +255,11 @@ function archetypesMd(stats) {
     '',
     ...mdTable(['Archetype', 'Rule', 'Owners', 'Share of lines', 'Examples'], stats.archetypes.map((a) => [
       // AI-written names carry an "(AI)" marker; Markdown has no icon.
-      escapeCell(names[a.key] ? `${names[a.key]} (AI)` : ARCHETYPE_TITLES[a.key]),
-      escapeCell(a.rule),
+      md(names[a.key] ? `${names[a.key]} (AI)` : ARCHETYPE_TITLES[a.key]),
+      md(a.rule),
       num(a.members),
       pct(a.lines, stats.total),
-      escapeCell(exampleLabels(a.examples).join(', ')),
+      md(exampleLabels(a.examples).join(', ')),
     ]), ['l', 'l', 'r', 'r', 'l']),
     '',
     ...(stats.ai && !stats.ai.withheld ? ['_Archetype names written by AI; membership is computed by OWNH._', ''] : []),
@@ -269,7 +269,7 @@ function archetypesMd(stats) {
 function leverageMd(stats) {
   const lev = leverage(stats);
   if (!lev) return [];
-  const rows = (list) => list.map((r) => [escapeCell(ownerLabel(r.owner)), num(r.written), num(r.owned), ratio(r.ratio)]);
+  const rows = (list) => list.map((r) => [md(ownerLabel(r.owner)), num(r.written), num(r.owned), ratio(r.ratio)]);
   const head = ['Owner', 'Lines written', 'Lines owned', 'Owned per line written'];
   return [
     '## Leverage',
@@ -292,7 +292,7 @@ function demolitionMd(stats) {
   const d = stats.deletions;
   if (!d) return [];
   const head = (label) => ['Rank', label, 'Lines', 'Own lines removed'];
-  const rows = (list) => list.map((r, k) => [String(k + 1), escapeCell(ownerLabel(r.owner)), num(r.lines), num(r.ownRemoved)]);
+  const rows = (list) => list.map((r, k) => [String(k + 1), md(ownerLabel(r.owner)), num(r.lines), num(r.ownRemoved)]);
   return [
     '## Code demolition',
     '',
@@ -316,7 +316,7 @@ function survivalMd(stats, charts) {
   return [
     '## Code survival',
     '',
-    ...survivalStatements(stats).map((s) => `- ${s}`),
+    ...survivalStatements(stats).map((s) => `- ${md(s)}`),
     '',
     ...(charts.survival ? ['![Code survival](code-survival.svg)', ''] : []),
     SURVIVAL_NOTE,
@@ -336,23 +336,23 @@ function outlookMd(stats, charts) {
   return [
     '## Outlook',
     '',
-    ...outlookStatements(t).map((s) => `- **${s.label}:** ${s.text}`),
+    ...outlookStatements(t).map((s) => `- **${s.label}:** ${md(s.text)}`),
     '',
     ...(charts.shares ? ['![Ownership outlook](ownership-outlook.svg)', ''] : []),
     ...(charts.blank ? ['![Blank line outlook](blank-line-outlook.svg)', ''] : []),
     ...mdTable(
-      ['Quarter', 'Lines under management', 'QoQ', 'New owners', t.principal ? escapeCell(t.principal.name) : 'Principal owner', 'Non-contributors', 'Inactive owners', 'Blank lines committed'],
+      ['Quarter', 'Lines under management', 'QoQ', 'New owners', t.principal ? md(t.principal.name) : 'Principal owner', 'Non-contributors', 'Inactive owners', 'Blank lines committed'],
       t.kpis.map((k) => [kpiQuarter(t, k), num(k.lines), signed(k.linesChange), num(k.newOwners), pctOrDash(k.principalShare), pctOrDash(k.nonContributorShare), pctOrDash(k.inactiveShare), k.blank === null ? '-' : num(k.blank)]),
       ['l', 'r', 'r', 'r', 'r', 'r', 'r', 'r'],
     ),
     '',
-    outlookNote(t),
+    md(outlookNote(t)),
     '',
   ];
 }
 
 function methodCells(name, m) {
-  const cell = (t) => (t ? `${escapeCell(t.owner.name)} (${methodShare(t)})` : '-');
+  const cell = (t) => (t ? `${md(t.owner.name)} (${methodShare(t)})` : '-');
   return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'yes' : 'no'];
 }
 
@@ -407,15 +407,28 @@ function code(s) {
   return escapeCell(codeSpan(s));
 }
 
-// A code span for prose; a fence of two backticks when the text has one.
+// A code span for prose. The fence is one backtick longer than the longest run
+// of backticks in the text, so no run inside can close it early.
 function codeSpan(s) {
-  const fence = s.includes('`') ? '``' : '`';
+  const longest = Math.max(0, ...(s.match(/`+/g) ?? []).map((run) => run.length));
+  const fence = '`'.repeat(longest + 1);
   const pad = s.startsWith('`') || s.endsWith('`') ? ' ' : '';
   return `${fence}${pad}${s}${pad}${fence}`;
 }
 
+// Pipes only: for code spans in table cells, where other escapes would show.
 function escapeCell(s) {
   return s.replace(/\|/g, '\\|');
+}
+
+// Untrusted text (author names, repository names, line text in prose, AI text)
+// as literal Markdown: inline markup and HTML characters are escaped, and a
+// leading block marker ("# ", "- ", "1. ") cannot start a heading or list.
+function md(s) {
+  return String(s)
+    .replace(/[\\`*_[\]<>|~&]/g, '\\$&')
+    .replace(/^(\s*)(#|[-+])(?=\s|$)/, '$1\\$2')
+    .replace(/^(\s*\d+)([.)])(?=\s|$)/, '$1\\$2');
 }
 
 function num(n) {

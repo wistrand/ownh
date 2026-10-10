@@ -4,12 +4,14 @@
 //
 // The inlined SVGs carry their own <style> with short class names (.title,
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
+import { esc } from './charts.js';
 import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
 import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
+  const anchor = repoAnchors(stats.repos);
   const topOwner = stats.owners.find((o) => o.owner);
   const topLine = stats.lines[0];
   const main = [
@@ -58,7 +60,7 @@ export function reportHtml(stats, top, charts) {
         stats.repos.map((r) => {
           const outside = r.origins.find((o) => o.repo !== null && o.repo !== r.name);
           return [
-            cell(`<a href="#repo-${slug(r.name)}">${esc(r.name)}</a>`, r.name),
+            cell(`<a href="#${anchor.get(r.name)}">${esc(r.name)}</a>`, r.name),
             cell(num(r.lines), r.lines),
             cell(pct(r.foreign, r.lines), share(r.foreign, r.lines)),
             cell(pct(r.absentee, r.lines), share(r.absentee, r.lines)),
@@ -91,7 +93,7 @@ export function reportHtml(stats, top, charts) {
       ? `<ul class="r-odd">${stats.oddities.map((o) => `<li><span class="r-odd-title">${esc(o.title)}.</span> <span class="r-odd-detail">${o.detail.map((p) => (p.code !== undefined ? `<code class="r-lit">${esc(p.code)}</code>` : esc(p.text))).join('')}</span></li>`).join('\n')}</ul>`
       : '<p class="r-note">None found.</p>'),
     section('Repositories', stats.repos.map((r) => `
-      <details class="r-repo" id="repo-${slug(r.name)}">
+      <details class="r-repo" id="${anchor.get(r.name)}">
         <summary><span class="r-repo-name">${esc(r.name)}</span>
           <span class="r-meta">${num(r.lines)} lines · ${pct(r.foreign, r.lines)} from other repos · ${pct(r.absentee, r.lines)} owned by non-contributors</span></summary>
         ${table(
@@ -288,8 +290,20 @@ function slug(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 }
 
-function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// One unique id per repository section. Distinct names can share a slug
+// ("foo.js" and "foo-js", or names with no ASCII letters at all), which would
+// send both links to the first section.
+function repoAnchors(repos) {
+  const anchors = new Map();
+  const used = new Set();
+  for (const r of repos) {
+    const base = `repo-${slug(r.name).replace(/^-+|-+$/g, '') || 'x'}`;
+    let id = base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    used.add(id);
+    anchors.set(r.name, id);
+  }
+  return anchors;
 }
 
 const PAGE_STYLE = `

@@ -42,13 +42,17 @@ dependencies. Git does all repository work through subprocesses (`src/git.js`).
 
 ## Commands
 
-| Command   | Does                                                                                       |
-|-----------|--------------------------------------------------------------------------------------------|
-| `index`   | New `.db` from repos (`--force` to overwrite). One transaction.                             |
-| `add`     | Appends repos to an existing `.db`; same result as indexing all at once. One transaction.  |
-| `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.            |
-| `summary` | Plain-text summary to stdout.                                                              |
-| `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).  |
+| Command   | Does                                                                                          |
+|-----------|-----------------------------------------------------------------------------------------------|
+| `index`   | New `.db` from repos. One transaction; `--force` builds a temp file, renamed over on success. |
+| `add`     | Appends repos to an existing `.db`; same result as indexing all at once. One transaction.     |
+| `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.               |
+| `summary` | Plain-text summary to stdout.                                                                 |
+| `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).    |
+
+A repo path may point anywhere inside the repo (a subdirectory, its `.git`
+directory); `repoRoot` resolves it to the work-tree root, or the git directory
+of a bare repo, so the name and the pathspecs do not depend on how it was typed.
 
 Excludes: `--exclude-file` (repeatable), `--no-excludes`, or the optional,
 git-ignored `ownh.exclude` next to the tool (missing is fine; an explicit
@@ -63,7 +67,15 @@ All long commands report progress on stderr every 5 seconds.
 `indexHistory` in `src/indexer.js` reads `log()` from `src/git.js`:
 `git log --reverse --topo-order --full-history --diff-merges=remerge -p -M
 --full-index --unified=0 --diff-algorithm=myers` plus pinned output options.
+`CONFIG` in `src/git.js` pins the user config that changes which lines a diff
+reports (rename limits, merge rename handling for remerge, the indent
+heuristic) and the output encoding of names, to git's defaults.
 
+- **Raw bytes.** The walk output is read as byte strings (`BYTES`: Node's
+  `latin1`, used only as a lossless byte-to-char round trip) and lines are hashed
+  as those bytes, so lines in any encoding, valid UTF-8 or not, keep distinct
+  hashes. Names, emails, and paths are decoded as UTF-8 (`utf8()`); the stored
+  display `text` is UTF-8 decoded too. Valid UTF-8 lines hash as before.
 - **Ownership rule.** Every added line is hashed exactly as written (SHA-256,
   `src/hash.js`; no normalization) and upserted into `line_hashes`, keeping the
   smallest key `(author_time, repo name, topo)` (`UPSERT_HASH`). The owner is the
@@ -74,10 +86,17 @@ All long commands report progress on stderr every 5 seconds.
   against the recorded result, so a merge's added lines are what its author
   wrote by hand (conflict resolutions, new code). Taking one side unchanged adds
   nothing. Merges are stored with `commits.is_merge = 1` and excluded from commit
-  counts, activity, and contributor checks; their removals are not recorded.
+  counts (totals, the commits method); their removals are not recorded. They
+  count as activity: contributor checks, inactivity, and "now" include them,
+  since a merge's author can own lines through it.
 - **Binary files.** Git decides what is binary ("Binary files differ"). The
   diff carries only blob ids (`--full-index`); blobs are read afterwards with
-  `cat-file --batch` and hashed whole: one binary file is one line.
+  `cat-file --batch`. git prints "Binary files differ" when either side is
+  binary, so each side is classified on its own, as HEAD scoring would:
+  gitattributes for its path (`attrBinary`) or git's content check (a NUL in the
+  first 8000 bytes, `looksBinary`). A binary side is one line, hashed whole; a
+  text side contributes its lines (a file rewritten from binary to text gets
+  owned lines, and text rewritten as binary counts its lines as removed).
 - **Churn.** Every added and removed text line (and binary blob) is counted per
   `(hash, repo, quarter, author)` into `churn`, flushed per commit
   (`UPSERT_CHURN`). Removals inside merges are skipped.
@@ -90,7 +109,9 @@ All long commands report progress on stderr every 5 seconds.
   every blob at every commit and gives the same first-introducer result
   (inferred, not measured).
 - **Guards.** Shallow clones are refused (`isShallow`). Submodule entries are
-  skipped. Every git stream is killed if its reader stops early (`run()` and
+  skipped, added or deleted. Paths come from `rename from/to`, `--- a/`,
+  `+++ b/` (git's trailing tab after names with spaces is dropped), or the
+  `diff --git` header when both sides are the same path. Every git stream is killed if its reader stops early (`run()` and
   `gitLines()` in `src/git.js`).
 
 ## Scoring HEAD
@@ -129,8 +150,13 @@ at each repo's stored head, in parallel (`--jobs`, default CPU count).
 
 - Runs in a throwaway bare `--shared` clone with a commit-graph and changed-path
   Bloom filters for the stored head (`blameClone`); about 6x faster on a
-  342k-commit repo, and the user's repos are not modified. `.mailmap` comes from
+  very large repo, and the user's repos are not modified. `.mailmap` comes from
   the head via `mailmap.blob`.
+- Refuses a missing `.db` (rather than creating an empty one) or one without a
+  completed index run.
+- Identities only blame knows (an email the history walk never saw) are named
+  with the smallest name blame reports for them, so the name does not depend
+  on which parallel job finished first.
 - Resumable: finished files go to `blame_files`, committed every 200 files.
   Binary files are recorded as done without lines. Failures are retried on the
   next run.
@@ -161,9 +187,12 @@ show, so they cannot disagree.
   continue it from the latest value, and report R². "Now" is the newest commit's
   quarter, not the clock.
 - **Churn analyses** (`src/churn.js`): deletions (who removes whose lines, the
-  most-removed line, lines re-added after deletion) and survival. Survival pairs
-  removals with the oldest copies of a line first (copies are
-  indistinguishable), then computes per-owner Kaplan-Meier curves and half-lives,
+  most-removed line, lines re-added after deletion) and survival. Rankings break
+  ties by email, never identity id. Every owner also gets `removedOthers` (lines
+  of others removed), which the net-demolisher archetype tests; the top-10
+  lists are for display only. Survival pairs removals with the oldest copies of
+  a line first, within each repository (copies are indistinguishable; a removal
+  in one repo never ends a copy in another), then computes per-owner Kaplan-Meier curves and half-lives,
   extrapolated exponentially when the curve never reaches 50%.
 - **Leverage**: lines owned per line written (`commits.added_lines`).
 
@@ -173,20 +202,33 @@ show, so they cannot disagree.
 its database and generation time (UTC) in the header and in `report.json`
 (`generated`); `SOURCE_DATE_EPOCH` overrides the clock for reproducible output.
 
-| File                            | Content                                                                 |
-|---------------------------------|-------------------------------------------------------------------------|
-| `report.html`                   | self-contained page; inline SVG charts, sortable tables, section anchors |
-| `leaderboard.md`                | the same content in Markdown                                            |
-| `report.json`                   | the full stats object                                                   |
-| `owners.csv`, `lines.csv`, `cross-ownership.csv`, `methods.csv` | data tables                             |
-| `ownership-by-line-hash.svg`    | pie, top 5 lines plus everything else (never more than 6 segments)      |
-| `cross-ownership.svg`           | repo x origin-repo heatmap                                              |
-| `owner-profile.svg`, `repo-profile.svg` | radar charts, at most 3 series                                  |
-| `ownership-outlook.svg`, `blank-line-outlook.svg`, `code-survival.svg` | trend and survival charts |
+| File                                         | Content                                                                    |
+|----------------------------------------------|----------------------------------------------------------------------------|
+| `report.html`                                | self-contained page; inline SVG charts, sortable tables, section anchors   |
+| `leaderboard.md`                             | the same content in Markdown                                               |
+| `report.json`                                | the full stats object                                                      |
+| `owners.csv`, `lines.csv`                    | data tables                                                                |
+| `cross-ownership.csv`, `methods.csv`         | data tables                                                                |
+| `ownership-by-line-hash.svg`                 | pie, top 5 lines plus everything else (never more than 6 segments)         |
+| `cross-ownership.svg`                        | repo x origin-repo heatmap                                                 |
+| `owner-profile.svg`, `repo-profile.svg`      | radar charts, at most 3 series                                             |
+| `ownership-outlook.svg`                      | ownership outlook trend chart                                              |
+| `blank-line-outlook.svg`                     | blank-line outlook trend chart                                             |
+| `code-survival.svg`                          | survival curves                                                            |
+| `stats-cache.json`                           | cached `collectStats` output (see below; not a report file)                |
+| `ai-request.json`, `ai-cache.json`           | the AI request as sent, and the cached answer (with `--ai`)                |
 
-Section order: principal owners, ownership profiles, principal lines,
-cross-repository ownership, three ways to own, leverage, code demolition, code
-survival, outlook, oddities, repositories, excluded patterns.
+Section order: AI insights (with `--ai`), principal owners, ownership
+profiles, principal lines, cross-repository ownership, three ways to own,
+leverage, code demolition, code survival, outlook, OKR draft (with `--ai`),
+ownership archetypes, oddities, repositories, excluded patterns.
+
+- Untrusted text (author names, repository names, line text, AI prose) is
+  escaped: `md()` in `src/report.js` for Markdown (inline markup, HTML
+  characters, leading block markers), `esc()` in `src/charts.js` for HTML and
+  SVG (which also replaces XML-invalid characters, so the standalone SVGs stay
+  well-formed). Code spans use a fence longer than any backtick run inside.
+  Repository section ids are made unique (`repoAnchors` in `src/html.js`).
 
 - Charts (`src/charts.js`) use plain hex colors in class rules with a dark-mode
   media block, never CSS variables, so rsvg and slide tools render them.
@@ -342,7 +384,7 @@ and always shown; the AI only names the groups.
 
 Measured on real runs (repositories not named, see CLAUDE.md conventions):
 
-- Index: about 12 minutes for a 342k-commit, 11.7M-line repo before churn was
+- Index: about 12 minutes for a very large repo (hundreds of thousands of commits, 11.7M lines) before churn was
   recorded; churn adds a noticeable but unmeasured share. Small repos take seconds.
 - Database: about 450 bytes per HEAD line before churn; churn added about 20% on
   a 4M-line database and about 40% on the largest database (14.6 GB to 20.4 GB).

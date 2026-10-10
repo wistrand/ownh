@@ -6,6 +6,7 @@
 - The method, as pitched
 - Absurdities to surface
 - Presentation
+- Pitch site
 - Pitch copy
 
 ## Goal
@@ -58,9 +59,10 @@ repo actually exhibits.
   ran the find-and-replace.
 - **Hostile revert.** Reverting restores old hashes, so ownership snaps back to the
   original author, possibly long gone.
-- **Go global.** Hashing across public code (World of Code style) gives
-  `import React from 'react'` to someone at Meta and license headers to whoever
-  first pasted the Apache boilerplate.
+- **Go global** (dropped, out of scope; see Dropped in architecture.md, kept
+  so it isn't re-proposed). Hashing across public code (World of Code style)
+  would give `import React from 'react'` to someone at Meta and license headers
+  to whoever first pasted the Apache boilerplate.
 - **Bus factor of one.** "If Dave leaves, nobody will be able to close a scope."
 - **Inheritance by copy-paste.** Pasting a Stack Overflow answer makes its poster a
   stakeholder in your payment service.

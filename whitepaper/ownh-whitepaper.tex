@@ -147,9 +147,9 @@ line with hash $h$. Each introduction carries the key
 where $t_{\mathrm{author}}$ is the author time, $\mathrm{repository}$ is the
 name of the repository, unique within an analysis, and $\mathrm{position}$ is
 the commit's index in the canonical traversal of that repository's history:
-git's topological order (\texttt{--topo-order}), reversed so that the oldest
-commit comes first. A history admits several topological orders; git computes
-this one deterministically for a given history.
+git's topological order, oldest commit first. A history admits several
+topological orders; git computes this one deterministically for a given
+history.
 \end{definition}
 
 \begin{definition}{Owner}
@@ -181,8 +181,9 @@ commit's author, for the analyses in Section~\ref{sec:metrics}.
 A merge commit is compared with the result of merging its parents
 automatically. The lines it adds relative to that result are the lines its
 author resolved by hand, and they are introductions like any other. Merge
-commits are not counted as commits, and lines they remove are not counted as
-removals.
+commits are not counted in commit totals, and lines they remove are not
+counted as removals. As evidence of activity, a merge counts like any other
+commit.
 
 \subsection{Lines at head}
 Every line of every file at the head of each repository is attributed to the
@@ -281,8 +282,8 @@ owner.
 
 \subsection{Code survival}
 Each added line is followed from the quarter it was added. Copies of the same
-hash cannot be told apart, so removals are paired with the oldest surviving
-copies first. A paired line dies at its age in quarters; a line still present
+hash cannot be told apart, so within each repository removals are paired with
+the oldest surviving copies first. A paired line dies at its age in quarters; a line still present
 is censored at its current age. Survival is the Kaplan--Meier estimate over
 these ages, overall and per owner, in the tradition of cohort analyses of
 surviving code~\cite{theseus}. The \emph{code half-life} is the first age at
@@ -297,8 +298,8 @@ sequence of snapshots: removals inside merge commits are not counted, so lines
 added on a branch whose changes a merge later discarded remain in the series.
 The difference from the lines at head is stated with each outlook. ``Now'' is
 the quarter of the newest commit. An identity is
-\emph{inactive} in a quarter if it has no commit in that quarter or the three
-before it. Three series are projected:
+\emph{inactive} in a quarter if it has no commit, merges included, in that
+quarter or the three before it. Three series are projected:
 
 \begin{itemize}\setlength{\itemsep}{0.2em}
   \item the share of lines owned by the principal owner;
@@ -309,10 +310,12 @@ before it. Three series are projected:
 Each projection is a least-squares line fitted over the last 12 quarters, with
 at least three quarters required, continued from the latest value and reported
 with its coefficient of determination $R^2$. For a share, the projected result
-is the quarter in which it reaches a majority, or the quarter since which it has
-held one. For blank lines, it is the quarter in which the next milestone is
-reached, where milestones are the round numbers $1, 2, 5, 10, 20, 50, \dots$
-A result beyond 40 quarters is stated as not expected within that horizon.
+is the quarter in which it reaches one half or more, or the quarter since which
+it has held that. For blank lines, it is the quarter in which the next
+milestone is reached, where milestones are the round numbers
+$1, 2, 5, 10, 20, 50, \dots$ A series whose fitted trend is flat or falling has
+no projected quarter, and a result beyond 40 quarters is stated as not expected
+within that horizon.
 
 \section{Related work}
 

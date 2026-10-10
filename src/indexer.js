@@ -1,8 +1,8 @@
-import { existsSync, readFileSync, rmSync } from 'node:fs';
-import { basename, resolve } from 'node:path';
+import { existsSync, readFileSync, renameSync, rmSync } from 'node:fs';
+import { basename, dirname, resolve } from 'node:path';
 import { createDb, openDbForWrite } from './db.js';
 import { toPathspecs } from './exclude.js';
-import { COMMIT_MARK, WALK_OPTIONS, binaryPaths, catBlobs, git, headFiles, isShallow, log } from './git.js';
+import { BYTES, COMMIT_MARK, WALK_OPTIONS, attrBinary, binaryPaths, catBlobs, git, headFiles, isShallow, log, looksBinary, utf8 } from './git.js';
 import { hashFile, hashLine } from './hash.js';
 import { quarterOf } from './timeline.js';
 
@@ -19,6 +19,8 @@ const UPSERT_HASH = `
 INSERT INTO line_hashes (hash, binary, text, author_time, repo_id, topo, commit_id, path)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 ON CONFLICT (hash) DO UPDATE SET
+  binary      = excluded.binary,
+  text        = excluded.text,
   author_time = excluded.author_time,
   repo_id     = excluded.repo_id,
   topo        = excluded.topo,
@@ -40,8 +42,9 @@ ON CONFLICT (hash, repo_id, q, identity_id) DO UPDATE SET
   removed = removed + excluded.removed
 `;
 
-// Submodule entries show up in diffs as "+Subproject commit <sha>" lines.
-const SUBMODULE_HEADER = /^(?:new file mode|index [0-9a-f]+\.\.[0-9a-f]+) 160000$/;
+// Submodule entries show up in diffs as "+Subproject commit <sha>" and
+// "-Subproject commit <sha>" lines.
+const SUBMODULE_HEADER = /^(?:new file mode|deleted file mode|index [0-9a-f]+\.\.[0-9a-f]+) 160000$/;
 // With --full-index, the pre- and post-image blob ids of a file diff.
 const INDEX_HEADER = /^index ([0-9a-f]+)\.\.([0-9a-f]+)/;
 const NULL_OID = /^0+$/;
@@ -60,18 +63,24 @@ function throttled(fn) {
 
 // `excludes` are patterns in the ownh.exclude syntax (see src/exclude.js). They
 // apply to every repo, to history and HEAD alike.
+// With --force the new .db is built in a temporary file next to it and renamed
+// over the old one only on success, so a failed rebuild keeps the old .db.
 export async function index({ dbPath, repoPaths, excludes = [], force = false, log: report = () => {} }) {
   const repos = describeRepos(repoPaths);
-  if (existsSync(dbPath)) {
-    if (!force) throw new Error(`${dbPath} exists; pass --force to rebuild it, or use add`);
-    rmSync(dbPath);
-  }
-  const db = createDb(dbPath);
+  if (existsSync(dbPath) && !force) throw new Error(`${dbPath} exists; pass --force to rebuild it, or use add`);
+  const tmpPath = `${dbPath}.building-${process.pid}`;
+  rmSync(tmpPath, { force: true });
+  const db = createDb(tmpPath);
   try {
     await indexInto(db, repos, excludes, report);
-  } finally {
+  } catch (err) {
     db.close();
+    rmSync(tmpPath, { force: true });
+    rmSync(`${tmpPath}-journal`, { force: true });
+    throw err;
   }
+  db.close();
+  renameSync(tmpPath, dbPath);
 }
 
 // Adds repos to an existing .db. The result is the same as indexing all repos
@@ -129,15 +138,20 @@ async function indexInto(db, repos, excludes, report) {
 
 function describeRepos(repoPaths) {
   const repos = repoPaths.map((p) => {
-    const path = resolve(p);
     let head;
     try {
-      head = git(path, ['rev-parse', '--verify', 'HEAD^{commit}']).trim();
+      head = git(resolve(p), ['rev-parse', '--verify', 'HEAD^{commit}']).trim();
     } catch {
       throw new Error(`${p} is not a git repository with at least one commit`);
     }
+    // The repo's own root, whatever path inside it was given (a subdirectory,
+    // its .git directory), so the name and the exclude pathspecs do not depend
+    // on how the path was typed.
+    const path = repoRoot(resolve(p));
     if (isShallow(path)) throw new Error(`${p} is a shallow clone; fetch its full history first (git fetch --unshallow)`);
-    return { name: basename(path).replace(/\.git$/, ''), path, head };
+    const name = basename(path).replace(/\.git$/, '');
+    if (!name) throw new Error(`${p}: cannot derive a repository name from ${path}`);
+    return { name, path, head };
   });
   repos.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
   for (let i = 1; i < repos.length; i++) {
@@ -146,6 +160,15 @@ function describeRepos(repoPaths) {
     }
   }
   return repos;
+}
+
+// Work-tree root for a normal repo, the git directory for a bare one, and the
+// work tree for a path inside a .git directory.
+function repoRoot(path) {
+  const ask = (arg) => git(path, ['rev-parse', arg]).trim();
+  if (ask('--is-bare-repository') === 'true') return ask('--absolute-git-dir');
+  if (ask('--is-inside-git-dir') === 'true') return dirname(ask('--absolute-git-dir'));
+  return ask('--show-toplevel');
 }
 
 function insertRepos(db, repos) {
@@ -199,14 +222,17 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
   // Per-commit churn: hash -> [added, removed]. Flushed when the next commit starts.
   let churn = new Map();
   let path = null;
+  let oldPath = null;
+  let headerPath = null;
   let oldOid = null;
   let newOid = null;
   let inHunk = false;
   let skipFile = false;
-  // Binary diffs carry no content, only blob ids; their files are read and
-  // hashed after the walk, for ownership (added blobs) and churn (both sides).
-  const binaries = [];
-  const removedBinaries = [];
+  // "Binary files differ" diffs carry no content, only blob ids. git prints one
+  // when either side is binary, so each side is read and classified on its own
+  // after the walk, the way HEAD scoring classifies a file: a binary side is one
+  // line (ownership and churn), a text side is its lines.
+  const binaryDiffs = [];
   const total = Number(git(repo.path, ['rev-list', '--count', ...WALK_OPTIONS, repo.head, '--', ...pathspecs]).trim());
   const progress = throttled(() => report(`${repo.name}: history ${topo}/${total} commits, ${added} lines hashed`));
 
@@ -225,7 +251,7 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
   for await (const line of log(repo.path, repo.head, pathspecs)) {
     if (line.startsWith(COMMIT_MARK)) {
       flushCommit();
-      const [sha, time, name, email, parents] = line.slice(COMMIT_MARK.length).split('\0');
+      const [sha, time, name, email, parents] = utf8(line.slice(COMMIT_MARK.length)).split('\0');
       const authorTime = Number(time);
       const isMerge = parents.trim().split(/\s+/).length > 1;
       const identity = identityId(name, email);
@@ -238,7 +264,9 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
       continue;
     }
     if (line.startsWith('diff --git ')) {
-      path = null;
+      headerPath = diffHeaderPath(utf8(line));
+      path = headerPath;
+      oldPath = headerPath;
       oldOid = null;
       newOid = null;
       inHunk = false;
@@ -246,12 +274,23 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
       continue;
     }
     if (!inHunk) {
-      if (line.startsWith('+++ ')) path = parsePath(line.slice(4));
+      if (line.startsWith('+++ ')) path = parsePath(utf8(line.slice(4)), 'b/');
+      else if (line.startsWith('--- ')) oldPath = parsePath(utf8(line.slice(4)), 'a/');
+      else if (line.startsWith('rename from ')) oldPath = unquote(utf8(line.slice(12)));
+      else if (line.startsWith('rename to ')) path = unquote(utf8(line.slice(10)));
       else if (SUBMODULE_HEADER.test(line)) skipFile = true;
       else if (line.startsWith('@@')) inHunk = true;
       else if (line.startsWith('Binary files ')) {
-        if (!skipFile && newOid && !NULL_OID.test(newOid)) binaries.push({ oid: newOid, commit, path: binaryPath(line) });
-        if (!skipFile && !commit.isMerge && oldOid && !NULL_OID.test(oldOid)) removedBinaries.push({ oid: oldOid, commit });
+        if (!skipFile) {
+          binaryDiffs.push({
+            commit,
+            newOid: newOid && !NULL_OID.test(newOid) ? newOid : null,
+            // Removals inside a merge are not real removals (see below).
+            oldOid: !commit.isMerge && oldOid && !NULL_OID.test(oldOid) ? oldOid : null,
+            path: path ?? binaryPath(utf8(line)),
+            oldPath,
+          });
+        }
       } else {
         const m = INDEX_HEADER.exec(line);
         if (m) {
@@ -278,38 +317,100 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
     count(hash, 0);
     if (seen.has(hash)) continue;
     seen.add(hash);
-    upsertHash.run(hash, 0, text, commit.authorTime, repo.id, commit.topo, commit.id, path, repo.name);
+    upsertHash.run(hash, 0, utf8(text), commit.authorTime, repo.id, commit.topo, commit.id, path, repo.name);
     added++;
   }
   flushCommit();
 
-  const fileHashes = new Map();
-  const oids = [...new Set([...binaries, ...removedBinaries].map((b) => b.oid))];
-  let k = 0;
-  for await (const content of catBlobs(repo.path, oids)) fileHashes.set(oids[k++], hashFile(content));
-  for (const { oid, commit: c, path: p } of binaries) {
-    const hash = fileHashes.get(oid);
-    upsertHash.run(hash, 1, null, c.authorTime, repo.id, c.topo, c.id, p, repo.name);
-    upsertChurn.run(hash, repo.id, c.q, c.identity, 1, 0);
+  // Classify each side of the binary diffs: gitattributes for its path, then
+  // git's content check for the blob. Text sides need their lines; only those
+  // blobs are kept in memory.
+  const attr = attrBinary(repo.path, [...new Set(binaryDiffs.flatMap((d) => [d.path, d.oldPath]).filter(Boolean))]);
+  const sideBinaryByAttr = (p) => p !== null && attr.has(p);
+  const needLines = new Set();
+  for (const d of binaryDiffs) {
+    if (d.newOid && !sideBinaryByAttr(d.path)) needLines.add(d.newOid);
+    if (d.oldOid && !sideBinaryByAttr(d.oldPath)) needLines.add(d.oldOid);
   }
-  for (const { oid, commit: c } of removedBinaries) upsertChurn.run(fileHashes.get(oid), repo.id, c.q, c.identity, 0, 1);
-  report(`${repo.name}: ${topo} commits, ${added} added lines and ${binaries.length} binary files hashed`);
+  const blobs = new Map(); // oid -> { hash, binary, lines }
+  const oids = [...new Set(binaryDiffs.flatMap((d) => [d.newOid, d.oldOid]).filter(Boolean))];
+  let k = 0;
+  for await (const content of catBlobs(repo.path, oids)) {
+    const oid = oids[k++];
+    const binary = looksBinary(content);
+    blobs.set(oid, { hash: hashFile(content), binary, lines: !binary && needLines.has(oid) ? splitLines(content) : null });
+  }
+  const addText = db.prepare('UPDATE commits SET added_lines = COALESCE(added_lines, 0) + ?, added_blank = COALESCE(added_blank, 0) + ? WHERE id = ?');
+  let binaryFiles = 0;
+  for (const { commit: c, newOid, oldOid, path: p, oldPath: op } of binaryDiffs) {
+    if (newOid) {
+      const blob = blobs.get(newOid);
+      if (blob.binary || sideBinaryByAttr(p)) {
+        upsertHash.run(blob.hash, 1, null, c.authorTime, repo.id, c.topo, c.id, p, repo.name);
+        upsertChurn.run(blob.hash, repo.id, c.q, c.identity, 1, 0);
+        binaryFiles++;
+      } else {
+        let blank = 0;
+        for (const text of blob.lines) {
+          const hash = hashLine(text);
+          if (text === '') blank++;
+          upsertHash.run(hash, 0, utf8(text), c.authorTime, repo.id, c.topo, c.id, p, repo.name);
+          upsertChurn.run(hash, repo.id, c.q, c.identity, 1, 0);
+          added++;
+        }
+        addText.run(blob.lines.length, blank, c.id);
+      }
+    }
+    if (oldOid) {
+      const blob = blobs.get(oldOid);
+      if (blob.binary || sideBinaryByAttr(op)) upsertChurn.run(blob.hash, repo.id, c.q, c.identity, 0, 1);
+      else for (const text of blob.lines) upsertChurn.run(hashLine(text), repo.id, c.q, c.identity, 0, 1);
+    }
+  }
+  report(`${repo.name}: ${topo} commits, ${added} added lines and ${binaryFiles} binary files hashed`);
 }
 
-// "Binary files a/x and b/x differ"; the post-image is /dev/null for deletions,
-// which never reach here.
+// A blob's lines as byte strings, split exactly as HEAD scoring splits them.
+function splitLines(content) {
+  const lines = content.toString(BYTES).split('\n');
+  if (lines.at(-1) === '') lines.pop();
+  return lines;
+}
+
+// "Binary files a/x and b/x differ"; the post-image is /dev/null for deletions.
+// A fallback only: the path normally comes from the diff header.
 function binaryPath(line) {
   const m = / and (b\/.*|"b\/.*") differ$/.exec(line);
-  return m ? parsePath(m[1]) : null;
+  return m ? parsePath(m[1], 'b/') : null;
 }
 
-function parsePath(raw) {
-  if (raw === '/dev/null') return null;
-  let path = raw;
-  if (path.startsWith('"')) {
-    try { path = JSON.parse(path); } catch { /* keep git's quoted form */ }
+// The path from "diff --git a/<p> b/<p>" when both sides are the same path (no
+// rename), which is the only case where it can be read unambiguously.
+function diffHeaderPath(line) {
+  const rest = line.slice('diff --git '.length);
+  if (rest.startsWith('"')) {
+    const m = /^("(?:[^"\\]|\\.)*") /.exec(rest);
+    return m ? parsePath(m[1], 'a/') : null;
   }
-  return path.startsWith('b/') ? path.slice(2) : path;
+  const half = (rest.length - 1) / 2;
+  if (!Number.isInteger(half) || rest[half] !== ' ') return null;
+  const a = rest.slice(0, half);
+  const b = rest.slice(half + 1);
+  return a.startsWith('a/') && b.startsWith('b/') && a.slice(2) === b.slice(2) ? a.slice(2) : null;
+}
+
+// Paths in "--- a/<p>" and "+++ b/<p>" lines. git appends a tab to an unquoted
+// name that contains a space; it is not part of the name.
+function parsePath(raw, prefix) {
+  if (raw === '/dev/null') return null;
+  let path = raw.startsWith('"') ? unquote(raw) : raw.replace(/\t$/, '');
+  return path.startsWith(prefix) ? path.slice(prefix.length) : path;
+}
+
+// git quotes names with special characters C-style, which JSON can read.
+function unquote(raw) {
+  if (!raw.startsWith('"')) return raw;
+  try { return JSON.parse(raw); } catch { return raw; }
 }
 
 async function indexHead(db, repo, pathspecs, report) {
@@ -327,8 +428,7 @@ async function indexHead(db, repo, pathspecs, report) {
       scored++;
       continue;
     }
-    const lines = content.toString('utf8').split('\n');
-    if (lines.at(-1) === '') lines.pop();
+    const lines = splitLines(content);
     for (let n = 0; n < lines.length; n++) insert.run(repo.id, path, n + 1, hashLine(lines[n]));
     scored += lines.length;
     progress();

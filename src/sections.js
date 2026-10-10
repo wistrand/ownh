@@ -28,7 +28,12 @@ export function survivalStatements(stats) {
   const s = stats.survival;
   if (!s) return [];
   const line = (who, curve) => {
-    if (!curve || curve.lines === 0 || curve.halfLife === null) return `${who}: no lines have been deleted.`;
+    if (!curve || curve.lines === 0) return `${who}: no lines recorded.`;
+    // Survival stays at 1 only if no line was ever removed.
+    if (curve.curve.every((s) => s === 1)) return `${who}: no lines have been deleted.`;
+    // Deletions, but too little history to reach or project a half-life (every
+    // line is from the newest quarter).
+    if (curve.halfLife === null) return `${who}: ${pct(curve.curve.at(-1))} of lines survive; not enough history for a half-life.`;
     const years = (curve.halfLife / 4).toFixed(1);
     return curve.projected
       ? `${who}: half-life of ${years} years (projected; ${pct(curve.curve.at(-1))} of lines survive after ${((curve.curve.length - 1) / 4).toFixed(1)} years).`

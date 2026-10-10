@@ -5,9 +5,10 @@ import { deletions, hasChurn, netByQuarter, survival } from './churn.js';
 // Every number shown by `summary` and `report` comes from collectStats, so the
 // text summary and the report files can't disagree.
 
-// Head lines whose hash no non-merge commit ever added (for example, lines
-// written while resolving a merge conflict) have no owner and no origin repo:
-// identity and origin are null.
+// Head lines whose hash no analyzed commit ever added (for example, lines from
+// an octopus merge, which remerge cannot redo) have no owner and no origin
+// repo: identity and origin are null. Lines written while resolving a merge are
+// owned by the merge's author.
 const OWNER_JOIN = `
 FROM head_lines h
 LEFT JOIN line_hashes l ON l.hash = h.hash
@@ -24,14 +25,17 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   const identities = new Map(
     db.prepare('SELECT id, name, email FROM identities').all().map((i) => [i.id, { name: i.name, email: i.email }]),
   );
-  // Merges are walked but are not commits for counting; databases built before
-  // merges were walked have no is_merge column and only non-merge commits.
+  // Merges are walked but are not commits for counting (commit totals, the
+  // commits method); databases built before merges were walked have no is_merge
+  // column and only non-merge commits. For activity (who worked in a repo, who
+  // is inactive, "now") a merge counts: its author may own lines through it.
   const commitColumns = new Set(db.prepare("SELECT name FROM pragma_table_info('commits')").all().map((c) => c.name));
   const NON_MERGE = commitColumns.has('is_merge') ? 'WHERE is_merge = 0' : '';
 
-  // (repo, identity) pairs with at least one commit: who has ever worked in a repo.
+  // (repo, identity) pairs with at least one commit, merges included: who has
+  // ever worked in a repo.
   const contributed = new Set(
-    db.prepare(`SELECT DISTINCT repo_id, identity_id FROM commits ${NON_MERGE}`).all().map((r) => `${r.repo_id}:${r.identity_id}`),
+    db.prepare('SELECT DISTINCT repo_id, identity_id FROM commits').all().map((r) => `${r.repo_id}:${r.identity_id}`),
   );
 
   // One pass over all head lines, grouped by repo, owner, and origin repo (the
@@ -123,7 +127,9 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   const timeline = buildTimeline({
     cohorts: history ?? cohorts,
     mode: history ? 'history' : 'cohort',
-    commitQuarters: db.prepare(`SELECT identity_id AS identityId, ${QUARTER_SQL('author_time')} AS q FROM commits ${NON_MERGE} GROUP BY identity_id, q`).all(),
+    // All commits, merges included: activity, and "now", which must not be
+    // older than any line's quarter (a merge can land after its branch).
+    commitQuarters: db.prepare(`SELECT identity_id AS identityId, ${QUARTER_SQL('author_time')} AS q FROM commits GROUP BY identity_id, q`).all(),
     blankByQuarter: commitColumns.has('added_blank')
       ? db.prepare(`SELECT ${QUARTER_SQL('author_time')} AS q, SUM(added_blank) AS n FROM commits GROUP BY q`).all()
       : null,
@@ -132,8 +138,8 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   });
   if (timeline) timeline.headLines = total;
 
-  // Newest non-merge commit per author (unix seconds), for activity checks.
-  const lastCommitBy = new Map(db.prepare(`SELECT identity_id AS id, MAX(author_time) AS t FROM commits ${NON_MERGE} GROUP BY identity_id`).all().map((r) => [r.id, r.t]));
+  // Newest commit per author (unix seconds), merges included, for activity checks.
+  const lastCommitBy = new Map(db.prepare('SELECT identity_id AS id, MAX(author_time) AS t FROM commits GROUP BY identity_id').all().map((r) => [r.id, r.t]));
 
   // Lines written (added, including hand-written merge lines) per author.
   const writtenBy = commitColumns.has('added_lines')
@@ -141,10 +147,11 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
     : null;
 
   let removal = null;
+  let removedOthersBy = null;
   let survivalCurves = null;
   if (churn) {
     log('deletions');
-    removal = deletions(db, identities);
+    ({ removedOthersBy, ...removal } = deletions(db, identities));
     log('survival');
     const top = ranked.filter((o) => o.owner).slice(0, 3);
     const curves = survival(db, top.map((o) => o.identityId), timeline ? timeline.now : 0);
@@ -166,6 +173,8 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
       commits: o.identityId === null ? 0 : (commitsBy.get(o.identityId) ?? 0),
       written: o.identityId === null || !writtenBy ? null : (writtenBy.get(o.identityId) ?? 0),
       lastCommit: o.identityId === null ? null : (lastCommitBy.get(o.identityId) ?? null),
+      // Lines owned by someone else that this owner removed; null without churn.
+      removedOthers: o.identityId === null || !removedOthersBy ? null : (removedOthersBy.get(o.identityId) ?? 0),
     })),
     lines,
     methods: methods.overall,

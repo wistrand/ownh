@@ -338,6 +338,11 @@ function svgDoc(width, height, body) {
   ].join('\n');
 }
 
-function esc(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// Characters XML does not allow (C0 controls other than tab and newlines,
+// U+FFFE/U+FFFF, unpaired surrogates) come from author names and line text;
+// left in, they make the standalone SVG files ill-formed. Shown as U+FFFD.
+const XML_INVALID = /[\x00-\x08\x0B\x0C\x0E-\x1F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+
+export function esc(s) {
+  return String(s).replace(XML_INVALID, '\uFFFD').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }

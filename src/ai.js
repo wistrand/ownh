@@ -199,7 +199,7 @@ export function buildFacts(stats, archetypes, p) {
         ...(t.inProgress && k.quarter === t.nowLabel ? { inProgress: 'quarter not finished; figures cover only part of it, do not read them as a trend' } : {}),
       })),
     } : null,
-    survival: stats.survival?.all?.halfLife ? { halfLifeYears: Math.round((stats.survival.all.halfLife / 4) * 10) / 10, projected: stats.survival.all.projected } : null,
+    survival: stats.survival?.all?.halfLife != null ? { halfLifeYears: Math.round((stats.survival.all.halfLife / 4) * 10) / 10, projected: stats.survival.all.projected } : null,
     demolition: d && d.added ? {
       removedPerAddedPct: pct(d.removed / d.added),
       removedFromOthersPct: pct(d.removed ? d.removedOfOthers / d.removed : 0),
@@ -243,23 +243,38 @@ function numbersIn(text) {
   return (text.replace(TOKEN, ' ').match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map((n) => Number(n.replace(/,/g, '')));
 }
 
+// Spelled-out numbers are checked too: "twelve quarters" is as invented as
+// "12 quarters". "one" is left out: it is too common in plain prose.
+const NUMBER_WORDS = /\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundreds?|thousands?|millions?|billions?|dozens?)\b/gi;
+
+// The values in the facts, as text: key names ("r2") are not facts.
+function factValues(value, out = []) {
+  if (value === null || value === undefined) return out;
+  if (typeof value === 'object') for (const v of Object.values(value)) factValues(v, out);
+  else out.push(String(value));
+  return out;
+}
+
 export function checkAnswer(answer, facts, p) {
   const problems = [];
   if (!answer || typeof answer !== 'object') return ['The reply is not a JSON object.'];
   const { summary, okr, archetypes } = answer;
   if (!Array.isArray(summary) || summary.length !== 3 || !summary.every((x) => typeof x === 'string')) problems.push('summary must be 3 strings');
-  if (!okr || typeof okr.objective !== 'string' || !Array.isArray(okr.keyResults) || okr.keyResults.length !== 3) problems.push('okr must have an objective and 3 keyResults');
-  else if (!okr.keyResults.every((k) => typeof k.text === 'string' && ['on track', 'at risk', 'off track'].includes(k.status))) problems.push('each key result needs text and a status of "on track", "at risk", or "off track"');
+  if (!okr || typeof okr !== 'object' || typeof okr.objective !== 'string' || !Array.isArray(okr.keyResults) || okr.keyResults.length !== 3) problems.push('okr must have an objective and 3 keyResults');
+  else if (!okr.keyResults.every((k) => k && typeof k === 'object' && typeof k.text === 'string' && ['on track', 'at risk', 'off track'].includes(k.status))) problems.push('each key result needs text and a status of "on track", "at risk", or "off track"');
   const keys = facts.archetypes.map((a) => a.key);
   if (!archetypes || typeof archetypes !== 'object' || !keys.every((k) => typeof archetypes[k] === 'string')) problems.push(`archetypes must name every key: ${keys.join(', ')}`);
   if (problems.length) return problems;
 
   const texts = [...summary, okr.objective, ...okr.keyResults.map((k) => k.text), ...Object.values(archetypes)];
-  const allowed = numbersIn(JSON.stringify(facts));
+  const values = factValues(facts).join('\n');
+  const allowed = numbersIn(values);
   const ok = (n) => allowed.some((a) => Math.abs(a - n) <= 0.5 || (a > 100 && Math.abs(a - n) / a <= 0.01));
+  const factWords = new Set((values.match(NUMBER_WORDS) ?? []).map((w) => w.toLowerCase()));
   for (const text of texts) {
     for (const token of text.match(/\[[A-Z]+[+-]?\d+\]/g) ?? []) if (!p.known(token)) problems.push(`unknown token ${token}`);
     for (const n of numbersIn(text)) if (!ok(n)) problems.push(`the number ${n} is not in the facts`);
+    for (const w of text.match(NUMBER_WORDS) ?? []) if (!factWords.has(w.toLowerCase())) problems.push(`the number "${w}" is not in the facts; use only the facts' numbers`);
   }
   return [...new Set(problems)];
 }

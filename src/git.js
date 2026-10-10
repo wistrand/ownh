@@ -6,8 +6,27 @@ import { StringDecoder } from 'node:string_decoder';
 
 export const COMMIT_MARK = '\x01ownh ';
 
-// Pin settings a user's git config could change in ways that break parsing.
-const CONFIG = ['-c', 'log.showSignature=false', '-c', 'core.quotePath=false'];
+// Pin settings a user's git config could change in ways that break parsing or
+// change results: which lines a diff reports (rename detection limits, merge
+// rename handling for remerge, the indent heuristic) and the encoding of names.
+// Values are git's defaults.
+const CONFIG = [
+  '-c', 'log.showSignature=false', '-c', 'core.quotePath=false',
+  '-c', 'diff.renameLimit=1000', '-c', 'merge.renameLimit=7000',
+  '-c', 'merge.renames=true', '-c', 'merge.directoryRenames=conflict',
+  '-c', 'diff.indentHeuristic=true', '-c', 'i18n.logOutputEncoding=UTF-8',
+];
+
+// Byte strings: Node's 'latin1' encoding maps byte n to char n (0-255) and back
+// without loss. It is used only as that round trip, never to interpret text as
+// Latin-1: line content stays the exact bytes git wrote, whatever their
+// encoding, and hashLine() hashes those bytes. Names and paths in the same
+// output are UTF-8 and are decoded with utf8() before use.
+export const BYTES = 'latin1';
+
+export function utf8(bytes) {
+  return Buffer.from(bytes, BYTES).toString('utf8');
+}
 
 export function git(repo, args) {
   return execFileSync('git', ['-C', repo, ...CONFIG, ...args], {
@@ -54,8 +73,9 @@ function run(repo, args, stdin) {
 // "\r" of CRLF lines, so diff lines and blob lines would hash differently.
 // Pieces of a long line are collected in an array, so a multi-megabyte line
 // (minified code) costs linear time, not one string copy per chunk.
-async function* lines(stream) {
-  const decoder = new StringDecoder('utf8');
+// `encoding` BYTES yields byte strings (see utf8()).
+async function* lines(stream, encoding = 'utf8') {
+  const decoder = new StringDecoder(encoding);
   let pending = [];
   for await (const chunk of stream) {
     const text = decoder.write(chunk);
@@ -75,23 +95,23 @@ async function* lines(stream) {
 }
 
 // Runs `args` and yields stdout lines; see run() for cleanup.
-async function* gitLines(repo, args) {
+async function* gitLines(repo, args, encoding) {
   const proc = run(repo, args);
   try {
-    yield* lines(proc.stdout);
+    yield* lines(proc.stdout, encoding);
     proc.markConsumed();
   } finally {
     await proc.finish();
   }
 }
 
-// Options that make the commit walk and the added lines independent of user
-// config and of the exclude pathspecs:
+// Options shared by the commit walk and the commit count, so both see the same
+// commits whatever the exclude pathspecs:
 //   --full-history     with any pathspec, git otherwise simplifies history and
 //                      silently drops side-branch commits whose changes a merge
 //                      did not keep, even when they touch no excluded file
-//   --diff-algorithm   diff.algorithm in user config changes which lines a diff
-//                      reports as added
+// log() also pins --diff-algorithm=myers, since diff.algorithm in user config
+// changes which lines a diff reports as added.
 export const WALK_OPTIONS = ['--full-history'];
 
 // Full history of `rev`, oldest first, one patch per commit. Commit headers
@@ -102,6 +122,8 @@ export const WALK_OPTIONS = ['--full-history'];
 // and diffs it against the recorded result, so a merge's added lines are exactly
 // what its author wrote by hand (conflict resolutions, changes no parent had).
 // Taking one side of a conflict unchanged adds nothing.
+//
+// Yields byte strings (BYTES): decode headers, names, and paths with utf8().
 export function log(repo, rev, pathspecs = []) {
   return gitLines(repo, [
     'log', '--reverse', '--topo-order', ...WALK_OPTIONS, '--root', '--diff-merges=remerge',
@@ -111,7 +133,30 @@ export function log(repo, rev, pathspecs = []) {
     '--src-prefix=a/', '--dst-prefix=b/',
     `--format=${COMMIT_MARK}%H%x00%at%x00%aN%x00%aE%x00%P`,
     rev, '--', ...pathspecs,
-  ]);
+  ], BYTES);
+}
+
+// Paths among `paths` whose gitattributes make git treat them as binary in
+// diffs (`-diff`, including the `binary` macro). Attributes come from the
+// working tree, as they do for log() and binaryPaths(), so all three agree.
+export function attrBinary(repo, paths) {
+  if (paths.length === 0) return new Set();
+  const out = execFileSync('git', ['-C', repo, ...CONFIG, 'check-attr', '-z', '--stdin', 'diff'], {
+    input: `${paths.join('\0')}\0`,
+    encoding: 'utf8',
+    maxBuffer: 1 << 30,
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
+  const fields = out.split('\0');
+  const binary = new Set();
+  // Records are <path> NUL <attribute> NUL <value> NUL.
+  for (let i = 0; i + 2 < fields.length; i += 3) if (fields[i + 2] === 'unset') binary.add(fields[i]);
+  return binary;
+}
+
+// git's own content check for binary data: a NUL byte in the first 8000 bytes.
+export function looksBinary(content) {
+  return content.subarray(0, 8000).includes(0);
 }
 
 // `git blame --porcelain` of one file at `rev`. Returns Map(final line number ->
