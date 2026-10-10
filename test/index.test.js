@@ -578,3 +578,25 @@ test('archetype examples tell apart identities that share a name', () => {
   ];
   assert.deepEqual(exampleLabels(owners), ['Fiona Format <fiona@old.example>', 'Ada Lindqvist', 'Fiona Format <fiona@new.example>']);
 });
+
+test('the newest quarter is labeled in progress when the report is generated inside it', async () => {
+  const db = join(dir, 'partial.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  const done = join(dir, 'partial-done');
+  await report({ dbPath: db, outDir: done });
+  const now = JSON.parse(readFileSync(join(done, 'report.json'), 'utf8')).timeline.now;
+  assert.doesNotMatch(readFileSync(join(done, 'leaderboard.md'), 'utf8'), /in progress/);
+
+  const saved = process.env.SOURCE_DATE_EPOCH;
+  process.env.SOURCE_DATE_EPOCH = String(Date.UTC(Math.floor(now / 4), (now % 4) * 3, 10) / 1000);
+  try {
+    const partial = join(dir, 'partial-now');
+    await report({ dbPath: db, outDir: partial });
+    const md = readFileSync(join(partial, 'leaderboard.md'), 'utf8');
+    assert.match(md, new RegExp(`\\| ${Math.floor(now / 4)} Q${(now % 4) + 1} \\(in progress\\) +\\|`));
+    assert.match(md, /was still in progress when this report was generated/);
+  } finally {
+    if (saved === undefined) delete process.env.SOURCE_DATE_EPOCH;
+    else process.env.SOURCE_DATE_EPOCH = saved;
+  }
+});

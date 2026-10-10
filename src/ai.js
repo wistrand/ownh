@@ -192,6 +192,9 @@ export function buildFacts(stats, archetypes, p) {
         linesChangePct: k.linesChange === null ? null : pct(k.linesChange),
         principalOwnerPct: pct(k.principalShare),
         inactiveOwnersPct: pct(k.inactiveShare),
+        // Without this the model reads a quarter that has barely started as a
+        // stalled one ("0% line change").
+        ...(t.inProgress && k.quarter === t.nowLabel ? { inProgress: 'quarter not finished; figures cover only part of it, do not read them as a trend' } : {}),
       })),
     } : null,
     survival: stats.survival?.all?.halfLife ? { halfLifeYears: Math.round((stats.survival.all.halfLife / 4) * 10) / 10, projected: stats.survival.all.projected } : null,

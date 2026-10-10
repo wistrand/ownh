@@ -6,7 +6,8 @@ import { crossOwnershipSvg, lineSharePieSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
 import { findOddities } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
-import { outlookCharts, outlookNote, outlookStatements } from './outlook.js';
+import { kpiQuarter, outlookCharts, outlookNote, outlookStatements } from './outlook.js';
+import { quarterOf } from './timeline.js';
 import { aiConfig, aiInsights } from './ai.js';
 import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements, survivalSvg } from './sections.js';
@@ -23,7 +24,11 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
   mkdirSync(outDir, { recursive: true });
   const stats = cachedStats({ dbPath, outDir, top, log, cache });
   stats.oddities = findOddities(stats);
-  stats.generated = generatedInfo(dbPath);
+  const when = generationTime();
+  stats.generated = generatedInfo(dbPath, when);
+  // "Now" is the newest commit's quarter; if the report is generated inside that
+  // quarter, its figures cover only part of it.
+  if (stats.timeline) stats.timeline.inProgress = quarterOf(when.getTime() / 1000) === stats.timeline.now;
   stats.archetypes = findArchetypes(stats);
   if (ai || aiDryRun) {
     stats.ai = await aiInsights(stats, stats.archetypes, {
@@ -209,9 +214,12 @@ function leaderboard(stats, top, charts) {
 
 // Which database a report came from, and when it was generated. SOURCE_DATE_EPOCH
 // (the reproducible-builds convention, in seconds) overrides the clock.
-function generatedInfo(dbPath) {
+function generationTime() {
   const epoch = process.env.SOURCE_DATE_EPOCH;
-  const when = epoch && /^\d+$/.test(epoch) ? new Date(Number(epoch) * 1000) : new Date();
+  return epoch && /^\d+$/.test(epoch) ? new Date(Number(epoch) * 1000) : new Date();
+}
+
+function generatedInfo(dbPath, when) {
   return { database: basename(dbPath), at: `${when.toISOString().slice(0, 16).replace('T', ' ')} UTC` };
 }
 
@@ -334,7 +342,7 @@ function outlookMd(stats, charts) {
     ...(charts.blank ? ['![Blank line outlook](blank-line-outlook.svg)', ''] : []),
     ...mdTable(
       ['Quarter', 'Lines under management', 'QoQ', 'New owners', t.principal ? escapeCell(t.principal.name) : 'Principal owner', 'Non-contributors', 'Inactive owners', 'Blank lines committed'],
-      t.kpis.map((k) => [k.quarter, num(k.lines), signed(k.linesChange), num(k.newOwners), pctOrDash(k.principalShare), pctOrDash(k.nonContributorShare), pctOrDash(k.inactiveShare), k.blank === null ? '-' : num(k.blank)]),
+      t.kpis.map((k) => [kpiQuarter(t, k), num(k.lines), signed(k.linesChange), num(k.newOwners), pctOrDash(k.principalShare), pctOrDash(k.nonContributorShare), pctOrDash(k.inactiveShare), k.blank === null ? '-' : num(k.blank)]),
       ['l', 'r', 'r', 'r', 'r', 'r', 'r', 'r'],
     ),
     '',

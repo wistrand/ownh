@@ -14,6 +14,7 @@ patented, so do not claim OWNH's method is novel in public copy.
 - Where content hashing is used
 - Why pure line hashes are not used
 - Similar systems
+- Observed in runs: subtree syncs and the repository-name tiebreak
 - Sources
 
 ## How line ownership is actually computed
@@ -119,6 +120,37 @@ Positioning, inferred from the above: OWNH sits where the ownership tools and
 the provenance systems meet. It takes provenance's first-introducer rule, applies
 it at line granularity, and reports it with ownership-tool vocabulary. Each half
 is legitimate on its own; the combination is the joke.
+
+## Observed in runs: subtree syncs and the repository-name tiebreak
+
+Not from the literature: observed on a public programming-language project
+analyzed with its tool repositories (formatter, linter, IDE server, interpreter,
+package manager, installer, book). No source; reproduce by indexing a main
+repository together with repositories that are subtree-synced into it.
+
+- **Mechanism.** Subtree syncs (git subtree, or josh-style tools) import a
+  tool repository's history into the main repository. The same commits, with
+  the same author times, then exist in both, so each line has two introductions
+  with equal author time. The ownership key `(author_time, repository name,
+  topo)` breaks the tie by repository name, in byte order. The owner (a person)
+  is the same either way, but the origin repository is whichever name sorts
+  first.
+- **Result.** Tools whose names sort after the main repository's name lost
+  their own code to it: three tool repositories each had 99.7% to 99.9% of their
+  lines "written elsewhere", nearly all credited to the main repository. The
+  interpreter, whose name sorts before it, kept 57.6% of its lines as its own
+  and was credited with 1.6% of the main repository. Which repository "owns" a
+  whole tool is decided by alphabetical order.
+- **Why it stays.** The tiebreak exists so that results do not depend on the
+  order repositories are given (an invariant in CLAUDE.md); any deterministic
+  tiebreak would hand the shared history to one side. Same family as the
+  formatter and rename absurdities: an honest rule producing an arbitrary
+  answer. It applies to any history-preserving import (subtree merges,
+  monorepo migrations that keep history, forks analyzed alongside their
+  upstream).
+- **Where it shows.** The cross-repository heatmap and the "written
+  elsewhere" share per repository; the AI summary, which rounds to whole
+  percent, called it "100% of their lines were written elsewhere".
 
 ## Sources
 

@@ -12,7 +12,14 @@ export function outlookNote(t) {
   const series = t.mode === 'history'
     ? `Series are lines added minus lines removed, each line owned by whoever first wrote it; at ${t.nowLabel} they total ${num(t.series.total.at(-1))} lines against ${num(t.headLines)} at HEAD (lines added on branches whose changes a merge discarded are never removed). `
     : 'Series count lines that exist today, by the quarter their owner first wrote them, so deleted code is not included. ';
-  return `${fit}${series}The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.`;
+  const partial = t.inProgress ? ` ${t.nowLabel} was still in progress when this report was generated, so its figures cover only part of the quarter.` : '';
+  return `${fit}${series}The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.${partial}`;
+}
+
+// A KPI row's quarter label, marked when it is the quarter still in progress
+// (`t.inProgress`, set by report() from the generation time).
+export function kpiQuarter(t, k) {
+  return t.inProgress && k.quarter === t.nowLabel ? `${k.quarter} (in progress)` : k.quarter;
 }
 
 export function outlookStatements(t) {

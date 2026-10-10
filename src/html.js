@@ -4,7 +4,7 @@
 //
 // The inlined SVGs carry their own <style> with short class names (.title,
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
-import { outlookNote, outlookStatements } from './outlook.js';
+import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
 import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
@@ -224,7 +224,7 @@ function outlookHtml(stats, charts) {
     ${table(
       ['Quarter', 'Lines under management', 'QoQ', 'New owners', t.principal ? esc(t.principal.name) : 'Principal owner', 'Non-contributors', 'Inactive owners', 'Blank lines committed'],
       t.kpis.map((k) => [
-        cell(esc(k.quarter), k.quarter),
+        cell(esc(kpiQuarter(t, k)), k.quarter),
         cell(num(k.lines), k.lines),
         change(k.linesChange),
         cell(num(k.newOwners), k.newOwners),

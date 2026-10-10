@@ -303,7 +303,8 @@
         "quarter": "2031 Q4"
       }
     },
-    "headLines": 17456
+    "headLines": 17456,
+    "inProgress": false
   },
   "deletions": {
     "added": 34094,
@@ -3288,7 +3289,7 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 13:23 UTC"
+    "at": "2026-10-10 15:21 UTC"
   },
   "archetypes": [
     {

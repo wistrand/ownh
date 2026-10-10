@@ -190,6 +190,12 @@ survival, outlook, oddities, repositories, excluded patterns.
 
 - Charts (`src/charts.js`) use plain hex colors in class rules with a dark-mode
   media block, never CSS variables, so rsvg and slide tools render them.
+- "Now" is the newest commit's quarter. When the report is generated inside
+  that quarter (generation time, `SOURCE_DATE_EPOCH` if set), `report()` sets
+  `timeline.inProgress`: the KPI row reads "(in progress)" (`kpiQuarter` in
+  `src/outlook.js`), the outlook note says so, and the AI facts mark that
+  quarter. Without the mark, a quarter ten days old read as "0% growth, off
+  track". Projections still include the partial quarter in their fit.
 - Outlook statements and charts are shared by Markdown and HTML
   (`src/outlook.js`); leverage, demolition, and survival pieces likewise
   (`src/sections.js`); radar data in `src/profiles.js`.

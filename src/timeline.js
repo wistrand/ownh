@@ -42,8 +42,12 @@ export const KPI_QUARTERS = 8;
 // history), 'cohort' when they are surviving lines by first-written quarter.
 export function buildTimeline({ cohorts, mode = 'cohort', commitQuarters, blankByQuarter, contributed, principal }) {
   if (cohorts.length === 0 || commitQuarters.length === 0) return null;
-  const now = Math.max(...commitQuarters.map((c) => c.q));
-  const first = Math.min(...cohorts.map((c) => c.q));
+  // Loops, not Math.max(...rows): spreading hundreds of thousands of rows as
+  // arguments overflows the call stack on large databases.
+  let now = -Infinity;
+  for (const c of commitQuarters) if (c.q > now) now = c.q;
+  let first = Infinity;
+  for (const c of cohorts) if (c.q < first) first = c.q;
   const quarters = [];
   for (let q = first; q <= now; q++) quarters.push(q);
   const index = new Map(quarters.map((q, i) => [q, i]));
