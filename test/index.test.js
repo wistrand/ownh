@@ -438,7 +438,15 @@ test('AI prose: pseudonymized facts, number guard, names mapped back, cache', as
   }
   // Group sizes are words, never a percentage of the owner count.
   assert.ok(!facts.includes('ownersPct'));
-  assert.match(facts, /"owners":"(one owner|under 5% of owners|about \d+% of owners)"/);
+  assert.match(facts, /"owners":"(one owner|no owners|all owners|(under a tenth|under a quarter|under half|about half|over half|over three quarters) of owners)"/);
+  // Count-based shares are words, never numbers that could be reversed.
+  assert.match(facts, /"methodsAgreeIn":"(no repositories|all repositories|(under a tenth|under a quarter|under half|about half|over half|over three quarters) of repositories)"/);
+  // Archetype rules sent to the model contain no number derived from the data.
+  const sentRules = JSON.parse(facts).archetypes.map((a) => a.rule).join(' ');
+  assert.ok(!/at least \d+ lines/.test(sentRules), sentRules);
+  // Only quarter tokens issued in the facts are known; invented ones are not.
+  assert.ok(p.known('[T0]'));
+  assert.ok(!p.known('[T+7]'), 'an invented quarter is rejected');
   // Quarter tokens map back to real quarters locally.
   assert.equal(p.unmap('by [T0]'), `by ${stats.timeline.nowLabel}`);
 
@@ -519,12 +527,23 @@ test('AI API: temperature fallback, and failures withhold instead of aborting', 
     assert.ok(!('provider' in bodies[0]), 'no OpenRouter routing fields for other APIs');
     assert.equal(aiConfig({ OWNH_AI_TEMPERATURE: 'default' }).temperature, null);
 
-    // Any other API error: the report is still written, the AI sections are withheld.
-    globalThis.fetch = async () => new Response('{"error": {"message": "invalid key"}}', { status: 401 });
     const db = join(dir, 'ai-fail.db');
     await index({ dbPath: db, repoPaths: [repos.alpha] });
+    const env = { OWNH_AI_KEY: 'k', OWNH_AI_BASE_URL: 'https://api.example.com/v1' };
+
+    // After a temperature fallback, ai-request.json shows the request that was
+    // actually sent: without temperature.
+    globalThis.fetch = async (_url, init) => ('temperature' in JSON.parse(init.body)
+      ? new Response('{"error": {"message": "temperature unsupported"}}', { status: 400 })
+      : new Response(JSON.stringify({ choices: [{ message: { content: 'not json' } }] }), { status: 200 }));
+    const fallback = join(dir, 'ai-fallback');
+    await report({ dbPath: db, outDir: fallback, ai: true, aiEnv: env });
+    assert.ok(!('temperature' in JSON.parse(readFileSync(join(fallback, 'ai-request.json'), 'utf8')).body));
+
+    // Any other API error: the report is still written, the AI sections are withheld.
+    globalThis.fetch = async () => new Response('{"error": {"message": "invalid key"}}', { status: 401 });
     const out = join(dir, 'ai-fail');
-    await report({ dbPath: db, outDir: out, ai: true, aiEnv: { OWNH_AI_KEY: 'k', OWNH_AI_BASE_URL: 'https://api.example.com/v1' } });
+    await report({ dbPath: db, outDir: out, ai: true, aiEnv: env });
     assert.match(readFileSync(join(out, 'leaderboard.md'), 'utf8'), /Withheld: AI request failed: HTTP 401 \{"error": \{"message": "invalid key"\}\}/);
   } finally {
     globalThis.fetch = realFetch;

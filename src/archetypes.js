@@ -50,6 +50,9 @@ export function findArchetypes(stats) {
     {
       key: 'leverage',
       rule: `Owners with at least ${minOwned} lines who own 10 or more lines per line written.`,
+      // For the AI: minOwned depends on the line total for small databases, so
+      // the threshold is described, not stated.
+      aiRule: 'Owners who own 10 or more lines per line written, excluding owners with very few lines.',
       members: owners.filter((o) => o.written > 0 && o.lines >= minOwned && o.lines / o.written >= 10),
     },
     {
@@ -69,6 +72,8 @@ export function findArchetypes(stats) {
     return {
       key: g.key,
       rule: g.rule,
+      // The rule as sent to the AI: never a number derived from the data.
+      aiRule: g.aiRule ?? g.rule,
       members: g.members.length,
       lines,
       share: total ? lines / total : 0,

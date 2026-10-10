@@ -1,36 +1,36 @@
 {
-  "key": "c380ef1c02b18d03c65f33fa3430706988b707441dd9d9ea780b4a43b8148511",
+  "key": "3162a1f31da6600d71929c146734d53cca83b732f02b9120f9fbf2ee4857bfe3",
   "model": "openai/gpt-6-luna",
-  "promptVersion": 1,
+  "promptVersion": 2,
   "answer": {
     "summary": [
-      "OWNH tracks 17,456 lines across 6 repositories and 40 owners. [O1] holds 54.4% of lines, while blank lines alone account for 20.5% of the codebase.",
-      "Cross-repository ownership varies substantially: 79.6% of [R5] was written elsewhere, while 57.4% of [R3] is owned by non-contributors. The ownership methods agree in 0 cases.",
-      "The latest quarter shows continued codebase growth and rising principal-owner concentration, while inactive-owner share has declined from 77.9% in 2025 Q3 to 76.3% in 2026 Q2. The 10,000 blank-line milestone is projected for 2031 Q4."
+      "The portfolio spans fewer than ten repositories, dozens of owners and tens of thousands of lines. [O1] holds 54% of lines; blank lines alone account for 21% and are attributed to [O1].",
+      "Cross-repository ownership varies materially: code written elsewhere accounts for 80% in [R1], 78% in [R2] and 66% in [R3]. Ownership by noncontributors ranges from 0% in [R2] to 57% in [R3], and ownership methods agree in no repositories.",
+      "At [T0], inactive owners account for 76% and the principal owner holds 54%. Inactivity eased from 78% at [T-3], while principal-owner share rose from 51%; the next blank-line milestone is projected at [T+22]. Code half-life is 2 years."
     ],
     "okr": {
-      "objective": "Strengthen durable, broadly distributed ownership as the codebase grows.",
+      "objective": "Improve ownership resilience and consistency across the portfolio.",
       "keyResults": [
         {
-          "text": "Reduce principal-owner concentration from 54.3% in 2026 Q2, following an increase from 51.2% in 2025 Q3.",
-          "status": "at risk"
+          "text": "Reduce principal-owner concentration from the [T0] baseline of 54.3%, reversing the increase from 51.2% at [T-3].",
+          "status": "off track"
         },
         {
-          "text": "Continue reducing inactive-owner share from 76.3% in 2026 Q2, down from 77.9% in 2025 Q3.",
+          "text": "Lower inactive-owner share from the [T0] baseline of 76.3%; it has eased from 77.9% at [T-3].",
           "status": "on track"
         },
         {
-          "text": "Advance blank-line management from 5,095 committed toward the 10,000-line milestone projected for 2031 Q4.",
-          "status": "on track"
+          "text": "Increase agreement between ownership methods from a baseline of no repositories in agreement.",
+          "status": "off track"
         }
       ]
     },
     "archetypes": {
-      "principal": "Principal Owner",
-      "inactive": "Dormant Owners",
+      "principal": "Dominant Owner",
+      "inactive": "Quiet Legacy",
       "absentee": "Cross-Repo Absentee",
-      "demolition": "Code Removers",
-      "automation": "Automated Owners"
+      "demolition": "Aggressive Pruner",
+      "automation": "Bot Steward"
     }
   }
 }

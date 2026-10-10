@@ -226,10 +226,17 @@ and always shown; the AI only names the groups.
   - Sizes are bands ("tens of millions" of lines, "dozens" of repositories).
   - Percentages are only as precise as is safe: one decimal for shares of the
     whole codebase or of all removals (huge denominators), whole percents for
-    shares of one repository, 5% steps for shares of a count (methods
-    agreement), and words for group sizes ("one owner", "about 40% of
-    owners"). A first dry run showed why: "0.2% of owners" and "31.7% of
-    repositories" pinned the exact owner and repository counts.
+    shares of one repository, and words for any share of a count (`fraction`:
+    "under a quarter", "about half", "over three quarters"; "one owner"). A
+    first dry run showed why: "0.2% of owners" and "31.7% of repositories"
+    pinned the exact owner and repository counts, and even 5% steps can pin
+    small totals (2 of 6 is 35%, which no other small total gives).
+  - Archetype rules are sent as `aiRule`, which never contains a number derived
+    from the data (the leverage threshold depends on the line total).
+  - Only tokens issued in the facts are accepted in the reply, quarters
+    included, so the model can't invent a date.
+  - `ai-request.json` is rewritten around each attempt, so after a temperature
+    fallback or a retry it shows the request actually sent last.
   - Top lists are cut to three; top lines are described by kind, never text.
   - No attribution headers. On OpenRouter the body sets
     `provider.data_collection: "deny"` and `provider.zdr: true`

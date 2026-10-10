@@ -67,22 +67,21 @@ export function pseudonyms(stats) {
     return map.get(key);
   };
   const now = stats.timeline?.now ?? null;
-  const timeOf = (token) => {
-    const m = /^\[T([+-]?\d+)\]$/.exec(token);
-    return m && now !== null && Math.abs(Number(m[1])) <= 400 ? quarterLabel(now + Number(m[1])) : null;
-  };
   return {
     owner: (owner) => (owner ? assign(ownerToken, 'O', owner.email, owner.name) : null),
     repo: (name) => (name ? assign(repoToken, 'R', name, name) : null),
-    // A quarter label ("2026 Q2") or quarter number to its relative token.
+    // A quarter label ("2026 Q2") or quarter number to its relative token. Only
+    // tokens issued here are known, so the model can't invent a quarter.
     quarter: (q) => {
       if (q === null || q === undefined || now === null) return null;
       const n = typeof q === 'number' ? q : Number(q.slice(0, 4)) * 4 + Number(q.slice(-1)) - 1;
       const d = n - now;
-      return `[T${d > 0 ? '+' : ''}${d}]`;
+      const token = `[T${d > 0 ? '+' : ''}${d}]`;
+      names.set(token, quarterLabel(n));
+      return token;
     },
-    known: (token) => names.has(token) || timeOf(token) !== null,
-    unmap: (text) => text.replace(TOKEN, (t) => names.get(t) ?? timeOf(t) ?? t),
+    known: (token) => names.has(token),
+    unmap: (text) => text.replace(TOKEN, (t) => names.get(t) ?? t),
   };
 }
 
@@ -96,14 +95,28 @@ const pct = (v) => Math.round(v * 1000) / 10;
 // Shares of one repository: whole percents, since a small repo's line count
 // could otherwise be recovered from the decimals.
 const wholePct = (v) => Math.round(v * 100);
-// Shares of a count (owners, repositories): to the nearest 5%.
-const fivePct = (v) => Math.round(v * 20) * 5;
+// Shares of a count (owners, repositories) as words. Any number, even in 5%
+// steps, can be reversed when the total is small (2 of 6 repositories is 35%,
+// which no other small total produces); coarse words map many counts to each.
+function fraction(n, total) {
+  if (!total || n === 0) return 'none';
+  if (n === total) return 'all';
+  const f = n / total;
+  if (f < 0.1) return 'under a tenth';
+  if (f < 0.25) return 'under a quarter';
+  if (f < 0.45) return 'under half';
+  if (f <= 0.55) return 'about half';
+  if (f < 0.75) return 'over half';
+  return 'over three quarters';
+}
 
 // How many owners are in a group, without revealing the total number of owners.
 function ownerShare(members, total) {
-  if (members === 1) return 'one owner';
-  const p = total ? fivePct(members / total) : 0;
-  return p < 5 ? 'under 5% of owners' : `about ${p}% of owners`;
+  return members === 1 ? 'one owner' : `${fraction(members, total)} of owners`.replace(/^none of owners$/, 'no owners').replace(/^all of owners$/, 'all owners');
+}
+
+function ofRepositories(f) {
+  return f === 'none' ? 'no repositories' : f === 'all' ? 'all repositories' : `${f} of repositories`;
 }
 
 const TRIVIAL = /^[\s{}()[\];,.:<>/\\*#'"`=+-]*$/;
@@ -129,7 +142,7 @@ function countBand(n) {
 
 // Everything the model may use: tokens for names and quarters, percentages and
 // bands for sizes. Precision is chosen so no count can be recovered: see pct,
-// wholePct, fivePct, and ownerShare.
+// wholePct, fraction, ownerShare, and the archetypes' aiRule.
 export function buildFacts(stats, archetypes, p) {
   const t = stats.timeline;
   const proj = t?.projections;
@@ -145,7 +158,7 @@ export function buildFacts(stats, archetypes, p) {
       writtenElsewherePct: wholePct(r.lines ? r.foreign / r.lines : 0),
       ownedByNonContributorsPct: wholePct(r.lines ? r.absentee / r.lines : 0),
     })),
-    methodsAgreeInPctOfRepositories: fivePct(stats.repos.length ? stats.repos.filter((r) => r.methods?.agree).length / stats.repos.length : 0),
+    methodsAgreeIn: ofRepositories(fraction(stats.repos.filter((r) => r.methods?.agree).length, stats.repos.length)),
     outlook: t ? {
       now: p.quarter(t.now),
       inactiveOwnersMajority: shareProj(proj.knowledgeLoss),
@@ -166,7 +179,7 @@ export function buildFacts(stats, archetypes, p) {
     } : null,
     archetypes: archetypes.map((a) => ({
       key: a.key,
-      rule: a.rule,
+      rule: a.aiRule,
       owners: ownerShare(a.members, owners.length),
       sharePct: pct(a.share),
       examples: a.examples.slice(0, 2).map((o) => p.owner(o)),
@@ -298,17 +311,22 @@ export async function aiInsights(stats, archetypes, { config, outDir, complete =
   // A cached answer needs no key; only a new request does.
   if (!answer && !config.key) return { withheld: 'no API key (set OWNH_AI_KEY or OPENROUTER_API_KEY)' };
   if (!answer) {
-    audit();
     let problems = [];
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       log(`ai: request ${attempt}/${MAX_ATTEMPTS} to ${config.model}`);
+      // Written before sending (a record even if the process dies) and again
+      // after, because chatCompletion may resend without temperature: the file
+      // always shows the last request actually sent.
+      audit();
       let content;
       try {
         content = await complete(config, messages);
       } catch (err) {
+        audit();
         // An API failure withholds the AI sections; the rest of the report is written.
         return { withheld: err.message.replace(/\s+/g, ' ').slice(0, 300) };
       }
+      audit();
       const parsed = parseJson(content);
       problems = parsed ? checkAnswer(parsed, facts, p) : ['The reply is not valid JSON.'];
       if (problems.length === 0) {

@@ -3288,12 +3288,13 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 12:27 UTC"
+    "at": "2026-10-10 12:40 UTC"
   },
   "archetypes": [
     {
       "key": "principal",
       "rule": "The single owner with the most lines.",
+      "aiRule": "The single owner with the most lines.",
       "members": 1,
       "lines": 9490,
       "share": 0.5436526122823098,
@@ -3307,6 +3308,7 @@
     {
       "key": "inactive",
       "rule": "Owners with no commit in the last 4 quarters.",
+      "aiRule": "Owners with no commit in the last 4 quarters.",
       "members": 12,
       "lines": 13334,
       "share": 0.7638634280476627,
@@ -3328,6 +3330,7 @@
     {
       "key": "absentee",
       "rule": "Owners with most of their lines in repositories they never committed to.",
+      "aiRule": "Owners with most of their lines in repositories they never committed to.",
       "members": 1,
       "lines": 12,
       "share": 0.000687442713107241,
@@ -3341,6 +3344,7 @@
     {
       "key": "demolition",
       "rule": "People who removed more lines belonging to others than they own.",
+      "aiRule": "People who removed more lines belonging to others than they own.",
       "members": 9,
       "lines": 2756,
       "share": 0.1578826764436297,
@@ -3362,6 +3366,7 @@
     {
       "key": "automation",
       "rule": "Automated accounts (bots) that own lines.",
+      "aiRule": "Automated accounts (bots) that own lines.",
       "members": 1,
       "lines": 35,
       "share": 0.0020050412465627866,
@@ -3374,6 +3379,37 @@
     }
   ],
   "ai": {
-    "withheld": "no cached AI text for this data (run with --ai to request it)"
+    "model": "openai/gpt-6-luna",
+    "promptVersion": 2,
+    "cached": false,
+    "summary": [
+      "The portfolio spans fewer than ten repositories, dozens of owners and tens of thousands of lines. Ada Lindqvist holds 54% of lines; blank lines alone account for 21% and are attributed to Ada Lindqvist.",
+      "Cross-repository ownership varies materially: code written elsewhere accounts for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Ownership by noncontributors ranges from 0% in web-frontend to 57% in api-gateway, and ownership methods agree in no repositories.",
+      "At 2026 Q2, inactive owners account for 76% and the principal owner holds 54%. Inactivity eased from 78% at 2025 Q3, while principal-owner share rose from 51%; the next blank-line milestone is projected at 2031 Q4. Code half-life is 2 years."
+    ],
+    "okr": {
+      "objective": "Improve ownership resilience and consistency across the portfolio.",
+      "keyResults": [
+        {
+          "text": "Reduce principal-owner concentration from the 2026 Q2 baseline of 54.3%, reversing the increase from 51.2% at 2025 Q3.",
+          "status": "off track"
+        },
+        {
+          "text": "Lower inactive-owner share from the 2026 Q2 baseline of 76.3%; it has eased from 77.9% at 2025 Q3.",
+          "status": "on track"
+        },
+        {
+          "text": "Increase agreement between ownership methods from a baseline of no repositories in agreement.",
+          "status": "off track"
+        }
+      ]
+    },
+    "archetypeNames": {
+      "principal": "Dominant Owner",
+      "inactive": "Quiet Legacy",
+      "absentee": "Cross-Repo Absentee",
+      "demolition": "Aggressive Pruner",
+      "automation": "Bot Steward"
+    }
   }
 }
