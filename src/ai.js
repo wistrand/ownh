@@ -1,6 +1,6 @@
 // Optional AI-written report prose (`ownh report --ai`): an executive summary,
 // an OKR draft, and names for the owner archetypes. Talks to any
-// OpenRouter-compatible chat completions API.
+// OpenAI-compatible chat completions API (OpenRouter by default; any hosted or local endpoint).
 //
 // What leaves the machine is kept to a minimum:
 // - No names: owners, repositories, and quarters are tokens ([O1], [R1], [T0],
@@ -35,6 +35,8 @@ export function aiConfig(env = process.env) {
   const baseUrl = (env.OWNH_AI_BASE_URL || 'https://openrouter.ai/api/v1').replace(/\/+$/, '');
   return {
     key: env.OWNH_AI_KEY || env.OPENROUTER_API_KEY || null,
+    // The default endpoint (OpenRouter) needs a key; a custom one may not.
+    requireKey: !env.OWNH_AI_BASE_URL,
     model: env.OWNH_AI_MODEL || DEFAULT_MODEL,
     baseUrl,
     // OpenRouter routing restrictions; other APIs may reject the extra field.
@@ -288,8 +290,9 @@ export function requestBody(config, messages) {
 export async function chatCompletion(config, messages) {
   const post = (cfg) => fetch(`${cfg.baseUrl}/chat/completions`, {
     method: 'POST',
-    // Only what the API needs: no referer or app-title attribution headers.
-    headers: { authorization: `Bearer ${cfg.key}`, 'content-type': 'application/json' },
+    // Only what the API needs: no referer or app-title attribution headers, and
+    // no authorization at all for a keyless (local) endpoint.
+    headers: { ...(cfg.key ? { authorization: `Bearer ${cfg.key}` } : {}), 'content-type': 'application/json' },
     body: JSON.stringify(requestBody(cfg, messages)),
     signal: AbortSignal.timeout(180_000),
   });
@@ -319,7 +322,7 @@ export async function aiInsights(stats, archetypes, { config, outDir, complete =
   const audit = () => writeFileSync(join(outDir, REQUEST_FILE), `${JSON.stringify({
     note: 'The exact request OWNH sends (the API key is sent as an Authorization header and is not shown). Names and quarters are tokens, mapped back locally.',
     url: `${config.baseUrl}/chat/completions`,
-    headers: ['authorization: Bearer <key>', 'content-type: application/json'],
+    headers: [...(config.key ? ['authorization: Bearer <key>'] : []), 'content-type: application/json'],
     body: requestBody(config, messages),
   }, null, 2)}\n`);
 
@@ -334,8 +337,9 @@ export async function aiInsights(stats, archetypes, { config, outDir, complete =
   let answer = cache?.key === key ? cache.answer : null;
   const cached = Boolean(answer);
   if (!answer && cacheOnly) return { withheld: 'no cached AI text for this data (run with --ai to request it)' };
-  // A cached answer needs no key; only a new request does.
-  if (!answer && !config.key) return { withheld: 'no API key (set OWNH_AI_KEY or OPENROUTER_API_KEY)' };
+  // A cached answer needs no key; only a new request to a hosted API does. A
+  // custom OWNH_AI_BASE_URL (e.g. a local server) may run without one.
+  if (!answer && !config.key && config.requireKey) return { withheld: 'no API key (set OWNH_AI_KEY or OPENROUTER_API_KEY, or OWNH_AI_BASE_URL for a keyless endpoint)' };
   if (!answer) {
     let problems = [];
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {

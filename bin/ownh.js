@@ -19,9 +19,10 @@ const USAGE = `usage:
   --no-excludes indexes everything. add requires the same exclude list the
   .db was built with.
 
-  --ai adds AI-written prose (summary, OKR draft, archetype names) via an
-  OpenRouter-compatible API: OWNH_AI_KEY or OPENROUTER_API_KEY; optional
-  OWNH_AI_MODEL (default openai/gpt-6-luna), OWNH_AI_BASE_URL, and
+  --ai adds AI-written prose (summary, OKR draft, archetype names) via any
+  OpenAI-compatible chat API, hosted or local: OWNH_AI_KEY or
+  OPENROUTER_API_KEY (not needed with a keyless OWNH_AI_BASE_URL such as a
+  local server); optional OWNH_AI_MODEL (default openai/gpt-6-luna), and
   OWNH_AI_ZDR=0 to allow endpoints that retain data. Only percentages, size
   bands, and tokens for names and quarters are sent; the exact request is
   written to ai-request.json. --ai-dry-run writes that file and sends nothing.

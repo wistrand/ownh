@@ -213,14 +213,17 @@ survival, outlook, oddities, repositories, excluded patterns.
 ## AI prose
 
 `src/ai.js`, enabled with `report --ai` (user request, opt-in). Writes three
-things with any OpenRouter-compatible chat completions API: an executive
+things with any OpenAI-compatible chat completions API, hosted or local (OpenRouter by default): an executive
 summary (top of the report), an OKR draft (after the Outlook), and names for
 the owner archetypes. Archetype membership is rule-based (`src/archetypes.js`)
 and always shown; the AI only names the groups.
 
 - **Configuration:** `OWNH_AI_KEY` or `OPENROUTER_API_KEY`; optional
   `OWNH_AI_MODEL` (default `openai/gpt-6-luna`, user decision, `DEFAULT_MODEL`)
-  and `OWNH_AI_BASE_URL` (default OpenRouter). Missing settings withhold the
+  and `OWNH_AI_BASE_URL` (default OpenRouter). A key is required only for the
+  default endpoint (`requireKey`); with a custom base URL and no key, requests
+  go out without an authorization header, so keyless local servers
+  (OpenAI-compatible `/chat/completions`) work. Missing settings withhold the
   section with a reason; the rest of the report is unaffected.
 - **Temperature:** 0 by default. Models that accept only their default (OpenAI
   reasoning models via api.openai.com return HTTP 400) are retried once

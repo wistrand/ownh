@@ -45,7 +45,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `src/churn.js`      | churn analyses: true ownership history, deletions, survival (Kaplan-Meier)                                                      |
 | `src/sections.js`   | leverage, code demolition, and code survival report pieces                                                                      |
 | `src/archetypes.js` | rule-based owner groups (principal, inactive, absentee, leverage, demolition, automation)                                       |
-| `src/ai.js`         | optional `--ai` prose: pseudonymized facts, OpenRouter-compatible call, number guard, cache                                     |
+| `src/ai.js`         | optional `--ai` prose: pseudonymized facts, OpenAI-compatible call (hosted or local), number guard, cache                              |
 | `src/html.js`       | self-contained report.html (inline charts, sortable tables)                                                                     |
 | `src/blame.js`      | `ownh blame`: git blame per HEAD file, parallel, resumable                                                                      |
 | `src/sample.js`     | deterministic blame file sample                                                                                                 |

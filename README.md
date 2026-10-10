@@ -57,11 +57,15 @@ by commit count, by blame, and by line hash.
 ### AI insights
 
 `--ai` adds an AI-written executive summary, an OKR draft, and names for the
-owner archetypes, using any OpenRouter-compatible API (default model
-`openai/gpt-6-luna`; set `OWNH_AI_MODEL` to use another):
+owner archetypes, using any OpenAI-compatible chat API, hosted or local
+(default: OpenRouter with model `openai/gpt-6-luna`; set `OWNH_AI_MODEL` to use
+another):
 
 ```bash
 OPENROUTER_API_KEY=... bin/ownh.js report --db acme.db --ai
+
+# A local server needs no key:
+OWNH_AI_BASE_URL=http://localhost:11434/v1 OWNH_AI_MODEL=<local model> bin/ownh.js report --db acme.db --ai
 ```
 
 Only percentages, size bands ("tens of millions of lines"), and trends leave

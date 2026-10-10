@@ -540,6 +540,19 @@ test('AI API: temperature fallback, and failures withhold instead of aborting', 
     assert.ok(!('provider' in bodies[0]), 'no OpenRouter routing fields for other APIs');
     assert.equal(aiConfig({ OWNH_AI_TEMPERATURE: 'default' }).temperature, null);
 
+    // A local endpoint without a key: no authorization header at all. The
+    // default (hosted) endpoint still requires a key.
+    let headers = null;
+    globalThis.fetch = async (_url, init) => {
+      headers = init.headers;
+      return new Response(JSON.stringify({ choices: [{ message: { content: 'ok' } }] }), { status: 200 });
+    };
+    const local = aiConfig({ OWNH_AI_BASE_URL: 'http://localhost:11434/v1' });
+    assert.equal(local.requireKey, false);
+    assert.equal(await chatCompletion(local, [{ role: 'user', content: 'hi' }]), 'ok');
+    assert.ok(!('authorization' in headers));
+    assert.equal(aiConfig({}).requireKey, true);
+
     const db = join(dir, 'ai-fail.db');
     await index({ dbPath: db, repoPaths: [repos.alpha] });
     const env = { OWNH_AI_KEY: 'k', OWNH_AI_BASE_URL: 'https://api.example.com/v1' };
