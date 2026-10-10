@@ -45,6 +45,9 @@ Writes into `report/acme/` (one directory per database; `--out` picks another):
 by line hash, cross-repository ownership, ownership profiles, outlook, code
 survival), and the underlying data as JSON and CSV.
 
+The computed statistics are kept in `stats-cache.json` in that directory, so a
+second report of an unchanged database is fast. `--no-cache` recomputes.
+
 For comparison with conventional methods, `bin/ownh.js blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add
 `--sample 2000` to blame a random sample of files in large repositories and
@@ -73,7 +76,10 @@ figures, and answers are cached per database.
 
 The site at [ownh.org](https://ownh.org) is `docs/index.html`, served by GitHub
 Pages from the `docs/` folder. Its [sample report](https://ownh.org/sample/report.html)
-is generated from the test repositories with `npm run sample`.
+is generated from the test repositories with `npm run sample`. The method
+whitepaper, [ownh-whitepaper.pdf](https://ownh.org/ownh-whitepaper.pdf), is
+built from `whitepaper/ownh-whitepaper.tex` with `npm run whitepaper` (needs
+pdflatex).
 
 ## How it works
 

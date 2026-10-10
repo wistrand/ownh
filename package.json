@@ -11,7 +11,8 @@
   },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
-    "sample": "node scripts/build-sample.js"
+    "sample": "node scripts/build-sample.js",
+    "whitepaper": "node scripts/build-whitepaper.js"
   },
   "license": "Apache-2.0",
   "private": true

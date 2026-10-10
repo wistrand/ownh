@@ -48,7 +48,7 @@ dependencies. Git does all repository work through subprocesses (`src/git.js`).
 | `add`     | Appends repos to an existing `.db`; same result as indexing all at once. One transaction.  |
 | `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.            |
 | `summary` | Plain-text summary to stdout.                                                              |
-| `report`  | Report files into `--out`, default `report/<db name>/`.                                    |
+| `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).  |
 
 Excludes: `--exclude-file` (repeatable), `--no-excludes`, or the optional,
 git-ignored `ownh.exclude` next to the tool (missing is fine; an explicit
@@ -282,6 +282,10 @@ and always shown; the AI only names the groups.
   byte-identical across runs except the generation time.
 - `scripts/screenshot.mjs` captures pages after scripted content has rendered
   (headless Firefox over WebDriver BiDi).
+- `docs/ownh-whitepaper.pdf` is built from `whitepaper/ownh-whitepaper.tex` by
+  `scripts/build-whitepaper.js` (`npm run whitepaper`, pdflatex, byte-identical
+  rebuilds). It states the core definitions and methods only; see
+  [design.md](design.md) for what it leaves out.
 
 ## Decisions
 
@@ -332,11 +336,13 @@ Measured on real runs (repositories not named, see CLAUDE.md conventions):
 - Index: about 12 minutes for a 342k-commit, 11.7M-line repo before churn was
   recorded; churn adds a noticeable but unmeasured share. Small repos take seconds.
 - Database: about 450 bytes per HEAD line before churn; churn added about 20% on
-  a 4M-line database.
+  a 4M-line database and about 40% on the largest database (14.6 GB to 20.4 GB).
 - Blame with commit-graph: about 40 files per second on 16 cores for the large
   repo (about 20 minutes for 57k files).
-- Report: about 1.5 minutes for 15M HEAD lines, dominated by the per-line owner
-  join of the largest repo.
+- Report: about 1.5 minutes for 15M HEAD lines before churn, dominated by the
+  per-line owner join of the largest repo; about 7 minutes on the largest
+  database with the churn analyses. A rerun with an unchanged database and
+  statistics code reuses `stats-cache.json` and takes seconds.
 - Remerge walking costs nothing measurable, including on a repo with 4,200 merges.
 
 ## Open questions
@@ -357,3 +363,17 @@ Measured on real runs (repositories not named, see CLAUDE.md conventions):
 - Generated CODEOWNERS (user decision).
 - Interactive ownership network with BlitZoom (user decision).
 - Public-code "go global" runs (World of Code scale): out of scope.
+- Deletion hazard by age (Nelson-Aalen / per-age `d / atRisk` from
+  `kaplanMeier()`) as a "Deletion risk by age" chart (user decision, after a
+  check). The per-age rate depends on how removals are paired with copies of a
+  hash: `survival()` takes the oldest copy first. Recomputing with newest-first
+  pairing on a 16-repo public set and on the largest local database: 44% and
+  54% of deaths came from hashes with live copies from more than one quarter,
+  so the convention decides the age of about half of all deaths. The age-0
+  rate doubled between conventions and later bands moved by up to 3x. Only
+  "the first year is the riskiest" held in both databases under both
+  conventions. On the larger database the rate also rose again at 7 to 10
+  years under both, most likely from a few large deletions of old code, so a
+  chart would present the pairing convention and deletion events as a
+  property of code age. Related: the projected half-life assumes a constant
+  rate, which the check shows does not hold; it stays labeled as projected.

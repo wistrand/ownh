@@ -53,8 +53,9 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `docs/`             | pitch site, served at https://ownh.org (GitHub Pages)                                                                           |
 | `docs/CNAME`        | GitHub Pages custom domain (`ownh.org`); keep it                                                                                |
 | `docs/sample/`      | sample report from the test fixtures; generated, run `npm run sample`                                                           |
+| `whitepaper/`       | LaTeX source of the method whitepaper; built to `docs/ownh-whitepaper.pdf`, never edit the PDF                                  |
 | `docs/og.png`       | link-preview image, rendered from `scripts/og.svg`                                                                              |
-| `scripts/`          | `build-sample.js` (sample report), `og.svg` (preview image source), `screenshot.mjs` (render-then-capture via headless Firefox) |
+| `scripts/`          | `build-sample.js` (sample report), `build-whitepaper.js`, `og.svg` (preview image source), `screenshot.mjs` (render-then-capture via headless Firefox) |
 | `README.md`         | human-facing deadpan pitch and usage                                                                                            |
 | `LICENSE`           | Apache License 2.0 (canonical text, unmodified)                                                                                 |
 | `agent_docs/`       | architecture, research, design, gotchas (linked below)                                                                          |
@@ -74,17 +75,18 @@ per analysis; reports are generated from it.
 bin/ownh.js index --db out.db [--exclude-file f]... [--no-excludes] [--force] <repo>...
 bin/ownh.js add --db out.db [--exclude-file f]... [--no-excludes] <repo>...   # same excludes as the .db
 bin/ownh.js summary --db out.db [--top 10]
-bin/ownh.js report --db out.db [--top 20] [--ai]   # writes report/out/ (always a subdirectory per database)
+bin/ownh.js report --db out.db [--top 20] [--ai] [--no-cache]   # writes report/out/ (always a subdirectory per database); reuses stats-cache.json there
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
 npm test        # only when the user asks
 npm run sample  # regenerate docs/sample/ after changing report output
 rsvg-convert scripts/og.svg -o docs/og.png   # after editing the preview image
+npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing whitepaper/
 ```
 
 ## Docs
 
 - [agent_docs/research.md](agent_docs/research.md): prior art on line-level ownership and content hashing, with sources. Read before claiming anything about the literature.
-- [agent_docs/design.md](agent_docs/design.md): the satire concept, naming, the absurdities to surface, presentation ideas, and the pitch copy.
+- [agent_docs/design.md](agent_docs/design.md): the satire concept, naming, the absurdities to surface, presentation ideas, the pitch copy, and the pitch site and whitepaper rules. Read before editing `docs/` or `whitepaper/`.
 - [agent_docs/architecture.md](agent_docs/architecture.md): how it works: history walk, database schema, blame, statistics, reports, sample; the decisions behind them, verification, performance, open questions. Read before changing `src/`. (Promoted from the former plan.md once all phases were built.)
 - [agent_docs/gotchas.md](agent_docs/gotchas.md): traps in the hashing method and in the tone. Skim before writing algorithm code or any public copy.
 

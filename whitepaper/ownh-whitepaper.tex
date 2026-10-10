@@ -1,0 +1,341 @@
+% OWNH whitepaper. Build: npm run whitepaper (writes docs/ownh-whitepaper.pdf).
+% Describes the method as implemented in src/; keep it in step with the code.
+% Deadpan pitch voice, like docs/index.html. No figures from runs.
+\pdftrailerid{} % no build-path-dependent PDF ID: same source, same bytes
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{charter}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{lmodern}
+\renewcommand{\rmdefault}{bch}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx}
+\usepackage[hyphens]{url}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage[font=small,labelfont=bf]{caption}
+\definecolor{brand}{HTML}{1F4FD1}
+\usepackage[colorlinks,linkcolor=brand,urlcolor=brand,citecolor=brand,
+  pdftitle={Content-Addressable Accountability: A Line-Hash Approach to Code Ownership},
+  pdfauthor={OWNH},pdfsubject={The OWNH method},pdfcreator={OWNH}]{hyperref}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\footnotesize\textcolor{brand}{\textbf{OWNH}}\ Whitepaper}
+\fancyhead[R]{\sffamily\footnotesize Objective Weighted Normalized Heuristics}
+\fancyfoot[C]{\sffamily\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{14pt}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}{-2.2ex plus -0.5ex}{1ex}{\sffamily\large\bfseries\color{brand}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-1.6ex plus -0.4ex}{0.6ex}{\sffamily\normalsize\bfseries}}
+\makeatother
+
+\newcommand{\ownh}{OWNH}
+\newcommand{\key}[1]{\texttt{#1}}
+\newenvironment{definition}[1]{\par\smallskip\noindent\textbf{Definition (#1).}\ }{\par\smallskip}
+\newenvironment{property}[1]{\par\smallskip\noindent\textbf{Property (#1).}\ }{\par\smallskip}
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+  {\sffamily\small\color{brand}\textbf{OWNH WHITEPAPER}}\par\vspace{1.2em}
+  {\LARGE\bfseries Content-Addressable Accountability:\\[0.2em] A Line-Hash Approach to Code Ownership\par}
+  \vspace{1em}
+  {\large The \ownh{} Framework\par}
+  \vspace{0.3em}
+  {\small\sffamily Objective Weighted Normalized Heuristics\par}
+  \vspace{0.3em}
+  {\small\url{https://ownh.org}\par}
+\end{center}
+\vspace{1em}
+
+\begin{abstract}
+\noindent Engineering organizations need to know who owns their code. Existing
+answers depend on activity (commit counts), recency (\texttt{git blame}), or
+declarations (\texttt{CODEOWNERS} files), and each can be changed by the
+behavior it is meant to measure. This paper presents \ownh{}, a method that
+assigns every line of code to exactly one owner using only the line's content
+hash and the version history of the repositories that contain it. The owner of
+a line is the first contributor, across all repositories under analysis, to
+commit a line with that exact content. The assignment is deterministic,
+independent of the order in which repositories are analyzed, and permanent.
+The definitions, the attribution procedure, the benchmark against
+established methods, and the derived governance metrics: ownership leverage,
+code demolition, code survival, and quarterly projections suitable for
+objectives and key results, are described.
+\end{abstract}
+
+\section{Introduction}
+
+Ownership measures have a respectable research history. In Windows Vista and
+Windows 7, ownership measures correlated with pre-release faults and
+post-release failures~\cite{bird}. Research comparing ownership definitions
+finds that line-based ownership suits accountability and attribution, and that
+commit-based and line-based methods disagree about who the major developers
+are~\cite{lines}. The question is therefore not whether ownership matters, but
+which definition an organization can defend.
+
+Each conventional definition carries a human element:
+
+\begin{itemize}\setlength{\itemsep}{0.2em}
+  \item \textbf{Commit counts} reward volume. Ten small commits outrank one good one.
+  \item \textbf{\texttt{git blame}} reports the revision and author that last
+    modified each line~\cite{blame}. Recency is not authorship.
+  \item \textbf{\texttt{CODEOWNERS}} files are declarations. They are maintained
+    by people and are out of date by the time they merge.
+\end{itemize}
+
+In the method presented here, the human element is removed. The history is
+read once, and a single answer is produced for every line, which any party can
+regenerate from the same repositories.
+
+\section{Definitions}
+
+\begin{definition}{Line}
+A line is the exact sequence of bytes between two newline characters. No
+normalization is applied. Leading and trailing whitespace, indentation, blank
+lines, and a trailing carriage return are part of the line. A line ending in
+\verb|\r\n| and the same line ending in \verb|\n| are different lines.
+\end{definition}
+
+\begin{definition}{Binary file}
+A file that git classifies as binary, using its attributes and content check,
+is treated as a single line whose content is the entire file. Git's
+classification is used as is; no other heuristic is applied.
+\end{definition}
+
+\begin{definition}{Line hash}
+The identity of a line is $h = \mathrm{SHA\text{-}256}(\ell)$, the hash of its
+bytes. Two lines are the same line if and only if their hashes are equal,
+regardless of file, path, language, or repository.
+\end{definition}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Line (shown between brackets) & SHA-256 prefix & Remark \\
+\midrule
+\texttt{[]}             & \texttt{e3b0c44298fc1c14} & a blank line \\
+\texttt{[\char`\}]}     & \texttt{d10b36aa74a59bcf} & closing brace \\
+\texttt{[\ \ \char`\}]} & \texttt{737db166c79ae98e} & closing brace, one level in \\
+\texttt{[\ \ \ \ \char`\}]} & \texttt{28d86778615f6af4} & closing brace, two levels in \\
+\texttt{[\textbackslash r]} & \texttt{9d1e0e2d9459d065} & a blank line, CRLF \\
+\bottomrule
+\end{tabular}
+\caption{Line hashes. Each row is a distinct line with its own owner.}
+\end{table}
+
+\begin{definition}{Introduction}
+A commit $c$ introduces hash $h$ if the diff of $c$ against its parent adds a
+line with hash $h$. Each introduction carries the key
+\[
+  k(c) = \bigl(t_{\mathrm{author}}(c),\ \mathrm{repository}(c),\ \mathrm{position}(c)\bigr),
+\]
+where $t_{\mathrm{author}}$ is the author time, $\mathrm{repository}$ is the
+name of the repository, and $\mathrm{position}$ is the commit's place in a
+topological walk of that repository's history.
+\end{definition}
+
+\begin{definition}{Owner}
+The owner of hash $h$ is the author of the introduction with the smallest key:
+\[
+  \mathrm{owner}(h) = \mathrm{author}\Bigl(\operatorname*{arg\,min}_{c \,\in\, I(h)} k(c)\Bigr),
+\]
+where $I(h)$ is the set of commits, in any repository under analysis, that
+introduce $h$. Every occurrence of $h$, in every file of every repository, has
+this owner.
+\end{definition}
+
+\begin{definition}{Identity}
+Contributors are identified by email address, compared without regard to case,
+after applying each repository's \texttt{.mailmap}. The display name of an
+identity is the name it has used most often.
+\end{definition}
+
+\section{Attribution}
+
+\subsection{Introductions and removals}
+The complete history of every repository is considered. Each line a commit adds
+relative to its parent is an introduction of that line's hash, and the owner of
+each hash follows from the smallest key among its introductions. Each line a
+commit removes is a removal, recorded by hash, quarter, and the identity of the
+commit's author, for the analyses in Section~\ref{sec:metrics}.
+
+\subsection{Merge commits}
+A merge commit is compared with the result of merging its parents
+automatically. The lines it adds relative to that result are the lines its
+author resolved by hand, and they are introductions like any other. Merge
+commits are not counted as commits, and lines they remove are not counted as
+removals.
+
+\subsection{Lines at head}
+Every line of every file at the head of each repository is attributed to the
+owner of its hash. The total is the number of \emph{lines under management}.
+Each line counts once per occurrence: a hash that appears in many places
+contributes all of those places to its owner.
+
+\section{Properties}
+
+\begin{property}{Uniqueness}
+Every line has exactly one owner. Ties are impossible: two introductions with
+equal author time are separated by repository name, and within a repository by
+topological position.
+\end{property}
+
+\begin{property}{Determinism}
+The same repositories at the same commits produce the same owners and the same
+counts.
+\end{property}
+
+\begin{property}{Order independence}
+Ownership is a minimum over a key that does not depend on the order of
+analysis. The result does not depend on the order in which repositories are
+analyzed.
+\end{property}
+
+\begin{property}{Permanence}
+An owner keeps ownership regardless of later activity, inactivity, or
+employment status. Ownership of a line changes only when the line changes.
+\end{property}
+
+\begin{property}{Global scope}
+Ownership is shared across repositories. A line first written in one
+repository is owned by its first author in every repository where it occurs.
+\end{property}
+
+\subsection{Operational consequences}
+The following follow directly from the definitions and are reported as
+designed:
+
+\begin{itemize}\setlength{\itemsep}{0.2em}
+  \item \textbf{Formatting.} A formatting commit changes the hash of every line
+    it reformats. Lines whose new form has not been written before are
+    introduced by the author of the formatting commit, who becomes their owner.
+  \item \textbf{Renames.} Renaming an identifier changes every line that
+    contains it, with the same effect.
+  \item \textbf{Reverts.} A revert restores earlier lines. Their hashes already
+    have owners, so ownership returns to the original authors.
+  \item \textbf{Indentation.} Each indentation level of a closing brace is a
+    separate line with its own owner.
+  \item \textbf{Copying.} A copied line keeps the owner it already has, wherever
+    it is pasted.
+  \item \textbf{Blank lines.} The blank line is one line. It has one owner.
+\end{itemize}
+
+\section{Benchmarking against established methods}
+
+For each repository, and for all repositories combined, the top owner is
+determined under three definitions:
+
+\begin{enumerate}\setlength{\itemsep}{0.2em}
+  \item \textbf{Commits}: the identity with the most non-merge commits.
+  \item \textbf{Blame}: the identity with the most lines at head according to
+    \texttt{git blame}.
+  \item \textbf{Line hash}: the identity with the most lines at head by
+    first introduction.
+\end{enumerate}
+
+For each repository, agreement is recorded when the three definitions name the
+same owner.
+
+\section{Governance metrics}
+\label{sec:metrics}
+
+\subsection{Ownership leverage}
+Leverage is the number of lines an identity owns per line it wrote, where lines
+written are the lines added in that identity's own commits:
+\[
+  \mathrm{leverage}(o) = \frac{\text{lines owned at head}}{\text{lines added in own commits}}.
+\]
+A leverage above one
+means an identity's lines have been reproduced, by others or by itself, more
+often than they were written.
+
+\subsection{Code demolition}
+A removal is attributed to the author of the removing commit and counted
+against the owner of the removed line. From the recorded removals are derived:
+the lines each identity removed that were owned by someone else, the lines each
+owner lost to others, and the lines added again after they had first been
+removed. A restored line returns to its original
+owner.
+
+\subsection{Code survival}
+Each added line is followed from the quarter it was added. Copies of the same
+hash cannot be told apart, so removals are paired with the oldest surviving
+copies first. A paired line dies at its age in quarters; a line still present
+is censored at its current age. Survival is the Kaplan--Meier estimate over
+these ages, overall and per owner, in the tradition of cohort analyses of
+surviving code~\cite{theseus}. The \emph{code half-life} is the first age at
+which the estimate falls to one half or below. When the estimate never falls
+that far, the half-life is extrapolated with an exponential through the last
+point and labeled as projected.
+
+\subsection{Outlook}
+Ownership is reconstructed quarter by quarter from the recorded additions and
+removals. ``Now'' is the quarter of the newest commit. An identity is
+\emph{inactive} in a quarter if it has no commit in that quarter or the three
+before it. Three series are projected:
+
+\begin{itemize}\setlength{\itemsep}{0.2em}
+  \item the share of lines owned by the principal owner;
+  \item the share of lines owned by inactive identities;
+  \item the number of blank lines.
+\end{itemize}
+
+Each projection is a least-squares line fitted over the last 12 quarters, with
+at least three quarters required, continued from the latest value and reported
+with its coefficient of determination $R^2$. For a share, the projected result
+is the quarter in which it reaches a majority, or the quarter since which it has
+held one. For blank lines, it is the quarter in which the next milestone is
+reached, where milestones are the round numbers $1, 2, 5, 10, 20, 50, \dots$
+A result beyond 40 quarters is stated as not expected within that horizon.
+
+\section{Related work}
+
+Studies built on World of Code identify the repository that first committed
+each version of a file as its origin~\cite{woc}. The Software Heritage
+provenance service answers where a file comes from with the oldest revision
+that contains it~\cite{swh}. Here the same first-introducer principle is
+applied at the granularity of a single line. Truck-factor research derives key
+developers from version history~\cite{truck}. \texttt{git blame} offers
+options to follow moved and copied lines and to ignore formatting
+revisions~\cite{blame}; in this method every revision is credited as written.
+
+\section{Conclusion}
+
+Under \ownh{}, the question of code ownership is settled by a definition that
+requires no judgment: the first contributor to write a line owns it,
+everywhere and permanently. Every line has an owner. Every owner can be named. Someone has to
+own it.
+
+\begin{thebibliography}{9}\small
+\bibitem{bird} C.~Bird, N.~Nagappan, B.~Murphy, H.~Gall, P.~Devanbu.
+  \emph{Don't Touch My Code! Examining the Effects of Ownership on Software Quality.}
+  ESEC/FSE 2011.
+  \url{https://www.microsoft.com/en-us/research/publication/dont-touch-my-code-examining-the-effects-of-ownership-on-software-quality/}
+\bibitem{lines} \emph{Code Ownership: The Principles, Differences, and Their
+  Associations with Software Quality.} arXiv:2408.12807.
+  \url{https://arxiv.org/abs/2408.12807}
+\bibitem{blame} \emph{git-blame documentation.} \url{https://git-scm.com/docs/git-blame}
+\bibitem{woc} M.~Jahanshahi, D.~Reid, A.~Mockus.
+  \emph{Beyond Dependencies: Copy-Based Reuse.}
+  arXiv:2409.04830. \url{https://arxiv.org/abs/2409.04830}
+\bibitem{swh} Software Heritage. \emph{Provenance service documentation.}
+  \url{https://docs.softwareheritage.org/devel/swh-provenance/}
+\bibitem{truck} G.~Avelino, M.~T.~Valente, et al.
+  \emph{What is the Truck Factor of popular GitHub applications?}
+  \url{https://peerj.com/preprints/1233}
+\bibitem{theseus} \emph{git-of-theseus.} \url{https://github.com/erikbern/git-of-theseus}
+\end{thebibliography}
+
+\end{document}

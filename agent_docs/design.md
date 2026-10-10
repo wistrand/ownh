@@ -94,6 +94,22 @@ claim to its source; keep it accurate if that changes.
   (rebuilds reuse them without a key; `node scripts/build-sample.js --ai` after
   data changes). It is the one place the site shows
   tool output; regenerate it whenever report output changes, never edit it.
+- `docs/ownh-whitepaper.pdf` is the method whitepaper ("Content-Addressable
+  Accountability"), built from `whitepaper/ownh-whitepaper.tex` by
+  `npm run whitepaper` (pdflatex; byte-identical rebuilds via `EDITION` in
+  `scripts/build-whitepaper.js` and `\pdftrailerid{}`). Linked from the site
+  nav, the method section (download button), and the closing section. User
+  decisions on scope and style:
+  - Core definitions and methods only: definitions, attribution, properties,
+    the three-way benchmark, leverage, demolition, survival, outlook.
+  - No figures from runs.
+  - No implementation details (storage, report formats, excludes, adding
+    repos, blame sampling, history-walk flags, ranking thresholds).
+  - No archetypes, profiles, oddities, or AI prose.
+  - Method text in the passive voice, never "OWNH does X".
+  - Every statement must match `src/`: update it when the definitions,
+    attribution, or metrics change. Same deadpan voice and citation rule as
+    the site.
 - `docs/og.png` is the link-preview image (Open Graph and Twitter tags in the
   page head), rendered from `scripts/og.svg` with `rsvg-convert`.
 - The OKR section's figures (KR sample lines and the KPI table) are copied by
