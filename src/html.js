@@ -6,7 +6,7 @@
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
 import { esc } from './charts.js';
 import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
-import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements } from './sections.js';
+import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
 import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
@@ -80,6 +80,7 @@ export function reportHtml(stats, top, charts) {
         ['', '', '', '', ''],
       )}
       <p class="r-note">The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.</p>`),
+    ...declaredHtml(stats),
     ...leverageHtml(stats),
     ...demolitionHtml(stats),
     ...(stats.survival ? [section('Code survival', `
@@ -178,6 +179,45 @@ function archetypesHtml(stats) {
   )}${stats.ai && !stats.ai.withheld ? '<p class="r-note">Archetype names written by AI; membership is computed by OWNH.</p>' : ''}`)];
 }
 
+function declaredHtml(stats) {
+  const repos = declaredRepos(stats);
+  if (!repos.length) return [];
+  const top = (t) => (t ? cell(`${esc(t.owner.name)} (${pct(t.count, t.total)})`, t.share) : cell('-', ''));
+  // Long patterns are clipped in the middle (start and end are the telling
+  // parts of a path); the full pattern is in the tooltip.
+  const pattern = (rule) => cell(`<code class="r-lit r-clip" title="${esc(rule.pattern)}">${esc(clipMiddle(rule.pattern, PATTERN_CHARS))}</code>`, rule.pattern);
+  // Each handle stays whole; lines wrap only between handles.
+  const owners = (rule) => cell(rule.owners.length ? rule.owners.map((o) => `<span class="r-nobr">${esc(o)}</span>`).join(' ') : esc(declaredOwners(rule)), declaredOwners(rule));
+  const detailed = declaredDetailed(stats);
+  const simple = declaredSimple(stats);
+  return [section('Declared ownership', `
+    <p class="r-note">What CODEOWNERS declares, next to the top owner of the same lines by line hash and by <code>git blame</code>.</p>
+    ${detailed.map((r) => `
+    <h4>${esc(r.name)}</h4>
+    <p class="r-note">${esc(declaredSummary(r))}</p>
+    ${table(
+      ['Pattern', 'Declared owners', 'Lines', 'By line hash', 'By blame'],
+      r.declared.rules.slice(0, DECLARED_ROWS).map((rule) => [pattern(rule), owners(rule), cell(num(rule.lines), rule.lines), top(rule.hash), top(rule.blame)]),
+      ['', '', 'num', '', ''],
+      { cls: 'r-fixed', widths: ['24%', '22%', '10%', '22%', '22%'] },
+    )}`).join('')}
+    ${simple.length ? `
+    <h4>${detailed.length ? 'Other repositories' : 'Repositories'} with a single rule</h4>
+    <p class="r-note">One rule decides every file in these repositories (usually a catch-all).</p>
+    ${table(
+      ['Repository', 'Pattern', 'Declared owners', 'Lines', 'By line hash', 'By blame'],
+      simple.map((r) => {
+        const rule = r.declared.rules[0];
+        return rule
+          ? [cell(esc(r.name), r.name), pattern(rule), owners(rule), cell(num(rule.lines), rule.lines), top(rule.hash), top(rule.blame)]
+          : [cell(esc(r.name), r.name), cell('-', ''), cell('(no rule matches a file)', ''), cell(num(r.declared.noRule), r.declared.noRule), cell('-', ''), cell('-', '')];
+      }),
+      ['', '', '', 'num', '', ''],
+      { cls: 'r-fixed', widths: ['18%', '14%', '20%', '8%', '20%', '20%'] },
+    )}` : ''}
+    <p class="r-note">${esc(DECLARED_NOTE)}</p>`)];
+}
+
 function leverageHtml(stats) {
   const lev = leverage(stats);
   if (!lev) return [];
@@ -273,17 +313,30 @@ function cell(html, sort) {
   return { html: String(html), sort: sort ?? null };
 }
 
-function table(header, rows, kinds) {
+// `opts.cls` adds a class to the table; `opts.widths` fixes column widths (CSS
+// lengths) with a fixed layout, so several tables of the same kind line up.
+function table(header, rows, kinds, opts = {}) {
+  const cols = opts.widths ? `<colgroup>${opts.widths.map((w) => `<col style="width: ${w}">`).join('')}</colgroup>` : '';
+  const cls = opts.cls ? ` ${opts.cls}` : '';
   const head = header.map((h, c) => `<th class="${kinds[c]}" data-col="${c}">${h}</th>`).join('');
   const body = rows.map((r) => `<tr>${r.map((v, c) => {
     const sort = v.sort === null ? '' : ` data-sort="${esc(String(v.sort))}"`;
     return `<td class="${kinds[c]}"${sort}>${v.html}</td>`;
   }).join('')}</tr>`).join('\n');
-  return `<div class="r-scroll"><table class="r-table"><thead><tr>${head}</tr></thead><tbody>\n${body}\n</tbody></table></div>`;
+  return `<div class="r-scroll"><table class="r-table${cls}">${cols}<thead><tr>${head}</tr></thead><tbody>\n${body}\n</tbody></table></div>`;
 }
 
 function num(n) {
   return Number(n).toLocaleString('en-US');
+}
+
+// Characters of a CODEOWNERS pattern shown before it is clipped in the middle.
+const PATTERN_CHARS = 34;
+
+function clipMiddle(s, max) {
+  if (s.length <= max) return s;
+  const tail = Math.ceil((max - 1) / 2);
+  return `${s.slice(0, max - 1 - tail)}\u2026${s.slice(-tail)}`;
 }
 
 function slug(s) {
@@ -368,6 +421,10 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 .r-table { border-collapse: collapse; width: 100%; font-size: 14px; }
 .r-table th, .r-table td { padding: 6px 10px; border-bottom: 1px solid var(--r-border); text-align: left; white-space: nowrap; }
 .r-table th { color: var(--r-text-2); font-weight: 600; cursor: pointer; user-select: none; }
+.r-table.r-fixed { table-layout: fixed; min-width: 720px; }
+.r-table.r-fixed td { white-space: normal; overflow-wrap: break-word; }
+.r-nobr { white-space: nowrap; }
+.r-clip { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 .r-table th[aria-sort="ascending"]::after { content: " \\2191"; }
 .r-table th[aria-sort="descending"]::after { content: " \\2193"; }
 .r-table .num { text-align: right; font-variant-numeric: tabular-nums; }

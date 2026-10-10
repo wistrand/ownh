@@ -259,6 +259,13 @@ determined under three definitions:
 For each repository, agreement is recorded when the three definitions name the
 same owner.
 
+Where a repository declares ownership in a \texttt{CODEOWNERS} file, each line
+at head is assigned to the last rule that matches its file, and for each rule
+the declared owners are set beside the top owner of the same lines by line
+hash and by blame. Declared owners are teams or accounts rather than
+contributors, so no agreement is recorded; the comparison is presented as
+found.
+
 \section{Governance metrics}
 \label{sec:metrics}
 

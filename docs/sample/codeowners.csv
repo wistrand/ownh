@@ -1,0 +1,17 @@
+repo,file,pattern,rule_line,declared_owners,lines,hash_name,hash_email,hash_count,hash_share,blame_name,blame_email,blame_count,blame_share
+api-gateway,CODEOWNERS,*.js,4,@acme/javascript-guild,3512,Ada Lindqvist,ada.lindqvist@example.com,2018,0.5746013667425968,Fiona Format,fiona.format@example.com,819,0.2332004555808656
+api-gateway,CODEOWNERS,/package.json,5,@acme/dependency-council,16,depbot[bot],depbot@example.com,10,0.625,depbot[bot],depbot@example.com,10,0.625
+api-gateway,CODEOWNERS,*,2,@acme/architecture,7,Petra Process,petra.process@example.com,7,1,Petra Process,petra.process@example.com,7,1
+billing-service,CODEOWNERS,*.js,4,@acme/javascript-guild,2073,Ada Lindqvist,ada.lindqvist@example.com,1308,0.6309696092619392,Juno Rasmussen,juno.rasmussen@example.com,341,0.16449589966232514
+billing-service,CODEOWNERS,/package.json,5,@acme/dependency-council,16,Ada Lindqvist,ada.lindqvist@example.com,8,0.5,Juno Rasmussen,juno.rasmussen@example.com,9,0.5625
+billing-service,CODEOWNERS,*,2,@acme/architecture,7,Petra Process,petra.process@example.com,7,1,Petra Process,petra.process@example.com,7,1
+data-pipeline,CODEOWNERS,*.py,4,@acme/python-guild,3189,Ada Lindqvist,ada.lindqvist@example.com,1020,0.3198494825964252,Rosa Garcia,rosa.garcia@example.com,1188,0.37253057384760113
+data-pipeline,CODEOWNERS,*,2,@acme/architecture,6,Petra Process,petra.process@example.com,6,1,Petra Process,petra.process@example.com,6,1
+infra-config,CODEOWNERS,/deploy/,3,@acme/infra-config-team @acme/sre,365,Greta Okafor,greta.okafor@example.com,192,0.5260273972602739,Cleo Bianchi,cleo.bianchi@example.com,107,0.29315068493150687
+infra-config,CODEOWNERS,*,2,@acme/architecture,5,Petra Process,petra.process@example.com,5,1,Petra Process,petra.process@example.com,5,1
+platform,CODEOWNERS,*.js,4,@acme/javascript-guild,4535,Ada Lindqvist,ada.lindqvist@example.com,2692,0.5936052921719955,Fiona Format,fiona.format@example.com,1057,0.2330760749724366
+platform,CODEOWNERS,/package.json,5,@acme/dependency-council,16,depbot[bot],depbot@example.com,10,0.625,depbot[bot],depbot@example.com,10,0.625
+platform,CODEOWNERS,*,2,@acme/architecture,7,Petra Process,petra.process@example.com,7,1,Petra Process,petra.process@example.com,7,1
+web-frontend,CODEOWNERS,*.js,4,@acme/javascript-guild,3718,Ada Lindqvist,ada.lindqvist@example.com,2359,0.634480903711673,Fiona Format,fiona.format@example.com,551,0.14819795589026358
+web-frontend,CODEOWNERS,/package.json,5,@acme/dependency-council,16,Ada Lindqvist,ada.lindqvist@example.com,8,0.5,Ada Lindqvist,ada.lindqvist@example.com,8,0.5
+web-frontend,CODEOWNERS,*,2,@acme/architecture,7,Petra Process,petra.process@example.com,7,1,Petra Process,petra.process@example.com,7,1

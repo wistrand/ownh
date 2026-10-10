@@ -1,35 +1,35 @@
 {
-  "key": "9fc88e81a0295faf1e9ce5cf676ef199573c6d76b0748d7a4bec0023f74f0f32",
+  "key": "7af726cb2e56864f9efc4234bb9391ef1970a7e0ac3ba664ce926dbfec60d145",
   "model": "openai/gpt-6-luna",
   "promptVersion": 2,
   "answer": {
     "summary": [
-      "OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: [O1] holds 54.4%, compared with [O2] at 10.6% and [O3] at 6.5%; blank lines account for 20.5% of lines, and the reported punctuation-only line categories account for 6.4% and 6.3%, all owned by [O1].",
-      "Cross-repository authorship is substantial: lines written elsewhere account for 80% in [R1], 78% in [R2] and 66% in [R3]. Ownership by non-contributors ranges from 0% in [R2] to 57% in [R3]; ownership methods agree in no repositories.",
-      "At [T0], principal-owner share is 54.3%, up from 51.2% at [T-3], while inactive-owner share is 76.3%, down from 77.9%; both majorities are established. The next blank-line milestone is projected for [T+22], and line survival has a half-life of 2 years."
+      "OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: [O1] holds 54.2% of lines, while inactive owners account for 76.1% at [T0], a majority since [T-10].",
+      "Blank lines represent 20.5% of lines and are attributed to [O1]. The next blank-line milestone is projected for [T+22]; the line-survival half-life is 2 years and is not projected.",
+      "Cross-repository ownership is uneven: 80% of [R1]’s lines were written elsewhere, while 57% of [R3]’s lines are owned by non-contributors. The methods agree in no repositories, limiting confidence in attribution consistency."
     ],
     "okr": {
-      "objective": "Improve ownership resilience and measurement consistency across the portfolio.",
+      "objective": "Build a more balanced and consistent ownership profile across repositories.",
       "keyResults": [
         {
-          "text": "Lower principal-owner concentration from the [T0] baseline of 54.3%, which rose from 51.2% at [T-3].",
+          "text": "Reduce principal-owner concentration from 54.1% at [T0], after it rose from 51.2% at [T-3].",
+          "status": "off track"
+        },
+        {
+          "text": "Lower the inactive-owner share from 76.1% at [T0], after easing from 77.9% at [T-3], while the majority has persisted since [T-10].",
           "status": "at risk"
         },
         {
-          "text": "Reduce inactive-owner share from the [T0] baseline of 76.3%; it has eased from 77.9% at [T-3] but remains a majority, held since [T-10].",
-          "status": "at risk"
-        },
-        {
-          "text": "Increase ownership-method agreement from a baseline of no repositories at [T0].",
+          "text": "Increase method agreement from a baseline of no repositories.",
           "status": "off track"
         }
       ]
     },
     "archetypes": {
-      "principal": "Lead Owner",
-      "inactive": "Dormant Contributors",
-      "demolition": "Aggressive Pruners",
-      "automation": "Automated Steward"
+      "principal": "Dominant Steward",
+      "inactive": "Dormant Majority",
+      "demolition": "High-Impact Removers",
+      "automation": "Automated Owner"
     }
   }
 }

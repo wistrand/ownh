@@ -1,30 +1,54 @@
-import { samplePaths } from './sample.js';
 import { QUARTER_SQL, buildTimeline } from './timeline.js';
 import { deletions, hasChurn, netByQuarter, survival } from './churn.js';
+import { declaredOwnership } from './codeowners.js';
+import { blameCounts } from './blamecounts.js';
+import { headPass, topLineCounts } from './head.js';
+import { compareNullLast, rankOwners, share, topOf } from './rank.js';
+import { codeHash, stageCache } from './stagecache.js';
+
+export { share } from './rank.js';
 
 // Every number shown by `summary` and `report` comes from collectStats, so the
 // text summary and the report files can't disagree.
+//
+// The expensive passes are stages, each cached under its own key by `cache`
+// (see stagecache.js); everything in this file only combines their results
+// and is recomputed on every run. A stage's code key covers its module and the
+// modules it imports, computed here, once, when this module loads.
+const CODE = {
+  head: codeHash(new URL('./head.js', import.meta.url)),
+  blame: codeHash(new URL('./blamecounts.js', import.meta.url)),
+  declared: codeHash(new URL('./codeowners.js', import.meta.url)),
+  churn: codeHash(new URL('./churn.js', import.meta.url)),
+};
 
-// Head lines whose hash no analyzed commit ever added (for example, lines from
-// an octopus merge, which remerge cannot redo) have no owner and no origin
-// repo: identity and origin are null. Lines written while resolving a merge are
-// owned by the merge's author.
-const OWNER_JOIN = `
-FROM head_lines h
-LEFT JOIN line_hashes l ON l.hash = h.hash
-LEFT JOIN commits c ON c.id = l.commit_id
-`;
+// What a stage's data key covers. `index`: every completed index or add run
+// (any change to history, head lines, or identities makes a new run row).
+// `blame`: blamed files and sample settings (blame writes nothing else that a
+// stage reads, apart from names of identities only blame knows).
+function fingerprints(db) {
+  const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((t) => t.name));
+  return {
+    index: db.prepare('SELECT id, finished_at FROM runs WHERE finished_at IS NOT NULL ORDER BY id').all(),
+    blame: tables.has('blame_files')
+      ? {
+        files: db.prepare('SELECT COUNT(*) AS n FROM blame_files').get().n,
+        repos: tables.has('blame_repos') ? db.prepare('SELECT repo_id, sample FROM blame_repos ORDER BY repo_id').all() : [],
+      }
+      : null,
+  };
+}
 
 // `log` receives progress messages; the passes over head_lines are the slow part.
-export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
-  const started = Date.now();
-  const elapsed = () => `${((Date.now() - started) / 1000).toFixed(1)}s`;
+// `cache` is a stageCache; without one every stage is computed.
+export function collectStats(db, { topLines = 10, log = () => {}, cache = stageCache(null) } = {}) {
   const run = db.prepare('SELECT tool_version, excludes FROM runs ORDER BY id DESC LIMIT 1').get();
-  const repos = db.prepare('SELECT id, name FROM repos ORDER BY name').all();
+  const repos = db.prepare('SELECT id, name, path, head FROM repos ORDER BY name').all();
   const repoName = new Map(repos.map((r) => [r.id, r.name]));
   const identities = new Map(
     db.prepare('SELECT id, name, email FROM identities').all().map((i) => [i.id, { name: i.name, email: i.email }]),
   );
+  const fp = fingerprints(db);
   // Merges are walked but are not commits for counting (commit totals, the
   // commits method); databases built before merges were walked have no is_merge
   // column and only non-merge commits. For activity (who worked in a repo, who
@@ -38,34 +62,15 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
     db.prepare('SELECT DISTINCT repo_id, identity_id FROM commits').all().map((r) => `${r.repo_id}:${r.identity_id}`),
   );
 
-  // One pass over all head lines, grouped by repo, owner, and origin repo (the
-  // repo where the owning line was first written). Run per repo, which costs the
-  // same (head_lines is keyed by repo) and lets progress be reported.
+  const head = cache.run('head', { code: CODE.head, data: fp.index }, () => headPass(db, repos, log));
   const byRepo = new Map(repos.map((r) => [r.id, {
     name: r.name, lines: 0, foreign: 0, absentee: 0, owners: new Map(), origins: new Map(),
   }]));
   const overall = new Map();
   let total = 0;
-  const ownersOf = db.prepare(`
-    SELECT c.identity_id AS identityId, l.repo_id AS originId, ${QUARTER_SQL('l.author_time')} AS q, COUNT(*) AS n
-    ${OWNER_JOIN}
-    WHERE h.repo_id = ? AND h.path >= ? AND (? IS NULL OR h.path < ?)
-    GROUP BY c.identity_id, l.repo_id, q
-  `);
-  const rows = [];
-  const repoPaths = new Map();
-  repos.forEach((r, k) => {
-    const chunks = pathChunks(db, r.id);
-    repoPaths.set(r.id, chunks.paths);
-    chunks.forEach(([from, to], c) => {
-      for (const row of ownersOf.all(r.id, from, to, to)) rows.push({ repoId: r.id, ...row });
-      const part = chunks.length > 1 ? ` part ${c + 1}/${chunks.length}` : '';
-      log(`owners: ${k + 1}/${repos.length} repos (${r.name}${part}), ${elapsed()}`);
-    });
-  });
   // Surviving lines by (repo, owner, quarter first written): input to the timeline.
   const cohorts = [];
-  for (const { repoId, identityId, originId, q, n } of rows) {
+  for (const { repoId, identityId, originId, q, n } of head.rows) {
     if (identityId !== null) cohorts.push({ repoId, identityId, q, n });
     const repo = byRepo.get(repoId);
     repo.lines += n;
@@ -77,43 +82,24 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
     total += n;
   }
 
-  // Count head lines per hash first (index-only on head_lines_hash), then look
-  // up owner details for the winners only. Split into 16 ranges by the first hex
-  // digit for progress; each hash is in exactly one range, so the global top N is
-  // the top N of the per-range top N lists.
-  const countRange = db.prepare(`
-    SELECT hash, COUNT(*) AS n FROM head_lines
-    WHERE hash >= ? AND (? IS NULL OR hash < ?)
-    GROUP BY hash
-    ORDER BY n DESC, hash
-    LIMIT ?
-  `);
-  const digits = '0123456789abcdef';
-  let candidates = [];
-  for (let d = 0; d < digits.length; d++) {
-    const to = d + 1 < digits.length ? digits[d + 1] : null;
-    candidates.push(...countRange.all(digits[d], to, to, topLines));
-    log(`top lines: ${d + 1}/${digits.length} hash ranges, ${elapsed()}`);
-  }
-  candidates.sort((a, b) => b.n - a.n || (a.hash < b.hash ? -1 : a.hash > b.hash ? 1 : 0));
-  candidates = candidates.slice(0, topLines);
-  const detail = db.prepare(`
-    SELECT l.binary, l.text, l.path, c.identity_id AS identityId, r.name AS origin
-    FROM line_hashes l
-    JOIN commits c ON c.id = l.commit_id
-    JOIN repos r ON r.id = l.repo_id
-    WHERE l.hash = ?
-  `);
-  const lines = candidates.map(({ hash, n }) => {
-    const r = detail.get(hash);
-    return r
-      ? { text: r.text, binary: Boolean(r.binary), path: r.path, lines: n, owner: identities.get(r.identityId) ?? null, origin: r.origin }
-      : { text: null, binary: null, path: null, lines: n, owner: null, origin: null };
+  const lines = cache.run('lines', { code: CODE.head, data: fp.index, args: { topLines } }, () => topLineCounts(db, topLines, log))
+    .map(({ identityId, ...l }) => ({ ...l, owner: identityId === null ? null : identities.get(identityId) ?? null }));
+
+  const blame = cache.run('blame', { code: CODE.blame, data: [fp.index, fp.blame] }, () => blameCounts(db, repos, head.paths, log));
+  const methods = collectMethods(db, repos, head.paths, blame, byRepo, overall, identities, NON_MERGE);
+
+  // Declared ownership (CODEOWNERS at the stored head) next to the computed
+  // answers. Blame per rule only for fully blamed repos: a sample covers too few
+  // files per rule.
+  const declared = cache.run('declared', { code: CODE.declared, data: [fp.index, fp.blame] }, () => {
+    const out = {};
+    for (const r of repos) {
+      const d = declaredOwnership(db, r, { blameFull: blame[r.id].kind === 'full', identities });
+      if (d) log(`declared: ${r.name} (${d.file}, ${d.rules.length} rules with lines)`);
+      out[r.id] = d;
+    }
+    return out;
   });
-
-  log(`top lines: done, ${elapsed()}`);
-
-  const methods = collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_MERGE, log);
 
   // Non-merge commits per identity across all repos, shown next to line counts.
   const commitsBy = new Map(db.prepare(`SELECT identity_id AS id, COUNT(*) AS n FROM commits ${NON_MERGE} GROUP BY identity_id`).all().map((r) => [r.id, r.n]));
@@ -122,8 +108,7 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   const churn = hasChurn(db);
   // With churn data the timeline is a true history (lines added minus removed);
   // without it, the surviving lines grouped by when they were first written.
-  if (churn) log('history: net lines by quarter');
-  const history = churn ? netByQuarter(db) : null;
+  const history = churn ? cache.run('history', { code: CODE.churn, data: fp.index }, () => netByQuarter(db, log)) : null;
   const timeline = buildTimeline({
     cohorts: history ?? cohorts,
     mode: history ? 'history' : 'cohort',
@@ -150,14 +135,16 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
   let removedOthersBy = null;
   let survivalCurves = null;
   if (churn) {
-    log('deletions');
-    ({ removedOthersBy, ...removal } = deletions(db, identities));
-    log('survival');
+    const { removedOthersBy: pairs, ...rest } = cache.run('deletions', { code: CODE.churn, data: fp.index }, () => deletions(db, identities, log));
+    removal = rest;
+    removedOthersBy = new Map(pairs);
     const top = ranked.filter((o) => o.owner).slice(0, 3);
-    const curves = survival(db, top.map((o) => o.identityId), timeline ? timeline.now : 0);
+    const groups = top.map((o) => o.identityId);
+    const now = timeline ? timeline.now : 0;
+    const curves = cache.run('survival', { code: CODE.churn, data: fp.index, args: { groups, now } }, () => survival(db, groups, now, log));
     survivalCurves = {
-      all: curves.get('all'),
-      owners: top.map((o) => ({ owner: o.owner, ...curves.get(o.identityId) })),
+      all: curves.all,
+      owners: top.map((o) => ({ owner: o.owner, ...curves[o.identityId] })),
     };
   }
 
@@ -181,6 +168,7 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
     repos: [...byRepo].map(([id, r]) => ({
       name: r.name,
       methods: methods.byRepo.get(id),
+      declared: declared[id],
       lines: r.lines,
       // Lines owned through a line first written in another repo.
       foreign: r.foreign,
@@ -200,11 +188,11 @@ export function collectStats(db, { topLines = 10, log = () => {} } = {}) {
 
 // Three answers to "who owns this repo": most commits, most lines by
 // `git blame`, most lines by line hash (OWNH). Blame needs `ownh blame` to have
-// run. A fully blamed repo gives exact counts once every file is done; a sampled
-// repo gives an estimate once every file in its sample is done (see
-// blameEstimate). The overall blame answer needs every repo and is an estimate
-// when any repo was sampled.
-function collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_MERGE, log) {
+// run; its counts come from the blame stage (blamecounts.js). A fully blamed
+// repo gives exact counts; a sampled repo gives an estimate (blameEstimate).
+// The overall blame answer needs every repo and is an estimate when any repo
+// was sampled.
+function collectMethods(db, repos, paths, blame, byRepo, overall, identities, NON_MERGE) {
   const commits = new Map(repos.map((r) => [r.id, new Map()]));
   const allCommits = new Map();
   for (const { repoId, identityId, n } of db.prepare(
@@ -214,21 +202,6 @@ function collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_M
     allCommits.set(identityId, (allCommits.get(identityId) ?? 0) + n);
   }
 
-  const tables = new Set(db.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((t) => t.name));
-  const blamedPaths = tables.has('blame_files') ? db.prepare('SELECT path FROM blame_files WHERE repo_id = ?') : null;
-  const settings = new Map(tables.has('blame_repos')
-    ? db.prepare('SELECT repo_id AS repoId, sample FROM blame_repos').all().map((r) => [r.repoId, r.sample])
-    : []);
-  const blameOf = db.prepare(`
-    SELECT blame_identity_id AS identityId, COUNT(*) AS n FROM head_lines
-    WHERE repo_id = ? AND blame_identity_id IS NOT NULL
-    GROUP BY blame_identity_id
-  `);
-  const blameOfFile = db.prepare(`
-    SELECT blame_identity_id AS identityId, COUNT(*) AS n FROM head_lines
-    WHERE repo_id = ? AND path = ? AND blame_identity_id IS NOT NULL
-    GROUP BY blame_identity_id
-  `);
   // Overall blame: exact counts from full repos plus expanded sample counts.
   const allBlame = new Map();
   let allBlameTotal = 0;
@@ -237,34 +210,30 @@ function collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_M
 
   const result = new Map();
   for (const r of repos) {
-    const paths = repoPaths.get(r.id);
-    const done = new Set(blamedPaths ? blamedPaths.all(r.id).map((b) => b.path) : []);
-    const sample = settings.get(r.id) ?? null;
-    let blame = null;
-    if (sample === null && done.size > 0 && paths.every((p) => done.has(p))) {
-      const counts = new Map(blameOf.all(r.id).map((b) => [b.identityId, b.n]));
+    const b = blame[r.id];
+    let top = null;
+    if (b.kind === 'full') {
+      const counts = new Map(b.counts);
       for (const [id, n] of counts) {
         allBlame.set(id, (allBlame.get(id) ?? 0) + n);
         allBlameTotal += n;
       }
-      blame = topOf(counts, identities);
-      log(`methods: blame counted for ${r.name}`);
-    } else if (sample !== null && samplePaths(paths, sample).every((p) => done.has(p))) {
-      const est = blameEstimate(r.id, samplePaths(paths, sample), paths.length, blameOfFile, identities);
+      top = topOf(counts, identities);
+    } else if (b.kind === 'sample') {
+      const est = blameEstimate(b.files.map((f) => new Map(f)), paths[r.id].length, identities);
       for (const [id, n] of est.expanded) allBlame.set(id, (allBlame.get(id) ?? 0) + n);
       allBlameTotal += est.expandedTotal;
       blameEstimated = true;
-      blame = est.top;
-      log(`methods: blame estimated for ${r.name} from ${sample} of ${paths.length} files`);
+      top = est.top;
     } else {
       blameComplete = false;
     }
     const m = {
       commits: topOf(commits.get(r.id), identities),
-      blame,
+      blame: top,
       hash: topOf(byRepo.get(r.id).owners, identities),
-      blamedFiles: [...done].length,
-      files: paths.length,
+      blamedFiles: b.done,
+      files: paths[r.id].length,
     };
     m.agree = agree(m);
     result.set(r.id, m);
@@ -290,9 +259,9 @@ function collectMethods(db, repos, repoPaths, byRepo, overall, identities, NON_M
 // finite population correction:
 //   SE(R) = sqrt((1 - n/N) * sum((y_i - R x_i)^2) / (n - 1) / n) / mean(x)
 // Files, not lines, are the sampling unit, so the margin accounts for the
-// clustering of lines within files.
-function blameEstimate(repoId, sample, totalFiles, blameOfFile, identities) {
-  const files = sample.map((path) => new Map(blameOfFile.all(repoId, path).map((b) => [b.identityId, b.n])));
+// clustering of lines within files. `files` holds one Map(identity -> lines)
+// per sampled file.
+function blameEstimate(files, totalFiles, identities) {
   const totals = new Map();
   let x = 0;
   for (const f of files) {
@@ -320,63 +289,10 @@ function blameEstimate(repoId, sample, totalFiles, blameOfFile, identities) {
   return { top, expanded, expandedTotal: x * expand };
 }
 
-// The top attributed owner: { owner, identityId, count, total, share }, or null
-// if none. `total` defaults to the sum of counts.
-function topOf(counts, identities, total) {
-  if (total === undefined) {
-    total = 0;
-    for (const n of counts.values()) total += n;
-  }
-  const ranked = rankOwners(counts, identities).filter((o) => o.owner);
-  if (ranked.length === 0) return null;
-  const t = ranked[0];
-  return { owner: t.owner, identityId: t.identityId, count: Math.round(t.lines), total: Math.round(total), share: share(t.lines, total) };
-}
-
 // True when every method that has an answer names the same person.
 function agree(m) {
   const emails = [m.commits, m.blame, m.hash].filter(Boolean).map((t) => t.owner.email);
   return emails.length > 1 && emails.every((e) => e === emails[0]);
-}
-
-// Splits a repo's head lines into path ranges of about CHUNK_LINES lines, so a
-// large repo reports progress while it is aggregated. Returns [from, to) pairs;
-// `to` is null for the last range. Rows in different ranges are summed later, so
-// the split doesn't change any number.
-const CHUNK_LINES = 1_000_000;
-
-function pathChunks(db, repoId) {
-  const chunks = [];
-  chunks.paths = [];
-  let from = '';
-  let size = 0;
-  for (const { path, n } of db.prepare('SELECT path, COUNT(*) AS n FROM head_lines WHERE repo_id = ? GROUP BY path').iterate(repoId)) {
-    if (size >= CHUNK_LINES) {
-      chunks.push([from, path]);
-      from = path;
-      size = 0;
-    }
-    size += n;
-    chunks.paths.push(path);
-  }
-  chunks.push([from, null]);
-  return chunks;
-}
-
-// Most lines first; ties by email, unattributed last.
-function rankOwners(counts, identities) {
-  return [...counts]
-    .map(([identityId, lines]) => ({ identityId, owner: identities.get(identityId) ?? null, lines }))
-    .sort((a, b) => b.lines - a.lines || compareNullLast(a.owner?.email ?? null, b.owner?.email ?? null));
-}
-
-function compareNullLast(a, b) {
-  if (a === null || b === null) return a === null ? (b === null ? 0 : 1) : -1;
-  return a < b ? -1 : a > b ? 1 : 0;
-}
-
-export function share(n, total) {
-  return total === 0 ? 0 : n / total;
 }
 
 export function pct(n, total) {

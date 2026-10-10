@@ -28,9 +28,9 @@ const USAGE = `usage:
   bands, and tokens for names and quarters are sent; the exact request is
   written to ai-request.json. --ai-dry-run writes that file and sends nothing.
 
-  report keeps the computed statistics in stats-cache.json in the output
-  directory and reuses them while the database and the statistics code are
-  unchanged. --no-cache recomputes without reading or writing it.`;
+  report caches its statistics passes in stats-cache.json in the output
+  directory, each pass on its own, and reruns only those whose database tables
+  or code changed. --no-cache recomputes without reading or writing it.`;
 
 const EXCLUDE_OPTIONS = {
   db: { type: 'string' },

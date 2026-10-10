@@ -109,69 +109,69 @@
 <text class="axis" transform="translate(288 190) rotate(-55)">platform</text>
 <text class="axis" transform="translate(320 190) rotate(-55)">web-frontend</text>
 <text class="axis" x="131" y="217" text-anchor="end">api-gateway</text>
-<rect class="b6" x="141" y="198" width="30" height="30" rx="3"><title>api-gateway: 1,192 of 3,528 lines first written in api-gateway (33.8%)</title></rect>
+<rect class="b6" x="141" y="198" width="30" height="30" rx="3"><title>api-gateway: 1,199 of 3,535 lines first written in api-gateway (33.9%)</title></rect>
 <text class="value t6" x="156" y="217" pointer-events="none">34</text>
 <rect class="self" x="141.75" y="198.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b1" x="173" y="198" width="30" height="30" rx="3"><title>api-gateway: 32 of 3,528 lines first written in billing-service (0.9%)</title></rect>
-<rect class="b0" x="205" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,528 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,528 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="198" width="30" height="30" rx="3"><title>api-gateway: 2,240 of 3,528 lines first written in platform (63.5%)</title></rect>
+<rect class="b1" x="173" y="198" width="30" height="30" rx="3"><title>api-gateway: 32 of 3,535 lines first written in billing-service (0.9%)</title></rect>
+<rect class="b0" x="205" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,535 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,535 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="198" width="30" height="30" rx="3"><title>api-gateway: 2,240 of 3,535 lines first written in platform (63.4%)</title></rect>
 <text class="value t8" x="284" y="217" pointer-events="none">63</text>
-<rect class="b2" x="301" y="198" width="30" height="30" rx="3"><title>api-gateway: 64 of 3,528 lines first written in web-frontend (1.8%)</title></rect>
+<rect class="b2" x="301" y="198" width="30" height="30" rx="3"><title>api-gateway: 64 of 3,535 lines first written in web-frontend (1.8%)</title></rect>
 <text class="value t2" x="316" y="217" pointer-events="none">2</text>
 <text class="axis" x="131" y="249" text-anchor="end">billing-service</text>
-<rect class="b5" x="141" y="230" width="30" height="30" rx="3"><title>billing-service: 251 of 2,089 lines first written in api-gateway (12.0%)</title></rect>
+<rect class="b5" x="141" y="230" width="30" height="30" rx="3"><title>billing-service: 256 of 2,096 lines first written in api-gateway (12.2%)</title></rect>
 <text class="value t5" x="156" y="249" pointer-events="none">12</text>
-<rect class="b6" x="173" y="230" width="30" height="30" rx="3"><title>billing-service: 427 of 2,089 lines first written in billing-service (20.4%)</title></rect>
+<rect class="b6" x="173" y="230" width="30" height="30" rx="3"><title>billing-service: 429 of 2,096 lines first written in billing-service (20.5%)</title></rect>
 <text class="value t6" x="188" y="249" pointer-events="none">20</text>
 <rect class="self" x="173.75" y="230.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b0" x="205" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,089 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,089 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="230" width="30" height="30" rx="3"><title>billing-service: 1,377 of 2,089 lines first written in platform (65.9%)</title></rect>
+<rect class="b0" x="205" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,096 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,096 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="230" width="30" height="30" rx="3"><title>billing-service: 1,377 of 2,096 lines first written in platform (65.7%)</title></rect>
 <text class="value t8" x="284" y="249" pointer-events="none">66</text>
-<rect class="b2" x="301" y="230" width="30" height="30" rx="3"><title>billing-service: 34 of 2,089 lines first written in web-frontend (1.6%)</title></rect>
+<rect class="b2" x="301" y="230" width="30" height="30" rx="3"><title>billing-service: 34 of 2,096 lines first written in web-frontend (1.6%)</title></rect>
 <text class="value t2" x="316" y="249" pointer-events="none">2</text>
 <text class="axis" x="131" y="281" text-anchor="end">data-pipeline</text>
-<rect class="b0" x="141" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in api-gateway (0.0%)</title></rect>
-<rect class="b0" x="173" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in billing-service (0.0%)</title></rect>
-<rect class="b8" x="205" y="262" width="30" height="30" rx="3"><title>data-pipeline: 2,202 of 3,189 lines first written in data-pipeline (69.0%)</title></rect>
+<rect class="b1" x="141" y="262" width="30" height="30" rx="3"><title>data-pipeline: 3 of 3,195 lines first written in api-gateway (0.1%)</title></rect>
+<rect class="b0" x="173" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,195 lines first written in billing-service (0.0%)</title></rect>
+<rect class="b8" x="205" y="262" width="30" height="30" rx="3"><title>data-pipeline: 2,205 of 3,195 lines first written in data-pipeline (69.0%)</title></rect>
 <text class="value t8" x="220" y="281" pointer-events="none">69</text>
 <rect class="self" x="205.75" y="262.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b0" x="237" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b6" x="269" y="262" width="30" height="30" rx="3"><title>data-pipeline: 987 of 3,189 lines first written in platform (31.0%)</title></rect>
+<rect class="b0" x="237" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,195 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b6" x="269" y="262" width="30" height="30" rx="3"><title>data-pipeline: 987 of 3,195 lines first written in platform (30.9%)</title></rect>
 <text class="value t6" x="284" y="281" pointer-events="none">31</text>
-<rect class="b0" x="301" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in web-frontend (0.0%)</title></rect>
+<rect class="b0" x="301" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,195 lines first written in web-frontend (0.0%)</title></rect>
 <text class="axis" x="131" y="313" text-anchor="end">infra-config</text>
-<rect class="b0" x="141" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in api-gateway (0.0%)</title></rect>
-<rect class="b0" x="173" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in billing-service (0.0%)</title></rect>
-<rect class="b0" x="205" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b8" x="237" y="294" width="30" height="30" rx="3"><title>infra-config: 305 of 365 lines first written in infra-config (83.6%)</title></rect>
-<text class="value t8" x="252" y="313" pointer-events="none">84</text>
+<rect class="b1" x="141" y="294" width="30" height="30" rx="3"><title>infra-config: 3 of 370 lines first written in api-gateway (0.8%)</title></rect>
+<rect class="b0" x="173" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 370 lines first written in billing-service (0.0%)</title></rect>
+<rect class="b0" x="205" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 370 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b8" x="237" y="294" width="30" height="30" rx="3"><title>infra-config: 307 of 370 lines first written in infra-config (83.0%)</title></rect>
+<text class="value t8" x="252" y="313" pointer-events="none">83</text>
 <rect class="self" x="237.75" y="294.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b5" x="269" y="294" width="30" height="30" rx="3"><title>infra-config: 60 of 365 lines first written in platform (16.4%)</title></rect>
+<rect class="b5" x="269" y="294" width="30" height="30" rx="3"><title>infra-config: 60 of 370 lines first written in platform (16.2%)</title></rect>
 <text class="value t5" x="284" y="313" pointer-events="none">16</text>
-<rect class="b0" x="301" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in web-frontend (0.0%)</title></rect>
+<rect class="b0" x="301" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 370 lines first written in web-frontend (0.0%)</title></rect>
 <text class="axis" x="131" y="345" text-anchor="end">platform</text>
-<rect class="b5" x="141" y="326" width="30" height="30" rx="3"><title>platform: 848 of 4,551 lines first written in api-gateway (18.6%)</title></rect>
+<rect class="b5" x="141" y="326" width="30" height="30" rx="3"><title>platform: 853 of 4,558 lines first written in api-gateway (18.7%)</title></rect>
 <text class="value t5" x="156" y="345" pointer-events="none">19</text>
-<rect class="b1" x="173" y="326" width="30" height="30" rx="3"><title>platform: 8 of 4,551 lines first written in billing-service (0.2%)</title></rect>
-<rect class="b0" x="205" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,551 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,551 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="326" width="30" height="30" rx="3"><title>platform: 3,643 of 4,551 lines first written in platform (80.0%)</title></rect>
+<rect class="b1" x="173" y="326" width="30" height="30" rx="3"><title>platform: 8 of 4,558 lines first written in billing-service (0.2%)</title></rect>
+<rect class="b0" x="205" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,558 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,558 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="326" width="30" height="30" rx="3"><title>platform: 3,645 of 4,558 lines first written in platform (80.0%)</title></rect>
 <text class="value t8" x="284" y="345" pointer-events="none">80</text>
 <rect class="self" x="269.75" y="326.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b2" x="301" y="326" width="30" height="30" rx="3"><title>platform: 52 of 4,551 lines first written in web-frontend (1.1%)</title></rect>
+<rect class="b2" x="301" y="326" width="30" height="30" rx="3"><title>platform: 52 of 4,558 lines first written in web-frontend (1.1%)</title></rect>
 <text class="value t2" x="316" y="345" pointer-events="none">1</text>
 <text class="axis" x="131" y="377" text-anchor="end">web-frontend</text>
-<rect class="b5" x="141" y="358" width="30" height="30" rx="3"><title>web-frontend: 376 of 3,734 lines first written in api-gateway (10.1%)</title></rect>
+<rect class="b5" x="141" y="358" width="30" height="30" rx="3"><title>web-frontend: 381 of 3,741 lines first written in api-gateway (10.2%)</title></rect>
 <text class="value t5" x="156" y="377" pointer-events="none">10</text>
-<rect class="b2" x="173" y="358" width="30" height="30" rx="3"><title>web-frontend: 44 of 3,734 lines first written in billing-service (1.2%)</title></rect>
+<rect class="b2" x="173" y="358" width="30" height="30" rx="3"><title>web-frontend: 44 of 3,741 lines first written in billing-service (1.2%)</title></rect>
 <text class="value t2" x="188" y="377" pointer-events="none">1</text>
-<rect class="b0" x="205" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,734 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,734 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="358" width="30" height="30" rx="3"><title>web-frontend: 2,499 of 3,734 lines first written in platform (66.9%)</title></rect>
+<rect class="b0" x="205" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,741 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,741 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="358" width="30" height="30" rx="3"><title>web-frontend: 2,499 of 3,741 lines first written in platform (66.8%)</title></rect>
 <text class="value t8" x="284" y="377" pointer-events="none">67</text>
-<rect class="b6" x="301" y="358" width="30" height="30" rx="3"><title>web-frontend: 815 of 3,734 lines first written in web-frontend (21.8%)</title></rect>
+<rect class="b6" x="301" y="358" width="30" height="30" rx="3"><title>web-frontend: 817 of 3,741 lines first written in web-frontend (21.8%)</title></rect>
 <text class="value t6" x="316" y="377" pointer-events="none">22</text>
 <rect class="self" x="301.75" y="358.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
 <text class="muted" x="141" y="416">% of the row repository's lines; outlined cells are the repository itself</text>

@@ -195,6 +195,18 @@ show, so they cannot disagree.
   in one repo never ends a copy in another), then computes per-owner Kaplan-Meier curves and half-lives,
   extrapolated exponentially when the curve never reaches 50%.
 - **Leverage**: lines owned per line written (`commits.added_lines`).
+- **Declared ownership** (`declaredOwnership` in `src/codeowners.js`): the
+  CODEOWNERS file at each repo's stored head (`.github/`, root, `docs/`,
+  `.gitlab/`, first found), parsed with GitHub's rules (last match wins,
+  gitignore-like globs, a wildcard last segment stays at its level, a rule
+  with no owners leaves paths unowned). Every line at head is resolved to its
+  rule (once per path); per rule: declared owners, lines, top owner by line
+  hash, and by blame for fully blamed repos only. Owners are teams or users,
+  not identities, so there is no agree flag. The file is read with git at
+  report time from the stored head; a repo that no longer exists has no
+  declared section. About 50 s for an 826-rule file over 11.7M lines.
+  Patterns and team names are paths and names: never in the AI facts.
+  Reading CODEOWNERS is not the dropped "generate CODEOWNERS" feature.
 
 ## Reports
 
@@ -209,6 +221,7 @@ its database and generation time (UTC) in the header and in `report.json`
 | `report.json`                                | the full stats object                                                      |
 | `owners.csv`, `lines.csv`                    | data tables                                                                |
 | `cross-ownership.csv`, `methods.csv`         | data tables                                                                |
+| `codeowners.csv`                             | declared ownership per CODEOWNERS rule (only when a repo has one)          |
 | `ownership-by-line-hash.svg`                 | pie, top 5 lines plus everything else (never more than 6 segments)         |
 | `cross-ownership.svg`                        | repo x origin-repo heatmap                                                 |
 | `owner-profile.svg`, `repo-profile.svg`      | radar charts, at most 3 series                                             |
@@ -220,7 +233,7 @@ its database and generation time (UTC) in the header and in `report.json`
 
 Section order: AI insights (with `--ai`), principal owners, ownership
 profiles, principal lines, cross-repository ownership, three ways to own,
-leverage, code demolition, code survival, outlook, OKR draft (with `--ai`),
+declared ownership (repos with CODEOWNERS), leverage, code demolition, code survival, outlook, OKR draft (with `--ai`),
 ownership archetypes, oddities, repositories, excluded patterns.
 
 - Untrusted text (author names, repository names, line text, AI prose) is
@@ -243,14 +256,39 @@ ownership archetypes, oddities, repositories, excluded patterns.
   (`src/sections.js`); radar data in `src/profiles.js`.
 - Oddities (`src/oddities.js`) are facts derived from the stats; each claim is
   checked by the code that prints it.
-- Stats cache (`cachedStats` in `src/report.js`): `collectStats` is nearly all
-  of a report's run time, so its output is kept in `stats-cache.json` in the
-  report directory. The key is the database file's size and mtime, `--top`, and
-  a hash of `STATS_SOURCES` (the modules that compute stats). Edits to rendering
-  code reuse the cache; a new module that `collectStats` imports must be added
-  to `STATS_SOURCES`. Fresh stats are round-tripped through JSON too, so cached
-  and fresh runs render identically. `--no-cache` recomputes and neither reads nor writes the cache; the sample build
-  never caches.
+- Stats cache (`cachedStats` in `src/report.js`, `src/stagecache.js`):
+  `collectStats` is nearly all of a report's run time. Its expensive passes are
+  stages, each cached in `stats-cache.json` in the report directory under its
+  own key; the rest of `collectStats` only combines their results and always
+  runs.
+
+  | Stage       | Module            | Data key            | Args             |
+  |-------------|-------------------|---------------------|------------------|
+  | `head`      | `head.js`         | index runs          |                  |
+  | `lines`     | `head.js`         | index runs          | `--top`          |
+  | `blame`     | `blamecounts.js`  | index runs, blame   |                  |
+  | `declared`  | `codeowners.js`   | index runs, blame   |                  |
+  | `history`   | `churn.js`        | index runs          |                  |
+  | `deletions` | `churn.js`        | index runs          |                  |
+  | `survival`  | `churn.js`        | index runs          | top owners, now  |
+
+  The code key is `codeHash` of the stage's module: its source plus, followed
+  through its import and re-export statements, every local module it uses,
+  computed when `stats.js` loads, so it describes the running code. Index runs
+  are the completed `runs` rows (any `index` or `add`); blame is the
+  `blame_files` count and `blame_repos` settings. A `blame` run recomputes only
+  `blame` and `declared`; editing `churn.js` recomputes only the churn stages;
+  editing `stats.js` (the combining code) recomputes nothing. Stage values are
+  plain JSON (identity ids or identity objects, never Maps) and pass through
+  JSON fresh or cached, so both render the same. Each computed stage is
+  written to the file at once (temp file, then rename), so a stopped report
+  keeps the stages it finished. `--no-cache` neither reads
+  nor writes the file; the sample build never caches.
+- Two rules keep the cache safe. A stage may depend only on code its module
+  imports: pass data into a stage, never a function from another module (that
+  is why `codeowners.js` imports `topOf` from `rank.js` instead of taking it as
+  an argument). A stage may read only data its key covers: a stage that starts
+  reading another table needs that table in its data key.
 
 ## AI prose
 
@@ -329,7 +367,8 @@ and always shown; the AI only names the groups.
   builds six repositories with about forty fictional authors over five and a
   half years from a seeded generator with fixed dates (founder import, copied
   services, shared headers, a formatter commit, a dependency bot, departures,
-  rewrites, reverts, conflict merges). `npm run sample` rebuilds it; output is
+  rewrites, reverts, conflict merges, and a late CODEOWNERS file per repo,
+  committed after the seeded history so it does not shift it). `npm run sample` rebuilds it; output is
   byte-identical across runs except the generation time.
 - `scripts/screenshot.mjs` captures pages after scripted content has rendered
   (headless Firefox over WebDriver BiDi).

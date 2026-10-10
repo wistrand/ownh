@@ -12,24 +12,85 @@ export function hasChurn(db) {
   return Boolean(db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'churn'").get());
 }
 
+// The passes over churn run in 16 ranges of hash (its primary key prefix), so
+// each is an index range scan and progress can be reported; every hash is in
+// exactly one range, so per-range results merge exactly.
+const DIGITS = '0123456789abcdef';
+const RANGE = 'ch.hash >= ? AND (? IS NULL OR ch.hash < ?)';
+
+function eachRange(fn, log, label) {
+  const started = Date.now();
+  for (let d = 0; d < DIGITS.length; d++) {
+    const to = d + 1 < DIGITS.length ? DIGITS[d + 1] : null;
+    fn([DIGITS[d], to, to]);
+    log(`${label}: ${d + 1}/${DIGITS.length} hash ranges, ${((Date.now() - started) / 1000).toFixed(1)}s`);
+  }
+}
+
 // Net lines (added minus removed) by (repo, owner, quarter): the input for a
 // true ownership history, in the same shape as the surviving-line cohorts.
-export function netByQuarter(db) {
-  return db.prepare(`
+export function netByQuarter(db, log = () => {}) {
+  const query = db.prepare(`
     SELECT ch.repo_id AS repoId, c.identity_id AS identityId, ch.q AS q, SUM(ch.added - ch.removed) AS n
     FROM churn ch ${OWNER_OF_HASH}
+    WHERE ${RANGE}
     GROUP BY ch.repo_id, c.identity_id, ch.q
-  `).all();
+  `);
+  const net = new Map();
+  eachRange((range) => {
+    for (const row of query.iterate(...range)) {
+      const key = `${row.repoId}:${row.identityId}:${row.q}`;
+      const entry = net.get(key);
+      if (entry) entry.n += row.n;
+      else net.set(key, row);
+    }
+  }, log, 'history');
+  return [...net.values()];
 }
 
 // Who removes whose lines, the most-removed line, and lines that came back.
-export function deletions(db, identities) {
-  const pairs = db.prepare(`
+export function deletions(db, identities, log = () => {}) {
+  const pairsOf = db.prepare(`
     SELECT ch.identity_id AS remover, c.identity_id AS owner, SUM(ch.removed) AS n
     FROM churn ch ${OWNER_OF_HASH}
-    WHERE ch.removed > 0
+    WHERE ch.removed > 0 AND ${RANGE}
     GROUP BY ch.identity_id, c.identity_id
-  `).all();
+  `);
+  const mostRemovedOf = db.prepare(`
+    SELECT ch.hash, SUM(ch.removed) AS n, l.text, l.binary, l.path, c.identity_id AS owner
+    FROM churn ch ${OWNER_OF_HASH}
+    WHERE ${RANGE}
+    GROUP BY ch.hash ORDER BY n DESC, ch.hash LIMIT 1
+  `);
+  // Lines added again after the first quarter in which that line was removed:
+  // each went straight back to its original owner.
+  const restoredOf = db.prepare(`
+    WITH first_removal AS (SELECT hash, MIN(q) AS q0 FROM churn ch WHERE removed > 0 AND ${RANGE} GROUP BY hash)
+    SELECT COUNT(DISTINCT ch.hash) AS hashes, COALESCE(SUM(ch.added), 0) AS lines
+    FROM churn ch JOIN first_removal f ON f.hash = ch.hash AND ch.q > f.q0
+    WHERE ch.added > 0
+  `);
+  const addedOf = db.prepare(`SELECT COALESCE(SUM(added), 0) AS n FROM churn ch WHERE ${RANGE}`);
+
+  const pairTotals = new Map();
+  let mostRemoved = null;
+  const restored = { hashes: 0, lines: 0 };
+  let added = 0;
+  eachRange((range) => {
+    for (const { remover, owner, n } of pairsOf.iterate(...range)) {
+      const key = `${remover}:${owner}`;
+      const entry = pairTotals.get(key);
+      if (entry) entry.n += n;
+      else pairTotals.set(key, { remover, owner, n });
+    }
+    const top = mostRemovedOf.get(...range);
+    if (top && (!mostRemoved || top.n > mostRemoved.n)) mostRemoved = top; // ranges ascend, so ties keep the smaller hash
+    const back = restoredOf.get(...range);
+    restored.hashes += back.hashes;
+    restored.lines += back.lines;
+    added += addedOf.get(...range).n;
+  }, log, 'deletions');
+  const pairs = [...pairTotals.values()];
   const removedOthers = new Map(); // remover -> lines of other people's removed
   const removedOwn = new Map(); // remover -> own lines removed
   const lostToOthers = new Map(); // owner -> lines removed by someone else
@@ -53,22 +114,6 @@ export function deletions(db, identities) {
     .slice(0, 10)
     .map(([id, n]) => ({ owner: identities.get(id) ?? null, lines: n, ownRemoved: removedOwn.get(id) ?? 0 }));
 
-  const mostRemoved = db.prepare(`
-    SELECT ch.hash, SUM(ch.removed) AS n, l.text, l.binary, l.path, c.identity_id AS owner
-    FROM churn ch ${OWNER_OF_HASH}
-    GROUP BY ch.hash ORDER BY n DESC, ch.hash LIMIT 1
-  `).get();
-
-  // Lines added again after the first quarter in which that line was removed:
-  // each went straight back to its original owner.
-  const restored = db.prepare(`
-    WITH first_removal AS (SELECT hash, MIN(q) AS q0 FROM churn WHERE removed > 0 GROUP BY hash)
-    SELECT COUNT(DISTINCT ch.hash) AS hashes, COALESCE(SUM(ch.added), 0) AS lines
-    FROM churn ch JOIN first_removal f ON f.hash = ch.hash AND ch.q > f.q0
-    WHERE ch.added > 0
-  `).get();
-
-  const added = db.prepare('SELECT COALESCE(SUM(added), 0) AS n FROM churn').get().n;
   return {
     added,
     removed: total,
@@ -83,19 +128,25 @@ export function deletions(db, identities) {
       owner: identities.get(mostRemoved.owner) ?? null,
     } : null,
     restored,
-    // Every remover, not only the top 10: identity id -> lines of others
-    // removed. A Map for collectStats only; it is not part of the stats output.
-    removedOthersBy: removedOthers,
+    // Every remover, not only the top 10: [identity id, lines of others
+    // removed] pairs, for collectStats; not part of the stats output.
+    removedOthersBy: [...removedOthers],
   };
 }
 
 // Survival of lines, per owner. Copies of the same line can't be told apart, so
 // within each hash and repository removals are paired with the oldest surviving
-// additions first (a removal in one repo never ends a copy in another). Each paired line "dies" at its age in quarters; lines still present are
-// censored at their age now. Survival is the Kaplan-Meier estimate over those
-// ages, and the half-life is the first age at which it drops to 50% or below,
-// or, if it never does, an exponential extrapolation from the last point.
-export function survival(db, groups, now) {
+// additions first (a removal in one repo never ends a copy in another). Each
+// paired line "dies" at its age in quarters; lines still present are censored
+// at their age now. Survival is the Kaplan-Meier estimate over those ages, and
+// the half-life is the first age at which it drops to 50% or below, or, if it
+// never does, an exponential extrapolation from the last point.
+//
+// Rows stream in hash order, so the current hash's first hex digits give the
+// share of the pass that is done; progress goes to `log` every 5 seconds.
+export function survival(db, groups, now, log = () => {}) {
+  const started = Date.now();
+  let lastLog = started;
   // group key (identity id, or 'all') -> { deaths: Map(age -> n), censored: Map(age -> n) }
   const stats = new Map([...groups.map((g) => [g, { deaths: new Map(), censored: new Map() }]), ['all', { deaths: new Map(), censored: new Map() }]]);
   const bump = (m, k, n) => m.set(k, (m.get(k) ?? 0) + n);
@@ -128,6 +179,11 @@ export function survival(db, groups, now) {
       current = key;
       owner = row.owner;
       queue = [];
+      if (Date.now() - lastLog >= 5000) {
+        lastLog = Date.now();
+        const done = parseInt(row.hash.slice(0, 4), 16) / 0x10000;
+        log(`survival: ${(done * 100).toFixed(0)}% of hashes, ${((lastLog - started) / 1000).toFixed(1)}s`);
+      }
     }
     // Additions in a quarter come before that quarter's removals.
     if (row.added > 0) queue.push([row.q, row.added]);
@@ -142,9 +198,11 @@ export function survival(db, groups, now) {
     }
   }
   if (current !== null) finish();
+  log(`survival: 100% of hashes, ${((Date.now() - started) / 1000).toFixed(1)}s`);
 
-  const out = new Map();
-  for (const [key, s] of stats) out.set(key, kaplanMeier(s.deaths, s.censored));
+  // Plain object, keyed by identity id or 'all', so it can be cached as JSON.
+  const out = {};
+  for (const [key, s] of stats) out[key] = kaplanMeier(s.deaths, s.censored);
   return out;
 }
 

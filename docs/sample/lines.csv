@@ -1,16 +1,16 @@
 rank,line,binary,path,lines,share,owner_name,owner_email,origin_repo
-1,,0,,3578,0.2049725022914757,Ada Lindqvist,ada.lindqvist@example.com,platform
-2,},0,,1118,0.06404674610449129,Ada Lindqvist,ada.lindqvist@example.com,platform
-3,  },0,,1105,0.06330201649862512,Ada Lindqvist,ada.lindqvist@example.com,platform
-4,    },0,,583,0.033398258478460126,Mira Quist,mira.quist@example.com,api-gateway
-5,    return null;,0,,533,0.03053391384051329,Ada Lindqvist,ada.lindqvist@example.com,platform
-6,        return null;,0,,288,0.016498625114573784,Mira Quist,mira.quist@example.com,api-gateway
-7,        return None,0,,224,0.012832263978001834,Umar Lindqvist,umar.lindqvist@example.com,data-pipeline
-8,/*,0,,198,0.011342804766269478,Ada Lindqvist,ada.lindqvist@example.com,platform
-9, * Copyright Example Corp. All rights reserved.,0,,193,0.011056370302474795,Ada Lindqvist,ada.lindqvist@example.com,platform
-10, * Licensed under the Example Corp internal license.,0,,189,0.010827222731439047,Ada Lindqvist,ada.lindqvist@example.com,platform
-11, */,0,,186,0.010655362053162237,Ada Lindqvist,ada.lindqvist@example.com,platform
-12,'use strict';,0,,180,0.010311640696608617,Ada Lindqvist,ada.lindqvist@example.com,platform
-13,  return result;,0,,76,0.004353803849679193,Ada Lindqvist,ada.lindqvist@example.com,platform
-14,  return value;,0,,70,0.004010082493125573,Ada Lindqvist,ada.lindqvist@example.com,platform
-15,  if (!result) {,0,,70,0.004010082493125573,Ada Lindqvist,ada.lindqvist@example.com,platform
+1,,0,,3578,0.20451557587882252,Ada Lindqvist,ada.lindqvist@example.com,platform
+2,},0,,1118,0.0639039725635896,Ada Lindqvist,ada.lindqvist@example.com,platform
+3,  },0,,1105,0.06316090311517576,Ada Lindqvist,ada.lindqvist@example.com,platform
+4,    },0,,583,0.03332380680194341,Mira Quist,mira.quist@example.com,api-gateway
+5,    return null;,0,,533,0.030465847384967132,Ada Lindqvist,ada.lindqvist@example.com,platform
+6,        return null;,0,,288,0.016461846241783366,Mira Quist,mira.quist@example.com,api-gateway
+7,        return None,0,,224,0.01280365818805373,Umar Lindqvist,umar.lindqvist@example.com,data-pipeline
+8,/*,0,,198,0.011317519291226064,Ada Lindqvist,ada.lindqvist@example.com,platform
+9, * Copyright Example Corp. All rights reserved.,0,,193,0.011031723349528436,Ada Lindqvist,ada.lindqvist@example.com,platform
+10, * Licensed under the Example Corp internal license.,0,,189,0.010803086596170334,Ada Lindqvist,ada.lindqvist@example.com,platform
+11, */,0,,186,0.010631609031151758,Ada Lindqvist,ada.lindqvist@example.com,platform
+12,'use strict';,0,,180,0.010288653901114605,Ada Lindqvist,ada.lindqvist@example.com,platform
+13,  return result;,0,,76,0.004344098313803944,Ada Lindqvist,ada.lindqvist@example.com,platform
+14,  return value;,0,,70,0.00400114318376679,Ada Lindqvist,ada.lindqvist@example.com,platform
+15,  if (!result) {,0,,70,0.00400114318376679,Ada Lindqvist,ada.lindqvist@example.com,platform

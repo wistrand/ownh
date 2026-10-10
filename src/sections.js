@@ -71,6 +71,44 @@ export const SURVIVAL_NOTE = 'Copies of the same line are indistinguishable, so 
 export const DEMOLITION_NOTE = 'Removals inside merge commits are not counted: they are relative to git\'s ' +
   're-run of the merge, not to a parent.';
 
+// Declared ownership: repositories with a CODEOWNERS file, the rules shown per
+// repository (largest first), and one summary sentence each.
+export const DECLARED_ROWS = 15;
+
+export const DECLARED_NOTE = 'Each line at head is assigned to the last CODEOWNERS rule that matches its file, as ' +
+  'GitHub does. Blame per rule is shown for fully blamed repositories only.';
+
+export function declaredRepos(stats) {
+  return stats.repos.filter((r) => r.declared);
+}
+
+// Repositories where at most one rule matches any line (usually a lone
+// "* @team") share one compact table; the rest get a table per repository.
+export function declaredSimple(stats) {
+  return declaredRepos(stats).filter((r) => r.declared.rules.length <= 1);
+}
+
+export function declaredDetailed(stats) {
+  return declaredRepos(stats).filter((r) => r.declared.rules.length > 1);
+}
+
+export function declaredSummary(r) {
+  const d = r.declared;
+  const covered = d.lines - d.noRule;
+  const shown = Math.min(DECLARED_ROWS, d.rules.length);
+  return `${d.file}: ${share(covered, d.lines)} of lines are covered by a rule, ${share(d.unowned, d.lines)} by a rule ` +
+    `that names no owner, and ${share(d.noRule, d.lines)} by no rule. ${d.rules.length} ${d.rules.length === 1 ? 'rule matches' : 'rules match'} lines` +
+    `${shown < d.rules.length ? ` (largest ${shown} shown)` : ''}; ${d.unmatchedRules} ${d.unmatchedRules === 1 ? 'rule matches' : 'rules match'} nothing.`;
+}
+
+export function declaredOwners(rule) {
+  return rule.owners.length ? rule.owners.join(' ') : '(no owner)';
+}
+
+function share(n, total) {
+  return total ? `${((n / total) * 100).toFixed(1)}%` : '0.0%';
+}
+
 function pct(v) {
   return `${(v * 100).toFixed(1)}%`;
 }

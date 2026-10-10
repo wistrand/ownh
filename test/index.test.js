@@ -15,6 +15,8 @@ import { findOddities } from '../src/oddities.js';
 import { aiConfig, buildFacts, chatCompletion, checkAnswer, pseudonyms } from '../src/ai.js';
 import { survivalStatements } from '../src/sections.js';
 import { exampleLabels, findArchetypes } from '../src/archetypes.js';
+import { parseCodeowners, patternRegex, ruleFor } from '../src/codeowners.js';
+import { codeHash } from '../src/stagecache.js';
 import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
 import { catBlobs, log } from '../src/git.js';
@@ -174,18 +176,22 @@ test('report files agree with the summary', async () => {
     'owner-profile.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
     'stats-cache.json',
   ]);
-  // A second run reuses the computed stats and writes the same files; another
-  // --top or --no-cache recomputes.
+  // Stages are cached separately: a second run reuses all of them and writes
+  // the same files; --no-cache reuses none; another --top recomputes only the
+  // top lines; a blame run recomputes only the stages that read blame.
   const owners = readFileSync(join(out, 'owners.csv'), 'utf8');
   const runLog = async (opts) => {
     const lines = [];
     await report({ dbPath: db, outDir: out, top: 5, log: (m) => lines.push(m), ...opts });
-    return lines.some((m) => m.startsWith('stats: reused'));
+    const m = /^stats: reused (.*); computed (.*)$/.exec(lines.find((l) => l.startsWith('stats: reused')) ?? '');
+    return m ? m[2] : null;
   };
-  assert.equal(await runLog({}), true);
+  assert.equal(await runLog({}), 'nothing');
   assert.equal(readFileSync(join(out, 'owners.csv'), 'utf8'), owners);
-  assert.equal(await runLog({ cache: false }), false);
-  assert.equal(await runLog({ top: 4 }), false);
+  assert.equal(await runLog({ cache: false }), 'head, lines, blame, declared, history, deletions, survival');
+  assert.equal(await runLog({ top: 4 }), 'lines');
+  await blame({ dbPath: db });
+  assert.equal(await runLog({ top: 4 }), 'blame, declared');
   const json = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
   assert.equal(json.generated.database, 'report.db');
   assert.match(json.generated.at, /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$/);
@@ -699,4 +705,85 @@ test('AI number guard: values only, and spelled-out numbers', () => {
   const bad = answer('x');
   bad.okr.keyResults[1] = null;
   assert.match(checkAnswer(bad, facts, p).join(), /each key result/);
+});
+
+test('CODEOWNERS patterns follow GitHub rules', () => {
+  const m = (pattern, path) => patternRegex(pattern).test(path);
+  assert.ok(m('*', 'a/b/c.js'));
+  assert.ok(m('*.js', 'a/b.js') && !m('*.js', 'a/b.ts'));
+  assert.ok(m('/docs/*', 'docs/a.md') && !m('/docs/*', 'docs/sub/b.md'), 'a wildcard last segment stays at its level');
+  assert.ok(m('docs/*', 'docs/a.md') && !m('docs/*', 'x/docs/a.md'), 'a slash inside anchors at the root');
+  assert.ok(m('apps/', 'x/apps/y/z.js') && !m('apps/', 'apps'), 'dir/ matches contents at any depth');
+  assert.ok(m('/apps/github', 'apps/github/a.js') && m('/apps/github', 'apps/github'));
+  assert.ok(m('**/logs', 'logs/a') && m('**/logs', 'a/b/logs/c') && !m('**/logs', 'catalogs/x'));
+  assert.ok(m('/build/**', 'build/a/b') && !m('/build/**', 'x/build/a'));
+  const rules = parseCodeowners('# comment\n* @org/all\n\n[Section]\n/docs/* @org/docs # inline\nsrc/ @org/src\n/vendor/\nmy\\ dir/ a@example.com\n');
+  assert.deepEqual(rules.map((r) => [r.pattern, r.owners]), [['*', ['@org/all']], ['/docs/*', ['@org/docs']], ['src/', ['@org/src']], ['/vendor/', []], ['my dir/', ['a@example.com']]]);
+  assert.equal(rules[ruleFor(rules, 'docs/sub/x.md')].pattern, '*', 'the last matching rule wins');
+  assert.equal(rules[ruleFor(rules, 'src/a.js')].pattern, 'src/');
+  assert.deepEqual(parseCodeowners('/docs/* @x').length, 1);
+});
+
+test('declared ownership: CODEOWNERS next to line hash and blame', async () => {
+  const A = ['Fiona Format', 'fiona@example.com'];
+  const B = ['Ada Lindqvist', 'ada@example.com'];
+  const repo = init(dir, 'declared');
+  mkdirSync(join(repo, '.github'));
+  mkdirSync(join(repo, 'src'));
+  mkdirSync(join(repo, 'docs'));
+  mkdirSync(join(repo, 'docs', 'sub'));
+  commit(repo, A, 100, {
+    '.github/CODEOWNERS': '* @org/all\n/docs/* @org/docs\nsrc/ @org/src\n/vendor/\n',
+    'src/a.js': 'alpha();\nbeta();\n',
+    'docs/x.md': 'x\n',
+    'docs/sub/y.md': 'y\n',
+  });
+  commit(repo, B, 200, { 'src/b.js': 'gamma();\ndelta();\nepsilon();\n' });
+  const db = join(dir, 'declared.db');
+  await index({ dbPath: db, repoPaths: [repo] });
+  await blame({ dbPath: db });
+  const stats = withDb(db, (conn) => collectStats(conn));
+  const d = stats.repos[0].declared;
+  assert.equal(d.file, '.github/CODEOWNERS');
+  const byPattern = Object.fromEntries(d.rules.map((r) => [r.pattern, r]));
+  assert.equal(byPattern['src/'].lines, 5);
+  assert.equal(byPattern['src/'].hash.owner.email, 'ada@example.com');
+  assert.equal(byPattern['src/'].blame.owner.email, 'ada@example.com');
+  assert.deepEqual(byPattern['src/'].owners, ['@org/src']);
+  assert.equal(byPattern['/docs/*'].lines, 1, 'docs/sub/y.md falls back to "*"');
+  assert.equal(byPattern['*'].lines, 4 + 1, 'CODEOWNERS itself and docs/sub/y.md');
+  assert.equal(d.noRule, 0);
+  assert.equal(d.unmatchedRules, 1, '/vendor/ matches nothing');
+  assert.deepEqual(d.unmatched, ['/vendor/']);
+  const unmatched = findOddities(stats).find((o) => o.kind === 'declared-unmatched');
+  assert.match(unmatched.title, /^1 CODEOWNERS rule matches no file, in 1 repository$/);
+  assert.deepEqual(unmatched.detail.filter((p) => p.code).map((p) => p.code), ['/vendor/']);
+
+  const out = join(dir, 'declared-report');
+  await report({ dbPath: db, outDir: out, cache: false });
+  const md = readFileSync(join(out, 'leaderboard.md'), 'utf8');
+  assert.match(md, /## Declared ownership/);
+  assert.match(md, /\| `src\/` +\| @org\/src +\| +5 \| Ada Lindqvist \(60\.0%\) +\| Ada Lindqvist \(60\.0%\) +\|/);
+  assert.ok(readdirSync(out).includes('codeowners.csv'));
+  assert.match(readFileSync(join(out, 'report.html'), 'utf8'), /id="declared-ownership"/);
+  // Paths and team names never reach the AI facts.
+  assert.ok(!JSON.stringify(buildFacts(stats, findArchetypes(stats), pseudonyms(stats))).includes('@org'));
+});
+
+test('stage code hash follows imports and re-exports', () => {
+  const mods = mkdtempSync(join(tmpdir(), 'ownh-code-'));
+  try {
+    writeFileSync(join(mods, 'a.js'), "import { b } from './b.js';\nexport const a = b;\n");
+    writeFileSync(join(mods, 'b.js'), "export { c as b } from './c.js';\n");
+    writeFileSync(join(mods, 'c.js'), 'export const c = 1;\n');
+    writeFileSync(join(mods, 'other.js'), 'export const other = 1;\n');
+    const url = new URL(`file://${join(mods, 'a.js')}`);
+    const before = codeHash(url);
+    writeFileSync(join(mods, 'other.js'), 'export const other = 2;\n');
+    assert.equal(codeHash(url), before, 'a module nothing imports does not count');
+    writeFileSync(join(mods, 'c.js'), 'export const c = 2;\n');
+    assert.notEqual(codeHash(url), before, 'a change two imports away does');
+  } finally {
+    rmSync(mods, { recursive: true, force: true });
+  }
 });

@@ -100,17 +100,17 @@
 </style>
 <rect class="bg" width="760" height="420"/>
 <text class="title" x="24" y="40">Ownership by line hash</text>
-<text class="subtitle" x="24" y="62">Share of 17,456 lines across 6 repositories held by each line</text>
-<path class="slice s1" d="M 190 260 L 190.00 110.00 A 150 150 0 0 1 334.04 218.13 Z"><title>&quot;&quot;: 3,578 lines (20.5%)</title></path>
-<path class="slice s2" d="M 190 260 L 334.04 218.13 A 150 150 0 0 1 338.93 277.88 Z"><title>&quot;}&quot;: 1,118 lines (6.4%)</title></path>
-<path class="slice s3" d="M 190 260 L 338.93 277.88 A 150 150 0 0 1 320.38 334.17 Z"><title>&quot;  }&quot;: 1,105 lines (6.3%)</title></path>
-<path class="slice s4" d="M 190 260 L 320.38 334.17 A 150 150 0 0 1 302.07 359.70 Z"><title>&quot;    }&quot;: 583 lines (3.3%)</title></path>
-<path class="slice s5" d="M 190 260 L 302.07 359.70 A 150 150 0 0 1 281.00 379.24 Z"><title>&quot;    return null;&quot;: 533 lines (3.1%)</title></path>
-<path class="slice other" d="M 190 260 L 281.00 379.24 A 150 150 0 1 1 190.00 110.00 Z"><title>Everything else: 10,539 lines (60.4%)</title></path>
+<text class="subtitle" x="24" y="62">Share of 17,495 lines across 6 repositories held by each line</text>
+<path class="slice s1" d="M 190 260 L 190.00 110.00 A 150 150 0 0 1 333.92 217.71 Z"><title>&quot;&quot;: 3,578 lines (20.5%)</title></path>
+<path class="slice s2" d="M 190 260 L 333.92 217.71 A 150 150 0 0 1 339.00 277.32 Z"><title>&quot;}&quot;: 1,118 lines (6.4%)</title></path>
+<path class="slice s3" d="M 190 260 L 339.00 277.32 A 150 150 0 0 1 320.72 333.56 Z"><title>&quot;  }&quot;: 1,105 lines (6.3%)</title></path>
+<path class="slice s4" d="M 190 260 L 320.72 333.56 A 150 150 0 0 1 302.58 359.13 Z"><title>&quot;    }&quot;: 583 lines (3.3%)</title></path>
+<path class="slice s5" d="M 190 260 L 302.58 359.13 A 150 150 0 0 1 281.66 378.74 Z"><title>&quot;    return null;&quot;: 533 lines (3.0%)</title></path>
+<path class="slice other" d="M 190 260 L 281.66 378.74 A 150 150 0 1 1 190.00 110.00 Z"><title>Everything else: 10,578 lines (60.5%)</title></path>
 <rect class="s1" x="380" y="121" width="12" height="12" rx="3"/><text class="mono" x="402" y="132" xml:space="preserve">&quot;&quot;</text><text class="muted" x="402" y="150">Ada Lindqvist · 20.5%</text>
 <rect class="s2" x="380" y="167" width="12" height="12" rx="3"/><text class="mono" x="402" y="178" xml:space="preserve">&quot;}&quot;</text><text class="muted" x="402" y="196">Ada Lindqvist · 6.4%</text>
 <rect class="s3" x="380" y="213" width="12" height="12" rx="3"/><text class="mono" x="402" y="224" xml:space="preserve">&quot;  }&quot;</text><text class="muted" x="402" y="242">Ada Lindqvist · 6.3%</text>
 <rect class="s4" x="380" y="259" width="12" height="12" rx="3"/><text class="mono" x="402" y="270" xml:space="preserve">&quot;    }&quot;</text><text class="muted" x="402" y="288">Mira Quist · 3.3%</text>
-<rect class="s5" x="380" y="305" width="12" height="12" rx="3"/><text class="mono" x="402" y="316" xml:space="preserve">&quot;    return null;&quot;</text><text class="muted" x="402" y="334">Ada Lindqvist · 3.1%</text>
-<rect class="other" x="380" y="351" width="12" height="12" rx="3"/><text class="label" x="402" y="362" xml:space="preserve">Everything else</text><text class="muted" x="402" y="380">all other lines · 60.4%</text>
+<rect class="s5" x="380" y="305" width="12" height="12" rx="3"/><text class="mono" x="402" y="316" xml:space="preserve">&quot;    return null;&quot;</text><text class="muted" x="402" y="334">Ada Lindqvist · 3.0%</text>
+<rect class="other" x="380" y="351" width="12" height="12" rx="3"/><text class="label" x="402" y="362" xml:space="preserve">Everything else</text><text class="muted" x="402" y="380">all other lines · 60.5%</text>
 </svg>

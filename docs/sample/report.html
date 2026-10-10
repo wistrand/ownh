@@ -66,6 +66,10 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 .r-table { border-collapse: collapse; width: 100%; font-size: 14px; }
 .r-table th, .r-table td { padding: 6px 10px; border-bottom: 1px solid var(--r-border); text-align: left; white-space: nowrap; }
 .r-table th { color: var(--r-text-2); font-weight: 600; cursor: pointer; user-select: none; }
+.r-table.r-fixed { table-layout: fixed; min-width: 720px; }
+.r-table.r-fixed td { white-space: normal; overflow-wrap: break-word; }
+.r-nobr { white-space: nowrap; }
+.r-clip { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
 .r-table th[aria-sort="ascending"]::after { content: " \2191"; }
 .r-table th[aria-sort="descending"]::after { content: " \2193"; }
 .r-table .num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -79,24 +83,24 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <main class="r-page">
 <header class="r-head">
       <h1>OWNH Ownership Report</h1>
-      <p class="r-meta">6 repositories · 17,456 lines under management · OWNH 0.1.0</p>
-      <p class="r-meta">Database <code>sample.db</code> · generated 2026-10-10 16:45 UTC</p>
+      <p class="r-meta">6 repositories · 17,495 lines under management · OWNH 0.1.0</p>
+      <p class="r-meta">Database <code>sample.db</code> · generated 2026-10-10 18:59 UTC</p>
     </header>
 <section class="r-section" id="ai-insights"><h2><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
-<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> AI insights</h2><div class="r-ai"><p>OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.4%, compared with Mira Quist at 10.6% and Umar Lindqvist at 6.5%; blank lines account for 20.5% of lines, and the reported punctuation-only line categories account for 6.4% and 6.3%, all owned by Ada Lindqvist.</p><p>Cross-repository authorship is substantial: lines written elsewhere account for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Ownership by non-contributors ranges from 0% in web-frontend to 57% in api-gateway; ownership methods agree in no repositories.</p><p>At 2026 Q2, principal-owner share is 54.3%, up from 51.2% at 2025 Q3, while inactive-owner share is 76.3%, down from 77.9%; both majorities are established. The next blank-line milestone is projected for 2031 Q4, and line survival has a half-life of 2 years.</p><p class="r-ai-label"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> AI insights</h2><div class="r-ai"><p>OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.2% of lines, while inactive owners account for 76.1% at 2026 Q2, a majority since 2023 Q4.</p><p>Blank lines represent 20.5% of lines and are attributed to Ada Lindqvist. The next blank-line milestone is projected for 2031 Q4; the line-survival half-life is 2 years and is not projected.</p><p>Cross-repository ownership is uneven: 80% of billing-service’s lines were written elsewhere, while 57% of api-gateway’s lines are owned by non-contributors. The methods agree in no repositories, limiting confidence in attribution consistency.</p><p class="r-ai-label"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
 <path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine.</p></div></section>
 <section class="r-tiles">
       <div class="r-tile"><div class="r-tile-label">Repositories</div><div class="r-tile-value">6</div></div>
-      <div class="r-tile"><div class="r-tile-label">Lines under management</div><div class="r-tile-value">17,456</div></div>
-      <div class="r-tile"><div class="r-tile-label">Principal owner</div><div class="r-tile-value">Ada Lindqvist</div><div class="r-tile-sub">54.4%</div></div>
+      <div class="r-tile"><div class="r-tile-label">Lines under management</div><div class="r-tile-value">17,495</div></div>
+      <div class="r-tile"><div class="r-tile-label">Principal owner</div><div class="r-tile-value">Ada Lindqvist</div><div class="r-tile-sub">54.2%</div></div>
       <div class="r-tile"><div class="r-tile-label">Principal line</div><div class="r-tile-value"><code class="r-lit">&quot;&quot;</code></div><div class="r-tile-sub">20.5%</div></div>
     </section>
 <section class="r-section" id="principal-owners"><h2>Principal owners</h2><div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="9490">9,490</td><td class="num" data-sort="9490">54.4%</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="9490">9,490</td><td class="num" data-sort="9490">54.2%</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Mira Quist &lt;mira.quist@example.com&gt;</td><td class="num" data-sort="1856">1,856</td><td class="num" data-sort="1856">10.6%</td></tr>
 <tr><td class="num" data-sort="3">3</td><td class="">Umar Lindqvist &lt;umar.lindqvist@example.com&gt;</td><td class="num" data-sort="1132">1,132</td><td class="num" data-sort="1132">6.5%</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="1111">1,111</td><td class="num" data-sort="1111">6.4%</td></tr>
@@ -108,7 +112,7 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="10">10</td><td class="">Greta Okafor &lt;greta.okafor@example.com&gt;</td><td class="num" data-sort="218">218</td><td class="num" data-sort="218">1.2%</td></tr>
 <tr><td class="num" data-sort="11">11</td><td class="">Vera Tanaka &lt;vera.tanaka@example.com&gt;</td><td class="num" data-sort="140">140</td><td class="num" data-sort="140">0.8%</td></tr>
 <tr><td class="num" data-sort="12">12</td><td class="">Nils Yilmaz &lt;nils.yilmaz@example.com&gt;</td><td class="num" data-sort="134">134</td><td class="num" data-sort="134">0.8%</td></tr>
-<tr><td class="num" data-sort="13">13</td><td class="">Dagny Petrov &lt;dagny.petrov@example.com&gt;</td><td class="num" data-sort="131">131</td><td class="num" data-sort="131">0.8%</td></tr>
+<tr><td class="num" data-sort="13">13</td><td class="">Dagny Petrov &lt;dagny.petrov@example.com&gt;</td><td class="num" data-sort="131">131</td><td class="num" data-sort="131">0.7%</td></tr>
 <tr><td class="num" data-sort="14">14</td><td class="">Olga Fischer &lt;olga.fischer@example.com&gt;</td><td class="num" data-sort="130">130</td><td class="num" data-sort="130">0.7%</td></tr>
 <tr><td class="num" data-sort="15">15</td><td class="">Wim Bianchi &lt;wim.bianchi@example.com&gt;</td><td class="num" data-sort="126">126</td><td class="num" data-sort="126">0.7%</td></tr>
 </tbody></table></div></section>
@@ -378,24 +382,24 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <text class="axis" x="288.1" y="458.0" text-anchor="end">Written in another repository</text>
 <line class="grid" x1="400" y1="300" x2="238.3" y2="247.5"/>
 <text class="axis" x="218.9" y="245.2" text-anchor="end">Owned by non-contributors</text>
-<polygon class="area ra1" points="400.0,199.2 437.6,287.8 414.3,319.7 380.1,327.4 399.9,300.0"><title>platform</title></polygon>
-<polygon class="area ra2" points="400.0,192.2 423.9,292.2 414.1,319.5 321.9,407.5 399.4,299.8"><title>web-frontend</title></polygon>
-<polygon class="area ra3" points="400.0,202.5 437.5,287.8 417.4,324.0 333.8,391.1 307.2,269.8"><title>api-gateway</title></polygon>
-<circle class="point rp1" cx="400.0" cy="199.2" r="4.5"><title>platform, Top owner, line hash: 59.3%</title></circle>
-<circle class="point rp1" cx="437.6" cy="287.8" r="4.5"><title>platform, Top owner, git blame: 23.2%</title></circle>
-<circle class="point rp1" cx="414.3" cy="319.7" r="4.5"><title>platform, Top committer: 14.3%</title></circle>
-<circle class="point rp1" cx="380.1" cy="327.4" r="4.5"><title>platform, Written in another repository: 20.0%</title></circle>
+<polygon class="area ra1" points="400.0,199.4 437.5,287.8 414.3,319.6 380.0,327.5 399.9,300.0"><title>platform</title></polygon>
+<polygon class="area ra2" points="400.0,192.4 423.8,292.3 414.1,319.4 321.9,407.5 399.4,299.8"><title>web-frontend</title></polygon>
+<polygon class="area ra3" points="400.0,202.7 437.5,287.8 417.3,323.9 334.0,390.9 307.3,269.9"><title>api-gateway</title></polygon>
+<circle class="point rp1" cx="400.0" cy="199.4" r="4.5"><title>platform, Top owner, line hash: 59.2%</title></circle>
+<circle class="point rp1" cx="437.5" cy="287.8" r="4.5"><title>platform, Top owner, git blame: 23.2%</title></circle>
+<circle class="point rp1" cx="414.3" cy="319.6" r="4.5"><title>platform, Top committer: 14.3%</title></circle>
+<circle class="point rp1" cx="380.0" cy="327.5" r="4.5"><title>platform, Written in another repository: 20.0%</title></circle>
 <circle class="point rp1" cx="399.9" cy="300.0" r="4.5"><title>platform, Owned by non-contributors: 0.1%</title></circle>
-<circle class="point rp2" cx="400.0" cy="192.2" r="4.5"><title>web-frontend, Top owner, line hash: 63.4%</title></circle>
-<circle class="point rp2" cx="423.9" cy="292.2" r="4.5"><title>web-frontend, Top owner, git blame: 14.8%</title></circle>
-<circle class="point rp2" cx="414.1" cy="319.5" r="4.5"><title>web-frontend, Top committer: 14.1%</title></circle>
+<circle class="point rp2" cx="400.0" cy="192.4" r="4.5"><title>web-frontend, Top owner, line hash: 63.3%</title></circle>
+<circle class="point rp2" cx="423.8" cy="292.3" r="4.5"><title>web-frontend, Top owner, git blame: 14.7%</title></circle>
+<circle class="point rp2" cx="414.1" cy="319.4" r="4.5"><title>web-frontend, Top committer: 14.1%</title></circle>
 <circle class="point rp2" cx="321.9" cy="407.5" r="4.5"><title>web-frontend, Written in another repository: 78.2%</title></circle>
 <circle class="point rp2" cx="399.4" cy="299.8" r="4.5"><title>web-frontend, Owned by non-contributors: 0.4%</title></circle>
-<circle class="point rp3" cx="400.0" cy="202.5" r="4.5"><title>api-gateway, Top owner, line hash: 57.3%</title></circle>
+<circle class="point rp3" cx="400.0" cy="202.7" r="4.5"><title>api-gateway, Top owner, line hash: 57.2%</title></circle>
 <circle class="point rp3" cx="437.5" cy="287.8" r="4.5"><title>api-gateway, Top owner, git blame: 23.2%</title></circle>
-<circle class="point rp3" cx="417.4" cy="324.0" r="4.5"><title>api-gateway, Top committer: 17.4%</title></circle>
-<circle class="point rp3" cx="333.8" cy="391.1" r="4.5"><title>api-gateway, Written in another repository: 66.2%</title></circle>
-<circle class="point rp3" cx="307.2" cy="269.8" r="4.5"><title>api-gateway, Owned by non-contributors: 57.4%</title></circle>
+<circle class="point rp3" cx="417.3" cy="323.9" r="4.5"><title>api-gateway, Top committer: 17.4%</title></circle>
+<circle class="point rp3" cx="334.0" cy="390.9" r="4.5"><title>api-gateway, Written in another repository: 66.1%</title></circle>
+<circle class="point rp3" cx="307.3" cy="269.9" r="4.5"><title>api-gateway, Owned by non-contributors: 57.3%</title></circle>
 <rect class="s1" x="24" y="529" width="12" height="12" rx="3"/>
 <text class="label" x="44" y="540">platform</text>
 <rect class="s2" x="132" y="529" width="12" height="12" rx="3"/>
@@ -507,19 +511,19 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 </style>
 <rect class="bg" width="760" height="420"/>
 <text class="title" x="24" y="40">Ownership by line hash</text>
-<text class="subtitle" x="24" y="62">Share of 17,456 lines across 6 repositories held by each line</text>
-<path class="slice s1" d="M 190 260 L 190.00 110.00 A 150 150 0 0 1 334.04 218.13 Z"><title>&quot;&quot;: 3,578 lines (20.5%)</title></path>
-<path class="slice s2" d="M 190 260 L 334.04 218.13 A 150 150 0 0 1 338.93 277.88 Z"><title>&quot;}&quot;: 1,118 lines (6.4%)</title></path>
-<path class="slice s3" d="M 190 260 L 338.93 277.88 A 150 150 0 0 1 320.38 334.17 Z"><title>&quot;  }&quot;: 1,105 lines (6.3%)</title></path>
-<path class="slice s4" d="M 190 260 L 320.38 334.17 A 150 150 0 0 1 302.07 359.70 Z"><title>&quot;    }&quot;: 583 lines (3.3%)</title></path>
-<path class="slice s5" d="M 190 260 L 302.07 359.70 A 150 150 0 0 1 281.00 379.24 Z"><title>&quot;    return null;&quot;: 533 lines (3.1%)</title></path>
-<path class="slice other" d="M 190 260 L 281.00 379.24 A 150 150 0 1 1 190.00 110.00 Z"><title>Everything else: 10,539 lines (60.4%)</title></path>
+<text class="subtitle" x="24" y="62">Share of 17,495 lines across 6 repositories held by each line</text>
+<path class="slice s1" d="M 190 260 L 190.00 110.00 A 150 150 0 0 1 333.92 217.71 Z"><title>&quot;&quot;: 3,578 lines (20.5%)</title></path>
+<path class="slice s2" d="M 190 260 L 333.92 217.71 A 150 150 0 0 1 339.00 277.32 Z"><title>&quot;}&quot;: 1,118 lines (6.4%)</title></path>
+<path class="slice s3" d="M 190 260 L 339.00 277.32 A 150 150 0 0 1 320.72 333.56 Z"><title>&quot;  }&quot;: 1,105 lines (6.3%)</title></path>
+<path class="slice s4" d="M 190 260 L 320.72 333.56 A 150 150 0 0 1 302.58 359.13 Z"><title>&quot;    }&quot;: 583 lines (3.3%)</title></path>
+<path class="slice s5" d="M 190 260 L 302.58 359.13 A 150 150 0 0 1 281.66 378.74 Z"><title>&quot;    return null;&quot;: 533 lines (3.0%)</title></path>
+<path class="slice other" d="M 190 260 L 281.66 378.74 A 150 150 0 1 1 190.00 110.00 Z"><title>Everything else: 10,578 lines (60.5%)</title></path>
 <rect class="s1" x="380" y="121" width="12" height="12" rx="3"/><text class="mono" x="402" y="132" xml:space="preserve">&quot;&quot;</text><text class="muted" x="402" y="150">Ada Lindqvist · 20.5%</text>
 <rect class="s2" x="380" y="167" width="12" height="12" rx="3"/><text class="mono" x="402" y="178" xml:space="preserve">&quot;}&quot;</text><text class="muted" x="402" y="196">Ada Lindqvist · 6.4%</text>
 <rect class="s3" x="380" y="213" width="12" height="12" rx="3"/><text class="mono" x="402" y="224" xml:space="preserve">&quot;  }&quot;</text><text class="muted" x="402" y="242">Ada Lindqvist · 6.3%</text>
 <rect class="s4" x="380" y="259" width="12" height="12" rx="3"/><text class="mono" x="402" y="270" xml:space="preserve">&quot;    }&quot;</text><text class="muted" x="402" y="288">Mira Quist · 3.3%</text>
-<rect class="s5" x="380" y="305" width="12" height="12" rx="3"/><text class="mono" x="402" y="316" xml:space="preserve">&quot;    return null;&quot;</text><text class="muted" x="402" y="334">Ada Lindqvist · 3.1%</text>
-<rect class="other" x="380" y="351" width="12" height="12" rx="3"/><text class="label" x="402" y="362" xml:space="preserve">Everything else</text><text class="muted" x="402" y="380">all other lines · 60.4%</text>
+<rect class="s5" x="380" y="305" width="12" height="12" rx="3"/><text class="mono" x="402" y="316" xml:space="preserve">&quot;    return null;&quot;</text><text class="muted" x="402" y="334">Ada Lindqvist · 3.0%</text>
+<rect class="other" x="380" y="351" width="12" height="12" rx="3"/><text class="label" x="402" y="362" xml:space="preserve">Everything else</text><text class="muted" x="402" y="380">all other lines · 60.5%</text>
 </svg>
 </figure>
       <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Line</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Owner</th><th class="" data-col="5">First written in</th></tr></thead><tbody>
@@ -527,7 +531,7 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="2">2</td><td class=""><code class="r-lit">&quot;}&quot;</code></td><td class="num" data-sort="1118">1,118</td><td class="num" data-sort="1118">6.4%</td><td class="">Ada Lindqvist</td><td class="">platform</td></tr>
 <tr><td class="num" data-sort="3">3</td><td class=""><code class="r-lit">&quot;  }&quot;</code></td><td class="num" data-sort="1105">1,105</td><td class="num" data-sort="1105">6.3%</td><td class="">Ada Lindqvist</td><td class="">platform</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class=""><code class="r-lit">&quot;    }&quot;</code></td><td class="num" data-sort="583">583</td><td class="num" data-sort="583">3.3%</td><td class="">Mira Quist</td><td class="">api-gateway</td></tr>
-<tr><td class="num" data-sort="5">5</td><td class=""><code class="r-lit">&quot;    return null;&quot;</code></td><td class="num" data-sort="533">533</td><td class="num" data-sort="533">3.1%</td><td class="">Ada Lindqvist</td><td class="">platform</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class=""><code class="r-lit">&quot;    return null;&quot;</code></td><td class="num" data-sort="533">533</td><td class="num" data-sort="533">3.0%</td><td class="">Ada Lindqvist</td><td class="">platform</td></tr>
 <tr><td class="num" data-sort="6">6</td><td class=""><code class="r-lit">&quot;        return null;&quot;</code></td><td class="num" data-sort="288">288</td><td class="num" data-sort="288">1.6%</td><td class="">Mira Quist</td><td class="">api-gateway</td></tr>
 <tr><td class="num" data-sort="7">7</td><td class=""><code class="r-lit">&quot;        return None&quot;</code></td><td class="num" data-sort="224">224</td><td class="num" data-sort="224">1.3%</td><td class="">Umar Lindqvist</td><td class="">data-pipeline</td></tr>
 <tr><td class="num" data-sort="8">8</td><td class=""><code class="r-lit">&quot;/*&quot;</code></td><td class="num" data-sort="198">198</td><td class="num" data-sort="198">1.1%</td><td class="">Ada Lindqvist</td><td class="">platform</td></tr>
@@ -653,69 +657,69 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <text class="axis" transform="translate(288 190) rotate(-55)">platform</text>
 <text class="axis" transform="translate(320 190) rotate(-55)">web-frontend</text>
 <text class="axis" x="131" y="217" text-anchor="end">api-gateway</text>
-<rect class="b6" x="141" y="198" width="30" height="30" rx="3"><title>api-gateway: 1,192 of 3,528 lines first written in api-gateway (33.8%)</title></rect>
+<rect class="b6" x="141" y="198" width="30" height="30" rx="3"><title>api-gateway: 1,199 of 3,535 lines first written in api-gateway (33.9%)</title></rect>
 <text class="value t6" x="156" y="217" pointer-events="none">34</text>
 <rect class="self" x="141.75" y="198.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b1" x="173" y="198" width="30" height="30" rx="3"><title>api-gateway: 32 of 3,528 lines first written in billing-service (0.9%)</title></rect>
-<rect class="b0" x="205" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,528 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,528 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="198" width="30" height="30" rx="3"><title>api-gateway: 2,240 of 3,528 lines first written in platform (63.5%)</title></rect>
+<rect class="b1" x="173" y="198" width="30" height="30" rx="3"><title>api-gateway: 32 of 3,535 lines first written in billing-service (0.9%)</title></rect>
+<rect class="b0" x="205" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,535 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="198" width="30" height="30" rx="3"><title>api-gateway: 0 of 3,535 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="198" width="30" height="30" rx="3"><title>api-gateway: 2,240 of 3,535 lines first written in platform (63.4%)</title></rect>
 <text class="value t8" x="284" y="217" pointer-events="none">63</text>
-<rect class="b2" x="301" y="198" width="30" height="30" rx="3"><title>api-gateway: 64 of 3,528 lines first written in web-frontend (1.8%)</title></rect>
+<rect class="b2" x="301" y="198" width="30" height="30" rx="3"><title>api-gateway: 64 of 3,535 lines first written in web-frontend (1.8%)</title></rect>
 <text class="value t2" x="316" y="217" pointer-events="none">2</text>
 <text class="axis" x="131" y="249" text-anchor="end">billing-service</text>
-<rect class="b5" x="141" y="230" width="30" height="30" rx="3"><title>billing-service: 251 of 2,089 lines first written in api-gateway (12.0%)</title></rect>
+<rect class="b5" x="141" y="230" width="30" height="30" rx="3"><title>billing-service: 256 of 2,096 lines first written in api-gateway (12.2%)</title></rect>
 <text class="value t5" x="156" y="249" pointer-events="none">12</text>
-<rect class="b6" x="173" y="230" width="30" height="30" rx="3"><title>billing-service: 427 of 2,089 lines first written in billing-service (20.4%)</title></rect>
+<rect class="b6" x="173" y="230" width="30" height="30" rx="3"><title>billing-service: 429 of 2,096 lines first written in billing-service (20.5%)</title></rect>
 <text class="value t6" x="188" y="249" pointer-events="none">20</text>
 <rect class="self" x="173.75" y="230.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b0" x="205" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,089 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,089 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="230" width="30" height="30" rx="3"><title>billing-service: 1,377 of 2,089 lines first written in platform (65.9%)</title></rect>
+<rect class="b0" x="205" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,096 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="230" width="30" height="30" rx="3"><title>billing-service: 0 of 2,096 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="230" width="30" height="30" rx="3"><title>billing-service: 1,377 of 2,096 lines first written in platform (65.7%)</title></rect>
 <text class="value t8" x="284" y="249" pointer-events="none">66</text>
-<rect class="b2" x="301" y="230" width="30" height="30" rx="3"><title>billing-service: 34 of 2,089 lines first written in web-frontend (1.6%)</title></rect>
+<rect class="b2" x="301" y="230" width="30" height="30" rx="3"><title>billing-service: 34 of 2,096 lines first written in web-frontend (1.6%)</title></rect>
 <text class="value t2" x="316" y="249" pointer-events="none">2</text>
 <text class="axis" x="131" y="281" text-anchor="end">data-pipeline</text>
-<rect class="b0" x="141" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in api-gateway (0.0%)</title></rect>
-<rect class="b0" x="173" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in billing-service (0.0%)</title></rect>
-<rect class="b8" x="205" y="262" width="30" height="30" rx="3"><title>data-pipeline: 2,202 of 3,189 lines first written in data-pipeline (69.0%)</title></rect>
+<rect class="b1" x="141" y="262" width="30" height="30" rx="3"><title>data-pipeline: 3 of 3,195 lines first written in api-gateway (0.1%)</title></rect>
+<rect class="b0" x="173" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,195 lines first written in billing-service (0.0%)</title></rect>
+<rect class="b8" x="205" y="262" width="30" height="30" rx="3"><title>data-pipeline: 2,205 of 3,195 lines first written in data-pipeline (69.0%)</title></rect>
 <text class="value t8" x="220" y="281" pointer-events="none">69</text>
 <rect class="self" x="205.75" y="262.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b0" x="237" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b6" x="269" y="262" width="30" height="30" rx="3"><title>data-pipeline: 987 of 3,189 lines first written in platform (31.0%)</title></rect>
+<rect class="b0" x="237" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,195 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b6" x="269" y="262" width="30" height="30" rx="3"><title>data-pipeline: 987 of 3,195 lines first written in platform (30.9%)</title></rect>
 <text class="value t6" x="284" y="281" pointer-events="none">31</text>
-<rect class="b0" x="301" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,189 lines first written in web-frontend (0.0%)</title></rect>
+<rect class="b0" x="301" y="262" width="30" height="30" rx="3"><title>data-pipeline: 0 of 3,195 lines first written in web-frontend (0.0%)</title></rect>
 <text class="axis" x="131" y="313" text-anchor="end">infra-config</text>
-<rect class="b0" x="141" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in api-gateway (0.0%)</title></rect>
-<rect class="b0" x="173" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in billing-service (0.0%)</title></rect>
-<rect class="b0" x="205" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b8" x="237" y="294" width="30" height="30" rx="3"><title>infra-config: 305 of 365 lines first written in infra-config (83.6%)</title></rect>
-<text class="value t8" x="252" y="313" pointer-events="none">84</text>
+<rect class="b1" x="141" y="294" width="30" height="30" rx="3"><title>infra-config: 3 of 370 lines first written in api-gateway (0.8%)</title></rect>
+<rect class="b0" x="173" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 370 lines first written in billing-service (0.0%)</title></rect>
+<rect class="b0" x="205" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 370 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b8" x="237" y="294" width="30" height="30" rx="3"><title>infra-config: 307 of 370 lines first written in infra-config (83.0%)</title></rect>
+<text class="value t8" x="252" y="313" pointer-events="none">83</text>
 <rect class="self" x="237.75" y="294.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b5" x="269" y="294" width="30" height="30" rx="3"><title>infra-config: 60 of 365 lines first written in platform (16.4%)</title></rect>
+<rect class="b5" x="269" y="294" width="30" height="30" rx="3"><title>infra-config: 60 of 370 lines first written in platform (16.2%)</title></rect>
 <text class="value t5" x="284" y="313" pointer-events="none">16</text>
-<rect class="b0" x="301" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 365 lines first written in web-frontend (0.0%)</title></rect>
+<rect class="b0" x="301" y="294" width="30" height="30" rx="3"><title>infra-config: 0 of 370 lines first written in web-frontend (0.0%)</title></rect>
 <text class="axis" x="131" y="345" text-anchor="end">platform</text>
-<rect class="b5" x="141" y="326" width="30" height="30" rx="3"><title>platform: 848 of 4,551 lines first written in api-gateway (18.6%)</title></rect>
+<rect class="b5" x="141" y="326" width="30" height="30" rx="3"><title>platform: 853 of 4,558 lines first written in api-gateway (18.7%)</title></rect>
 <text class="value t5" x="156" y="345" pointer-events="none">19</text>
-<rect class="b1" x="173" y="326" width="30" height="30" rx="3"><title>platform: 8 of 4,551 lines first written in billing-service (0.2%)</title></rect>
-<rect class="b0" x="205" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,551 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,551 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="326" width="30" height="30" rx="3"><title>platform: 3,643 of 4,551 lines first written in platform (80.0%)</title></rect>
+<rect class="b1" x="173" y="326" width="30" height="30" rx="3"><title>platform: 8 of 4,558 lines first written in billing-service (0.2%)</title></rect>
+<rect class="b0" x="205" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,558 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="326" width="30" height="30" rx="3"><title>platform: 0 of 4,558 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="326" width="30" height="30" rx="3"><title>platform: 3,645 of 4,558 lines first written in platform (80.0%)</title></rect>
 <text class="value t8" x="284" y="345" pointer-events="none">80</text>
 <rect class="self" x="269.75" y="326.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
-<rect class="b2" x="301" y="326" width="30" height="30" rx="3"><title>platform: 52 of 4,551 lines first written in web-frontend (1.1%)</title></rect>
+<rect class="b2" x="301" y="326" width="30" height="30" rx="3"><title>platform: 52 of 4,558 lines first written in web-frontend (1.1%)</title></rect>
 <text class="value t2" x="316" y="345" pointer-events="none">1</text>
 <text class="axis" x="131" y="377" text-anchor="end">web-frontend</text>
-<rect class="b5" x="141" y="358" width="30" height="30" rx="3"><title>web-frontend: 376 of 3,734 lines first written in api-gateway (10.1%)</title></rect>
+<rect class="b5" x="141" y="358" width="30" height="30" rx="3"><title>web-frontend: 381 of 3,741 lines first written in api-gateway (10.2%)</title></rect>
 <text class="value t5" x="156" y="377" pointer-events="none">10</text>
-<rect class="b2" x="173" y="358" width="30" height="30" rx="3"><title>web-frontend: 44 of 3,734 lines first written in billing-service (1.2%)</title></rect>
+<rect class="b2" x="173" y="358" width="30" height="30" rx="3"><title>web-frontend: 44 of 3,741 lines first written in billing-service (1.2%)</title></rect>
 <text class="value t2" x="188" y="377" pointer-events="none">1</text>
-<rect class="b0" x="205" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,734 lines first written in data-pipeline (0.0%)</title></rect>
-<rect class="b0" x="237" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,734 lines first written in infra-config (0.0%)</title></rect>
-<rect class="b8" x="269" y="358" width="30" height="30" rx="3"><title>web-frontend: 2,499 of 3,734 lines first written in platform (66.9%)</title></rect>
+<rect class="b0" x="205" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,741 lines first written in data-pipeline (0.0%)</title></rect>
+<rect class="b0" x="237" y="358" width="30" height="30" rx="3"><title>web-frontend: 0 of 3,741 lines first written in infra-config (0.0%)</title></rect>
+<rect class="b8" x="269" y="358" width="30" height="30" rx="3"><title>web-frontend: 2,499 of 3,741 lines first written in platform (66.8%)</title></rect>
 <text class="value t8" x="284" y="377" pointer-events="none">67</text>
-<rect class="b6" x="301" y="358" width="30" height="30" rx="3"><title>web-frontend: 815 of 3,734 lines first written in web-frontend (21.8%)</title></rect>
+<rect class="b6" x="301" y="358" width="30" height="30" rx="3"><title>web-frontend: 817 of 3,741 lines first written in web-frontend (21.8%)</title></rect>
 <text class="value t6" x="316" y="377" pointer-events="none">22</text>
 <rect class="self" x="301.75" y="358.75" width="28.5" height="28.5" rx="3" pointer-events="none"/>
 <text class="muted" x="141" y="416">% of the row repository's lines; outlined cells are the repository itself</text>
@@ -741,12 +745,12 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 </svg>
 </figure>
       <div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Repository</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Owned from other repos</th><th class="num" data-col="3">Owned by non-contributors</th><th class="" data-col="4">Largest outside source</th></tr></thead><tbody>
-<tr><td class="" data-sort="api-gateway"><a href="#repo-api-gateway">api-gateway</a></td><td class="num" data-sort="3528">3,528</td><td class="num" data-sort="0.6621315192743764">66.2%</td><td class="num" data-sort="0.5742630385487528">57.4%</td><td class="" data-sort="0.6349206349206349">platform (63.5%)</td></tr>
-<tr><td class="" data-sort="billing-service"><a href="#repo-billing-service">billing-service</a></td><td class="num" data-sort="2089">2,089</td><td class="num" data-sort="0.7955959789372906">79.6%</td><td class="num" data-sort="0.10962182862613691">11.0%</td><td class="" data-sort="0.659167065581618">platform (65.9%)</td></tr>
-<tr><td class="" data-sort="data-pipeline"><a href="#repo-data-pipeline">data-pipeline</a></td><td class="num" data-sort="3189">3,189</td><td class="num" data-sort="0.30950141110065854">31.0%</td><td class="num" data-sort="0">0.0%</td><td class="" data-sort="0.30950141110065854">platform (31.0%)</td></tr>
-<tr><td class="" data-sort="infra-config"><a href="#repo-infra-config">infra-config</a></td><td class="num" data-sort="365">365</td><td class="num" data-sort="0.1643835616438356">16.4%</td><td class="num" data-sort="0">0.0%</td><td class="" data-sort="0.1643835616438356">platform (16.4%)</td></tr>
-<tr><td class="" data-sort="platform"><a href="#repo-platform">platform</a></td><td class="num" data-sort="4551">4,551</td><td class="num" data-sort="0.1995165897604922">20.0%</td><td class="num" data-sort="0.0008789277081960009">0.1%</td><td class="" data-sort="0.1863326741375522">api-gateway (18.6%)</td></tr>
-<tr><td class="" data-sort="web-frontend"><a href="#repo-web-frontend">web-frontend</a></td><td class="num" data-sort="3734">3,734</td><td class="num" data-sort="0.7817354043920729">78.2%</td><td class="num" data-sort="0.003749330476700589">0.4%</td><td class="" data-sort="0.6692554900910551">platform (66.9%)</td></tr>
+<tr><td class="" data-sort="api-gateway"><a href="#repo-api-gateway">api-gateway</a></td><td class="num" data-sort="3535">3,535</td><td class="num" data-sort="0.6608203677510608">66.1%</td><td class="num" data-sort="0.5731258840169732">57.3%</td><td class="" data-sort="0.6336633663366337">platform (63.4%)</td></tr>
+<tr><td class="" data-sort="billing-service"><a href="#repo-billing-service">billing-service</a></td><td class="num" data-sort="2096">2,096</td><td class="num" data-sort="0.795324427480916">79.5%</td><td class="num" data-sort="0.10925572519083969">10.9%</td><td class="" data-sort="0.6569656488549618">platform (65.7%)</td></tr>
+<tr><td class="" data-sort="data-pipeline"><a href="#repo-data-pipeline">data-pipeline</a></td><td class="num" data-sort="3195">3,195</td><td class="num" data-sort="0.30985915492957744">31.0%</td><td class="num" data-sort="0">0.0%</td><td class="" data-sort="0.3089201877934272">platform (30.9%)</td></tr>
+<tr><td class="" data-sort="infra-config"><a href="#repo-infra-config">infra-config</a></td><td class="num" data-sort="370">370</td><td class="num" data-sort="0.17027027027027028">17.0%</td><td class="num" data-sort="0">0.0%</td><td class="" data-sort="0.16216216216216217">platform (16.2%)</td></tr>
+<tr><td class="" data-sort="platform"><a href="#repo-platform">platform</a></td><td class="num" data-sort="4558">4,558</td><td class="num" data-sort="0.20030715225976306">20.0%</td><td class="num" data-sort="0.0008775778850372971">0.1%</td><td class="" data-sort="0.1871434839842036">api-gateway (18.7%)</td></tr>
+<tr><td class="" data-sort="web-frontend"><a href="#repo-web-frontend">web-frontend</a></td><td class="num" data-sort="3741">3,741</td><td class="num" data-sort="0.7816091954022989">78.2%</td><td class="num" data-sort="0.0037423148890670943">0.4%</td><td class="" data-sort="0.6680032076984763">platform (66.8%)</td></tr>
 </tbody></table></div>
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p></section>
 <section class="r-section" id="three-ways-to-own-a-repository"><h2>Three ways to own a repository</h2>
@@ -754,15 +758,60 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
       line hash. Blame shows "-" until <code>bin/ownh.js blame</code> has covered every file (or every file of its sample).
       Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.</p>
       <div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Repository</th><th class="" data-col="1">By commits</th><th class="" data-col="2">By blame</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">Agree</th></tr></thead><tbody>
-<tr><td class="" data-sort=""><strong>All repositories</strong></td><td class="" data-sort="Rosa Garcia">Rosa Garcia <span class="r-dim">10.0%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">15.8%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">54.4%</span></td><td class="">no</td></tr>
-<tr><td class="" data-sort="api-gateway">api-gateway</td><td class="" data-sort="Juno Rasmussen">Juno Rasmussen <span class="r-dim">17.4%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">23.2%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">57.3%</span></td><td class="">no</td></tr>
-<tr><td class="" data-sort="billing-service">billing-service</td><td class="" data-sort="Freja Eriksen">Freja Eriksen <span class="r-dim">12.5%</span></td><td class="" data-sort="Juno Rasmussen">Juno Rasmussen <span class="r-dim">16.8%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">63.0%</span></td><td class="">no</td></tr>
-<tr><td class="" data-sort="data-pipeline">data-pipeline</td><td class="" data-sort="Rosa Garcia">Rosa Garcia <span class="r-dim">44.4%</span></td><td class="" data-sort="Rosa Garcia">Rosa Garcia <span class="r-dim">37.3%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">32.0%</span></td><td class="">no</td></tr>
-<tr><td class="" data-sort="infra-config">infra-config</td><td class="" data-sort="Yusuf Ulrich">Yusuf Ulrich <span class="r-dim">24.5%</span></td><td class="" data-sort="Cleo Bianchi">Cleo Bianchi <span class="r-dim">29.3%</span></td><td class="" data-sort="Greta Okafor">Greta Okafor <span class="r-dim">52.6%</span></td><td class="">no</td></tr>
-<tr><td class="" data-sort="platform">platform</td><td class="" data-sort="Pavel Rasmussen">Pavel Rasmussen <span class="r-dim">14.3%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">23.2%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">59.3%</span></td><td class="">no</td></tr>
-<tr><td class="" data-sort="web-frontend">web-frontend</td><td class="" data-sort="Juno Rasmussen">Juno Rasmussen <span class="r-dim">14.1%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">14.8%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">63.4%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort=""><strong>All repositories</strong></td><td class="" data-sort="Rosa Garcia">Rosa Garcia <span class="r-dim">9.9%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">15.8%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">54.2%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="api-gateway">api-gateway</td><td class="" data-sort="Juno Rasmussen">Juno Rasmussen <span class="r-dim">17.4%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">23.2%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">57.2%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="billing-service">billing-service</td><td class="" data-sort="Freja Eriksen">Freja Eriksen <span class="r-dim">12.4%</span></td><td class="" data-sort="Juno Rasmussen">Juno Rasmussen <span class="r-dim">16.7%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">62.8%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="data-pipeline">data-pipeline</td><td class="" data-sort="Rosa Garcia">Rosa Garcia <span class="r-dim">44.2%</span></td><td class="" data-sort="Rosa Garcia">Rosa Garcia <span class="r-dim">37.2%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">31.9%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="infra-config">infra-config</td><td class="" data-sort="Yusuf Ulrich">Yusuf Ulrich <span class="r-dim">24.4%</span></td><td class="" data-sort="Cleo Bianchi">Cleo Bianchi <span class="r-dim">28.9%</span></td><td class="" data-sort="Greta Okafor">Greta Okafor <span class="r-dim">51.9%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="platform">platform</td><td class="" data-sort="Pavel Rasmussen">Pavel Rasmussen <span class="r-dim">14.3%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">23.2%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">59.2%</span></td><td class="">no</td></tr>
+<tr><td class="" data-sort="web-frontend">web-frontend</td><td class="" data-sort="Juno Rasmussen">Juno Rasmussen <span class="r-dim">14.1%</span></td><td class="" data-sort="Fiona Format">Fiona Format <span class="r-dim">14.7%</span></td><td class="" data-sort="Ada Lindqvist">Ada Lindqvist <span class="r-dim">63.3%</span></td><td class="">no</td></tr>
 </tbody></table></div>
       <p class="r-note">The three methods agree on 0 of 6 repositories.</p></section>
+<section class="r-section" id="declared-ownership"><h2>Declared ownership</h2>
+    <p class="r-note">What CODEOWNERS declares, next to the top owner of the same lines by line hash and by <code>git blame</code>.</p>
+    
+    <h4>api-gateway</h4>
+    <p class="r-note">CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.</p>
+    <div class="r-scroll"><table class="r-table r-fixed"><colgroup><col style="width: 24%"><col style="width: 22%"><col style="width: 10%"><col style="width: 22%"><col style="width: 22%"></colgroup><thead><tr><th class="" data-col="0">Pattern</th><th class="" data-col="1">Declared owners</th><th class="num" data-col="2">Lines</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">By blame</th></tr></thead><tbody>
+<tr><td class="" data-sort="*.js"><code class="r-lit r-clip" title="*.js">*.js</code></td><td class="" data-sort="@acme/javascript-guild"><span class="r-nobr">@acme/javascript-guild</span></td><td class="num" data-sort="3512">3,512</td><td class="" data-sort="0.5746013667425968">Ada Lindqvist (57.5%)</td><td class="" data-sort="0.2332004555808656">Fiona Format (23.3%)</td></tr>
+<tr><td class="" data-sort="/package.json"><code class="r-lit r-clip" title="/package.json">/package.json</code></td><td class="" data-sort="@acme/dependency-council"><span class="r-nobr">@acme/dependency-council</span></td><td class="num" data-sort="16">16</td><td class="" data-sort="0.625">depbot[bot] (62.5%)</td><td class="" data-sort="0.625">depbot[bot] (62.5%)</td></tr>
+<tr><td class="" data-sort="*"><code class="r-lit r-clip" title="*">*</code></td><td class="" data-sort="@acme/architecture"><span class="r-nobr">@acme/architecture</span></td><td class="num" data-sort="7">7</td><td class="" data-sort="1">Petra Process (100.0%)</td><td class="" data-sort="1">Petra Process (100.0%)</td></tr>
+</tbody></table></div>
+    <h4>billing-service</h4>
+    <p class="r-note">CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.</p>
+    <div class="r-scroll"><table class="r-table r-fixed"><colgroup><col style="width: 24%"><col style="width: 22%"><col style="width: 10%"><col style="width: 22%"><col style="width: 22%"></colgroup><thead><tr><th class="" data-col="0">Pattern</th><th class="" data-col="1">Declared owners</th><th class="num" data-col="2">Lines</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">By blame</th></tr></thead><tbody>
+<tr><td class="" data-sort="*.js"><code class="r-lit r-clip" title="*.js">*.js</code></td><td class="" data-sort="@acme/javascript-guild"><span class="r-nobr">@acme/javascript-guild</span></td><td class="num" data-sort="2073">2,073</td><td class="" data-sort="0.6309696092619392">Ada Lindqvist (63.1%)</td><td class="" data-sort="0.16449589966232514">Juno Rasmussen (16.4%)</td></tr>
+<tr><td class="" data-sort="/package.json"><code class="r-lit r-clip" title="/package.json">/package.json</code></td><td class="" data-sort="@acme/dependency-council"><span class="r-nobr">@acme/dependency-council</span></td><td class="num" data-sort="16">16</td><td class="" data-sort="0.5">Ada Lindqvist (50.0%)</td><td class="" data-sort="0.5625">Juno Rasmussen (56.3%)</td></tr>
+<tr><td class="" data-sort="*"><code class="r-lit r-clip" title="*">*</code></td><td class="" data-sort="@acme/architecture"><span class="r-nobr">@acme/architecture</span></td><td class="num" data-sort="7">7</td><td class="" data-sort="1">Petra Process (100.0%)</td><td class="" data-sort="1">Petra Process (100.0%)</td></tr>
+</tbody></table></div>
+    <h4>data-pipeline</h4>
+    <p class="r-note">CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 2 rules match lines; 3 rules match nothing.</p>
+    <div class="r-scroll"><table class="r-table r-fixed"><colgroup><col style="width: 24%"><col style="width: 22%"><col style="width: 10%"><col style="width: 22%"><col style="width: 22%"></colgroup><thead><tr><th class="" data-col="0">Pattern</th><th class="" data-col="1">Declared owners</th><th class="num" data-col="2">Lines</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">By blame</th></tr></thead><tbody>
+<tr><td class="" data-sort="*.py"><code class="r-lit r-clip" title="*.py">*.py</code></td><td class="" data-sort="@acme/python-guild"><span class="r-nobr">@acme/python-guild</span></td><td class="num" data-sort="3189">3,189</td><td class="" data-sort="0.3198494825964252">Ada Lindqvist (32.0%)</td><td class="" data-sort="0.37253057384760113">Rosa Garcia (37.3%)</td></tr>
+<tr><td class="" data-sort="*"><code class="r-lit r-clip" title="*">*</code></td><td class="" data-sort="@acme/architecture"><span class="r-nobr">@acme/architecture</span></td><td class="num" data-sort="6">6</td><td class="" data-sort="1">Petra Process (100.0%)</td><td class="" data-sort="1">Petra Process (100.0%)</td></tr>
+</tbody></table></div>
+    <h4>infra-config</h4>
+    <p class="r-note">CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 2 rules match lines; 2 rules match nothing.</p>
+    <div class="r-scroll"><table class="r-table r-fixed"><colgroup><col style="width: 24%"><col style="width: 22%"><col style="width: 10%"><col style="width: 22%"><col style="width: 22%"></colgroup><thead><tr><th class="" data-col="0">Pattern</th><th class="" data-col="1">Declared owners</th><th class="num" data-col="2">Lines</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">By blame</th></tr></thead><tbody>
+<tr><td class="" data-sort="/deploy/"><code class="r-lit r-clip" title="/deploy/">/deploy/</code></td><td class="" data-sort="@acme/infra-config-team @acme/sre"><span class="r-nobr">@acme/infra-config-team</span> <span class="r-nobr">@acme/sre</span></td><td class="num" data-sort="365">365</td><td class="" data-sort="0.5260273972602739">Greta Okafor (52.6%)</td><td class="" data-sort="0.29315068493150687">Cleo Bianchi (29.3%)</td></tr>
+<tr><td class="" data-sort="*"><code class="r-lit r-clip" title="*">*</code></td><td class="" data-sort="@acme/architecture"><span class="r-nobr">@acme/architecture</span></td><td class="num" data-sort="5">5</td><td class="" data-sort="1">Petra Process (100.0%)</td><td class="" data-sort="1">Petra Process (100.0%)</td></tr>
+</tbody></table></div>
+    <h4>platform</h4>
+    <p class="r-note">CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.</p>
+    <div class="r-scroll"><table class="r-table r-fixed"><colgroup><col style="width: 24%"><col style="width: 22%"><col style="width: 10%"><col style="width: 22%"><col style="width: 22%"></colgroup><thead><tr><th class="" data-col="0">Pattern</th><th class="" data-col="1">Declared owners</th><th class="num" data-col="2">Lines</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">By blame</th></tr></thead><tbody>
+<tr><td class="" data-sort="*.js"><code class="r-lit r-clip" title="*.js">*.js</code></td><td class="" data-sort="@acme/javascript-guild"><span class="r-nobr">@acme/javascript-guild</span></td><td class="num" data-sort="4535">4,535</td><td class="" data-sort="0.5936052921719955">Ada Lindqvist (59.4%)</td><td class="" data-sort="0.2330760749724366">Fiona Format (23.3%)</td></tr>
+<tr><td class="" data-sort="/package.json"><code class="r-lit r-clip" title="/package.json">/package.json</code></td><td class="" data-sort="@acme/dependency-council"><span class="r-nobr">@acme/dependency-council</span></td><td class="num" data-sort="16">16</td><td class="" data-sort="0.625">depbot[bot] (62.5%)</td><td class="" data-sort="0.625">depbot[bot] (62.5%)</td></tr>
+<tr><td class="" data-sort="*"><code class="r-lit r-clip" title="*">*</code></td><td class="" data-sort="@acme/architecture"><span class="r-nobr">@acme/architecture</span></td><td class="num" data-sort="7">7</td><td class="" data-sort="1">Petra Process (100.0%)</td><td class="" data-sort="1">Petra Process (100.0%)</td></tr>
+</tbody></table></div>
+    <h4>web-frontend</h4>
+    <p class="r-note">CODEOWNERS: 100.0% of lines are covered by a rule, 0.0% by a rule that names no owner, and 0.0% by no rule. 3 rules match lines; 3 rules match nothing.</p>
+    <div class="r-scroll"><table class="r-table r-fixed"><colgroup><col style="width: 24%"><col style="width: 22%"><col style="width: 10%"><col style="width: 22%"><col style="width: 22%"></colgroup><thead><tr><th class="" data-col="0">Pattern</th><th class="" data-col="1">Declared owners</th><th class="num" data-col="2">Lines</th><th class="" data-col="3">By line hash</th><th class="" data-col="4">By blame</th></tr></thead><tbody>
+<tr><td class="" data-sort="*.js"><code class="r-lit r-clip" title="*.js">*.js</code></td><td class="" data-sort="@acme/javascript-guild"><span class="r-nobr">@acme/javascript-guild</span></td><td class="num" data-sort="3718">3,718</td><td class="" data-sort="0.634480903711673">Ada Lindqvist (63.4%)</td><td class="" data-sort="0.14819795589026358">Fiona Format (14.8%)</td></tr>
+<tr><td class="" data-sort="/package.json"><code class="r-lit r-clip" title="/package.json">/package.json</code></td><td class="" data-sort="@acme/dependency-council"><span class="r-nobr">@acme/dependency-council</span></td><td class="num" data-sort="16">16</td><td class="" data-sort="0.5">Ada Lindqvist (50.0%)</td><td class="" data-sort="0.5">Ada Lindqvist (50.0%)</td></tr>
+<tr><td class="" data-sort="*"><code class="r-lit r-clip" title="*">*</code></td><td class="" data-sort="@acme/architecture"><span class="r-nobr">@acme/architecture</span></td><td class="num" data-sort="7">7</td><td class="" data-sort="1">Petra Process (100.0%)</td><td class="" data-sort="1">Petra Process (100.0%)</td></tr>
+</tbody></table></div>
+    
+    <p class="r-note">Each line at head is assigned to the last CODEOWNERS rule that matches its file, as GitHub does. Blame per rule is shown for fully blamed repositories only.</p></section>
 <section class="r-section" id="leverage"><h2>Leverage</h2>
     <p class="r-note">Lines owned today for every line written. Identical lines are owned by whoever wrote them first, so one line written can be many lines owned.</p>
     <h4>Highest leverage</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Owner</th><th class="num" data-col="1">Lines written</th><th class="num" data-col="2">Lines owned</th><th class="num" data-col="3">Owned per line written</th></tr></thead><tbody>
@@ -790,7 +839,7 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="">Zora Costa &lt;zora.costa@example.com&gt;</td><td class="num" data-sort="831">831</td><td class="num" data-sort="115">115</td><td class="num" data-sort="0.13838748495788206">0.14</td></tr>
 </tbody></table></div></section>
 <section class="r-section" id="code-demolition"><h2>Code demolition</h2>
-    <p class="r-note">34,094 lines added and 16,620 removed in total; 15,896 of the removed lines (95.6%) belonged to someone other than the person removing them.</p>
+    <p class="r-note">34,133 lines added and 16,620 removed in total; 15,896 of the removed lines (95.6%) belonged to someone other than the person removing them.</p>
     <h4>Most lines removed that belonged to others</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Remover</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Own lines removed</th></tr></thead><tbody>
 <tr><td class="num" data-sort="1">1</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="5053">5,053</td><td class="num" data-sort="21">21</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Juno Rasmussen &lt;juno.rasmussen@example.com&gt;</td><td class="num" data-sort="1256">1,256</td><td class="num" data-sort="36">36</td></tr>
@@ -1040,7 +1089,7 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 </figure>
       <p class="r-note">Copies of the same line are indistinguishable, so removals are paired with the oldest surviving copies of that line first. Lines still present count as surviving at their current age. A half-life marked projected extends an exponential decay through the last point.</p></section>
 <section class="r-section" id="outlook"><h2>Outlook</h2>
-    <ul class="r-outlook"><li><b>Knowledge retention:</b> Contributors with no commit in the past year have owned the majority of the codebase since 2023 Q4 (now 76.3%).</li><li><b>Principal owner:</b> Ada Lindqvist has owned the majority of the codebase since 2025 Q3 (now 54.3%).</li><li><b>Blank lines:</b> 5,095 blank lines have been committed. At the current rate, the 10,000th arrives in 2031 Q4 (fit over 2023 Q3 to 2026 Q2, R² 0.99).</li></ul>
+    <ul class="r-outlook"><li><b>Knowledge retention:</b> Contributors with no commit in the past year have owned the majority of the codebase since 2023 Q4 (now 76.1%).</li><li><b>Principal owner:</b> Ada Lindqvist has owned the majority of the codebase since 2025 Q3 (now 54.1%).</li><li><b>Blank lines:</b> 5,095 blank lines have been committed. At the current rate, the 10,000th arrives in 2031 Q4 (fit over 2023 Q3 to 2026 Q2, R² 0.99).</li></ul>
     <div class="r-pair">
       <figure class="r-chart"><svg xmlns="http://www.w3.org/2000/svg" width="800" height="420" viewBox="0 0 800 420" role="img">
 <style>
@@ -1166,8 +1215,8 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <text class="muted" x="468.7" y="358">2026 Q2</text>
 <line class="target" x1="72" x2="630" y1="228.0" y2="228.0"/>
 <text class="muted" x="638" y="232.0">majority</text>
-<path class="trend ln1" d="M 72.0 364.0 L 92.7 364.0 L 113.3 352.0 L 134.0 354.7 L 154.7 355.7 L 175.3 364.0 L 196.0 352.6 L 216.7 336.1 L 237.3 338.2 L 258.0 165.0 L 278.7 173.4 L 299.3 176.7 L 320.0 174.6 L 340.7 169.6 L 361.3 168.5 L 382.0 154.4 L 402.7 152.0 L 423.3 151.0 L 444.0 154.7 L 464.7 156.5"/>
-<path class="trend projected ln1" d="M 464.7 156.5 L 485.3 148.0 L 506.0 139.5 L 526.7 131.0 L 547.3 122.5 L 568.0 114.0 L 588.7 105.5 L 609.3 97.0 L 630.0 92.0"/>
+<path class="trend ln1" d="M 72.0 364.0 L 92.7 364.0 L 113.3 352.0 L 134.0 354.7 L 154.7 355.7 L 175.3 364.0 L 196.0 352.6 L 216.7 336.1 L 237.3 338.2 L 258.0 165.0 L 278.7 173.4 L 299.3 176.7 L 320.0 174.6 L 340.7 169.6 L 361.3 168.5 L 382.0 154.4 L 402.7 152.0 L 423.3 151.0 L 444.0 154.7 L 464.7 157.0"/>
+<path class="trend projected ln1" d="M 464.7 157.0 L 485.3 148.5 L 506.0 140.0 L 526.7 131.5 L 547.3 123.0 L 568.0 114.5 L 588.7 106.0 L 609.3 97.6 L 630.0 92.0"/>
 <circle class="hit" cx="72.0" cy="364.0" r="6"><title>Inactive owners, 2021 Q3: 0%</title></circle>
 <circle class="hit" cx="92.7" cy="364.0" r="6"><title>Inactive owners, 2021 Q4: 0%</title></circle>
 <circle class="hit" cx="113.3" cy="352.0" r="6"><title>Inactive owners, 2022 Q1: 4%</title></circle>
@@ -1187,10 +1236,10 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <circle class="hit" cx="402.7" cy="152.0" r="6"><title>Inactive owners, 2025 Q3: 78%</title></circle>
 <circle class="hit" cx="423.3" cy="151.0" r="6"><title>Inactive owners, 2025 Q4: 78%</title></circle>
 <circle class="hit" cx="444.0" cy="154.7" r="6"><title>Inactive owners, 2026 Q1: 77%</title></circle>
-<circle class="hit" cx="464.7" cy="156.5" r="6"><title>Inactive owners, 2026 Q2: 76%</title></circle>
-<circle class="point rp1" cx="464.7" cy="156.5" r="4.5"/>
-<path class="trend ln2" d="M 72.0 154.2 L 92.7 161.0 L 113.3 172.9 L 134.0 176.9 L 154.7 177.8 L 175.3 179.4 L 196.0 181.6 L 216.7 181.7 L 237.3 182.6 L 258.0 234.3 L 278.7 249.3 L 299.3 255.6 L 320.0 248.2 L 340.7 239.6 L 361.3 234.1 L 382.0 228.7 L 402.7 224.9 L 423.3 221.6 L 444.0 218.2 L 464.7 216.4"/>
-<path class="trend projected ln2" d="M 464.7 216.4 L 485.3 215.8 L 506.0 215.1 L 526.7 214.5 L 547.3 213.9 L 568.0 213.2 L 588.7 212.6 L 609.3 211.9 L 630.0 211.3"/>
+<circle class="hit" cx="464.7" cy="157.0" r="6"><title>Inactive owners, 2026 Q2: 76%</title></circle>
+<circle class="point rp1" cx="464.7" cy="157.0" r="4.5"/>
+<path class="trend ln2" d="M 72.0 154.2 L 92.7 161.0 L 113.3 172.9 L 134.0 176.9 L 154.7 177.8 L 175.3 179.4 L 196.0 181.6 L 216.7 181.7 L 237.3 182.6 L 258.0 234.3 L 278.7 249.3 L 299.3 255.6 L 320.0 248.2 L 340.7 239.6 L 361.3 234.1 L 382.0 228.7 L 402.7 224.9 L 423.3 221.6 L 444.0 218.2 L 464.7 216.8"/>
+<path class="trend projected ln2" d="M 464.7 216.8 L 485.3 216.1 L 506.0 215.5 L 526.7 214.9 L 547.3 214.2 L 568.0 213.6 L 588.7 213.0 L 609.3 212.3 L 630.0 211.7"/>
 <circle class="hit" cx="72.0" cy="154.2" r="6"><title>Ada Lindqvist, 2021 Q3: 77%</title></circle>
 <circle class="hit" cx="92.7" cy="161.0" r="6"><title>Ada Lindqvist, 2021 Q4: 75%</title></circle>
 <circle class="hit" cx="113.3" cy="172.9" r="6"><title>Ada Lindqvist, 2022 Q1: 70%</title></circle>
@@ -1210,9 +1259,9 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <circle class="hit" cx="402.7" cy="224.9" r="6"><title>Ada Lindqvist, 2025 Q3: 51%</title></circle>
 <circle class="hit" cx="423.3" cy="221.6" r="6"><title>Ada Lindqvist, 2025 Q4: 52%</title></circle>
 <circle class="hit" cx="444.0" cy="218.2" r="6"><title>Ada Lindqvist, 2026 Q1: 54%</title></circle>
-<circle class="hit" cx="464.7" cy="216.4" r="6"><title>Ada Lindqvist, 2026 Q2: 54%</title></circle>
-<circle class="point rp2" cx="464.7" cy="216.4" r="4.5"/>
-<path class="trend ln3" d="M 72.0 324.4 L 92.7 325.9 L 113.3 325.6 L 134.0 317.6 L 154.7 314.4 L 175.3 313.6 L 196.0 315.4 L 216.7 318.9 L 237.3 319.1 L 258.0 318.5 L 278.7 342.1 L 299.3 332.7 L 320.0 330.8 L 340.7 329.9 L 361.3 329.5 L 382.0 329.0 L 402.7 330.1 L 423.3 329.2 L 444.0 329.2 L 464.7 328.7"/>
+<circle class="hit" cx="464.7" cy="216.8" r="6"><title>Ada Lindqvist, 2026 Q2: 54%</title></circle>
+<circle class="point rp2" cx="464.7" cy="216.8" r="4.5"/>
+<path class="trend ln3" d="M 72.0 324.4 L 92.7 325.9 L 113.3 325.6 L 134.0 317.6 L 154.7 314.4 L 175.3 313.6 L 196.0 315.4 L 216.7 318.9 L 237.3 319.1 L 258.0 318.5 L 278.7 342.1 L 299.3 332.7 L 320.0 330.8 L 340.7 329.9 L 361.3 329.5 L 382.0 329.0 L 402.7 330.1 L 423.3 329.2 L 444.0 329.2 L 464.7 328.8"/>
 <circle class="hit" cx="72.0" cy="324.4" r="6"><title>Non-contributors, 2021 Q3: 15%</title></circle>
 <circle class="hit" cx="92.7" cy="325.9" r="6"><title>Non-contributors, 2021 Q4: 14%</title></circle>
 <circle class="hit" cx="113.3" cy="325.6" r="6"><title>Non-contributors, 2022 Q1: 14%</title></circle>
@@ -1232,8 +1281,8 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <circle class="hit" cx="402.7" cy="330.1" r="6"><title>Non-contributors, 2025 Q3: 12%</title></circle>
 <circle class="hit" cx="423.3" cy="329.2" r="6"><title>Non-contributors, 2025 Q4: 13%</title></circle>
 <circle class="hit" cx="444.0" cy="329.2" r="6"><title>Non-contributors, 2026 Q1: 13%</title></circle>
-<circle class="hit" cx="464.7" cy="328.7" r="6"><title>Non-contributors, 2026 Q2: 13%</title></circle>
-<circle class="point rp3" cx="464.7" cy="328.7" r="4.5"/>
+<circle class="hit" cx="464.7" cy="328.8" r="6"><title>Non-contributors, 2026 Q2: 13%</title></circle>
+<circle class="point rp3" cx="464.7" cy="328.8" r="4.5"/>
 <line class="trend ln1" x1="72" x2="90" y1="404" y2="404"/>
 <text class="label" x="96" y="408">Inactive owners</text>
 <line class="trend ln2" x1="236.5" x2="254.5" y1="404" y2="404"/>
@@ -1406,58 +1455,60 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="" data-sort="2025 Q3">2025 Q3</td><td class="num" data-sort="15506">15,506</td><td class="num" data-sort="0.048694711213309816"><span class="r-up">▲ +4.9%</span></td><td class="num" data-sort="3">3</td><td class="num" data-sort="0.5115439184831678">51.2%</td><td class="num" data-sort="0.12446794789113891">12.4%</td><td class="num" data-sort="0.7794402166903134">77.9%</td><td class="num" data-sort="4328">4,328</td></tr>
 <tr><td class="" data-sort="2025 Q4">2025 Q4</td><td class="num" data-sort="15709">15,709</td><td class="num" data-sort="0.013091706436218153"><span class="r-up">▲ +1.3%</span></td><td class="num" data-sort="0">0</td><td class="num" data-sort="0.5235215481571074">52.4%</td><td class="num" data-sort="0.12807944490419504">12.8%</td><td class="num" data-sort="0.7829906423069578">78.3%</td><td class="num" data-sort="4525">4,525</td></tr>
 <tr><td class="" data-sort="2026 Q1">2026 Q1</td><td class="num" data-sort="16737">16,737</td><td class="num" data-sort="0.06544019351963848"><span class="r-up">▲ +6.5%</span></td><td class="num" data-sort="0">0</td><td class="num" data-sort="0.5358785923403239">53.6%</td><td class="num" data-sort="0.12809942044571906">12.8%</td><td class="num" data-sort="0.76961223636255">77.0%</td><td class="num" data-sort="4843">4,843</td></tr>
-<tr><td class="" data-sort="2026 Q2">2026 Q2</td><td class="num" data-sort="17474">17,474</td><td class="num" data-sort="0.04403417577821589"><span class="r-up">▲ +4.4%</span></td><td class="num" data-sort="0">0</td><td class="num" data-sort="0.5425203158979055">54.3%</td><td class="num" data-sort="0.12985006295066956">13.0%</td><td class="num" data-sort="0.7627904314982259">76.3%</td><td class="num" data-sort="5095">5,095</td></tr>
+<tr><td class="" data-sort="2026 Q2">2026 Q2</td><td class="num" data-sort="17513">17,513</td><td class="num" data-sort="0.046364342474756626"><span class="r-up">▲ +4.6%</span></td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.5413121681036944">54.1%</td><td class="num" data-sort="0.12956089761891165">13.0%</td><td class="num" data-sort="0.7610917604065551">76.1%</td><td class="num" data-sort="5095">5,095</td></tr>
 </tbody></table></div>
-    <p class="r-note">Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,474 lines against 17,456 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. &quot;Inactive&quot; means no commit in the current or previous three quarters. &quot;Now&quot; is the quarter of the newest commit analyzed.</p></section>
+    <p class="r-note">Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,513 lines against 17,495 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. &quot;Inactive&quot; means no commit in the current or previous three quarters. &quot;Now&quot; is the quarter of the newest commit analyzed.</p></section>
 <section class="r-section" id="okr-draft"><h2><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
 <path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> OKR draft</h2><div class="r-ai">
-    <p><b>Objective:</b> Improve ownership resilience and measurement consistency across the portfolio.</p>
-    <ul class="r-outlook"><li><b>KR1</b> <span class="r-status r-risk">at risk</span> Lower principal-owner concentration from the 2026 Q2 baseline of 54.3%, which rose from 51.2% at 2025 Q3.</li><li><b>KR2</b> <span class="r-status r-risk">at risk</span> Reduce inactive-owner share from the 2026 Q2 baseline of 76.3%; it has eased from 77.9% at 2025 Q3 but remains a majority, held since 2023 Q4.</li><li><b>KR3</b> <span class="r-status r-off">off track</span> Increase ownership-method agreement from a baseline of no repositories at 2026 Q2.</li></ul>
+    <p><b>Objective:</b> Build a more balanced and consistent ownership profile across repositories.</p>
+    <ul class="r-outlook"><li><b>KR1</b> <span class="r-status r-off">off track</span> Reduce principal-owner concentration from 54.1% at 2026 Q2, after it rose from 51.2% at 2025 Q3.</li><li><b>KR2</b> <span class="r-status r-risk">at risk</span> Lower the inactive-owner share from 76.1% at 2026 Q2, after easing from 77.9% at 2025 Q3, while the majority has persisted since 2023 Q4.</li><li><b>KR3</b> <span class="r-status r-off">off track</span> Increase method agreement from a baseline of no repositories.</li></ul>
     <p class="r-ai-label"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
 <path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine.</p></div></section>
 <section class="r-section" id="ownership-archetypes"><h2>Ownership archetypes</h2><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Archetype</th><th class="" data-col="1">Rule</th><th class="num" data-col="2">Owners</th><th class="num" data-col="3">Share of lines</th><th class="" data-col="4">Examples</th></tr></thead><tbody>
-<tr><td class="" data-sort="Lead Owner"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<tr><td class="" data-sort="Dominant Steward"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
-<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Lead Owner</b></td><td class="">The single owner with the most lines.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.5436526122823098">54.4%</td><td class="">Ada Lindqvist</td></tr>
-<tr><td class="" data-sort="Dormant Contributors"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Dominant Steward</b></td><td class="">The single owner with the most lines.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.5424406973420978">54.2%</td><td class="">Ada Lindqvist</td></tr>
+<tr><td class="" data-sort="Dormant Majority"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
-<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Dormant Contributors</b></td><td class="">Owners with no commit in the last 4 quarters.</td><td class="num" data-sort="12">12</td><td class="num" data-sort="0.7638634280476627">76.4%</td><td class="">Ada Lindqvist, Mira Quist, Fiona Format</td></tr>
-<tr><td class="" data-sort="Aggressive Pruners"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Dormant Majority</b></td><td class="">Owners with no commit in the last 4 quarters.</td><td class="num" data-sort="12">12</td><td class="num" data-sort="0.762160617319234">76.2%</td><td class="">Ada Lindqvist, Mira Quist, Fiona Format</td></tr>
+<tr><td class="" data-sort="High-Impact Removers"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
-<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Aggressive Pruners</b></td><td class="">People who removed more lines belonging to others than they own.</td><td class="num" data-sort="32">32</td><td class="num" data-sort="0.26243125572868925">26.2%</td><td class="">Fiona Format, Rosa Garcia, Juno Rasmussen</td></tr>
-<tr><td class="" data-sort="Automated Steward"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>High-Impact Removers</b></td><td class="">People who removed more lines belonging to others than they own.</td><td class="num" data-sort="32">32</td><td class="num" data-sort="0.2618462417833667">26.2%</td><td class="">Fiona Format, Rosa Garcia, Juno Rasmussen</td></tr>
+<tr><td class="" data-sort="Automated Owner"><svg class="r-sparkle" viewBox="0 0 24 24" role="img" aria-label="AI-generated"><title>AI-generated</title>
 <path fill="#7c5cf0" d="M10 2 C10.6 7.2 12.8 9.4 18 10 C12.8 10.6 10.6 12.8 10 18 C9.4 12.8 7.2 10.6 2 10 C7.2 9.4 9.4 7.2 10 2 Z"/>
 <path fill="#7c5cf0" d="M19 13 C19.3 15.4 20.6 16.7 23 17 C20.6 17.3 19.3 18.6 19 21 C18.7 18.6 17.4 17.3 15 17 C17.4 16.7 18.7 15.4 19 13 Z"/>
-<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Automated Steward</b></td><td class="">Automated accounts (bots) that own lines.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.0020050412465627866">0.2%</td><td class="">depbot[bot]</td></tr>
+<path fill="#7c5cf0" d="M18 1 C18.2 2.6 19.1 3.5 20.7 3.7 C19.1 3.9 18.2 4.8 18 6.4 C17.8 4.8 16.9 3.9 15.3 3.7 C16.9 3.5 17.8 2.6 18 1 Z"/></svg> <b>Automated Owner</b></td><td class="">Automated accounts (bots) that own lines.</td><td class="num" data-sort="1">1</td><td class="num" data-sort="0.002000571591883395">0.2%</td><td class="">depbot[bot]</td></tr>
 </tbody></table></div><p class="r-note">Archetype names written by AI; membership is computed by OWNH.</p></section>
 <section class="r-section" id="oddities"><h2>Oddities</h2><ul class="r-odd"><li><span class="r-odd-title">The most-owned line has no letters or digits.</span> <span class="r-odd-detail"><code class="r-lit">&quot;&quot;</code> appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform.</span></li>
-<li><span class="r-odd-title">6 of the top 15 lines are whitespace or punctuation.</span> <span class="r-odd-detail">Together they hold 38.8% of all lines: <code class="r-lit">&quot;&quot;</code>, <code class="r-lit">&quot;}&quot;</code>, <code class="r-lit">&quot;  }&quot;</code>, <code class="r-lit">&quot;    }&quot;</code>, <code class="r-lit">&quot;/*&quot;</code>, and 1 more.</span></li>
-<li><span class="r-odd-title">web-frontend was mostly written somewhere else.</span> <span class="r-odd-detail">66.9% of its lines were first written in platform; 21.8% in web-frontend itself.</span></li>
-<li><span class="r-odd-title">billing-service was mostly written somewhere else.</span> <span class="r-odd-detail">65.9% of its lines were first written in platform; 20.4% in billing-service itself.</span></li>
-<li><span class="r-odd-title">api-gateway was mostly written somewhere else.</span> <span class="r-odd-detail">63.5% of its lines were first written in platform; 33.8% in api-gateway itself.</span></li>
-<li><span class="r-odd-title">1 of 6 repositories is owned by someone who never committed to it.</span> <span class="r-odd-detail">api-gateway (Ada Lindqvist, 57.3%).</span></li>
-<li><span class="r-odd-title">In 1 repository, most lines belong to people who never committed there.</span> <span class="r-odd-detail">api-gateway (57.4%).</span></li>
+<li><span class="r-odd-title">6 of the top 15 lines are whitespace or punctuation.</span> <span class="r-odd-detail">Together they hold 38.7% of all lines: <code class="r-lit">&quot;&quot;</code>, <code class="r-lit">&quot;}&quot;</code>, <code class="r-lit">&quot;  }&quot;</code>, <code class="r-lit">&quot;    }&quot;</code>, <code class="r-lit">&quot;/*&quot;</code>, and 1 more.</span></li>
+<li><span class="r-odd-title">web-frontend was mostly written somewhere else.</span> <span class="r-odd-detail">66.8% of its lines were first written in platform; 21.8% in web-frontend itself.</span></li>
+<li><span class="r-odd-title">billing-service was mostly written somewhere else.</span> <span class="r-odd-detail">65.7% of its lines were first written in platform; 20.5% in billing-service itself.</span></li>
+<li><span class="r-odd-title">api-gateway was mostly written somewhere else.</span> <span class="r-odd-detail">63.4% of its lines were first written in platform; 33.9% in api-gateway itself.</span></li>
+<li><span class="r-odd-title">1 of 6 repositories is owned by someone who never committed to it.</span> <span class="r-odd-detail">api-gateway (Ada Lindqvist, 57.2%).</span></li>
+<li><span class="r-odd-title">In 1 repository, most lines belong to people who never committed there.</span> <span class="r-odd-detail">api-gateway (57.3%).</span></li>
 <li><span class="r-odd-title">Three methods, three owners, in 5 repositories.</span> <span class="r-odd-detail">api-gateway (Juno Rasmussen / Fiona Format / Ada Lindqvist), billing-service (Freja Eriksen / Juno Rasmussen / Ada Lindqvist), infra-config (Yusuf Ulrich / Cleo Bianchi / Greta Okafor), platform (Pavel Rasmussen / Fiona Format / Ada Lindqvist), web-frontend (Juno Rasmussen / Fiona Format / Ada Lindqvist).</span></li>
 <li><span class="r-odd-title">Fiona Format has removed 5,053 lines that belonged to others.</span> <span class="r-odd-detail">More than anyone else, against 21 of their own.</span></li>
 <li><span class="r-odd-title">The most-deleted line.</span> <span class="r-odd-detail"><code class="r-lit">&quot;  }&quot;</code> has been removed 1,562 times. It belongs to Ada Lindqvist.</span></li>
-<li><span class="r-odd-title">22,013 lines were added again after being deleted.</span> <span class="r-odd-detail">Each went straight back to its original owner (983 distinct lines).</span></li></ul></section>
+<li><span class="r-odd-title">22,013 lines were added again after being deleted.</span> <span class="r-odd-detail">Each went straight back to its original owner (983 distinct lines).</span></li>
+<li><span class="r-odd-title">8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year.</span> <span class="r-odd-detail">Together they cover 17,424 lines. Largest: <code class="r-lit">*.js</code> in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%; <code class="r-lit">*.js</code> in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%; <code class="r-lit">*.js</code> in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%; <code class="r-lit">*.py</code> in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%; <code class="r-lit">*.js</code> in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%; and 3 more.</span></li>
+<li><span class="r-odd-title">17 CODEOWNERS rules match no file, in 6 repositories.</span> <span class="r-odd-detail"><code class="r-lit">/src/</code> (api-gateway), <code class="r-lit">/legacy/</code> (api-gateway), <code class="r-lit">/docs/</code> (api-gateway), <code class="r-lit">/src/</code> (billing-service), <code class="r-lit">/legacy/</code> (billing-service), and 12 more.</span></li></ul></section>
 <section class="r-section" id="repositories"><h2>Repositories</h2>
       <details class="r-repo" id="repo-api-gateway">
         <summary><span class="r-repo-name">api-gateway</span>
-          <span class="r-meta">3,528 lines · 66.2% from other repos · 57.4% owned by non-contributors</span></summary>
+          <span class="r-meta">3,535 lines · 66.1% from other repos · 57.3% owned by non-contributors</span></summary>
         <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="2023">2,023</td><td class="num" data-sort="2023">57.3%</td><td class="">none</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="2023">2,023</td><td class="num" data-sort="2023">57.2%</td><td class="">none</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Mira Quist &lt;mira.quist@example.com&gt;</td><td class="num" data-sort="491">491</td><td class="num" data-sort="491">13.9%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="3">3</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="398">398</td><td class="num" data-sort="398">11.3%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class="">Juno Rasmussen &lt;juno.rasmussen@example.com&gt;</td><td class="num" data-sort="95">95</td><td class="num" data-sort="95">2.7%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="5">5</td><td class="">Hugo Varga &lt;hugo.varga@example.com&gt;</td><td class="num" data-sort="90">90</td><td class="num" data-sort="90">2.6%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class="">Hugo Varga &lt;hugo.varga@example.com&gt;</td><td class="num" data-sort="90">90</td><td class="num" data-sort="90">2.5%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="6">6</td><td class="">Nils Yilmaz &lt;nils.yilmaz@example.com&gt;</td><td class="num" data-sort="85">85</td><td class="num" data-sort="85">2.4%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="7">7</td><td class="">Dagny Petrov &lt;dagny.petrov@example.com&gt;</td><td class="num" data-sort="80">80</td><td class="num" data-sort="80">2.3%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="8">8</td><td class="">Sven Silva &lt;sven.silva@example.com&gt;</td><td class="num" data-sort="49">49</td><td class="num" data-sort="49">1.4%</td><td class="">yes</td></tr>
@@ -1470,7 +1521,7 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="15">15</td><td class="">Gustav Quist &lt;gustav.quist@example.com&gt;</td><td class="num" data-sort="9">9</td><td class="num" data-sort="9">0.3%</td><td class="">yes</td></tr>
 </tbody></table></div>
         <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
-<tr><td class="">platform</td><td class="num" data-sort="2240">2,240</td><td class="num" data-sort="2240">63.5%</td></tr>
+<tr><td class="">platform</td><td class="num" data-sort="2240">2,240</td><td class="num" data-sort="2240">63.4%</td></tr>
 <tr><td class="">web-frontend</td><td class="num" data-sort="64">64</td><td class="num" data-sort="64">1.8%</td></tr>
 <tr><td class="">billing-service</td><td class="num" data-sort="32">32</td><td class="num" data-sort="32">0.9%</td></tr>
 </tbody></table></div>
@@ -1478,15 +1529,15 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 
       <details class="r-repo" id="repo-billing-service">
         <summary><span class="r-repo-name">billing-service</span>
-          <span class="r-meta">2,089 lines · 79.6% from other repos · 11.0% owned by non-contributors</span></summary>
+          <span class="r-meta">2,096 lines · 79.5% from other repos · 10.9% owned by non-contributors</span></summary>
         <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="1316">1,316</td><td class="num" data-sort="1316">63.0%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="1316">1,316</td><td class="num" data-sort="1316">62.8%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Mira Quist &lt;mira.quist@example.com&gt;</td><td class="num" data-sort="213">213</td><td class="num" data-sort="213">10.2%</td><td class="">none</td></tr>
-<tr><td class="num" data-sort="3">3</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="133">133</td><td class="num" data-sort="133">6.4%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="133">133</td><td class="num" data-sort="133">6.3%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class="">Juno Rasmussen &lt;juno.rasmussen@example.com&gt;</td><td class="num" data-sort="61">61</td><td class="num" data-sort="61">2.9%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="5">5</td><td class="">Vera Tanaka &lt;vera.tanaka@example.com&gt;</td><td class="num" data-sort="60">60</td><td class="num" data-sort="60">2.9%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="6">6</td><td class="">Zora Costa &lt;zora.costa@example.com&gt;</td><td class="num" data-sort="49">49</td><td class="num" data-sort="49">2.3%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="7">7</td><td class="">Freja Eriksen &lt;freja.eriksen@example.com&gt;</td><td class="num" data-sort="45">45</td><td class="num" data-sort="45">2.2%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="7">7</td><td class="">Freja Eriksen &lt;freja.eriksen@example.com&gt;</td><td class="num" data-sort="45">45</td><td class="num" data-sort="45">2.1%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="8">8</td><td class="">Pavel Rasmussen &lt;pavel.rasmussen@example.com&gt;</td><td class="num" data-sort="24">24</td><td class="num" data-sort="24">1.1%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="9">9</td><td class="">Casper Dahl &lt;casper.dahl@example.com&gt;</td><td class="num" data-sort="21">21</td><td class="num" data-sort="21">1.0%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="10">10</td><td class="">Aron Okafor &lt;aron.okafor@example.com&gt;</td><td class="num" data-sort="20">20</td><td class="num" data-sort="20">1.0%</td><td class="">yes</td></tr>
@@ -1497,19 +1548,19 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="15">15</td><td class="">Ivar Fischer &lt;ivar.fischer@example.com&gt;</td><td class="num" data-sort="12">12</td><td class="num" data-sort="12">0.6%</td><td class="">yes</td></tr>
 </tbody></table></div>
         <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
-<tr><td class="">platform</td><td class="num" data-sort="1377">1,377</td><td class="num" data-sort="1377">65.9%</td></tr>
-<tr><td class="">api-gateway</td><td class="num" data-sort="251">251</td><td class="num" data-sort="251">12.0%</td></tr>
+<tr><td class="">platform</td><td class="num" data-sort="1377">1,377</td><td class="num" data-sort="1377">65.7%</td></tr>
+<tr><td class="">api-gateway</td><td class="num" data-sort="256">256</td><td class="num" data-sort="256">12.2%</td></tr>
 <tr><td class="">web-frontend</td><td class="num" data-sort="34">34</td><td class="num" data-sort="34">1.6%</td></tr>
 </tbody></table></div>
       </details>
 
       <details class="r-repo" id="repo-data-pipeline">
         <summary><span class="r-repo-name">data-pipeline</span>
-          <span class="r-meta">3,189 lines · 31.0% from other repos · 0.0% owned by non-contributors</span></summary>
+          <span class="r-meta">3,195 lines · 31.0% from other repos · 0.0% owned by non-contributors</span></summary>
         <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="1020">1,020</td><td class="num" data-sort="1020">32.0%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="2">2</td><td class="">Umar Lindqvist &lt;umar.lindqvist@example.com&gt;</td><td class="num" data-sort="979">979</td><td class="num" data-sort="979">30.7%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="3">3</td><td class="">Rosa Garcia &lt;rosa.garcia@example.com&gt;</td><td class="num" data-sort="423">423</td><td class="num" data-sort="423">13.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="1020">1,020</td><td class="num" data-sort="1020">31.9%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="2">2</td><td class="">Umar Lindqvist &lt;umar.lindqvist@example.com&gt;</td><td class="num" data-sort="979">979</td><td class="num" data-sort="979">30.6%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class="">Rosa Garcia &lt;rosa.garcia@example.com&gt;</td><td class="num" data-sort="423">423</td><td class="num" data-sort="423">13.2%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class="">Ines Dahl &lt;ines.dahl@example.com&gt;</td><td class="num" data-sort="180">180</td><td class="num" data-sort="180">5.6%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="5">5</td><td class="">Olga Fischer &lt;olga.fischer@example.com&gt;</td><td class="num" data-sort="125">125</td><td class="num" data-sort="125">3.9%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="6">6</td><td class="">Wim Bianchi &lt;wim.bianchi@example.com&gt;</td><td class="num" data-sort="118">118</td><td class="num" data-sort="118">3.7%</td><td class="">yes</td></tr>
@@ -1524,44 +1575,46 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="15">15</td><td class="">Jonas Petrov &lt;jonas.petrov@example.com&gt;</td><td class="num" data-sort="8">8</td><td class="num" data-sort="8">0.3%</td><td class="">yes</td></tr>
 </tbody></table></div>
         <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
-<tr><td class="">platform</td><td class="num" data-sort="987">987</td><td class="num" data-sort="987">31.0%</td></tr>
+<tr><td class="">platform</td><td class="num" data-sort="987">987</td><td class="num" data-sort="987">30.9%</td></tr>
+<tr><td class="">api-gateway</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">0.1%</td></tr>
 </tbody></table></div>
       </details>
 
       <details class="r-repo" id="repo-infra-config">
         <summary><span class="r-repo-name">infra-config</span>
-          <span class="r-meta">365 lines · 16.4% from other repos · 0.0% owned by non-contributors</span></summary>
+          <span class="r-meta">370 lines · 17.0% from other repos · 0.0% owned by non-contributors</span></summary>
         <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Greta Okafor &lt;greta.okafor@example.com&gt;</td><td class="num" data-sort="192">192</td><td class="num" data-sort="192">52.6%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="2">2</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="66">66</td><td class="num" data-sort="66">18.1%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="3">3</td><td class="">Yusuf Ulrich &lt;yusuf.ulrich@example.com&gt;</td><td class="num" data-sort="40">40</td><td class="num" data-sort="40">11.0%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="4">4</td><td class="">Juno Rasmussen &lt;juno.rasmussen@example.com&gt;</td><td class="num" data-sort="24">24</td><td class="num" data-sort="24">6.6%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Greta Okafor &lt;greta.okafor@example.com&gt;</td><td class="num" data-sort="192">192</td><td class="num" data-sort="192">51.9%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="2">2</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="66">66</td><td class="num" data-sort="66">17.8%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="3">3</td><td class="">Yusuf Ulrich &lt;yusuf.ulrich@example.com&gt;</td><td class="num" data-sort="40">40</td><td class="num" data-sort="40">10.8%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="4">4</td><td class="">Juno Rasmussen &lt;juno.rasmussen@example.com&gt;</td><td class="num" data-sort="24">24</td><td class="num" data-sort="24">6.5%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="5">5</td><td class="">Tove Andersen &lt;tove.andersen@example.com&gt;</td><td class="num" data-sort="14">14</td><td class="num" data-sort="14">3.8%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="6">6</td><td class="">Cleo Bianchi &lt;cleo.bianchi@example.com&gt;</td><td class="num" data-sort="13">13</td><td class="num" data-sort="13">3.6%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="7">7</td><td class="">Rosa Garcia &lt;rosa.garcia@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">0.8%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="8">8</td><td class="">Beatrix Varga &lt;beatrix.varga@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">0.5%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="9">9</td><td class="">Dmitri Moreau &lt;dmitri.moreau@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">0.5%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="10">10</td><td class="">Gustav Quist &lt;gustav.quist@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">0.5%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="11">11</td><td class="">Farid Costa &lt;farid.costa@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="12">12</td><td class="">Freja Eriksen &lt;freja.eriksen@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="13">13</td><td class="">Ivar Fischer &lt;ivar.fischer@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="14">14</td><td class="">Kaia Weber &lt;kaia.weber@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="15">15</td><td class="">Lars Eriksen &lt;lars.eriksen@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="6">6</td><td class="">Cleo Bianchi &lt;cleo.bianchi@example.com&gt;</td><td class="num" data-sort="13">13</td><td class="num" data-sort="13">3.5%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="7">7</td><td class="">Petra Process &lt;petra.process@example.com&gt;</td><td class="num" data-sort="5">5</td><td class="num" data-sort="5">1.4%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="8">8</td><td class="">Rosa Garcia &lt;rosa.garcia@example.com&gt;</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">0.8%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="9">9</td><td class="">Beatrix Varga &lt;beatrix.varga@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">0.5%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="10">10</td><td class="">Dmitri Moreau &lt;dmitri.moreau@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">0.5%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="11">11</td><td class="">Gustav Quist &lt;gustav.quist@example.com&gt;</td><td class="num" data-sort="2">2</td><td class="num" data-sort="2">0.5%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="12">12</td><td class="">Farid Costa &lt;farid.costa@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="13">13</td><td class="">Freja Eriksen &lt;freja.eriksen@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="14">14</td><td class="">Ivar Fischer &lt;ivar.fischer@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="15">15</td><td class="">Kaia Weber &lt;kaia.weber@example.com&gt;</td><td class="num" data-sort="1">1</td><td class="num" data-sort="1">0.3%</td><td class="">yes</td></tr>
 </tbody></table></div>
         <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
-<tr><td class="">platform</td><td class="num" data-sort="60">60</td><td class="num" data-sort="60">16.4%</td></tr>
+<tr><td class="">platform</td><td class="num" data-sort="60">60</td><td class="num" data-sort="60">16.2%</td></tr>
+<tr><td class="">api-gateway</td><td class="num" data-sort="3">3</td><td class="num" data-sort="3">0.8%</td></tr>
 </tbody></table></div>
       </details>
 
       <details class="r-repo" id="repo-platform">
         <summary><span class="r-repo-name">platform</span>
-          <span class="r-meta">4,551 lines · 20.0% from other repos · 0.1% owned by non-contributors</span></summary>
+          <span class="r-meta">4,558 lines · 20.0% from other repos · 0.1% owned by non-contributors</span></summary>
         <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="2698">2,698</td><td class="num" data-sort="2698">59.3%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="2698">2,698</td><td class="num" data-sort="2698">59.2%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Mira Quist &lt;mira.quist@example.com&gt;</td><td class="num" data-sort="775">775</td><td class="num" data-sort="775">17.0%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="3">3</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="364">364</td><td class="num" data-sort="364">8.0%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class="">Pavel Rasmussen &lt;pavel.rasmussen@example.com&gt;</td><td class="num" data-sort="125">125</td><td class="num" data-sort="125">2.7%</td><td class="">yes</td></tr>
-<tr><td class="num" data-sort="5">5</td><td class="">Kasimir Zeller &lt;kasimir.zeller@example.com&gt;</td><td class="num" data-sort="66">66</td><td class="num" data-sort="66">1.5%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="5">5</td><td class="">Kasimir Zeller &lt;kasimir.zeller@example.com&gt;</td><td class="num" data-sort="66">66</td><td class="num" data-sort="66">1.4%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="6">6</td><td class="">Ivar Fischer &lt;ivar.fischer@example.com&gt;</td><td class="num" data-sort="52">52</td><td class="num" data-sort="52">1.1%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="7">7</td><td class="">Freja Eriksen &lt;freja.eriksen@example.com&gt;</td><td class="num" data-sort="42">42</td><td class="num" data-sort="42">0.9%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="8">8</td><td class="">Vera Tanaka &lt;vera.tanaka@example.com&gt;</td><td class="num" data-sort="42">42</td><td class="num" data-sort="42">0.9%</td><td class="">yes</td></tr>
@@ -1574,7 +1627,7 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="15">15</td><td class="">Rosa Garcia &lt;rosa.garcia@example.com&gt;</td><td class="num" data-sort="23">23</td><td class="num" data-sort="23">0.5%</td><td class="">yes</td></tr>
 </tbody></table></div>
         <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
-<tr><td class="">api-gateway</td><td class="num" data-sort="848">848</td><td class="num" data-sort="848">18.6%</td></tr>
+<tr><td class="">api-gateway</td><td class="num" data-sort="853">853</td><td class="num" data-sort="853">18.7%</td></tr>
 <tr><td class="">web-frontend</td><td class="num" data-sort="52">52</td><td class="num" data-sort="52">1.1%</td></tr>
 <tr><td class="">billing-service</td><td class="num" data-sort="8">8</td><td class="num" data-sort="8">0.2%</td></tr>
 </tbody></table></div>
@@ -1582,9 +1635,9 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 
       <details class="r-repo" id="repo-web-frontend">
         <summary><span class="r-repo-name">web-frontend</span>
-          <span class="r-meta">3,734 lines · 78.2% from other repos · 0.4% owned by non-contributors</span></summary>
+          <span class="r-meta">3,741 lines · 78.2% from other repos · 0.4% owned by non-contributors</span></summary>
         <div class="r-scroll"><table class="r-table"><thead><tr><th class="num" data-col="0">Rank</th><th class="" data-col="1">Owner</th><th class="num" data-col="2">Lines</th><th class="num" data-col="3">Share</th><th class="" data-col="4">Commits here</th></tr></thead><tbody>
-<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="2367">2,367</td><td class="num" data-sort="2367">63.4%</td><td class="">yes</td></tr>
+<tr><td class="num" data-sort="1">1</td><td class="">Ada Lindqvist &lt;ada.lindqvist@example.com&gt;</td><td class="num" data-sort="2367">2,367</td><td class="num" data-sort="2367">63.3%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="2">2</td><td class="">Mira Quist &lt;mira.quist@example.com&gt;</td><td class="num" data-sort="377">377</td><td class="num" data-sort="377">10.1%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="3">3</td><td class="">Fiona Format &lt;fiona.format@example.com&gt;</td><td class="num" data-sort="216">216</td><td class="num" data-sort="216">5.8%</td><td class="">yes</td></tr>
 <tr><td class="num" data-sort="4">4</td><td class="">Juno Rasmussen &lt;juno.rasmussen@example.com&gt;</td><td class="num" data-sort="134">134</td><td class="num" data-sort="134">3.6%</td><td class="">yes</td></tr>
@@ -1601,8 +1654,8 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 <tr><td class="num" data-sort="15">15</td><td class="">Vera Tanaka &lt;vera.tanaka@example.com&gt;</td><td class="num" data-sort="16">16</td><td class="num" data-sort="16">0.4%</td><td class="">yes</td></tr>
 </tbody></table></div>
         <h4>Lines first written in other repositories</h4><div class="r-scroll"><table class="r-table"><thead><tr><th class="" data-col="0">Origin</th><th class="num" data-col="1">Lines</th><th class="num" data-col="2">Share of this repo</th></tr></thead><tbody>
-<tr><td class="">platform</td><td class="num" data-sort="2499">2,499</td><td class="num" data-sort="2499">66.9%</td></tr>
-<tr><td class="">api-gateway</td><td class="num" data-sort="376">376</td><td class="num" data-sort="376">10.1%</td></tr>
+<tr><td class="">platform</td><td class="num" data-sort="2499">2,499</td><td class="num" data-sort="2499">66.8%</td></tr>
+<tr><td class="">api-gateway</td><td class="num" data-sort="381">381</td><td class="num" data-sort="381">10.2%</td></tr>
 <tr><td class="">billing-service</td><td class="num" data-sort="44">44</td><td class="num" data-sort="44">1.2%</td></tr>
 </tbody></table></div>
       </details></section>

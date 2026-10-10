@@ -122,8 +122,8 @@
 <text class="muted" x="468.7" y="358">2026 Q2</text>
 <line class="target" x1="72" x2="630" y1="228.0" y2="228.0"/>
 <text class="muted" x="638" y="232.0">majority</text>
-<path class="trend ln1" d="M 72.0 364.0 L 92.7 364.0 L 113.3 352.0 L 134.0 354.7 L 154.7 355.7 L 175.3 364.0 L 196.0 352.6 L 216.7 336.1 L 237.3 338.2 L 258.0 165.0 L 278.7 173.4 L 299.3 176.7 L 320.0 174.6 L 340.7 169.6 L 361.3 168.5 L 382.0 154.4 L 402.7 152.0 L 423.3 151.0 L 444.0 154.7 L 464.7 156.5"/>
-<path class="trend projected ln1" d="M 464.7 156.5 L 485.3 148.0 L 506.0 139.5 L 526.7 131.0 L 547.3 122.5 L 568.0 114.0 L 588.7 105.5 L 609.3 97.0 L 630.0 92.0"/>
+<path class="trend ln1" d="M 72.0 364.0 L 92.7 364.0 L 113.3 352.0 L 134.0 354.7 L 154.7 355.7 L 175.3 364.0 L 196.0 352.6 L 216.7 336.1 L 237.3 338.2 L 258.0 165.0 L 278.7 173.4 L 299.3 176.7 L 320.0 174.6 L 340.7 169.6 L 361.3 168.5 L 382.0 154.4 L 402.7 152.0 L 423.3 151.0 L 444.0 154.7 L 464.7 157.0"/>
+<path class="trend projected ln1" d="M 464.7 157.0 L 485.3 148.5 L 506.0 140.0 L 526.7 131.5 L 547.3 123.0 L 568.0 114.5 L 588.7 106.0 L 609.3 97.6 L 630.0 92.0"/>
 <circle class="hit" cx="72.0" cy="364.0" r="6"><title>Inactive owners, 2021 Q3: 0%</title></circle>
 <circle class="hit" cx="92.7" cy="364.0" r="6"><title>Inactive owners, 2021 Q4: 0%</title></circle>
 <circle class="hit" cx="113.3" cy="352.0" r="6"><title>Inactive owners, 2022 Q1: 4%</title></circle>
@@ -143,10 +143,10 @@
 <circle class="hit" cx="402.7" cy="152.0" r="6"><title>Inactive owners, 2025 Q3: 78%</title></circle>
 <circle class="hit" cx="423.3" cy="151.0" r="6"><title>Inactive owners, 2025 Q4: 78%</title></circle>
 <circle class="hit" cx="444.0" cy="154.7" r="6"><title>Inactive owners, 2026 Q1: 77%</title></circle>
-<circle class="hit" cx="464.7" cy="156.5" r="6"><title>Inactive owners, 2026 Q2: 76%</title></circle>
-<circle class="point rp1" cx="464.7" cy="156.5" r="4.5"/>
-<path class="trend ln2" d="M 72.0 154.2 L 92.7 161.0 L 113.3 172.9 L 134.0 176.9 L 154.7 177.8 L 175.3 179.4 L 196.0 181.6 L 216.7 181.7 L 237.3 182.6 L 258.0 234.3 L 278.7 249.3 L 299.3 255.6 L 320.0 248.2 L 340.7 239.6 L 361.3 234.1 L 382.0 228.7 L 402.7 224.9 L 423.3 221.6 L 444.0 218.2 L 464.7 216.4"/>
-<path class="trend projected ln2" d="M 464.7 216.4 L 485.3 215.8 L 506.0 215.1 L 526.7 214.5 L 547.3 213.9 L 568.0 213.2 L 588.7 212.6 L 609.3 211.9 L 630.0 211.3"/>
+<circle class="hit" cx="464.7" cy="157.0" r="6"><title>Inactive owners, 2026 Q2: 76%</title></circle>
+<circle class="point rp1" cx="464.7" cy="157.0" r="4.5"/>
+<path class="trend ln2" d="M 72.0 154.2 L 92.7 161.0 L 113.3 172.9 L 134.0 176.9 L 154.7 177.8 L 175.3 179.4 L 196.0 181.6 L 216.7 181.7 L 237.3 182.6 L 258.0 234.3 L 278.7 249.3 L 299.3 255.6 L 320.0 248.2 L 340.7 239.6 L 361.3 234.1 L 382.0 228.7 L 402.7 224.9 L 423.3 221.6 L 444.0 218.2 L 464.7 216.8"/>
+<path class="trend projected ln2" d="M 464.7 216.8 L 485.3 216.1 L 506.0 215.5 L 526.7 214.9 L 547.3 214.2 L 568.0 213.6 L 588.7 213.0 L 609.3 212.3 L 630.0 211.7"/>
 <circle class="hit" cx="72.0" cy="154.2" r="6"><title>Ada Lindqvist, 2021 Q3: 77%</title></circle>
 <circle class="hit" cx="92.7" cy="161.0" r="6"><title>Ada Lindqvist, 2021 Q4: 75%</title></circle>
 <circle class="hit" cx="113.3" cy="172.9" r="6"><title>Ada Lindqvist, 2022 Q1: 70%</title></circle>
@@ -166,9 +166,9 @@
 <circle class="hit" cx="402.7" cy="224.9" r="6"><title>Ada Lindqvist, 2025 Q3: 51%</title></circle>
 <circle class="hit" cx="423.3" cy="221.6" r="6"><title>Ada Lindqvist, 2025 Q4: 52%</title></circle>
 <circle class="hit" cx="444.0" cy="218.2" r="6"><title>Ada Lindqvist, 2026 Q1: 54%</title></circle>
-<circle class="hit" cx="464.7" cy="216.4" r="6"><title>Ada Lindqvist, 2026 Q2: 54%</title></circle>
-<circle class="point rp2" cx="464.7" cy="216.4" r="4.5"/>
-<path class="trend ln3" d="M 72.0 324.4 L 92.7 325.9 L 113.3 325.6 L 134.0 317.6 L 154.7 314.4 L 175.3 313.6 L 196.0 315.4 L 216.7 318.9 L 237.3 319.1 L 258.0 318.5 L 278.7 342.1 L 299.3 332.7 L 320.0 330.8 L 340.7 329.9 L 361.3 329.5 L 382.0 329.0 L 402.7 330.1 L 423.3 329.2 L 444.0 329.2 L 464.7 328.7"/>
+<circle class="hit" cx="464.7" cy="216.8" r="6"><title>Ada Lindqvist, 2026 Q2: 54%</title></circle>
+<circle class="point rp2" cx="464.7" cy="216.8" r="4.5"/>
+<path class="trend ln3" d="M 72.0 324.4 L 92.7 325.9 L 113.3 325.6 L 134.0 317.6 L 154.7 314.4 L 175.3 313.6 L 196.0 315.4 L 216.7 318.9 L 237.3 319.1 L 258.0 318.5 L 278.7 342.1 L 299.3 332.7 L 320.0 330.8 L 340.7 329.9 L 361.3 329.5 L 382.0 329.0 L 402.7 330.1 L 423.3 329.2 L 444.0 329.2 L 464.7 328.8"/>
 <circle class="hit" cx="72.0" cy="324.4" r="6"><title>Non-contributors, 2021 Q3: 15%</title></circle>
 <circle class="hit" cx="92.7" cy="325.9" r="6"><title>Non-contributors, 2021 Q4: 14%</title></circle>
 <circle class="hit" cx="113.3" cy="325.6" r="6"><title>Non-contributors, 2022 Q1: 14%</title></circle>
@@ -188,8 +188,8 @@
 <circle class="hit" cx="402.7" cy="330.1" r="6"><title>Non-contributors, 2025 Q3: 12%</title></circle>
 <circle class="hit" cx="423.3" cy="329.2" r="6"><title>Non-contributors, 2025 Q4: 13%</title></circle>
 <circle class="hit" cx="444.0" cy="329.2" r="6"><title>Non-contributors, 2026 Q1: 13%</title></circle>
-<circle class="hit" cx="464.7" cy="328.7" r="6"><title>Non-contributors, 2026 Q2: 13%</title></circle>
-<circle class="point rp3" cx="464.7" cy="328.7" r="4.5"/>
+<circle class="hit" cx="464.7" cy="328.8" r="6"><title>Non-contributors, 2026 Q2: 13%</title></circle>
+<circle class="point rp3" cx="464.7" cy="328.8" r="4.5"/>
 <line class="trend ln1" x1="72" x2="90" y1="404" y2="404"/>
 <text class="label" x="96" y="408">Inactive owners</text>
 <line class="trend ln2" x1="236.5" x2="254.5" y1="404" y2="404"/>

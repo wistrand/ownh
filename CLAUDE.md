@@ -18,48 +18,54 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
                                               │
                                               └──> collectStats ──> summary, report
                                                                      ├─ owners, lines, pie, cross-repo heatmap
-                                                                     ├─ spider charts, three-way comparison
+                                                                     ├─ spider charts, three-way comparison, declared (CODEOWNERS)
                                                                      ├─ leverage, demolition, survival
                                                                      └─ outlook (projections), oddities
 ```
 
 ## Layout
 
-| Path                | Role                                                                                                                            |
-|---------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `bin/ownh.js`       | CLI: `index`, `add`, `summary`, `report`, `blame`                                                                               |
-| `src/indexer.js`    | history walk, first-introducer upsert, HEAD scoring                                                                             |
-| `src/git.js`        | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame`                                                           |
-| `src/exclude.js`    | exclude-file parsing, patterns to git pathspecs                                                                                 |
-| `ownh.exclude`      | optional default exclude list, git-ignored                                                                                      |
-| `src/db.js`         | SQLite schema (`node:sqlite`)                                                                                                   |
-| `src/hash.js`       | line and file hash                                                                                                              |
-| `src/stats.js`      | `collectStats`: every number summary and report show                                                                            |
-| `src/summary.js`    | plain-text summary                                                                                                              |
-| `src/report.js`     | report files: leaderboard.md, JSON, CSV                                                                                         |
-| `src/charts.js`     | SVG pie, cross-ownership heatmap, radar charts                                                                                  |
-| `src/oddities.js`   | "Oddities" report section: odd findings derived from the stats                                                                  |
-| `src/profiles.js`   | data for the radar charts (owner and repository profiles)                                                                       |
-| `src/timeline.js`   | quarterly series and projections for the report's Outlook                                                                       |
-| `src/outlook.js`    | Outlook statements and charts (shared by Markdown and HTML)                                                                     |
-| `src/churn.js`      | churn analyses: true ownership history, deletions, survival (Kaplan-Meier)                                                      |
-| `src/sections.js`   | leverage, code demolition, and code survival report pieces                                                                      |
-| `src/archetypes.js` | rule-based owner groups (principal, inactive, absentee, leverage, demolition, automation)                                       |
-| `src/ai.js`         | optional `--ai` prose: pseudonymized facts, OpenAI-compatible call (hosted or local), number guard, cache                       |
-| `src/html.js`       | self-contained report.html (inline charts, sortable tables)                                                                     |
-| `src/blame.js`      | `ownh blame`: git blame per HEAD file, parallel, resumable                                                                      |
-| `src/sample.js`     | deterministic blame file sample                                                                                                 |
-| `test/`             | fixture repo builder and `node:test` suite                                                                                      |
-| `docs/`             | pitch site, served at https://ownh.org (GitHub Pages)                                                                           |
-| `docs/CNAME`        | GitHub Pages custom domain (`ownh.org`); keep it                                                                                |
-| `docs/sample/`      | sample report of six generated demo repos (`scripts/demo-repos.js`); generated, run `npm run sample`                            |
-| `whitepaper/`       | LaTeX source of the method whitepaper; built to `docs/ownh-whitepaper.pdf`, never edit the PDF                                  |
-| `docs/og.png`       | link-preview image, rendered from `scripts/og.svg`                                                                              |
-| `scripts/`          | `build-sample.js`, `demo-repos.js` (sample), `build-whitepaper.js`, `og.svg` (preview), `screenshot.mjs` (headless Firefox)     |
-| `README.md`         | human-facing deadpan pitch and usage                                                                                            |
-| `LICENSE`           | Apache License 2.0 (canonical text, unmodified)                                                                                 |
-| `agent_docs/`       | architecture, research, design, gotchas (linked below)                                                                          |
-| `AGENTS.md`         | symlink to this file                                                                                                            |
+| Path                 | Role                                                                                                                        |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `bin/ownh.js`        | CLI: `index`, `add`, `summary`, `report`, `blame`                                                                           |
+| `src/indexer.js`     | history walk, first-introducer upsert, HEAD scoring                                                                         |
+| `src/git.js`         | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame`                                                       |
+| `src/exclude.js`     | exclude-file parsing, patterns to git pathspecs                                                                             |
+| `ownh.exclude`       | optional default exclude list, git-ignored                                                                                  |
+| `src/db.js`          | SQLite schema (`node:sqlite`)                                                                                               |
+| `src/hash.js`        | line and file hash                                                                                                          |
+| `src/stats.js`       | `collectStats`: every number summary and report show                                                                        |
+| `src/head.js`        | head-line passes cached as stats stages: owners per repo, top lines                                                         |
+| `src/blamecounts.js` | blame counts per repo (full or sampled), cached as a stats stage                                                            |
+| `src/rank.js`        | owner ranking helpers (`rankOwners`, `topOf`, `share`) shared by stats and stages                                           |
+| `src/stagecache.js`  | per-stage stats cache (`stats-cache.json`): code hash over a module's imports, cache file                                   |
+| `src/quarters.js`    | quarter numbers and labels (`QUARTER_SQL`, `quarterOf`, `quarterLabel`)                                                     |
+| `src/summary.js`     | plain-text summary                                                                                                          |
+| `src/report.js`      | report files: leaderboard.md, JSON, CSV                                                                                     |
+| `src/charts.js`      | SVG pie, cross-ownership heatmap, radar charts                                                                              |
+| `src/oddities.js`    | "Oddities" report section: odd findings derived from the stats                                                              |
+| `src/profiles.js`    | data for the radar charts (owner and repository profiles)                                                                   |
+| `src/timeline.js`    | quarterly series and projections for the report's Outlook                                                                   |
+| `src/outlook.js`     | Outlook statements and charts (shared by Markdown and HTML)                                                                 |
+| `src/churn.js`       | churn analyses: true ownership history, deletions, survival (Kaplan-Meier)                                                  |
+| `src/sections.js`    | leverage, code demolition, and code survival report pieces                                                                  |
+| `src/archetypes.js`  | rule-based owner groups (principal, inactive, absentee, leverage, demolition, automation)                                   |
+| `src/codeowners.js`  | CODEOWNERS parsing (GitHub rules) and declared ownership per rule, compared with line hash and blame                        |
+| `src/ai.js`          | optional `--ai` prose: pseudonymized facts, OpenAI-compatible call (hosted or local), number guard, cache                   |
+| `src/html.js`        | self-contained report.html (inline charts, sortable tables)                                                                 |
+| `src/blame.js`       | `ownh blame`: git blame per HEAD file, parallel, resumable                                                                  |
+| `src/sample.js`      | deterministic blame file sample                                                                                             |
+| `test/`              | fixture repo builder and `node:test` suite                                                                                  |
+| `docs/`              | pitch site, served at https://ownh.org (GitHub Pages)                                                                       |
+| `docs/CNAME`         | GitHub Pages custom domain (`ownh.org`); keep it                                                                            |
+| `docs/sample/`       | sample report of six generated demo repos (`scripts/demo-repos.js`); generated, run `npm run sample`                        |
+| `whitepaper/`        | LaTeX source of the method whitepaper; built to `docs/ownh-whitepaper.pdf`, never edit the PDF                              |
+| `docs/og.png`        | link-preview image, rendered from `scripts/og.svg`                                                                          |
+| `scripts/`           | `build-sample.js`, `demo-repos.js` (sample), `build-whitepaper.js`, `og.svg` (preview), `screenshot.mjs` (headless Firefox) |
+| `README.md`          | human-facing deadpan pitch and usage                                                                                        |
+| `LICENSE`            | Apache License 2.0 (canonical text, unmodified)                                                                             |
+| `agent_docs/`        | architecture, research, design, gotchas (linked below)                                                                      |
+| `AGENTS.md`          | symlink to this file                                                                                                        |
 
 The pitch site is `docs/index.html`, published by GitHub Pages from `docs/` on the
 default branch of https://github.com/wistrand/ownh to https://ownh.org (DNS at
@@ -75,7 +81,7 @@ per analysis; reports are generated from it.
 bin/ownh.js index --db out.db [--exclude-file f]... [--no-excludes] [--force] <repo>...
 bin/ownh.js add --db out.db [--exclude-file f]... [--no-excludes] <repo>...   # same excludes as the .db
 bin/ownh.js summary --db out.db [--top 10]
-bin/ownh.js report --db out.db [--out dir] [--top 20] [--ai | --ai-dry-run] [--no-cache]   # default out: report/out/; reuses stats-cache.json there
+bin/ownh.js report --db out.db [--out dir] [--top 20] [--ai | --ai-dry-run] [--no-cache]   # default out: report/out/; caches stats stages in stats-cache.json there
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
 npm test        # only when the user asks
 npm run sample  # regenerate docs/sample/ after changing report output

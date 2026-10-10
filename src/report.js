@@ -1,5 +1,4 @@
-import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { openDb } from './db.js';
 import { crossOwnershipSvg, lineSharePieSvg, radarSvg } from './charts.js';
@@ -10,7 +9,8 @@ import { kpiQuarter, outlookCharts, outlookNote, outlookStatements } from './out
 import { quarterOf } from './timeline.js';
 import { aiConfig, aiInsights } from './ai.js';
 import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js';
-import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements, survivalSvg } from './sections.js';
+import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
+import { stageCache } from './stagecache.js';
 import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, textWidth } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
@@ -19,7 +19,7 @@ import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, 
 // `aiDryRun`: write the AI request to ai-request.json without sending it.
 // `aiCacheOnly`: use cached AI text only, never send a request.
 // `complete` replaces the API call (tests).
-// `cache`: reuse collectStats output from outDir/stats-cache.json (see cachedStats).
+// `cache`: reuse cached collectStats stages from outDir/stats-cache.json (see cachedStats).
 export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete, cache = true }) {
   mkdirSync(outDir, { recursive: true });
   const stats = cachedStats({ dbPath, outDir, top, log, cache });
@@ -52,6 +52,7 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
     'lines.csv': linesCsv(stats),
     'cross-ownership.csv': crossCsv(stats),
     'methods.csv': methodsCsv(stats),
+    ...(declaredRepos(stats).length ? { 'codeowners.csv': codeownersCsv(stats) } : {}),
     'ownership-by-line-hash.svg': charts.pie,
     'cross-ownership.svg': charts.heatmap,
     'owner-profile.svg': charts.owners,
@@ -65,41 +66,24 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
 }
 
 // collectStats is nearly all of a report's run time; everything after it is
-// rendering. The cache key covers what collectStats reads: the database file
-// (size and mtime; any index, add, or blame writes it), the --top value, and
-// the source of the modules that compute the stats. Editing rendering code
-// reuses the cache; editing a STATS_SOURCES file recomputes.
-const STATS_SOURCES = ['stats.js', 'churn.js', 'timeline.js', 'sample.js'];
+// rendering. Its expensive stages are cached in outDir/stats-cache.json, each
+// under its own key (see stagecache.js and stats.js), so a code or data change
+// recomputes only the stages it affects. With `cache` false nothing is read or
+// written.
 const STATS_CACHE = 'stats-cache.json';
 
 function cachedStats({ dbPath, outDir, top, log, cache }) {
-  const path = join(outDir, STATS_CACHE);
-  const { size, mtimeMs } = statSync(dbPath);
-  const sources = createHash('sha256');
-  for (const file of STATS_SOURCES) sources.update(readFileSync(new URL(file, import.meta.url)));
-  const key = JSON.stringify({ size, mtimeMs, top, sources: sources.digest('hex') });
-  if (cache) {
-    try {
-      const saved = JSON.parse(readFileSync(path, 'utf8'));
-      if (saved.key === key) {
-        log(`stats: reused ${path}`);
-        return saved.stats;
-      }
-    } catch {
-      // Missing or unreadable cache: recompute.
-    }
-  }
+  const stages = stageCache(cache ? join(outDir, STATS_CACHE) : null, log);
   const db = openDb(dbPath);
   let stats;
   try {
-    stats = collectStats(db, { topLines: top, log });
+    stats = collectStats(db, { topLines: top, log, cache: stages });
   } finally {
     db.close();
   }
-  // Round-trip through JSON so a fresh run renders exactly what a cached run would.
-  const text = JSON.stringify({ key, stats });
-  if (cache) writeFileSync(path, text);
-  return JSON.parse(text).stats;
+  stages.save();
+  // Round-trip through JSON so the rendered stats are plain data, as before.
+  return JSON.parse(JSON.stringify(stats));
 }
 
 function leaderboard(stats, top, charts) {
@@ -173,6 +157,7 @@ function leaderboard(stats, top, charts) {
     '',
     `The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.`,
     '',
+    ...declaredMd(stats),
     ...leverageMd(stats),
     ...demolitionMd(stats),
     ...survivalMd(stats, charts),
@@ -264,6 +249,63 @@ function archetypesMd(stats) {
     '',
     ...(stats.ai && !stats.ai.withheld ? ['_Archetype names written by AI; membership is computed by OWNH._', ''] : []),
   ];
+}
+
+function declaredMd(stats) {
+  const repos = declaredRepos(stats);
+  if (!repos.length) return [];
+  const top = (t) => (t ? `${md(t.owner.name)} (${pct(t.count, t.total)})` : '-');
+  const header = ['Pattern', 'Declared owners', 'Lines', 'By line hash', 'By blame'];
+  const rowsOf = (r) => r.declared.rules.slice(0, DECLARED_ROWS).map((rule) => [
+    code(rule.pattern),
+    md(declaredOwners(rule)),
+    num(rule.lines),
+    top(rule.hash),
+    top(rule.blame),
+  ]);
+  const detailed = declaredDetailed(stats);
+  const simple = declaredSimple(stats);
+  // One set of column widths for every repository's table.
+  const widths = header.map((h, c) => Math.max(textWidth(h), ...detailed.flatMap((r) => rowsOf(r).map((row) => textWidth(row[c])))));
+  return [
+    '## Declared ownership',
+    '',
+    'What CODEOWNERS declares, next to the top owner of the same lines by line hash and by `git blame`.',
+    '',
+    ...detailed.flatMap((r) => [
+      `### ${md(r.name)}`,
+      '',
+      md(declaredSummary(r)),
+      '',
+      ...mdTable(header, rowsOf(r), ['l', 'l', 'r', 'l', 'l'], widths),
+      '',
+    ]),
+    ...(simple.length ? [
+      `### ${detailed.length ? 'Other repositories' : 'Repositories'} with a single rule`,
+      '',
+      'One rule decides every file in these repositories (usually a catch-all).',
+      '',
+      ...mdTable(['Repository', ...header], simple.map((r) => {
+        const rule = r.declared.rules[0];
+        return rule
+          ? [md(r.name), code(rule.pattern), md(declaredOwners(rule)), num(rule.lines), top(rule.hash), top(rule.blame)]
+          : [md(r.name), '-', '(no rule matches a file)', num(r.declared.noRule), '-', '-'];
+      }), ['l', 'l', 'l', 'r', 'l', 'l']),
+      '',
+    ] : []),
+    DECLARED_NOTE,
+    '',
+  ];
+}
+
+function codeownersCsv(stats) {
+  const cols = (t) => (t ? [t.owner.name, t.owner.email, t.count, t.share] : ['', '', '', '']);
+  return csv(
+    ['repo', 'file', 'pattern', 'rule_line', 'declared_owners', 'lines', 'hash_name', 'hash_email', 'hash_count', 'hash_share', 'blame_name', 'blame_email', 'blame_count', 'blame_share'],
+    declaredRepos(stats).flatMap((r) => r.declared.rules.map((rule) => [
+      r.name, r.declared.file, rule.pattern, rule.line, rule.owners.join(' '), rule.lines, ...cols(rule.hash), ...cols(rule.blame),
+    ])),
+  );
 }
 
 function leverageMd(stats) {
@@ -393,9 +435,10 @@ function csv(header, rows) {
 }
 
 // Markdown table with padded columns; align is 'l' or 'r' per column.
-function mdTable(header, rows, align) {
+// `minWidths` pads columns to at least those widths, so related tables line up.
+function mdTable(header, rows, align, minWidths = []) {
   const all = [header, ...rows];
-  const widths = header.map((_, c) => Math.max(3, ...all.map((r) => textWidth(r[c]))));
+  const widths = header.map((_, c) => Math.max(3, minWidths[c] ?? 0, ...all.map((r) => textWidth(r[c]))));
   const pad = (s, c) => padText(s, widths[c], align[c] === 'r');
   const line = (r) => `| ${r.map(pad).join(' | ')} |`;
   const rule = `|${widths.map((w, c) => (align[c] === 'r' ? `${'-'.repeat(w + 1)}:` : `${'-'.repeat(w + 2)}`)).join('|')}|`;

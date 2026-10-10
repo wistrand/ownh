@@ -6,6 +6,7 @@
 // { text } for prose and { code } for literal lines or names, so each renderer
 // can escape them its own way.
 import { lineLabel, pct, share } from './stats.js';
+import { quarterOf } from './timeline.js';
 
 // Names lists in findings are cut to this many, with "and N more".
 const MAX_NAMES = 5;
@@ -29,8 +30,58 @@ export function findOddities(stats) {
     ...linesPerCommit(stats),
     ...leverageOddity(stats),
     ...demolition(stats),
+    ...declaredInactive(stats),
+    ...declaredUnmatched(stats),
     ...unattributed(stats),
   ];
+}
+
+// CODEOWNERS rules that name owners for code whose top owner by line hash has
+// made no commit in the last year (the same window as the inactive archetype).
+function declaredInactive(stats) {
+  const now = stats.timeline?.now;
+  if (now === undefined || now === null) return [];
+  const lastCommit = new Map(stats.owners.filter((o) => o.identityId !== null).map((o) => [o.identityId, o.lastCommit]));
+  const hits = [];
+  for (const r of stats.repos) {
+    for (const rule of r.declared?.rules ?? []) {
+      if (!rule.owners.length || !rule.hash) continue;
+      const t = lastCommit.get(rule.hash.identityId);
+      if (t !== null && t !== undefined && quarterOf(t) <= now - 4) hits.push({ repo: r.name, rule });
+    }
+  }
+  if (!hits.length) return [];
+  hits.sort((a, b) => b.rule.lines - a.rule.lines || cmp(a.repo, b.repo) || cmp(a.rule.pattern, b.rule.pattern));
+  const lines = hits.reduce((n, h) => n + h.rule.lines, 0);
+  const detail = [{ text: `Together they cover ${num(lines)} lines. Largest: ` }];
+  hits.slice(0, MAX_NAMES).forEach((h, i) => {
+    if (i) detail.push({ text: '; ' });
+    detail.push({ code: h.rule.pattern }, { text: ` in ${h.repo} declares ${h.rule.owners.join(' ')}; ${h.rule.hash.owner.name} owns ${pct(h.rule.hash.count, h.rule.hash.total)}` });
+  });
+  detail.push({ text: hits.length > MAX_NAMES ? `; and ${hits.length - MAX_NAMES} more.` : '.' });
+  return [{
+    kind: 'declared-inactive',
+    title: `${hits.length} CODEOWNERS ${hits.length === 1 ? 'rule declares an owner' : 'rules declare owners'} for code whose top owner has not committed in a year`,
+    detail,
+  }];
+}
+
+// CODEOWNERS rules that match no file at head.
+function declaredUnmatched(stats) {
+  const hits = stats.repos.flatMap((r) => (r.declared?.unmatched ?? []).map((pattern) => ({ repo: r.name, pattern })));
+  if (!hits.length) return [];
+  const repos = new Set(hits.map((h) => h.repo)).size;
+  const detail = [];
+  hits.slice(0, MAX_NAMES).forEach((h, i) => {
+    if (i) detail.push({ text: ', ' });
+    detail.push({ code: h.pattern }, { text: ` (${h.repo})` });
+  });
+  detail.push({ text: hits.length > MAX_NAMES ? `, and ${hits.length - MAX_NAMES} more.` : '.' });
+  return [{
+    kind: 'declared-unmatched',
+    title: `${hits.length} CODEOWNERS ${hits.length === 1 ? 'rule matches' : 'rules match'} no file, in ${repos} ${repos === 1 ? 'repository' : 'repositories'}`,
+    detail,
+  }];
 }
 
 function trivialLines(stats) {

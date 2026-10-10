@@ -77,6 +77,9 @@ repo actually exhibits.
   OWNH something to do.
 - An "Oddities" section that states the absurd findings flatly.
 - Punchline slide: the three-way comparison (commits / blame / hash).
+- Declared ownership: what CODEOWNERS says next to what line hash and blame
+  compute, per rule. The site already calls CODEOWNERS fiction; this shows it.
+  Reading CODEOWNERS is in scope; generating it was dropped (user decision).
 - Deliver deadpan under the OWNH name, then reveal the leaderboard.
 
 ## Pitch site

@@ -291,7 +291,35 @@ export function buildDemoRepos(root) {
       }
     }
   }
+
+  // Declared ownership: every repo gets a CODEOWNERS file late in its history,
+  // committed after all repos are built and without the random generator, so
+  // the seeded history above is unchanged. The rules are what such files tend
+  // to become: a catch-all, a later rule that overrides an earlier one, a team
+  // for a directory that no longer exists, and a rule that owns nothing.
+  for (const spec of REPOS) {
+    const repo = repos.get(spec.name);
+    repo.set('CODEOWNERS', codeowners(spec));
+    repo.commit(GOVERNANCE, CODEOWNERS_TIME, 'Add CODEOWNERS');
+  }
   return [...repos.values()].map((repo) => repo.dir);
+}
+
+const GOVERNANCE = { name: 'Petra Process', email: 'petra.process@example.com' };
+const CODEOWNERS_TIME = at(2026, 6, 1);
+
+function codeowners(spec) {
+  const team = `@acme/${spec.name}-team`;
+  const lines = ['# Ownership is reviewed quarterly.', `*                 @acme/architecture`];
+  if (spec.lang === 'js') {
+    lines.push(`/src/             ${team}`, '*.js              @acme/javascript-guild', '/package.json     @acme/dependency-council');
+  } else if (spec.lang === 'py') {
+    lines.push(`/${spec.name.replace(/-/g, '_')}/  ${team}`, '*.py              @acme/python-guild');
+  } else {
+    lines.push(`/deploy/          ${team} @acme/sre`);
+  }
+  lines.push(`/legacy/          @acme/${spec.name}-legacy-team`, '/docs/');
+  return lines;
 }
 
 // Two people change the same line on main and on a branch; a third merges and

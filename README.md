@@ -45,14 +45,20 @@ Writes into `report/acme/` (one directory per database; `--out` picks another):
 by line hash, cross-repository ownership, ownership profiles, outlook, code
 survival), and the underlying data as JSON and CSV.
 
-The computed statistics are kept in `stats-cache.json` in that directory, so a
-second report of an unchanged database is fast. `--no-cache` recomputes.
+The expensive statistics passes are cached in `stats-cache.json` in that
+directory, each on its own, so a second report reruns only what the database or
+code changed (a `blame` run, for example, recomputes only the blame-based parts).
+`--no-cache` recomputes everything.
 
 For comparison with conventional methods, `bin/ownh.js blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add
 `--sample 2000` to blame a random sample of files in large repositories and
 report an estimate instead. Reports then show the top owner of each repository
 by commit count, by blame, and by line hash.
+
+Repositories with a CODEOWNERS file also get a declared-ownership table: each
+rule's declared owners next to the top owner of the same lines by line hash and
+by blame (`codeowners.csv`).
 
 ### AI insights
 

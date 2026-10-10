@@ -115,24 +115,24 @@
 <text class="axis" x="288.1" y="458.0" text-anchor="end">Written in another repository</text>
 <line class="grid" x1="400" y1="300" x2="238.3" y2="247.5"/>
 <text class="axis" x="218.9" y="245.2" text-anchor="end">Owned by non-contributors</text>
-<polygon class="area ra1" points="400.0,199.2 437.6,287.8 414.3,319.7 380.1,327.4 399.9,300.0"><title>platform</title></polygon>
-<polygon class="area ra2" points="400.0,192.2 423.9,292.2 414.1,319.5 321.9,407.5 399.4,299.8"><title>web-frontend</title></polygon>
-<polygon class="area ra3" points="400.0,202.5 437.5,287.8 417.4,324.0 333.8,391.1 307.2,269.8"><title>api-gateway</title></polygon>
-<circle class="point rp1" cx="400.0" cy="199.2" r="4.5"><title>platform, Top owner, line hash: 59.3%</title></circle>
-<circle class="point rp1" cx="437.6" cy="287.8" r="4.5"><title>platform, Top owner, git blame: 23.2%</title></circle>
-<circle class="point rp1" cx="414.3" cy="319.7" r="4.5"><title>platform, Top committer: 14.3%</title></circle>
-<circle class="point rp1" cx="380.1" cy="327.4" r="4.5"><title>platform, Written in another repository: 20.0%</title></circle>
+<polygon class="area ra1" points="400.0,199.4 437.5,287.8 414.3,319.6 380.0,327.5 399.9,300.0"><title>platform</title></polygon>
+<polygon class="area ra2" points="400.0,192.4 423.8,292.3 414.1,319.4 321.9,407.5 399.4,299.8"><title>web-frontend</title></polygon>
+<polygon class="area ra3" points="400.0,202.7 437.5,287.8 417.3,323.9 334.0,390.9 307.3,269.9"><title>api-gateway</title></polygon>
+<circle class="point rp1" cx="400.0" cy="199.4" r="4.5"><title>platform, Top owner, line hash: 59.2%</title></circle>
+<circle class="point rp1" cx="437.5" cy="287.8" r="4.5"><title>platform, Top owner, git blame: 23.2%</title></circle>
+<circle class="point rp1" cx="414.3" cy="319.6" r="4.5"><title>platform, Top committer: 14.3%</title></circle>
+<circle class="point rp1" cx="380.0" cy="327.5" r="4.5"><title>platform, Written in another repository: 20.0%</title></circle>
 <circle class="point rp1" cx="399.9" cy="300.0" r="4.5"><title>platform, Owned by non-contributors: 0.1%</title></circle>
-<circle class="point rp2" cx="400.0" cy="192.2" r="4.5"><title>web-frontend, Top owner, line hash: 63.4%</title></circle>
-<circle class="point rp2" cx="423.9" cy="292.2" r="4.5"><title>web-frontend, Top owner, git blame: 14.8%</title></circle>
-<circle class="point rp2" cx="414.1" cy="319.5" r="4.5"><title>web-frontend, Top committer: 14.1%</title></circle>
+<circle class="point rp2" cx="400.0" cy="192.4" r="4.5"><title>web-frontend, Top owner, line hash: 63.3%</title></circle>
+<circle class="point rp2" cx="423.8" cy="292.3" r="4.5"><title>web-frontend, Top owner, git blame: 14.7%</title></circle>
+<circle class="point rp2" cx="414.1" cy="319.4" r="4.5"><title>web-frontend, Top committer: 14.1%</title></circle>
 <circle class="point rp2" cx="321.9" cy="407.5" r="4.5"><title>web-frontend, Written in another repository: 78.2%</title></circle>
 <circle class="point rp2" cx="399.4" cy="299.8" r="4.5"><title>web-frontend, Owned by non-contributors: 0.4%</title></circle>
-<circle class="point rp3" cx="400.0" cy="202.5" r="4.5"><title>api-gateway, Top owner, line hash: 57.3%</title></circle>
+<circle class="point rp3" cx="400.0" cy="202.7" r="4.5"><title>api-gateway, Top owner, line hash: 57.2%</title></circle>
 <circle class="point rp3" cx="437.5" cy="287.8" r="4.5"><title>api-gateway, Top owner, git blame: 23.2%</title></circle>
-<circle class="point rp3" cx="417.4" cy="324.0" r="4.5"><title>api-gateway, Top committer: 17.4%</title></circle>
-<circle class="point rp3" cx="333.8" cy="391.1" r="4.5"><title>api-gateway, Written in another repository: 66.2%</title></circle>
-<circle class="point rp3" cx="307.2" cy="269.8" r="4.5"><title>api-gateway, Owned by non-contributors: 57.4%</title></circle>
+<circle class="point rp3" cx="417.3" cy="323.9" r="4.5"><title>api-gateway, Top committer: 17.4%</title></circle>
+<circle class="point rp3" cx="334.0" cy="390.9" r="4.5"><title>api-gateway, Written in another repository: 66.1%</title></circle>
+<circle class="point rp3" cx="307.3" cy="269.9" r="4.5"><title>api-gateway, Owned by non-contributors: 57.3%</title></circle>
 <rect class="s1" x="24" y="529" width="12" height="12" rx="3"/>
 <text class="label" x="44" y="540">platform</text>
 <rect class="s2" x="132" y="529" width="12" height="12" rx="3"/>

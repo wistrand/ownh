@@ -1,7 +1,7 @@
 {
   "toolVersion": "0.1.0",
   "excludes": [],
-  "total": 17456,
+  "total": 17495,
   "timeline": {
     "mode": "history",
     "now": 8105,
@@ -57,7 +57,7 @@
         15506,
         15709,
         16737,
-        17474
+        17513
       ],
       "principalShare": [
         0.9061748195669607,
@@ -81,7 +81,7 @@
         0.5115439184831678,
         0.5235215481571074,
         0.5358785923403239,
-        0.5425203158979055
+        0.5413121681036944
       ],
       "nonContributorShare": [
         0,
@@ -105,7 +105,7 @@
         0.12446794789113891,
         0.12807944490419504,
         0.12809942044571906,
-        0.12985006295066956
+        0.12956089761891165
       ],
       "inactiveShare": [
         0,
@@ -129,7 +129,7 @@
         0.7794402166903134,
         0.7829906423069578,
         0.76961223636255,
-        0.7627904314982259
+        0.7610917604065551
       ],
       "newOwners": [
         5,
@@ -153,7 +153,7 @@
         3,
         0,
         0,
-        0
+        1
       ],
       "blank": [
         217,
@@ -253,23 +253,23 @@
       },
       {
         "quarter": "2026 Q2",
-        "lines": 17474,
-        "linesChange": 0.04403417577821589,
-        "newOwners": 0,
-        "principalShare": 0.5425203158979055,
-        "nonContributorShare": 0.12985006295066956,
-        "inactiveShare": 0.7627904314982259,
+        "lines": 17513,
+        "linesChange": 0.046364342474756626,
+        "newOwners": 1,
+        "principalShare": 0.5413121681036944,
+        "nonContributorShare": 0.12956089761891165,
+        "inactiveShare": 0.7610917604065551,
         "blank": 5095
       }
     ],
     "projections": {
       "knowledgeLoss": {
         "target": 0.5,
-        "current": 0.7627904314982259,
+        "current": 0.7610917604065551,
         "fit": {
-          "slope": 0.03127486461528314,
-          "intercept": -252.62647076165518,
-          "r2": 0.35696325424184827
+          "slope": 0.03120953111175734,
+          "intercept": -252.09744360577224,
+          "r2": 0.3557131024873719
         },
         "fitFrom": "2023 Q3",
         "fitTo": "2026 Q2",
@@ -278,11 +278,11 @@
       },
       "principal": {
         "target": 0.5,
-        "current": 0.5425203158979055,
+        "current": 0.5413121681036944,
         "fit": {
-          "slope": 0.0023691929418495276,
-          "intercept": -18.69464238966488,
-          "r2": 0.01432086910918339
+          "slope": 0.002322725718995255,
+          "intercept": -18.318381797139555,
+          "r2": 0.013792768083224645
         },
         "fitFrom": "2023 Q3",
         "fitTo": "2026 Q2",
@@ -303,11 +303,11 @@
         "quarter": "2031 Q4"
       }
     },
-    "headLines": 17456,
+    "headLines": 17495,
     "inProgress": false
   },
   "deletions": {
-    "added": 34094,
+    "added": 34133,
     "removed": 16620,
     "removedOfOthers": 15896,
     "topRemovers": [
@@ -492,32 +492,32 @@
   "survival": {
     "all": {
       "curve": [
-        0.9697600750865255,
-        0.9074308139578455,
-        0.8539302393887183,
-        0.798574398012246,
-        0.7375103247565417,
-        0.6752367136393376,
-        0.6079932234843828,
-        0.5582873996330346,
-        0.49383757692059144,
-        0.4588287418391826,
-        0.3976822920947269,
-        0.35509207018670297,
-        0.32411167645080013,
-        0.2977758609524333,
-        0.26753038910485166,
-        0.25511159055474447,
-        0.2354450075695253,
-        0.2106802125660234,
-        0.18378486628099913,
-        0.15625433975307618,
-        0.09588334484847856,
-        0.07896275458109998
+        0.9697946269006533,
+        0.9074631450277908,
+        0.8539606642738702,
+        0.7986028506108589,
+        0.737536601688654,
+        0.675260771810035,
+        0.6080148858206539,
+        0.5583072909885953,
+        0.4938551719779727,
+        0.4588450895583885,
+        0.39769646121242047,
+        0.35510472184717307,
+        0.3241232243033971,
+        0.2977864704799482,
+        0.2675399210092015,
+        0.2551206799867445,
+        0.23545339629612683,
+        0.2106877189418086,
+        0.1837914143960458,
+        0.15625990697639522,
+        0.09588676109915162,
+        0.07896556796400721
       ],
       "halfLife": 8,
       "projected": false,
-      "lines": 34094
+      "lines": 34133
     },
     "owners": [
       {
@@ -616,7 +616,7 @@
   },
   "owners": [
     {
-      "identityId": 32,
+      "identityId": 33,
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
@@ -772,7 +772,7 @@
       "removedOthers": 292
     },
     {
-      "identityId": 38,
+      "identityId": 39,
       "owner": {
         "name": "Olga Fischer",
         "email": "olga.fischer@example.com"
@@ -784,7 +784,7 @@
       "removedOthers": 159
     },
     {
-      "identityId": 37,
+      "identityId": 38,
       "owner": {
         "name": "Wim Bianchi",
         "email": "wim.bianchi@example.com"
@@ -892,7 +892,7 @@
       "removedOthers": 222
     },
     {
-      "identityId": 35,
+      "identityId": 36,
       "owner": {
         "name": "Cleo Bianchi",
         "email": "cleo.bianchi@example.com"
@@ -940,7 +940,7 @@
       "removedOthers": 298
     },
     {
-      "identityId": 40,
+      "identityId": 41,
       "owner": {
         "name": "Dmitri Moreau",
         "email": "dmitri.moreau@example.com"
@@ -964,6 +964,18 @@
       "removedOthers": 288
     },
     {
+      "identityId": 32,
+      "owner": {
+        "name": "Petra Process",
+        "email": "petra.process@example.com"
+      },
+      "lines": 39,
+      "commits": 6,
+      "written": 39,
+      "lastCommit": 1780308000,
+      "removedOthers": 0
+    },
+    {
       "identityId": 2,
       "owner": {
         "name": "depbot[bot]",
@@ -976,7 +988,7 @@
       "removedOthers": 35
     },
     {
-      "identityId": 34,
+      "identityId": 35,
       "owner": {
         "name": "Aron Okafor",
         "email": "aron.okafor@example.com"
@@ -988,7 +1000,7 @@
       "removedOthers": 116
     },
     {
-      "identityId": 33,
+      "identityId": 34,
       "owner": {
         "name": "Jonas Petrov",
         "email": "jonas.petrov@example.com"
@@ -1000,7 +1012,7 @@
       "removedOthers": 29
     },
     {
-      "identityId": 36,
+      "identityId": 37,
       "owner": {
         "name": "Lars Eriksen",
         "email": "lars.eriksen@example.com"
@@ -1084,7 +1096,7 @@
       "removedOthers": 14
     },
     {
-      "identityId": 39,
+      "identityId": 40,
       "owner": {
         "name": "Elif Ulrich",
         "email": "elif.ulrich@example.com"
@@ -1102,165 +1114,165 @@
       "binary": false,
       "path": "src/config-format.js",
       "lines": 3578,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "}",
       "binary": false,
       "path": "package.json",
       "lines": 1118,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "  }",
       "binary": false,
       "path": "package.json",
       "lines": 1105,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "    }",
       "binary": false,
       "path": "src/event-create.js",
       "lines": 583,
+      "origin": "api-gateway",
       "owner": {
         "name": "Mira Quist",
         "email": "mira.quist@example.com"
-      },
-      "origin": "api-gateway"
+      }
     },
     {
       "text": "    return null;",
       "binary": false,
       "path": "src/config-format.js",
       "lines": 533,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "        return null;",
       "binary": false,
       "path": "src/event-create.js",
       "lines": 288,
+      "origin": "api-gateway",
       "owner": {
         "name": "Mira Quist",
         "email": "mira.quist@example.com"
-      },
-      "origin": "api-gateway"
+      }
     },
     {
       "text": "        return None",
       "binary": false,
       "path": "data_pipeline/account_save.py",
       "lines": 224,
+      "origin": "data-pipeline",
       "owner": {
         "name": "Umar Lindqvist",
         "email": "umar.lindqvist@example.com"
-      },
-      "origin": "data-pipeline"
+      }
     },
     {
       "text": "/*",
       "binary": false,
       "path": "src/config-format.js",
       "lines": 198,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": " * Copyright Example Corp. All rights reserved.",
       "binary": false,
       "path": "src/config-format.js",
       "lines": 193,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": " * Licensed under the Example Corp internal license.",
       "binary": false,
       "path": "src/config-format.js",
       "lines": 189,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": " */",
       "binary": false,
       "path": "src/config-format.js",
       "lines": 186,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "'use strict';",
       "binary": false,
       "path": "src/config-format.js",
       "lines": 180,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "  return result;",
       "binary": false,
       "path": "src/event-update.js",
       "lines": 76,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "  return value;",
       "binary": false,
       "path": "src/order-remove.js",
       "lines": 70,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     },
     {
       "text": "  if (!result) {",
       "binary": false,
       "path": "src/event-update.js",
       "lines": 70,
+      "origin": "platform",
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
-      },
-      "origin": "platform"
+      }
     }
   ],
   "methods": {
@@ -1271,8 +1283,8 @@
       },
       "identityId": 22,
       "count": 156,
-      "total": 1562,
-      "share": 0.0998719590268886
+      "total": 1568,
+      "share": 0.09948979591836735
     },
     "blame": {
       "owner": {
@@ -1281,18 +1293,18 @@
       },
       "identityId": 23,
       "count": 2759,
-      "total": 17456,
-      "share": 0.1580545371219065
+      "total": 17495,
+      "share": 0.15770220062875107
     },
     "hash": {
       "owner": {
         "name": "Ada Lindqvist",
         "email": "ada.lindqvist@example.com"
       },
-      "identityId": 32,
+      "identityId": 33,
       "count": 9490,
-      "total": 17456,
-      "share": 0.5436526122823098
+      "total": 17495,
+      "share": 0.5424406973420978
     },
     "agree": false
   },
@@ -1307,8 +1319,8 @@
           },
           "identityId": 6,
           "count": 46,
-          "total": 264,
-          "share": 0.17424242424242425
+          "total": 265,
+          "share": 0.17358490566037735
         },
         "blame": {
           "owner": {
@@ -1317,29 +1329,127 @@
           },
           "identityId": 23,
           "count": 819,
-          "total": 3528,
-          "share": 0.23214285714285715
+          "total": 3535,
+          "share": 0.2316831683168317
         },
         "hash": {
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
           },
-          "identityId": 32,
+          "identityId": 33,
           "count": 2023,
-          "total": 3528,
-          "share": 0.5734126984126984
+          "total": 3535,
+          "share": 0.5722772277227722
         },
-        "blamedFiles": 52,
-        "files": 52,
+        "blamedFiles": 53,
+        "files": 53,
         "agree": false
       },
-      "lines": 3528,
+      "declared": {
+        "file": "CODEOWNERS",
+        "lines": 3535,
+        "noRule": 0,
+        "unowned": 0,
+        "rules": [
+          {
+            "pattern": "*.js",
+            "line": 4,
+            "owners": [
+              "@acme/javascript-guild"
+            ],
+            "lines": 3512,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 2018,
+              "total": 3512,
+              "share": 0.5746013667425968
+            },
+            "blame": {
+              "owner": {
+                "name": "Fiona Format",
+                "email": "fiona.format@example.com"
+              },
+              "identityId": 23,
+              "count": 819,
+              "total": 3512,
+              "share": 0.2332004555808656
+            }
+          },
+          {
+            "pattern": "/package.json",
+            "line": 5,
+            "owners": [
+              "@acme/dependency-council"
+            ],
+            "lines": 16,
+            "hash": {
+              "owner": {
+                "name": "depbot[bot]",
+                "email": "depbot@example.com"
+              },
+              "identityId": 2,
+              "count": 10,
+              "total": 16,
+              "share": 0.625
+            },
+            "blame": {
+              "owner": {
+                "name": "depbot[bot]",
+                "email": "depbot@example.com"
+              },
+              "identityId": 2,
+              "count": 10,
+              "total": 16,
+              "share": 0.625
+            }
+          },
+          {
+            "pattern": "*",
+            "line": 2,
+            "owners": [
+              "@acme/architecture"
+            ],
+            "lines": 7,
+            "hash": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            },
+            "blame": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            }
+          }
+        ],
+        "unmatchedRules": 3,
+        "unmatched": [
+          "/src/",
+          "/legacy/",
+          "/docs/"
+        ]
+      },
+      "lines": 3535,
       "foreign": 2336,
       "absentee": 2026,
       "owners": [
         {
-          "identityId": 32,
+          "identityId": 33,
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
@@ -1501,6 +1611,15 @@
           "contributor": true
         },
         {
+          "identityId": 32,
+          "owner": {
+            "name": "Petra Process",
+            "email": "petra.process@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
           "identityId": 22,
           "owner": {
             "name": "Rosa Garcia",
@@ -1591,7 +1710,7 @@
           "contributor": true
         },
         {
-          "identityId": 33,
+          "identityId": 34,
           "owner": {
             "name": "Jonas Petrov",
             "email": "jonas.petrov@example.com"
@@ -1609,7 +1728,7 @@
           "contributor": true
         },
         {
-          "identityId": 35,
+          "identityId": 36,
           "owner": {
             "name": "Cleo Bianchi",
             "email": "cleo.bianchi@example.com"
@@ -1625,7 +1744,7 @@
         },
         {
           "repo": "api-gateway",
-          "lines": 1192
+          "lines": 1199
         },
         {
           "repo": "web-frontend",
@@ -1647,8 +1766,8 @@
           },
           "identityId": 18,
           "count": 28,
-          "total": 224,
-          "share": 0.125
+          "total": 225,
+          "share": 0.12444444444444444
         },
         "blame": {
           "owner": {
@@ -1657,29 +1776,127 @@
           },
           "identityId": 6,
           "count": 350,
-          "total": 2089,
-          "share": 0.1675442795595979
+          "total": 2096,
+          "share": 0.16698473282442747
         },
         "hash": {
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
           },
-          "identityId": 32,
+          "identityId": 33,
           "count": 1316,
-          "total": 2089,
-          "share": 0.6299664911440881
+          "total": 2096,
+          "share": 0.6278625954198473
         },
-        "blamedFiles": 30,
-        "files": 30,
+        "blamedFiles": 31,
+        "files": 31,
         "agree": false
       },
-      "lines": 2089,
-      "foreign": 1662,
+      "declared": {
+        "file": "CODEOWNERS",
+        "lines": 2096,
+        "noRule": 0,
+        "unowned": 0,
+        "rules": [
+          {
+            "pattern": "*.js",
+            "line": 4,
+            "owners": [
+              "@acme/javascript-guild"
+            ],
+            "lines": 2073,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 1308,
+              "total": 2073,
+              "share": 0.6309696092619392
+            },
+            "blame": {
+              "owner": {
+                "name": "Juno Rasmussen",
+                "email": "juno.rasmussen@example.com"
+              },
+              "identityId": 6,
+              "count": 341,
+              "total": 2073,
+              "share": 0.16449589966232514
+            }
+          },
+          {
+            "pattern": "/package.json",
+            "line": 5,
+            "owners": [
+              "@acme/dependency-council"
+            ],
+            "lines": 16,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 8,
+              "total": 16,
+              "share": 0.5
+            },
+            "blame": {
+              "owner": {
+                "name": "Juno Rasmussen",
+                "email": "juno.rasmussen@example.com"
+              },
+              "identityId": 6,
+              "count": 9,
+              "total": 16,
+              "share": 0.5625
+            }
+          },
+          {
+            "pattern": "*",
+            "line": 2,
+            "owners": [
+              "@acme/architecture"
+            ],
+            "lines": 7,
+            "hash": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            },
+            "blame": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            }
+          }
+        ],
+        "unmatchedRules": 3,
+        "unmatched": [
+          "/src/",
+          "/legacy/",
+          "/docs/"
+        ]
+      },
+      "lines": 2096,
+      "foreign": 1667,
       "absentee": 229,
       "owners": [
         {
-          "identityId": 32,
+          "identityId": 33,
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
@@ -1760,7 +1977,7 @@
           "contributor": true
         },
         {
-          "identityId": 34,
+          "identityId": 35,
           "owner": {
             "name": "Aron Okafor",
             "email": "aron.okafor@example.com"
@@ -1778,7 +1995,7 @@
           "contributor": true
         },
         {
-          "identityId": 35,
+          "identityId": 36,
           "owner": {
             "name": "Cleo Bianchi",
             "email": "cleo.bianchi@example.com"
@@ -1841,10 +2058,19 @@
           "contributor": true
         },
         {
-          "identityId": 36,
+          "identityId": 37,
           "owner": {
             "name": "Lars Eriksen",
             "email": "lars.eriksen@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Petra Process",
+            "email": "petra.process@example.com"
           },
           "lines": 7,
           "contributor": true
@@ -1913,7 +2139,7 @@
           "contributor": true
         },
         {
-          "identityId": 37,
+          "identityId": 38,
           "owner": {
             "name": "Wim Bianchi",
             "email": "wim.bianchi@example.com"
@@ -1940,7 +2166,7 @@
           "contributor": true
         },
         {
-          "identityId": 38,
+          "identityId": 39,
           "owner": {
             "name": "Olga Fischer",
             "email": "olga.fischer@example.com"
@@ -1958,7 +2184,7 @@
           "contributor": false
         },
         {
-          "identityId": 33,
+          "identityId": 34,
           "owner": {
             "name": "Jonas Petrov",
             "email": "jonas.petrov@example.com"
@@ -2001,11 +2227,11 @@
         },
         {
           "repo": "billing-service",
-          "lines": 427
+          "lines": 429
         },
         {
           "repo": "api-gateway",
-          "lines": 251
+          "lines": 256
         },
         {
           "repo": "web-frontend",
@@ -2023,8 +2249,8 @@
           },
           "identityId": 22,
           "count": 99,
-          "total": 223,
-          "share": 0.4439461883408072
+          "total": 224,
+          "share": 0.4419642857142857
         },
         "blame": {
           "owner": {
@@ -2033,29 +2259,99 @@
           },
           "identityId": 22,
           "count": 1188,
-          "total": 3189,
-          "share": 0.37253057384760113
+          "total": 3195,
+          "share": 0.37183098591549296
         },
         "hash": {
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
           },
-          "identityId": 32,
+          "identityId": 33,
           "count": 1020,
-          "total": 3189,
-          "share": 0.3198494825964252
+          "total": 3195,
+          "share": 0.3192488262910798
         },
-        "blamedFiles": 56,
-        "files": 56,
+        "blamedFiles": 57,
+        "files": 57,
         "agree": false
       },
-      "lines": 3189,
-      "foreign": 987,
+      "declared": {
+        "file": "CODEOWNERS",
+        "lines": 3195,
+        "noRule": 0,
+        "unowned": 0,
+        "rules": [
+          {
+            "pattern": "*.py",
+            "line": 4,
+            "owners": [
+              "@acme/python-guild"
+            ],
+            "lines": 3189,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 1020,
+              "total": 3189,
+              "share": 0.3198494825964252
+            },
+            "blame": {
+              "owner": {
+                "name": "Rosa Garcia",
+                "email": "rosa.garcia@example.com"
+              },
+              "identityId": 22,
+              "count": 1188,
+              "total": 3189,
+              "share": 0.37253057384760113
+            }
+          },
+          {
+            "pattern": "*",
+            "line": 2,
+            "owners": [
+              "@acme/architecture"
+            ],
+            "lines": 6,
+            "hash": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 6,
+              "total": 6,
+              "share": 1
+            },
+            "blame": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 6,
+              "total": 6,
+              "share": 1
+            }
+          }
+        ],
+        "unmatchedRules": 3,
+        "unmatched": [
+          "/data_pipeline/",
+          "/legacy/",
+          "/docs/"
+        ]
+      },
+      "lines": 3195,
+      "foreign": 990,
       "absentee": 0,
       "owners": [
         {
-          "identityId": 32,
+          "identityId": 33,
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
@@ -2091,7 +2387,7 @@
           "contributor": true
         },
         {
-          "identityId": 38,
+          "identityId": 39,
           "owner": {
             "name": "Olga Fischer",
             "email": "olga.fischer@example.com"
@@ -2100,7 +2396,7 @@
           "contributor": true
         },
         {
-          "identityId": 37,
+          "identityId": 38,
           "owner": {
             "name": "Wim Bianchi",
             "email": "wim.bianchi@example.com"
@@ -2154,7 +2450,7 @@
           "contributor": true
         },
         {
-          "identityId": 40,
+          "identityId": 41,
           "owner": {
             "name": "Dmitri Moreau",
             "email": "dmitri.moreau@example.com"
@@ -2181,7 +2477,7 @@
           "contributor": true
         },
         {
-          "identityId": 33,
+          "identityId": 34,
           "owner": {
             "name": "Jonas Petrov",
             "email": "jonas.petrov@example.com"
@@ -2190,12 +2486,21 @@
           "contributor": true
         },
         {
-          "identityId": 34,
+          "identityId": 35,
           "owner": {
             "name": "Aron Okafor",
             "email": "aron.okafor@example.com"
           },
           "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Petra Process",
+            "email": "petra.process@example.com"
+          },
+          "lines": 6,
           "contributor": true
         },
         {
@@ -2208,7 +2513,7 @@
           "contributor": true
         },
         {
-          "identityId": 39,
+          "identityId": 40,
           "owner": {
             "name": "Elif Ulrich",
             "email": "elif.ulrich@example.com"
@@ -2274,11 +2579,15 @@
       "origins": [
         {
           "repo": "data-pipeline",
-          "lines": 2202
+          "lines": 2205
         },
         {
           "repo": "platform",
           "lines": 987
+        },
+        {
+          "repo": "api-gateway",
+          "lines": 3
         }
       ]
     },
@@ -2292,18 +2601,18 @@
           },
           "identityId": 21,
           "count": 40,
-          "total": 163,
-          "share": 0.24539877300613497
+          "total": 164,
+          "share": 0.24390243902439024
         },
         "blame": {
           "owner": {
             "name": "Cleo Bianchi",
             "email": "cleo.bianchi@example.com"
           },
-          "identityId": 35,
+          "identityId": 36,
           "count": 107,
-          "total": 365,
-          "share": 0.29315068493150687
+          "total": 370,
+          "share": 0.2891891891891892
         },
         "hash": {
           "owner": {
@@ -2312,15 +2621,85 @@
           },
           "identityId": 20,
           "count": 192,
-          "total": 365,
-          "share": 0.5260273972602739
+          "total": 370,
+          "share": 0.518918918918919
         },
-        "blamedFiles": 13,
-        "files": 13,
+        "blamedFiles": 14,
+        "files": 14,
         "agree": false
       },
-      "lines": 365,
-      "foreign": 60,
+      "declared": {
+        "file": "CODEOWNERS",
+        "lines": 370,
+        "noRule": 0,
+        "unowned": 0,
+        "rules": [
+          {
+            "pattern": "/deploy/",
+            "line": 3,
+            "owners": [
+              "@acme/infra-config-team",
+              "@acme/sre"
+            ],
+            "lines": 365,
+            "hash": {
+              "owner": {
+                "name": "Greta Okafor",
+                "email": "greta.okafor@example.com"
+              },
+              "identityId": 20,
+              "count": 192,
+              "total": 365,
+              "share": 0.5260273972602739
+            },
+            "blame": {
+              "owner": {
+                "name": "Cleo Bianchi",
+                "email": "cleo.bianchi@example.com"
+              },
+              "identityId": 36,
+              "count": 107,
+              "total": 365,
+              "share": 0.29315068493150687
+            }
+          },
+          {
+            "pattern": "*",
+            "line": 2,
+            "owners": [
+              "@acme/architecture"
+            ],
+            "lines": 5,
+            "hash": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 5,
+              "total": 5,
+              "share": 1
+            },
+            "blame": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 5,
+              "total": 5,
+              "share": 1
+            }
+          }
+        ],
+        "unmatchedRules": 2,
+        "unmatched": [
+          "/legacy/",
+          "/docs/"
+        ]
+      },
+      "lines": 370,
+      "foreign": 63,
       "absentee": 0,
       "owners": [
         {
@@ -2333,7 +2712,7 @@
           "contributor": true
         },
         {
-          "identityId": 32,
+          "identityId": 33,
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
@@ -2369,12 +2748,21 @@
           "contributor": true
         },
         {
-          "identityId": 35,
+          "identityId": 36,
           "owner": {
             "name": "Cleo Bianchi",
             "email": "cleo.bianchi@example.com"
           },
           "lines": 13,
+          "contributor": true
+        },
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Petra Process",
+            "email": "petra.process@example.com"
+          },
+          "lines": 5,
           "contributor": true
         },
         {
@@ -2396,7 +2784,7 @@
           "contributor": true
         },
         {
-          "identityId": 40,
+          "identityId": 41,
           "owner": {
             "name": "Dmitri Moreau",
             "email": "dmitri.moreau@example.com"
@@ -2450,7 +2838,7 @@
           "contributor": true
         },
         {
-          "identityId": 36,
+          "identityId": 37,
           "owner": {
             "name": "Lars Eriksen",
             "email": "lars.eriksen@example.com"
@@ -2480,11 +2868,15 @@
       "origins": [
         {
           "repo": "infra-config",
-          "lines": 305
+          "lines": 307
         },
         {
           "repo": "platform",
           "lines": 60
+        },
+        {
+          "repo": "api-gateway",
+          "lines": 3
         }
       ]
     },
@@ -2498,8 +2890,8 @@
           },
           "identityId": 16,
           "count": 55,
-          "total": 384,
-          "share": 0.14322916666666666
+          "total": 385,
+          "share": 0.14285714285714285
         },
         "blame": {
           "owner": {
@@ -2508,29 +2900,127 @@
           },
           "identityId": 23,
           "count": 1057,
-          "total": 4551,
-          "share": 0.23225664689079323
+          "total": 4558,
+          "share": 0.23189995612110575
         },
         "hash": {
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
           },
-          "identityId": 32,
+          "identityId": 33,
           "count": 2698,
-          "total": 4551,
-          "share": 0.5928367391782026
+          "total": 4558,
+          "share": 0.5919262834576569
         },
-        "blamedFiles": 68,
-        "files": 68,
+        "blamedFiles": 69,
+        "files": 69,
         "agree": false
       },
-      "lines": 4551,
-      "foreign": 908,
+      "declared": {
+        "file": "CODEOWNERS",
+        "lines": 4558,
+        "noRule": 0,
+        "unowned": 0,
+        "rules": [
+          {
+            "pattern": "*.js",
+            "line": 4,
+            "owners": [
+              "@acme/javascript-guild"
+            ],
+            "lines": 4535,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 2692,
+              "total": 4535,
+              "share": 0.5936052921719955
+            },
+            "blame": {
+              "owner": {
+                "name": "Fiona Format",
+                "email": "fiona.format@example.com"
+              },
+              "identityId": 23,
+              "count": 1057,
+              "total": 4535,
+              "share": 0.2330760749724366
+            }
+          },
+          {
+            "pattern": "/package.json",
+            "line": 5,
+            "owners": [
+              "@acme/dependency-council"
+            ],
+            "lines": 16,
+            "hash": {
+              "owner": {
+                "name": "depbot[bot]",
+                "email": "depbot@example.com"
+              },
+              "identityId": 2,
+              "count": 10,
+              "total": 16,
+              "share": 0.625
+            },
+            "blame": {
+              "owner": {
+                "name": "depbot[bot]",
+                "email": "depbot@example.com"
+              },
+              "identityId": 2,
+              "count": 10,
+              "total": 16,
+              "share": 0.625
+            }
+          },
+          {
+            "pattern": "*",
+            "line": 2,
+            "owners": [
+              "@acme/architecture"
+            ],
+            "lines": 7,
+            "hash": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            },
+            "blame": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            }
+          }
+        ],
+        "unmatchedRules": 3,
+        "unmatched": [
+          "/src/",
+          "/legacy/",
+          "/docs/"
+        ]
+      },
+      "lines": 4558,
+      "foreign": 913,
       "absentee": 4,
       "owners": [
         {
-          "identityId": 32,
+          "identityId": 33,
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
@@ -2602,7 +3092,7 @@
           "contributor": true
         },
         {
-          "identityId": 35,
+          "identityId": 36,
           "owner": {
             "name": "Cleo Bianchi",
             "email": "cleo.bianchi@example.com"
@@ -2692,7 +3182,7 @@
           "contributor": true
         },
         {
-          "identityId": 36,
+          "identityId": 37,
           "owner": {
             "name": "Lars Eriksen",
             "email": "lars.eriksen@example.com"
@@ -2710,7 +3200,7 @@
           "contributor": true
         },
         {
-          "identityId": 33,
+          "identityId": 34,
           "owner": {
             "name": "Jonas Petrov",
             "email": "jonas.petrov@example.com"
@@ -2773,6 +3263,15 @@
           "contributor": true
         },
         {
+          "identityId": 32,
+          "owner": {
+            "name": "Petra Process",
+            "email": "petra.process@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
           "identityId": 7,
           "owner": {
             "name": "Tove Andersen",
@@ -2800,7 +3299,7 @@
           "contributor": true
         },
         {
-          "identityId": 34,
+          "identityId": 35,
           "owner": {
             "name": "Aron Okafor",
             "email": "aron.okafor@example.com"
@@ -2821,11 +3320,11 @@
       "origins": [
         {
           "repo": "platform",
-          "lines": 3643
+          "lines": 3645
         },
         {
           "repo": "api-gateway",
-          "lines": 848
+          "lines": 853
         },
         {
           "repo": "web-frontend",
@@ -2847,8 +3346,8 @@
           },
           "identityId": 6,
           "count": 43,
-          "total": 304,
-          "share": 0.14144736842105263
+          "total": 305,
+          "share": 0.14098360655737704
         },
         "blame": {
           "owner": {
@@ -2857,29 +3356,127 @@
           },
           "identityId": 23,
           "count": 551,
-          "total": 3734,
-          "share": 0.14756293519014463
+          "total": 3741,
+          "share": 0.14728682170542637
         },
         "hash": {
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
           },
-          "identityId": 32,
+          "identityId": 33,
           "count": 2367,
-          "total": 3734,
-          "share": 0.6339046598821639
+          "total": 3741,
+          "share": 0.6327185244587009
         },
-        "blamedFiles": 59,
-        "files": 59,
+        "blamedFiles": 60,
+        "files": 60,
         "agree": false
       },
-      "lines": 3734,
-      "foreign": 2919,
+      "declared": {
+        "file": "CODEOWNERS",
+        "lines": 3741,
+        "noRule": 0,
+        "unowned": 0,
+        "rules": [
+          {
+            "pattern": "*.js",
+            "line": 4,
+            "owners": [
+              "@acme/javascript-guild"
+            ],
+            "lines": 3718,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 2359,
+              "total": 3718,
+              "share": 0.634480903711673
+            },
+            "blame": {
+              "owner": {
+                "name": "Fiona Format",
+                "email": "fiona.format@example.com"
+              },
+              "identityId": 23,
+              "count": 551,
+              "total": 3718,
+              "share": 0.14819795589026358
+            }
+          },
+          {
+            "pattern": "/package.json",
+            "line": 5,
+            "owners": [
+              "@acme/dependency-council"
+            ],
+            "lines": 16,
+            "hash": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 8,
+              "total": 16,
+              "share": 0.5
+            },
+            "blame": {
+              "owner": {
+                "name": "Ada Lindqvist",
+                "email": "ada.lindqvist@example.com"
+              },
+              "identityId": 33,
+              "count": 8,
+              "total": 16,
+              "share": 0.5
+            }
+          },
+          {
+            "pattern": "*",
+            "line": 2,
+            "owners": [
+              "@acme/architecture"
+            ],
+            "lines": 7,
+            "hash": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            },
+            "blame": {
+              "owner": {
+                "name": "Petra Process",
+                "email": "petra.process@example.com"
+              },
+              "identityId": 32,
+              "count": 7,
+              "total": 7,
+              "share": 1
+            }
+          }
+        ],
+        "unmatchedRules": 3,
+        "unmatched": [
+          "/src/",
+          "/legacy/",
+          "/docs/"
+        ]
+      },
+      "lines": 3741,
+      "foreign": 2924,
       "absentee": 14,
       "owners": [
         {
-          "identityId": 32,
+          "identityId": 33,
           "owner": {
             "name": "Ada Lindqvist",
             "email": "ada.lindqvist@example.com"
@@ -2978,7 +3575,7 @@
           "contributor": true
         },
         {
-          "identityId": 40,
+          "identityId": 41,
           "owner": {
             "name": "Dmitri Moreau",
             "email": "dmitri.moreau@example.com"
@@ -3059,13 +3656,22 @@
           "contributor": true
         },
         {
-          "identityId": 36,
+          "identityId": 37,
           "owner": {
             "name": "Lars Eriksen",
             "email": "lars.eriksen@example.com"
           },
           "lines": 7,
           "contributor": false
+        },
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Petra Process",
+            "email": "petra.process@example.com"
+          },
+          "lines": 7,
+          "contributor": true
         },
         {
           "identityId": 15,
@@ -3077,7 +3683,7 @@
           "contributor": true
         },
         {
-          "identityId": 33,
+          "identityId": 34,
           "owner": {
             "name": "Jonas Petrov",
             "email": "jonas.petrov@example.com"
@@ -3104,7 +3710,7 @@
           "contributor": true
         },
         {
-          "identityId": 37,
+          "identityId": 38,
           "owner": {
             "name": "Wim Bianchi",
             "email": "wim.bianchi@example.com"
@@ -3113,7 +3719,7 @@
           "contributor": true
         },
         {
-          "identityId": 34,
+          "identityId": 35,
           "owner": {
             "name": "Aron Okafor",
             "email": "aron.okafor@example.com"
@@ -3131,7 +3737,7 @@
           "contributor": true
         },
         {
-          "identityId": 38,
+          "identityId": 39,
           "owner": {
             "name": "Olga Fischer",
             "email": "olga.fischer@example.com"
@@ -3149,7 +3755,7 @@
           "contributor": true
         },
         {
-          "identityId": 35,
+          "identityId": 36,
           "owner": {
             "name": "Cleo Bianchi",
             "email": "cleo.bianchi@example.com"
@@ -3174,11 +3780,11 @@
         },
         {
           "repo": "web-frontend",
-          "lines": 815
+          "lines": 817
         },
         {
           "repo": "api-gateway",
-          "lines": 376
+          "lines": 381
         },
         {
           "repo": "billing-service",
@@ -3205,7 +3811,7 @@
       "title": "6 of the top 15 lines are whitespace or punctuation",
       "detail": [
         {
-          "text": "Together they hold 38.8% of all lines: "
+          "text": "Together they hold 38.7% of all lines: "
         },
         {
           "code": "\"\""
@@ -3247,7 +3853,7 @@
       "title": "web-frontend was mostly written somewhere else",
       "detail": [
         {
-          "text": "66.9% of its lines were first written in platform; 21.8% in web-frontend itself."
+          "text": "66.8% of its lines were first written in platform; 21.8% in web-frontend itself."
         }
       ]
     },
@@ -3256,7 +3862,7 @@
       "title": "billing-service was mostly written somewhere else",
       "detail": [
         {
-          "text": "65.9% of its lines were first written in platform; 20.4% in billing-service itself."
+          "text": "65.7% of its lines were first written in platform; 20.5% in billing-service itself."
         }
       ]
     },
@@ -3265,7 +3871,7 @@
       "title": "api-gateway was mostly written somewhere else",
       "detail": [
         {
-          "text": "63.5% of its lines were first written in platform; 33.8% in api-gateway itself."
+          "text": "63.4% of its lines were first written in platform; 33.9% in api-gateway itself."
         }
       ]
     },
@@ -3274,7 +3880,7 @@
       "title": "1 of 6 repositories is owned by someone who never committed to it",
       "detail": [
         {
-          "text": "api-gateway (Ada Lindqvist, 57.3%)."
+          "text": "api-gateway (Ada Lindqvist, 57.2%)."
         }
       ]
     },
@@ -3283,7 +3889,7 @@
       "title": "In 1 repository, most lines belong to people who never committed there",
       "detail": [
         {
-          "text": "api-gateway (57.4%)."
+          "text": "api-gateway (57.3%)."
         }
       ]
     },
@@ -3325,11 +3931,116 @@
           "text": "Each went straight back to its original owner (983 distinct lines)."
         }
       ]
+    },
+    {
+      "kind": "declared-inactive",
+      "title": "8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year",
+      "detail": [
+        {
+          "text": "Together they cover 17,424 lines. Largest: "
+        },
+        {
+          "code": "*.js"
+        },
+        {
+          "text": " in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%"
+        },
+        {
+          "text": "; "
+        },
+        {
+          "code": "*.js"
+        },
+        {
+          "text": " in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%"
+        },
+        {
+          "text": "; "
+        },
+        {
+          "code": "*.js"
+        },
+        {
+          "text": " in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%"
+        },
+        {
+          "text": "; "
+        },
+        {
+          "code": "*.py"
+        },
+        {
+          "text": " in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%"
+        },
+        {
+          "text": "; "
+        },
+        {
+          "code": "*.js"
+        },
+        {
+          "text": " in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%"
+        },
+        {
+          "text": "; and 3 more."
+        }
+      ]
+    },
+    {
+      "kind": "declared-unmatched",
+      "title": "17 CODEOWNERS rules match no file, in 6 repositories",
+      "detail": [
+        {
+          "code": "/src/"
+        },
+        {
+          "text": " (api-gateway)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/legacy/"
+        },
+        {
+          "text": " (api-gateway)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/docs/"
+        },
+        {
+          "text": " (api-gateway)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/src/"
+        },
+        {
+          "text": " (billing-service)"
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "/legacy/"
+        },
+        {
+          "text": " (billing-service)"
+        },
+        {
+          "text": ", and 12 more."
+        }
+      ]
     }
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 16:45 UTC"
+    "at": "2026-10-10 18:59 UTC"
   },
   "archetypes": [
     {
@@ -3338,7 +4049,7 @@
       "aiRule": "The single owner with the most lines.",
       "members": 1,
       "lines": 9490,
-      "share": 0.5436526122823098,
+      "share": 0.5424406973420978,
       "examples": [
         {
           "name": "Ada Lindqvist",
@@ -3352,7 +4063,7 @@
       "aiRule": "Owners with no commit in the last 4 quarters.",
       "members": 12,
       "lines": 13334,
-      "share": 0.7638634280476627,
+      "share": 0.762160617319234,
       "examples": [
         {
           "name": "Ada Lindqvist",
@@ -3374,7 +4085,7 @@
       "aiRule": "People who removed more lines belonging to others than they own.",
       "members": 32,
       "lines": 4581,
-      "share": 0.26243125572868925,
+      "share": 0.2618462417833667,
       "examples": [
         {
           "name": "Fiona Format",
@@ -3396,7 +4107,7 @@
       "aiRule": "Automated accounts (bots) that own lines.",
       "members": 1,
       "lines": 35,
-      "share": 0.0020050412465627866,
+      "share": 0.002000571591883395,
       "examples": [
         {
           "name": "depbot[bot]",
@@ -3408,34 +4119,34 @@
   "ai": {
     "model": "openai/gpt-6-luna",
     "promptVersion": 2,
-    "cached": false,
+    "cached": true,
     "summary": [
-      "OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.4%, compared with Mira Quist at 10.6% and Umar Lindqvist at 6.5%; blank lines account for 20.5% of lines, and the reported punctuation-only line categories account for 6.4% and 6.3%, all owned by Ada Lindqvist.",
-      "Cross-repository authorship is substantial: lines written elsewhere account for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Ownership by non-contributors ranges from 0% in web-frontend to 57% in api-gateway; ownership methods agree in no repositories.",
-      "At 2026 Q2, principal-owner share is 54.3%, up from 51.2% at 2025 Q3, while inactive-owner share is 76.3%, down from 77.9%; both majorities are established. The next blank-line milestone is projected for 2031 Q4, and line survival has a half-life of 2 years."
+      "OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.2% of lines, while inactive owners account for 76.1% at 2026 Q2, a majority since 2023 Q4.",
+      "Blank lines represent 20.5% of lines and are attributed to Ada Lindqvist. The next blank-line milestone is projected for 2031 Q4; the line-survival half-life is 2 years and is not projected.",
+      "Cross-repository ownership is uneven: 80% of billing-service’s lines were written elsewhere, while 57% of api-gateway’s lines are owned by non-contributors. The methods agree in no repositories, limiting confidence in attribution consistency."
     ],
     "okr": {
-      "objective": "Improve ownership resilience and measurement consistency across the portfolio.",
+      "objective": "Build a more balanced and consistent ownership profile across repositories.",
       "keyResults": [
         {
-          "text": "Lower principal-owner concentration from the 2026 Q2 baseline of 54.3%, which rose from 51.2% at 2025 Q3.",
+          "text": "Reduce principal-owner concentration from 54.1% at 2026 Q2, after it rose from 51.2% at 2025 Q3.",
+          "status": "off track"
+        },
+        {
+          "text": "Lower the inactive-owner share from 76.1% at 2026 Q2, after easing from 77.9% at 2025 Q3, while the majority has persisted since 2023 Q4.",
           "status": "at risk"
         },
         {
-          "text": "Reduce inactive-owner share from the 2026 Q2 baseline of 76.3%; it has eased from 77.9% at 2025 Q3 but remains a majority, held since 2023 Q4.",
-          "status": "at risk"
-        },
-        {
-          "text": "Increase ownership-method agreement from a baseline of no repositories at 2026 Q2.",
+          "text": "Increase method agreement from a baseline of no repositories.",
           "status": "off track"
         }
       ]
     },
     "archetypeNames": {
-      "principal": "Lead Owner",
-      "inactive": "Dormant Contributors",
-      "demolition": "Aggressive Pruners",
-      "automation": "Automated Steward"
+      "principal": "Dominant Steward",
+      "inactive": "Dormant Majority",
+      "demolition": "High-Impact Removers",
+      "automation": "Automated Owner"
     }
   }
 }

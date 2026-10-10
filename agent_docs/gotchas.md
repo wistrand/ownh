@@ -113,6 +113,12 @@
   (the CLI says so on stderr). An explicit `--exclude-file` that is missing is
   still an error.
 - **Exclude patterns have no negation.** `!pattern` is taken literally.
+- **A cached stats stage can go stale silently.** Each stage in `collectStats`
+  is keyed by its module's import graph and the tables in its data key
+  (architecture.md, Stats cache). Passing a function from another module into
+  a stage, or reading a table its key does not cover, breaks that: the cache
+  keeps serving the old result. Import helpers in the stage module instead,
+  and extend `fingerprints` in `src/stats.js` when a stage reads new data.
 - **Churn makes databases larger.** One row per (hash, repo, quarter, author)
   with additions or removals: measured at about 20% on a 4M-line database and
   about 40% on the largest one (see Performance in architecture.md).
