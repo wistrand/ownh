@@ -115,6 +115,10 @@ claim to its source; keep it accurate if that changes.
   - Every statement must match `src/`: update it when the definitions,
     attribution, or metrics change. Same deadpan voice and citation rule as
     the site.
+- `docs/robots.txt` allows every crawler, Google-Extended explicitly (so
+  Gemini may read the site), and points to `docs/sitemap.xml`, which lists the
+  public pages: the site, the sample report, and the whitepaper. Add new pages
+  there. No `lastmod`: hand-kept dates go stale.
 - `docs/og.png` is the link-preview image (Open Graph and Twitter tags in the
   page head), rendered from `scripts/og.svg` with `rsvg-convert`.
 - The OKR section's figures (KR sample lines and the KPI table) are copied by

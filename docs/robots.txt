@@ -3,3 +3,5 @@ Allow: /
 
 User-agent: Google-Extended
 Allow: /
+
+Sitemap: https://ownh.org/sitemap.xml
