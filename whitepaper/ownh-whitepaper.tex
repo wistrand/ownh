@@ -66,7 +66,8 @@ assigns every line of code to exactly one owner using only the line's content
 hash and the version history of the repositories that contain it. The owner of
 a line is the first contributor, across all repositories under analysis, to
 commit a line with that exact content. The assignment is deterministic,
-independent of the order in which repositories are analyzed, and permanent.
+independent of the order in which repositories are analyzed, and permanent for
+a fixed scope of analyzed histories.
 The definitions, the attribution procedure, the benchmark against
 established methods, and the derived governance metrics: ownership leverage,
 code demolition, code survival, and quarterly projections suitable for
@@ -78,10 +79,12 @@ objectives and key results, are described.
 Ownership measures have a respectable research history. In Windows Vista and
 Windows 7, ownership measures correlated with pre-release faults and
 post-release failures~\cite{bird}. Research comparing ownership definitions
-finds that line-based ownership suits accountability and attribution, and that
-commit-based and line-based methods disagree about who the major developers
-are~\cite{lines}. The question is therefore not whether ownership matters, but
-which definition an organization can defend.
+finds that line-based ownership suits accountability and attribution, that
+commit-based ownership is the better choice for bug fixing and quality
+planning, and that commit-based and line-based methods disagree about who the
+major developers are~\cite{lines}. The question is therefore not whether
+ownership matters, but which definition an organization can defend. The method
+presented here addresses accountability.
 
 Each conventional definition carries a human element:
 
@@ -142,8 +145,11 @@ line with hash $h$. Each introduction carries the key
   k(c) = \bigl(t_{\mathrm{author}}(c),\ \mathrm{repository}(c),\ \mathrm{position}(c)\bigr),
 \]
 where $t_{\mathrm{author}}$ is the author time, $\mathrm{repository}$ is the
-name of the repository, and $\mathrm{position}$ is the commit's place in a
-topological walk of that repository's history.
+name of the repository, unique within an analysis, and $\mathrm{position}$ is
+the commit's index in the canonical traversal of that repository's history:
+git's topological order (\texttt{--topo-order}), reversed so that the oldest
+commit comes first. A history admits several topological orders; git computes
+this one deterministically for a given history.
 \end{definition}
 
 \begin{definition}{Owner}
@@ -189,7 +195,7 @@ contributes all of those places to its owner.
 \begin{property}{Uniqueness}
 Every line has exactly one owner. Ties are impossible: two introductions with
 equal author time are separated by repository name, and within a repository by
-topological position.
+position in the canonical traversal.
 \end{property}
 
 \begin{property}{Determinism}
@@ -205,7 +211,11 @@ analyzed.
 
 \begin{property}{Permanence}
 An owner keeps ownership regardless of later activity, inactivity, or
-employment status. Ownership of a line changes only when the line changes.
+employment status. Ownership is permanent for a fixed scope: for a given set of
+analyzed histories, ownership of a line changes only when the line changes.
+Extending the scope with a repository that introduces the same line earlier,
+or rewriting an analyzed history, transfers ownership to the earlier
+introduction.
 \end{property}
 
 \begin{property}{Global scope}
@@ -281,8 +291,12 @@ that far, the half-life is extrapolated with an exponential through the last
 point and labeled as projected.
 
 \subsection{Outlook}
-Ownership is reconstructed quarter by quarter from the recorded additions and
-removals. ``Now'' is the quarter of the newest commit. An identity is
+The ownership series is the cumulative net of recorded additions and removals
+per owner and quarter, summed over all branches of the history. It is not a
+sequence of snapshots: removals inside merge commits are not counted, so lines
+added on a branch whose changes a merge later discarded remain in the series.
+The difference from the lines at head is stated with each outlook. ``Now'' is
+the quarter of the newest commit. An identity is
 \emph{inactive} in a quarter if it has no commit in that quarter or the three
 before it. Three series are projected:
 
