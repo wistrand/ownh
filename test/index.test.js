@@ -10,7 +10,7 @@ import { blame } from '../src/blame.js';
 import { add, index } from '../src/indexer.js';
 import { report } from '../src/report.js';
 import { samplePaths } from '../src/sample.js';
-import { collectStats } from '../src/stats.js';
+import { collectStats, padText, textWidth } from '../src/stats.js';
 import { findOddities } from '../src/oddities.js';
 import { aiConfig, buildFacts, chatCompletion, pseudonyms } from '../src/ai.js';
 import { findArchetypes } from '../src/archetypes.js';
@@ -561,4 +561,11 @@ test('AI API: temperature fallback, and failures withhold instead of aborting', 
   } finally {
     globalThis.fetch = realFetch;
   }
+});
+
+test('table columns pad by visible characters, not UTF-16 units', () => {
+  const combining = 'Fo\u0308rmat'; // "o" + combining diaeresis, as some git authors store it
+  assert.equal(textWidth(combining), 6);
+  assert.equal(padText(combining, 8), `${combining}  `);
+  assert.equal(padText('F\u00f6rmat', 8, true), '  F\u00f6rmat');
 });

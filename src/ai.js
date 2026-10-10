@@ -137,7 +137,8 @@ function lineBand(n) {
 }
 
 function countBand(n) {
-  return n < 10 ? 'fewer than ten' : n < 100 ? 'dozens' : n < 1000 ? 'hundreds' : 'thousands';
+  // "dozens" overstates 10 to 24.
+  return n < 10 ? 'fewer than ten' : n < 25 ? 'more than ten' : n < 100 ? 'dozens' : n < 1000 ? 'hundreds' : 'thousands';
 }
 
 // Everything the model may use: tokens for names and quarters, percentages and
@@ -147,7 +148,29 @@ export function buildFacts(stats, archetypes, p) {
   const t = stats.timeline;
   const proj = t?.projections;
   const owners = stats.owners.filter((o) => o.owner);
-  const shareProj = (x) => (x ? { status: x.status, currentPct: pct(x.current), quarter: p.quarter(x.quarter ?? null), r2: x.fit ? Math.round(x.fit.r2 * 100) / 100 : null } : null);
+  // `meaning` spells out each status, so a past event ("reached") is not
+  // written as a milestone still to come.
+  const shareProj = (x) => {
+    if (!x) return null;
+    const q = p.quarter(x.quarter ?? null);
+    const meaning = {
+      reached: `has held the majority since ${q}; this is past, not a target`,
+      projected: `projected to reach the majority by ${q}`,
+      beyond: `not projected to reach the majority before ${q}`,
+      'not-on-track': 'trend flat or falling; no majority projected',
+      insufficient: 'not enough history to project',
+    }[x.status];
+    return { status: x.status, meaning, currentPct: pct(x.current), quarter: q, r2: x.fit ? Math.round(x.fit.r2 * 100) / 100 : null };
+  };
+  const blankMeaning = (x) => {
+    const q = p.quarter(x.quarter ?? null);
+    return {
+      projected: `next milestone projected for ${q}`,
+      beyond: `next milestone not expected before ${q}`,
+      'not-on-track': 'blank-line count flat or falling; no milestone projected',
+      insufficient: 'not enough history to project',
+    }[x.status];
+  };
   const d = stats.deletions;
   return {
     scale: { repositories: countBand(stats.repos.length), owners: countBand(owners.length), lines: lineBand(stats.total) },
@@ -163,7 +186,7 @@ export function buildFacts(stats, archetypes, p) {
       now: p.quarter(t.now),
       inactiveOwnersMajority: shareProj(proj.knowledgeLoss),
       principalOwnerMajority: shareProj(proj.principal),
-      nextBlankLineMilestone: proj.blank ? { status: proj.blank.status, quarter: p.quarter(proj.blank.quarter ?? null) } : null,
+      nextBlankLineMilestone: proj.blank ? { status: proj.blank.status, meaning: blankMeaning(proj.blank), quarter: p.quarter(proj.blank.quarter ?? null) } : null,
       lastQuarters: t.kpis.slice(-4).map((k) => ({
         quarter: p.quarter(k.quarter),
         linesChangePct: k.linesChange === null ? null : pct(k.linesChange),

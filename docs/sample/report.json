@@ -3288,7 +3288,7 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-10 12:40 UTC"
+    "at": "2026-10-10 13:23 UTC"
   },
   "archetypes": [
     {
@@ -3381,35 +3381,35 @@
   "ai": {
     "model": "openai/gpt-6-luna",
     "promptVersion": 2,
-    "cached": false,
+    "cached": true,
     "summary": [
-      "The portfolio spans fewer than ten repositories, dozens of owners and tens of thousands of lines. Ada Lindqvist holds 54% of lines; blank lines alone account for 21% and are attributed to Ada Lindqvist.",
-      "Cross-repository ownership varies materially: code written elsewhere accounts for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Ownership by noncontributors ranges from 0% in web-frontend to 57% in api-gateway, and ownership methods agree in no repositories.",
-      "At 2026 Q2, inactive owners account for 76% and the principal owner holds 54%. Inactivity eased from 78% at 2025 Q3, while principal-owner share rose from 51%; the next blank-line milestone is projected at 2031 Q4. Code half-life is 2 years."
+      "OWNH covers fewer than ten repositories, dozens of owners, and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.4% of lines, compared with 10.6% for Mira Quist and 6.5% for Umar Lindqvist.",
+      "At 2026 Q2, principal-owner share is 54.3%, up from 51.2% at 2025 Q3. Inactive-owner share is 76.3%, down from 77.9% over the same period; both majorities are already established. The next blank-line milestone is projected for 2031 Q4.",
+      "Cross-repository ownership remains uneven, and methods agree in no repositories. Removed lines equal 48.7% of added lines, with 95.6% of removals belonging to others; Fiona Format accounts for 30.4% of removals. Code survival has a two-year half-life, not a projection."
     ],
     "okr": {
-      "objective": "Improve ownership resilience and consistency across the portfolio.",
+      "objective": "Build more balanced, current, and consistently measured code ownership across the portfolio.",
       "keyResults": [
         {
-          "text": "Reduce principal-owner concentration from the 2026 Q2 baseline of 54.3%, reversing the increase from 51.2% at 2025 Q3.",
-          "status": "off track"
+          "text": "Reduce principal-owner concentration from its 2026 Q2 baseline of 54.3%, which has risen from 51.2% at 2025 Q3.",
+          "status": "at risk"
         },
         {
-          "text": "Lower inactive-owner share from the 2026 Q2 baseline of 76.3%; it has eased from 77.9% at 2025 Q3.",
+          "text": "Reduce inactive-owner concentration from its 2026 Q2 baseline of 76.3%; it remains a majority despite declining from 77.9% at 2025 Q3.",
           "status": "on track"
         },
         {
-          "text": "Increase agreement between ownership methods from a baseline of no repositories in agreement.",
+          "text": "Establish cross-method agreement from a baseline of no repositories where methods agree.",
           "status": "off track"
         }
       ]
     },
     "archetypeNames": {
-      "principal": "Dominant Owner",
-      "inactive": "Quiet Legacy",
+      "principal": "Lead Owner",
+      "inactive": "Dormant Stewards",
       "absentee": "Cross-Repo Absentee",
-      "demolition": "Aggressive Pruner",
-      "automation": "Bot Steward"
+      "demolition": "Code Removers",
+      "automation": "Automated Steward"
     }
   }
 }

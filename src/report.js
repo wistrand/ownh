@@ -10,7 +10,7 @@ import { outlookCharts, outlookNote, outlookStatements } from './outlook.js';
 import { aiConfig, aiInsights } from './ai.js';
 import { ARCHETYPE_TITLES, findArchetypes } from './archetypes.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements, survivalSvg } from './sections.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, textWidth } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
@@ -93,7 +93,7 @@ function cachedStats({ dbPath, outDir, top, log, cache }) {
   }
   // Round-trip through JSON so a fresh run renders exactly what a cached run would.
   const text = JSON.stringify({ key, stats });
-  writeFileSync(path, text);
+  if (cache) writeFileSync(path, text);
   return JSON.parse(text).stats;
 }
 
@@ -387,8 +387,8 @@ function csv(header, rows) {
 // Markdown table with padded columns; align is 'l' or 'r' per column.
 function mdTable(header, rows, align) {
   const all = [header, ...rows];
-  const widths = header.map((_, c) => Math.max(3, ...all.map((r) => r[c].length)));
-  const pad = (s, c) => (align[c] === 'r' ? s.padStart(widths[c]) : s.padEnd(widths[c]));
+  const widths = header.map((_, c) => Math.max(3, ...all.map((r) => textWidth(r[c]))));
+  const pad = (s, c) => padText(s, widths[c], align[c] === 'r');
   const line = (r) => `| ${r.map(pad).join(' | ')} |`;
   const rule = `|${widths.map((w, c) => (align[c] === 'r' ? `${'-'.repeat(w + 1)}:` : `${'-'.repeat(w + 2)}`)).join('|')}|`;
   return [line(header), rule, ...rows.map(line)];

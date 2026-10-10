@@ -1,5 +1,5 @@
 import { openDb } from './db.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, pct } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, textWidth } from './stats.js';
 
 export function summary({ dbPath, top = 10, log }) {
   const db = openDb(dbPath);
@@ -69,6 +69,6 @@ function ownerTable(owners, top, total) {
 
 function table(rows) {
   if (rows.length === 0) return ['  (none)'];
-  const widths = rows[0].map((_, c) => Math.max(...rows.map((r) => r[c].length)));
-  return rows.map((r) => '  ' + r.map((cell, c) => cell.padEnd(widths[c])).join('  ').trimEnd());
+  const widths = rows[0].map((_, c) => Math.max(...rows.map((r) => textWidth(r[c]))));
+  return rows.map((r) => '  ' + r.map((cell, c) => padText(cell, widths[c])).join('  ').trimEnd());
 }

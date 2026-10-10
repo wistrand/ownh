@@ -28,7 +28,7 @@ const USAGE = `usage:
 
   report keeps the computed statistics in stats-cache.json in the output
   directory and reuses them while the database and the statistics code are
-  unchanged. --no-cache recomputes.`;
+  unchanged. --no-cache recomputes without reading or writing it.`;
 
 const EXCLUDE_OPTIONS = {
   db: { type: 'string' },

@@ -201,7 +201,7 @@ survival, outlook, oddities, repositories, excluded patterns.
   a hash of `STATS_SOURCES` (the modules that compute stats). Edits to rendering
   code reuse the cache; a new module that `collectStats` imports must be added
   to `STATS_SOURCES`. Fresh stats are round-tripped through JSON too, so cached
-  and fresh runs render identically. `--no-cache` recomputes; the sample build
+  and fresh runs render identically. `--no-cache` recomputes and neither reads nor writes the cache; the sample build
   never caches.
 
 ## AI prose
@@ -231,7 +231,10 @@ and always shown; the AI only names the groups.
     rank or size, so the highest number only counts what was mentioned.
     Quarters are relative: `[T0]` is the newest commit's quarter, `[T-4]`,
     `[T+20]`.
-  - Sizes are bands ("tens of millions" of lines, "dozens" of repositories).
+  - Sizes are bands ("tens of millions" of lines; repositories and owners as "fewer than ten", "more than ten" (10 to 24), "dozens", "hundreds").
+  - Outlook projections carry a `meaning` next to the status code. With the
+    bare code, the model wrote a majority reached years ago ("reached",
+    quarter `[T-47]`) as a milestone, "reached at 2015 Q1".
   - Percentages are only as precise as is safe: one decimal for shares of the
     whole codebase or of all removals (huge denominators), whole percents for
     shares of one repository, and words for any share of a count (`fraction`:

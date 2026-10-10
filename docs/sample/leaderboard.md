@@ -2,15 +2,15 @@
 
 Repositories: 6. Lines under management: 17,456.
 OWNH 0.1.0.
-Database: `sample.db`. Generated 2026-10-10 12:40 UTC.
+Database: `sample.db`. Generated 2026-10-10 13:23 UTC.
 
 ## AI insights (AI-generated)
 
-The portfolio spans fewer than ten repositories, dozens of owners and tens of thousands of lines. Ada Lindqvist holds 54% of lines; blank lines alone account for 21% and are attributed to Ada Lindqvist.
+OWNH covers fewer than ten repositories, dozens of owners, and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.4% of lines, compared with 10.6% for Mira Quist and 6.5% for Umar Lindqvist.
 
-Cross-repository ownership varies materially: code written elsewhere accounts for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Ownership by noncontributors ranges from 0% in web-frontend to 57% in api-gateway, and ownership methods agree in no repositories.
+At 2026 Q2, principal-owner share is 54.3%, up from 51.2% at 2025 Q3. Inactive-owner share is 76.3%, down from 77.9% over the same period; both majorities are already established. The next blank-line milestone is projected for 2031 Q4.
 
-At 2026 Q2, inactive owners account for 76% and the principal owner holds 54%. Inactivity eased from 78% at 2025 Q3, while principal-owner share rose from 51%; the next blank-line milestone is projected at 2031 Q4. Code half-life is 2 years.
+Cross-repository ownership remains uneven, and methods agree in no repositories. Removed lines equal 48.7% of added lines, with 95.6% of removals belonging to others; Fiona Format accounts for 30.4% of removals. Code survival has a two-year half-life, not a projection.
 
 _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
 
@@ -205,11 +205,11 @@ Projections continue the trend of the last 12 quarters (least-squares slope) fro
 
 ## OKR draft (AI-generated)
 
-**Objective:** Improve ownership resilience and consistency across the portfolio.
+**Objective:** Build more balanced, current, and consistently measured code ownership across the portfolio.
 
-- **KR1** (off track): Reduce principal-owner concentration from the 2026 Q2 baseline of 54.3%, reversing the increase from 51.2% at 2025 Q3.
-- **KR2** (on track): Lower inactive-owner share from the 2026 Q2 baseline of 76.3%; it has eased from 77.9% at 2025 Q3.
-- **KR3** (off track): Increase agreement between ownership methods from a baseline of no repositories in agreement.
+- **KR1** (at risk): Reduce principal-owner concentration from its 2026 Q2 baseline of 54.3%, which has risen from 51.2% at 2025 Q3.
+- **KR2** (on track): Reduce inactive-owner concentration from its 2026 Q2 baseline of 76.3%; it remains a majority despite declining from 77.9% at 2025 Q3.
+- **KR3** (off track): Establish cross-method agreement from a baseline of no repositories where methods agree.
 
 _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
 
@@ -217,11 +217,11 @@ _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked
 
 | Archetype                | Rule                                                                     | Owners | Share of lines | Examples                                  |
 |--------------------------|--------------------------------------------------------------------------|-------:|---------------:|-------------------------------------------|
-| Dominant Owner (AI)      | The single owner with the most lines.                                    |      1 |          54.4% | Ada Lindqvist                             |
-| Quiet Legacy (AI)        | Owners with no commit in the last 4 quarters.                            |     12 |          76.4% | Ada Lindqvist, Mira Quist, Fiona Format   |
+| Lead Owner (AI)          | The single owner with the most lines.                                    |      1 |          54.4% | Ada Lindqvist                             |
+| Dormant Stewards (AI)    | Owners with no commit in the last 4 quarters.                            |     12 |          76.4% | Ada Lindqvist, Mira Quist, Fiona Format   |
 | Cross-Repo Absentee (AI) | Owners with most of their lines in repositories they never committed to. |      1 |           0.1% | Quinn Zeller                              |
-| Aggressive Pruner (AI)   | People who removed more lines belonging to others than they own.         |      9 |          15.8% | Fiona Format, Rosa Garcia, Juno Rasmussen |
-| Bot Steward (AI)         | Automated accounts (bots) that own lines.                                |      1 |           0.2% | depbot[bot]                               |
+| Code Removers (AI)       | People who removed more lines belonging to others than they own.         |      9 |          15.8% | Fiona Format, Rosa Garcia, Juno Rasmussen |
+| Automated Steward (AI)   | Automated accounts (bots) that own lines.                                |      1 |           0.2% | depbot[bot]                               |
 
 _Archetype names written by AI; membership is computed by OWNH._
 

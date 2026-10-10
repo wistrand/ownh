@@ -393,3 +393,19 @@ export function lineLabel(line, max = 50) {
   const s = line.binary ? `(binary) ${line.path}` : JSON.stringify(line.text);
   return s.length > max ? `${s.slice(0, max - 3)}...` : s;
 }
+
+// Column width for text tables: user-perceived characters, not UTF-16 units,
+// so a name stored with a combining mark ("o" + U+0308) pads like "ö". Names
+// are shown as stored, never normalized.
+const graphemes = new Intl.Segmenter('en', { granularity: 'grapheme' });
+
+export function textWidth(s) {
+  let n = 0;
+  for (const _ of graphemes.segment(s)) n++;
+  return n;
+}
+
+export function padText(s, width, right = false) {
+  const fill = ' '.repeat(Math.max(0, width - textWidth(s)));
+  return right ? fill + s : s + fill;
+}
