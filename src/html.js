@@ -6,7 +6,7 @@
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
 import { outlookNote, outlookStatements } from './outlook.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements } from './sections.js';
-import { ARCHETYPE_TITLES } from './archetypes.js';
+import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
 import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
@@ -170,7 +170,7 @@ function archetypesHtml(stats) {
       cell(esc(a.rule)),
       cell(num(a.members), a.members),
       cell(pct(a.lines, stats.total), a.share),
-      cell(esc(a.examples.map((o) => o.name).join(', '))),
+      cell(esc(exampleLabels(a.examples).join(', '))),
     ]),
     ['', '', 'num', 'num', ''],
   )}${stats.ai && !stats.ai.withheld ? '<p class="r-note">Archetype names written by AI; membership is computed by OWNH.</p>' : ''}`)];

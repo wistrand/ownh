@@ -17,6 +17,15 @@ export const ARCHETYPE_TITLES = {
   automation: 'Automation',
 };
 
+// Example owners as display names. Identities are emails, so two can share a
+// name (an author with an old and a new address); those get their email too,
+// so the list does not read as a duplicate.
+export function exampleLabels(owners) {
+  const count = new Map();
+  for (const o of owners) count.set(o.name, (count.get(o.name) ?? 0) + 1);
+  return owners.map((o) => (count.get(o.name) > 1 ? `${o.name} <${o.email}>` : o.name));
+}
+
 export function findArchetypes(stats) {
   const owners = stats.owners.filter((o) => o.owner);
   if (owners.length === 0) return [];

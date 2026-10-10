@@ -138,7 +138,7 @@ function lineBand(n) {
 
 function countBand(n) {
   // "dozens" overstates 10 to 24.
-  return n < 10 ? 'fewer than ten' : n < 25 ? 'more than ten' : n < 100 ? 'dozens' : n < 1000 ? 'hundreds' : 'thousands';
+  return n < 10 ? 'fewer than ten' : n < 25 ? 'ten to two dozen' : n < 100 ? 'dozens' : n < 1000 ? 'hundreds' : 'thousands';
 }
 
 // Everything the model may use: tokens for names and quarters, percentages and

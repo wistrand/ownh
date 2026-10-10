@@ -8,7 +8,7 @@ import { findOddities } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
 import { outlookCharts, outlookNote, outlookStatements } from './outlook.js';
 import { aiConfig, aiInsights } from './ai.js';
-import { ARCHETYPE_TITLES, findArchetypes } from './archetypes.js';
+import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js';
 import { DEMOLITION_NOTE, SURVIVAL_NOTE, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, textWidth } from './stats.js';
 
@@ -251,7 +251,7 @@ function archetypesMd(stats) {
       escapeCell(a.rule),
       num(a.members),
       pct(a.lines, stats.total),
-      escapeCell(a.examples.map((o) => o.name).join(', ')),
+      escapeCell(exampleLabels(a.examples).join(', ')),
     ]), ['l', 'l', 'r', 'r', 'l']),
     '',
     ...(stats.ai && !stats.ai.withheld ? ['_Archetype names written by AI; membership is computed by OWNH._', ''] : []),

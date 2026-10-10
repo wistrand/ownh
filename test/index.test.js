@@ -13,7 +13,7 @@ import { samplePaths } from '../src/sample.js';
 import { collectStats, padText, textWidth } from '../src/stats.js';
 import { findOddities } from '../src/oddities.js';
 import { aiConfig, buildFacts, chatCompletion, pseudonyms } from '../src/ai.js';
-import { findArchetypes } from '../src/archetypes.js';
+import { exampleLabels, findArchetypes } from '../src/archetypes.js';
 import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
 import { catBlobs, log } from '../src/git.js';
@@ -568,4 +568,13 @@ test('table columns pad by visible characters, not UTF-16 units', () => {
   assert.equal(textWidth(combining), 6);
   assert.equal(padText(combining, 8), `${combining}  `);
   assert.equal(padText('F\u00f6rmat', 8, true), '  F\u00f6rmat');
+});
+
+test('archetype examples tell apart identities that share a name', () => {
+  const owners = [
+    { name: 'Fiona Format', email: 'fiona@old.example' },
+    { name: 'Ada Lindqvist', email: 'ada@example.com' },
+    { name: 'Fiona Format', email: 'fiona@new.example' },
+  ];
+  assert.deepEqual(exampleLabels(owners), ['Fiona Format <fiona@old.example>', 'Ada Lindqvist', 'Fiona Format <fiona@new.example>']);
 });

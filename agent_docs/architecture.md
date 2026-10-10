@@ -231,7 +231,7 @@ and always shown; the AI only names the groups.
     rank or size, so the highest number only counts what was mentioned.
     Quarters are relative: `[T0]` is the newest commit's quarter, `[T-4]`,
     `[T+20]`.
-  - Sizes are bands ("tens of millions" of lines; repositories and owners as "fewer than ten", "more than ten" (10 to 24), "dozens", "hundreds").
+  - Sizes are bands ("tens of millions" of lines; repositories and owners as "fewer than ten", "ten to two dozen" (10 to 24), "dozens", "hundreds").
   - Outlook projections carry a `meaning` next to the status code. With the
     bare code, the model wrote a majority reached years ago ("reached",
     quarter `[T-47]`) as a milestone, "reached at 2015 Q1".
