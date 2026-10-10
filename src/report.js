@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { openDb } from './db.js';
 import { crossOwnershipSvg, lineSharePieSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
@@ -20,6 +20,7 @@ export function report({ dbPath, outDir, top = 20, log }) {
     db.close();
   }
   stats.oddities = findOddities(stats);
+  stats.generated = generatedInfo(dbPath);
   mkdirSync(outDir, { recursive: true });
   const charts = {
     pie: lineSharePieSvg(stats),
@@ -55,6 +56,7 @@ function leaderboard(stats, top, charts) {
     '',
     `Repositories: ${stats.repos.length}. Lines under management: ${stats.total.toLocaleString('en-US')}.`,
     `OWNH ${stats.toolVersion}.`,
+    `Database: ${codeSpan(stats.generated.database)}. Generated ${stats.generated.at}.`,
     '',
     '## Principal owners',
     '',
@@ -153,6 +155,14 @@ function leaderboard(stats, top, charts) {
       : 'None. Every file was analyzed.',
   );
   return `${out.join('\n')}\n`;
+}
+
+// Which database a report came from, and when it was generated. SOURCE_DATE_EPOCH
+// (the reproducible-builds convention, in seconds) overrides the clock.
+function generatedInfo(dbPath) {
+  const epoch = process.env.SOURCE_DATE_EPOCH;
+  const when = epoch && /^\d+$/.test(epoch) ? new Date(Number(epoch) * 1000) : new Date();
+  return { database: basename(dbPath), at: `${when.toISOString().slice(0, 16).replace('T', ' ')} UTC` };
 }
 
 function leverageMd(stats) {

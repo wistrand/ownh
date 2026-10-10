@@ -117,31 +117,31 @@
 <text class="axis" x="235.1" y="399.2" text-anchor="end">Lines per commit</text>
 <line class="grid" x1="400" y1="300" x2="252.8" y2="215.0"/>
 <text class="axis" x="235.1" y="208.8" text-anchor="end">Repositories led</text>
-<polygon class="area ra1" points="400.0,130.0 547.2,215.0 547.2,385.0 400.0,470.0 252.8,385.0 252.8,215.0"><title>Alice</title></polygon>
-<polygon class="area ra2" points="400.0,236.3 473.6,257.5 547.2,385.0 400.0,356.7 289.6,363.8 400.0,300.0"><title>Frank</title></polygon>
-<polygon class="area ra3" points="400.0,236.3 473.6,257.5 473.6,342.5 400.0,300.0 289.6,363.8 400.0,300.0"><title>Judy</title></polygon>
-<circle class="point rp1" cx="400.0" cy="130.0" r="4.5"><title>Alice, Lines owned: 8</title></circle>
-<circle class="point rp1" cx="547.2" cy="215.0" r="4.5"><title>Alice, Commits: 2</title></circle>
-<circle class="point rp1" cx="547.2" cy="385.0" r="4.5"><title>Alice, Repositories reached: 2</title></circle>
-<circle class="point rp1" cx="400.0" cy="470.0" r="4.5"><title>Alice, Lines owned where never committed: 3</title></circle>
-<circle class="point rp1" cx="252.8" cy="385.0" r="4.5"><title>Alice, Lines per commit: 4</title></circle>
-<circle class="point rp1" cx="252.8" cy="215.0" r="4.5"><title>Alice, Repositories led: 2</title></circle>
-<circle class="point rp2" cx="400.0" cy="236.3" r="4.5"><title>Frank, Lines owned: 3</title></circle>
-<circle class="point rp2" cx="473.6" cy="257.5" r="4.5"><title>Frank, Commits: 1</title></circle>
-<circle class="point rp2" cx="547.2" cy="385.0" r="4.5"><title>Frank, Repositories reached: 2</title></circle>
-<circle class="point rp2" cx="400.0" cy="356.7" r="4.5"><title>Frank, Lines owned where never committed: 1</title></circle>
-<circle class="point rp2" cx="289.6" cy="363.8" r="4.5"><title>Frank, Lines per commit: 3</title></circle>
-<circle class="point rp2" cx="400.0" cy="300.0" r="4.5"><title>Frank, Repositories led: 0</title></circle>
-<circle class="point rp3" cx="400.0" cy="236.3" r="4.5"><title>Judy, Lines owned: 3</title></circle>
-<circle class="point rp3" cx="473.6" cy="257.5" r="4.5"><title>Judy, Commits: 1</title></circle>
-<circle class="point rp3" cx="473.6" cy="342.5" r="4.5"><title>Judy, Repositories reached: 1</title></circle>
-<circle class="point rp3" cx="400.0" cy="300.0" r="4.5"><title>Judy, Lines owned where never committed: 0</title></circle>
-<circle class="point rp3" cx="289.6" cy="363.8" r="4.5"><title>Judy, Lines per commit: 3</title></circle>
-<circle class="point rp3" cx="400.0" cy="300.0" r="4.5"><title>Judy, Repositories led: 0</title></circle>
+<polygon class="area ra1" points="400.0,130.0 543.7,217.0 547.2,385.0 400.0,470.0 252.8,385.0 252.8,215.0"><title>Ada Lindqvist</title></polygon>
+<polygon class="area ra2" points="400.0,266.8 508.7,237.3 498.1,356.7 400.0,317.9 361.9,322.0 400.0,300.0"><title>Mira Quist</title></polygon>
+<polygon class="area ra3" points="400.0,279.7 547.2,215.0 522.7,370.8 400.0,300.0 382.9,309.9 400.0,300.0"><title>Umar Lindqvist</title></polygon>
+<circle class="point rp1" cx="400.0" cy="130.0" r="4.5"><title>Ada Lindqvist, Lines owned: 9,490</title></circle>
+<circle class="point rp1" cx="543.7" cy="217.0" r="4.5"><title>Ada Lindqvist, Commits: 41</title></circle>
+<circle class="point rp1" cx="547.2" cy="385.0" r="4.5"><title>Ada Lindqvist, Repositories reached: 6</title></circle>
+<circle class="point rp1" cx="400.0" cy="470.0" r="4.5"><title>Ada Lindqvist, Lines owned where never committed: 2,023</title></circle>
+<circle class="point rp1" cx="252.8" cy="385.0" r="4.5"><title>Ada Lindqvist, Lines per commit: 231</title></circle>
+<circle class="point rp1" cx="252.8" cy="215.0" r="4.5"><title>Ada Lindqvist, Repositories led: 5</title></circle>
+<circle class="point rp2" cx="400.0" cy="266.8" r="4.5"><title>Mira Quist, Lines owned: 1,856</title></circle>
+<circle class="point rp2" cx="508.7" cy="237.3" r="4.5"><title>Mira Quist, Commits: 31</title></circle>
+<circle class="point rp2" cx="498.1" cy="356.7" r="4.5"><title>Mira Quist, Repositories reached: 4</title></circle>
+<circle class="point rp2" cx="400.0" cy="317.9" r="4.5"><title>Mira Quist, Lines owned where never committed: 213</title></circle>
+<circle class="point rp2" cx="361.9" cy="322.0" r="4.5"><title>Mira Quist, Lines per commit: 60</title></circle>
+<circle class="point rp2" cx="400.0" cy="300.0" r="4.5"><title>Mira Quist, Repositories led: 0</title></circle>
+<circle class="point rp3" cx="400.0" cy="279.7" r="4.5"><title>Umar Lindqvist, Lines owned: 1,132</title></circle>
+<circle class="point rp3" cx="547.2" cy="215.0" r="4.5"><title>Umar Lindqvist, Commits: 42</title></circle>
+<circle class="point rp3" cx="522.7" cy="370.8" r="4.5"><title>Umar Lindqvist, Repositories reached: 5</title></circle>
+<circle class="point rp3" cx="400.0" cy="300.0" r="4.5"><title>Umar Lindqvist, Lines owned where never committed: 0</title></circle>
+<circle class="point rp3" cx="382.9" cy="309.9" r="4.5"><title>Umar Lindqvist, Lines per commit: 27</title></circle>
+<circle class="point rp3" cx="400.0" cy="300.0" r="4.5"><title>Umar Lindqvist, Repositories led: 0</title></circle>
 <rect class="s1" x="24" y="529" width="12" height="12" rx="3"/>
-<text class="label" x="44" y="540">Alice</text>
-<rect class="s2" x="109.5" y="529" width="12" height="12" rx="3"/>
-<text class="label" x="129.5" y="540">Frank</text>
-<rect class="s3" x="195" y="529" width="12" height="12" rx="3"/>
-<text class="label" x="215" y="540">Judy</text>
+<text class="label" x="44" y="540">Ada Lindqvist</text>
+<rect class="s2" x="169.5" y="529" width="12" height="12" rx="3"/>
+<text class="label" x="189.5" y="540">Mira Quist</text>
+<rect class="s3" x="292.5" y="529" width="12" height="12" rx="3"/>
+<text class="label" x="312.5" y="540">Umar Lindqvist</text>
 </svg>

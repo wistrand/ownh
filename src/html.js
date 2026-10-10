@@ -15,6 +15,7 @@ export function reportHtml(stats, top, charts) {
     `<header class="r-head">
       <h1>OWNH Ownership Report</h1>
       <p class="r-meta">${stats.repos.length} repositories · ${num(stats.total)} lines under management · OWNH ${esc(stats.toolVersion)}</p>
+      ${stats.generated ? `<p class="r-meta">Database <code>${esc(stats.generated.database)}</code> · generated ${esc(stats.generated.at)}</p>` : ''}
     </header>`,
     `<section class="r-tiles">
       ${tile('Repositories', num(stats.repos.length))}

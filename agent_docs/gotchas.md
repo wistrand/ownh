@@ -109,6 +109,9 @@
 - **Fixture times are scaled.** `TIME_SCALE` in `test/fixtures.js` spreads the
   fixture history over about 2.5 years so the sample outlook has quarters;
   order and same-second ties are unchanged.
+- **`firefox --screenshot` captures before scripts draw.** Anything rendered
+  asynchronously after load is missing from plain screenshots. Use
+  `node scripts/screenshot.mjs <url> <out.png> [waitMs]`.
 - **Git rejects tiny epoch dates.** `GIT_AUTHOR_DATE="1000 +0000"` fails with
   "invalid date format". Fixtures add `BASE_TIME` in `test/fixtures.js`.
 - **`node --test test/` fails on Node 26.** A directory argument is resolved as a

@@ -1,17 +1,29 @@
 {
   "toolVersion": "0.1.0",
   "excludes": [],
-  "total": 24,
+  "total": 17456,
   "timeline": {
     "mode": "history",
     "now": 8105,
     "nowLabel": "2026 Q2",
     "principal": {
-      "name": "Alice",
-      "email": "alice@example.com"
+      "name": "Ada Lindqvist",
+      "email": "ada.lindqvist@example.com"
     },
     "series": {
       "quarters": [
+        8084,
+        8085,
+        8086,
+        8087,
+        8088,
+        8089,
+        8090,
+        8091,
+        8092,
+        8093,
+        8094,
+        8095,
         8096,
         8097,
         8098,
@@ -24,802 +36,1878 @@
         8105
       ],
       "total": [
-        5,
-        14,
-        14,
-        14,
-        14,
-        14,
-        15,
-        17,
-        20,
-        24
+        1247,
+        1878,
+        3059,
+        3649,
+        4490,
+        5939,
+        6639,
+        7485,
+        8477,
+        9280,
+        10039,
+        10836,
+        11310,
+        11612,
+        11927,
+        12917,
+        13706,
+        14786,
+        15506,
+        15709,
+        16737,
+        17474
       ],
       "principalShare": [
-        0.8,
-        0.5,
-        0.5714285714285714,
-        0.5,
-        0.5714285714285714,
-        0.5714285714285714,
-        0.5333333333333333,
-        0.47058823529411764,
-        0.4,
-        0.3333333333333333
+        0.9061748195669607,
+        0.9132055378061767,
+        0.7711670480549199,
+        0.7462318443409153,
+        0.7026726057906458,
+        0.6878262333726216,
+        0.6847416779635487,
+        0.678690714762859,
+        0.6705202312138728,
+        0.6702586206896551,
+        0.6667994820201215,
+        0.4768364710225175,
+        0.42166224580017686,
+        0.3986393386152256,
+        0.4257566865096001,
+        0.45722691027328327,
+        0.4777469721289946,
+        0.4974976328959827,
+        0.5115439184831678,
+        0.5235215481571074,
+        0.5358785923403239,
+        0.5425203158979055
       ],
       "nonContributorShare": [
         0,
-        0.2857142857142857,
-        0.2857142857142857,
-        0.2857142857142857,
-        0.2857142857142857,
-        0.2857142857142857,
-        0.3333333333333333,
-        0.35294117647058826,
-        0.3,
-        0.2916666666666667
+        0,
+        0.14547237659365805,
+        0.14003836667580158,
+        0.14120267260579064,
+        0.17073581411011954,
+        0.18225636391022745,
+        0.18530394121576485,
+        0.17871888639849004,
+        0.1658405172413793,
+        0.16535511505129993,
+        0.16731266149870802,
+        0.08063660477453581,
+        0.11531174646916982,
+        0.12199211872222689,
+        0.1252612835797786,
+        0.12680577849117175,
+        0.12883809008521574,
+        0.12453243905584935,
+        0.12814310267999235,
+        0.12845790762980225,
+        0.1303078860020602
       ],
       "inactiveShare": [
         0,
         0,
         0,
         0,
-        0.6428571428571429,
-        0.9285714285714286,
-        0.4666666666666667,
-        0.4117647058823529,
-        0.35,
-        0.2916666666666667
+        0.044097995545657014,
+        0.03401246001010271,
+        0.030426269016418137,
+        0,
+        0.04199598914710393,
+        0.10247844827586207,
+        0.09492977388186075,
+        0.7314507198228128,
+        0.7008841732979664,
+        0.6887702376851533,
+        0.6964869623543222,
+        0.7147944569172409,
+        0.7186633591127973,
+        0.7707290680373327,
+        0.7794402166903134,
+        0.7829906423069578,
+        0.76961223636255,
+        0.7627904314982259
       ],
       "newOwners": [
+        5,
+        1,
+        2,
+        3,
+        5,
+        2,
+        3,
+        4,
+        0,
+        0,
+        1,
+        3,
+        0,
+        0,
+        1,
+        3,
         2,
         2,
-        1,
-        1,
+        3,
         0,
         0,
-        0,
-        1,
-        1,
-        2
+        0
       ],
       "blank": [
-        0,
-        2,
-        2,
-        2,
-        2,
-        2,
-        2,
-        2,
-        2,
-        2
+        217,
+        352,
+        576,
+        713,
+        963,
+        1329,
+        1554,
+        1812,
+        2058,
+        2256,
+        2484,
+        2762,
+        2975,
+        3159,
+        3298,
+        3534,
+        3772,
+        4098,
+        4328,
+        4525,
+        4843,
+        5095
       ]
     },
     "kpis": [
       {
         "quarter": "2024 Q3",
-        "lines": 14,
-        "linesChange": 0,
+        "lines": 11927,
+        "linesChange": 0.027127109886324385,
         "newOwners": 1,
-        "principalShare": 0.5714285714285714,
-        "nonContributorShare": 0.2857142857142857,
-        "inactiveShare": 0,
-        "blank": 2
+        "principalShare": 0.4257566865096001,
+        "nonContributorShare": 0.12199211872222689,
+        "inactiveShare": 0.6964869623543222,
+        "blank": 3298
       },
       {
         "quarter": "2024 Q4",
-        "lines": 14,
-        "linesChange": 0,
-        "newOwners": 1,
-        "principalShare": 0.5,
-        "nonContributorShare": 0.2857142857142857,
-        "inactiveShare": 0,
-        "blank": 2
+        "lines": 12917,
+        "linesChange": 0.08300494675945336,
+        "newOwners": 3,
+        "principalShare": 0.45722691027328327,
+        "nonContributorShare": 0.1252612835797786,
+        "inactiveShare": 0.7147944569172409,
+        "blank": 3534
       },
       {
         "quarter": "2025 Q1",
-        "lines": 14,
-        "linesChange": 0,
-        "newOwners": 0,
-        "principalShare": 0.5714285714285714,
-        "nonContributorShare": 0.2857142857142857,
-        "inactiveShare": 0.6428571428571429,
-        "blank": 2
+        "lines": 13706,
+        "linesChange": 0.061082294650460556,
+        "newOwners": 2,
+        "principalShare": 0.4777469721289946,
+        "nonContributorShare": 0.12680577849117175,
+        "inactiveShare": 0.7186633591127973,
+        "blank": 3772
       },
       {
         "quarter": "2025 Q2",
-        "lines": 14,
-        "linesChange": 0,
-        "newOwners": 0,
-        "principalShare": 0.5714285714285714,
-        "nonContributorShare": 0.2857142857142857,
-        "inactiveShare": 0.9285714285714286,
-        "blank": 2
+        "lines": 14786,
+        "linesChange": 0.07879760688749449,
+        "newOwners": 2,
+        "principalShare": 0.4974976328959827,
+        "nonContributorShare": 0.12883809008521574,
+        "inactiveShare": 0.7707290680373327,
+        "blank": 4098
       },
       {
         "quarter": "2025 Q3",
-        "lines": 15,
-        "linesChange": 0.0714285714285714,
-        "newOwners": 0,
-        "principalShare": 0.5333333333333333,
-        "nonContributorShare": 0.3333333333333333,
-        "inactiveShare": 0.4666666666666667,
-        "blank": 2
+        "lines": 15506,
+        "linesChange": 0.048694711213309816,
+        "newOwners": 3,
+        "principalShare": 0.5115439184831678,
+        "nonContributorShare": 0.12453243905584935,
+        "inactiveShare": 0.7794402166903134,
+        "blank": 4328
       },
       {
         "quarter": "2025 Q4",
-        "lines": 17,
-        "linesChange": 0.1333333333333333,
-        "newOwners": 1,
-        "principalShare": 0.47058823529411764,
-        "nonContributorShare": 0.35294117647058826,
-        "inactiveShare": 0.4117647058823529,
-        "blank": 2
+        "lines": 15709,
+        "linesChange": 0.013091706436218153,
+        "newOwners": 0,
+        "principalShare": 0.5235215481571074,
+        "nonContributorShare": 0.12814310267999235,
+        "inactiveShare": 0.7829906423069578,
+        "blank": 4525
       },
       {
         "quarter": "2026 Q1",
-        "lines": 20,
-        "linesChange": 0.17647058823529416,
-        "newOwners": 1,
-        "principalShare": 0.4,
-        "nonContributorShare": 0.3,
-        "inactiveShare": 0.35,
-        "blank": 2
+        "lines": 16737,
+        "linesChange": 0.06544019351963848,
+        "newOwners": 0,
+        "principalShare": 0.5358785923403239,
+        "nonContributorShare": 0.12845790762980225,
+        "inactiveShare": 0.76961223636255,
+        "blank": 4843
       },
       {
         "quarter": "2026 Q2",
-        "lines": 24,
-        "linesChange": 0.19999999999999996,
-        "newOwners": 2,
-        "principalShare": 0.3333333333333333,
-        "nonContributorShare": 0.2916666666666667,
-        "inactiveShare": 0.2916666666666667,
-        "blank": 2
+        "lines": 17474,
+        "linesChange": 0.04403417577821589,
+        "newOwners": 0,
+        "principalShare": 0.5425203158979055,
+        "nonContributorShare": 0.1303078860020602,
+        "inactiveShare": 0.7627904314982259,
+        "blank": 5095
       }
     ],
     "projections": {
       "knowledgeLoss": {
         "target": 0.5,
-        "current": 0.2916666666666667,
+        "current": 0.7627904314982259,
         "fit": {
-          "slope": 0.053451744334097266,
-          "intercept": -432.67670231729045,
-          "r2": 0.25770385370697935
+          "slope": 0.03127486461528314,
+          "intercept": -252.62647076165518,
+          "r2": 0.35696325424184827
         },
-        "fitFrom": "2024 Q1",
+        "fitFrom": "2023 Q3",
         "fitTo": "2026 Q2",
-        "status": "projected",
-        "quarter": "2027 Q2"
+        "status": "reached",
+        "quarter": "2023 Q4"
       },
       "principal": {
         "target": 0.5,
-        "current": 0.3333333333333333,
+        "current": 0.5425203158979055,
         "fit": {
-          "slope": -0.03214667685255921,
-          "intercept": 260.92930990578054,
-          "r2": 0.6145355079615551
+          "slope": 0.0023691929418495276,
+          "intercept": -18.69464238966488,
+          "r2": 0.01432086910918339
         },
-        "fitFrom": "2024 Q1",
+        "fitFrom": "2023 Q3",
         "fitTo": "2026 Q2",
-        "status": "not-on-track"
+        "status": "reached",
+        "quarter": "2025 Q3"
       },
       "blank": {
-        "current": 2,
-        "milestone": 5,
+        "current": 5095,
+        "milestone": 10000,
         "fit": {
-          "slope": 0.10909090909090909,
-          "intercept": -881.8909090909091,
-          "r2": 0.27272727272727265
+          "slope": 233.506993006993,
+          "intercept": -1887550.4731934732,
+          "r2": 0.994738186754333
         },
-        "fitFrom": "2024 Q1",
+        "fitFrom": "2023 Q3",
         "fitTo": "2026 Q2",
         "status": "projected",
-        "quarter": "2033 Q2"
+        "quarter": "2031 Q4"
       }
     },
-    "headLines": 24
+    "headLines": 17456
   },
   "deletions": {
-    "added": 28,
-    "removed": 4,
-    "removedOfOthers": 4,
+    "added": 34094,
+    "removed": 16620,
+    "removedOfOthers": 15896,
     "topRemovers": [
       {
         "owner": {
-          "name": "Carol",
-          "email": "carol@example.com"
+          "name": "Fiona Format",
+          "email": "fiona.format@example.com"
         },
-        "lines": 2,
+        "lines": 5053,
+        "ownRemoved": 21
+      },
+      {
+        "owner": {
+          "name": "Juno Rasmussen",
+          "email": "juno.rasmussen@example.com"
+        },
+        "lines": 1256,
+        "ownRemoved": 36
+      },
+      {
+        "owner": {
+          "name": "Rosa Garcia",
+          "email": "rosa.garcia@example.com"
+        },
+        "lines": 866,
+        "ownRemoved": 169
+      },
+      {
+        "owner": {
+          "name": "Pavel Rasmussen",
+          "email": "pavel.rasmussen@example.com"
+        },
+        "lines": 599,
+        "ownRemoved": 16
+      },
+      {
+        "owner": {
+          "name": "Vera Tanaka",
+          "email": "vera.tanaka@example.com"
+        },
+        "lines": 564,
+        "ownRemoved": 8
+      },
+      {
+        "owner": {
+          "name": "Ivar Fischer",
+          "email": "ivar.fischer@example.com"
+        },
+        "lines": 532,
+        "ownRemoved": 10
+      },
+      {
+        "owner": {
+          "name": "Umar Lindqvist",
+          "email": "umar.lindqvist@example.com"
+        },
+        "lines": 473,
+        "ownRemoved": 11
+      },
+      {
+        "owner": {
+          "name": "Cleo Bianchi",
+          "email": "cleo.bianchi@example.com"
+        },
+        "lines": 426,
+        "ownRemoved": 1
+      },
+      {
+        "owner": {
+          "name": "Freja Eriksen",
+          "email": "freja.eriksen@example.com"
+        },
+        "lines": 425,
         "ownRemoved": 0
       },
       {
         "owner": {
-          "name": "Dave",
-          "email": "dave@example.com"
+          "name": "Tove Andersen",
+          "email": "tove.andersen@example.com"
         },
-        "lines": 1,
-        "ownRemoved": 0
-      },
-      {
-        "owner": {
-          "name": "Erin",
-          "email": "erin@example.com"
-        },
-        "lines": 1,
-        "ownRemoved": 0
+        "lines": 370,
+        "ownRemoved": 5
       }
     ],
     "mostRemovedOwners": [
       {
         "owner": {
-          "name": "Bob",
-          "email": "bob@example.com"
+          "name": "Ada Lindqvist",
+          "email": "ada.lindqvist@example.com"
         },
-        "lines": 2,
-        "ownRemoved": 0
+        "lines": 8426,
+        "ownRemoved": 84
       },
       {
         "owner": {
-          "name": "Alice",
-          "email": "alice@example.com"
+          "name": "Mira Quist",
+          "email": "mira.quist@example.com"
         },
-        "lines": 1,
-        "ownRemoved": 0
+        "lines": 2075,
+        "ownRemoved": 45
       },
       {
         "owner": {
-          "name": "Dave",
-          "email": "dave@example.com"
+          "name": "Fiona Format",
+          "email": "fiona.format@example.com"
         },
-        "lines": 1,
-        "ownRemoved": 0
+        "lines": 1058,
+        "ownRemoved": 21
+      },
+      {
+        "owner": {
+          "name": "Greta Okafor",
+          "email": "greta.okafor@example.com"
+        },
+        "lines": 700,
+        "ownRemoved": 48
+      },
+      {
+        "owner": {
+          "name": "Umar Lindqvist",
+          "email": "umar.lindqvist@example.com"
+        },
+        "lines": 561,
+        "ownRemoved": 11
+      },
+      {
+        "owner": {
+          "name": "Juno Rasmussen",
+          "email": "juno.rasmussen@example.com"
+        },
+        "lines": 401,
+        "ownRemoved": 36
+      },
+      {
+        "owner": {
+          "name": "Ines Dahl",
+          "email": "ines.dahl@example.com"
+        },
+        "lines": 375,
+        "ownRemoved": 66
+      },
+      {
+        "owner": {
+          "name": "Pavel Rasmussen",
+          "email": "pavel.rasmussen@example.com"
+        },
+        "lines": 274,
+        "ownRemoved": 16
+      },
+      {
+        "owner": {
+          "name": "Yusuf Ulrich",
+          "email": "yusuf.ulrich@example.com"
+        },
+        "lines": 251,
+        "ownRemoved": 31
+      },
+      {
+        "owner": {
+          "name": "Rosa Garcia",
+          "email": "rosa.garcia@example.com"
+        },
+        "lines": 227,
+        "ownRemoved": 169
       }
     ],
     "mostRemovedLine": {
-      "text": "    }",
+      "text": "  }",
       "binary": false,
-      "path": "b.js",
-      "lines": 1,
+      "path": "package.json",
+      "lines": 1562,
       "owner": {
-        "name": "Bob",
-        "email": "bob@example.com"
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
       }
     },
     "restored": {
-      "hashes": 1,
-      "lines": 1
+      "hashes": 983,
+      "lines": 22013
     }
   },
   "survival": {
     "all": {
       "curve": [
-        1,
-        0.875,
-        0.875,
-        0.8203125,
-        0.8203125,
-        0.8203125,
-        0.8203125,
-        0.8203125,
-        0.8203125,
-        0.8203125
+        0.9842200973778378,
+        0.9438837094695178,
+        0.878874285828292,
+        0.8149980743283883,
+        0.753763296429159,
+        0.6872696207715756,
+        0.6076975939410093,
+        0.5417593312188975,
+        0.4846547045509139,
+        0.4314935191075136,
+        0.39071501070834197,
+        0.35772992224551015,
+        0.3285395387652852,
+        0.30563141154951606,
+        0.2398510298071442,
+        0.17355768467658123,
+        0.1511489709588454,
+        0.13748578714335655,
+        0.120155645906799,
+        0.11308766673581082,
+        0.10052237043183183,
+        0.08304021905238282
       ],
-      "halfLife": 31.49556894608688,
-      "projected": true,
-      "lines": 28
+      "halfLife": 8,
+      "projected": false,
+      "lines": 34094
     },
     "owners": [
       {
         "owner": {
-          "name": "Alice",
-          "email": "alice@example.com"
+          "name": "Ada Lindqvist",
+          "email": "ada.lindqvist@example.com"
         },
         "curve": [
-          1,
-          1,
-          1,
-          0.8888888888888888,
-          0.8888888888888888,
-          0.8888888888888888,
-          0.8888888888888888,
-          0.8888888888888888,
-          0.8888888888888888,
-          0.8888888888888888
+          0.9961645358532518,
+          0.9807923452134775,
+          0.9200748547957802,
+          0.8598318583508184,
+          0.8017678048887485,
+          0.7285615949131434,
+          0.633231895008355,
+          0.5645738535887306,
+          0.5042534857702493,
+          0.445141891465191,
+          0.4033173068735336,
+          0.3675586901214118,
+          0.3374498090595415,
+          0.3140428858877814,
+          0.23205139351313897,
+          0.1415686673111874,
+          0.10821479281378722,
+          0.10062077226545128,
+          0.08089120907614711,
+          0.08089120907614711,
+          0.07613290265990316,
+          0.06289239784948522
         ],
-        "halfLife": 52.964542731255435,
-        "projected": true,
-        "lines": 9
+        "halfLife": 9,
+        "projected": false,
+        "lines": 17990
       },
       {
         "owner": {
-          "name": "Frank",
-          "email": "frank@example.com"
+          "name": "Mira Quist",
+          "email": "mira.quist@example.com"
         },
         "curve": [
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1,
-          1
+          0.9969811320754717,
+          0.960262243543355,
+          0.8870629702639544,
+          0.8174239016250403,
+          0.7575620502434086,
+          0.7181408138048608,
+          0.6653210365576192,
+          0.580119346207607,
+          0.5273077382853167,
+          0.45583851684543225,
+          0.3932153340200214,
+          0.38643575929553825,
+          0.35931746039760576,
+          0.3193932981312051,
+          0.29417803775242574,
+          0.2768734472964007,
+          0.2768734472964007,
+          0.2768734472964007,
+          0.26058677392602414,
+          0.26058677392602414
         ],
-        "halfLife": null,
+        "halfLife": 9,
         "projected": false,
-        "lines": 3
+        "lines": 3975
       },
       {
         "owner": {
-          "name": "Judy",
-          "email": "judy@example.com"
+          "name": "Umar Lindqvist",
+          "email": "umar.lindqvist@example.com"
         },
         "curve": [
-          1,
-          1
+          0.9765258215962441,
+          0.9061855450244186,
+          0.8885828732096475,
+          0.8633300739710074,
+          0.8359367962912723,
+          0.8054050997012887,
+          0.7283163258727368,
+          0.66267949927762,
+          0.6073409189621611,
+          0.5476024679167026,
+          0.4639990377004121,
+          0.40326617936266185,
+          0.35616939929111013,
+          0.31007688879461354,
+          0.18456957666346044,
+          0.18456957666346044,
+          0.18456957666346044
         ],
-        "halfLife": null,
+        "halfLife": 10,
         "projected": false,
-        "lines": 3
+        "lines": 1704
       }
     ]
   },
   "owners": [
     {
+      "identityId": 32,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "lines": 9490,
+      "commits": 41,
+      "written": 1920
+    },
+    {
       "identityId": 1,
       "owner": {
-        "name": "Alice",
-        "email": "alice@example.com"
+        "name": "Mira Quist",
+        "email": "mira.quist@example.com"
       },
-      "lines": 8,
-      "commits": 2,
-      "written": 5
+      "lines": 1856,
+      "commits": 31,
+      "written": 1230
     },
     {
-      "identityId": 9,
+      "identityId": 27,
       "owner": {
-        "name": "Frank",
-        "email": "frank@example.com"
+        "name": "Umar Lindqvist",
+        "email": "umar.lindqvist@example.com"
       },
-      "lines": 3,
-      "commits": 1,
-      "written": 5
+      "lines": 1132,
+      "commits": 42,
+      "written": 1493
     },
     {
-      "identityId": 11,
+      "identityId": 23,
       "owner": {
-        "name": "Judy",
-        "email": "judy@example.com"
+        "name": "Fiona Format",
+        "email": "fiona.format@example.com"
       },
-      "lines": 3,
-      "commits": 1,
-      "written": 3
+      "lines": 1111,
+      "commits": 4,
+      "written": 5074
     },
     {
-      "identityId": 8,
+      "identityId": 22,
       "owner": {
-        "name": "Grace",
-        "email": "grace@example.com"
+        "name": "Rosa Garcia",
+        "email": "rosa.garcia@example.com"
       },
-      "lines": 2,
-      "commits": 1,
-      "written": 1
+      "lines": 512,
+      "commits": 156,
+      "written": 2847
     },
     {
       "identityId": 6,
       "owner": {
-        "name": "Heidi",
-        "email": "heidi@example.com"
+        "name": "Juno Rasmussen",
+        "email": "juno.rasmussen@example.com"
       },
-      "lines": 2,
-      "commits": 1,
-      "written": 1
+      "lines": 351,
+      "commits": 141,
+      "written": 3551
+    },
+    {
+      "identityId": 8,
+      "owner": {
+        "name": "Ines Dahl",
+        "email": "ines.dahl@example.com"
+      },
+      "lines": 300,
+      "commits": 57,
+      "written": 1090
+    },
+    {
+      "identityId": 4,
+      "owner": {
+        "name": "Ivar Fischer",
+        "email": "ivar.fischer@example.com"
+      },
+      "lines": 224,
+      "commits": 72,
+      "written": 1127
+    },
+    {
+      "identityId": 16,
+      "owner": {
+        "name": "Pavel Rasmussen",
+        "email": "pavel.rasmussen@example.com"
+      },
+      "lines": 221,
+      "commits": 66,
+      "written": 1241
+    },
+    {
+      "identityId": 20,
+      "owner": {
+        "name": "Greta Okafor",
+        "email": "greta.okafor@example.com"
+      },
+      "lines": 218,
+      "commits": 34,
+      "written": 544
+    },
+    {
+      "identityId": 14,
+      "owner": {
+        "name": "Vera Tanaka",
+        "email": "vera.tanaka@example.com"
+      },
+      "lines": 140,
+      "commits": 45,
+      "written": 859
+    },
+    {
+      "identityId": 5,
+      "owner": {
+        "name": "Nils Yilmaz",
+        "email": "nils.yilmaz@example.com"
+      },
+      "lines": 134,
+      "commits": 53,
+      "written": 1081
     },
     {
       "identityId": 12,
       "owner": {
-        "name": "Kate",
-        "email": "kate@example.com"
+        "name": "Dagny Petrov",
+        "email": "dagny.petrov@example.com"
       },
-      "lines": 2,
-      "commits": 1,
-      "written": 0
+      "lines": 131,
+      "commits": 48,
+      "written": 1084
     },
     {
-      "identityId": 7,
+      "identityId": 38,
       "owner": {
-        "name": "Leo",
-        "email": "leo@example.com"
+        "name": "Olga Fischer",
+        "email": "olga.fischer@example.com"
       },
-      "lines": 2,
-      "commits": 1,
-      "written": 1
+      "lines": 130,
+      "commits": 21,
+      "written": 407
     },
     {
-      "identityId": 2,
+      "identityId": 37,
       "owner": {
-        "name": "Bob",
-        "email": "bob@example.com"
+        "name": "Wim Bianchi",
+        "email": "wim.bianchi@example.com"
       },
-      "lines": 1,
-      "commits": 1,
-      "written": 4
+      "lines": 126,
+      "commits": 26,
+      "written": 451
+    },
+    {
+      "identityId": 31,
+      "owner": {
+        "name": "Zora Costa",
+        "email": "zora.costa@example.com"
+      },
+      "lines": 115,
+      "commits": 40,
+      "written": 831
+    },
+    {
+      "identityId": 25,
+      "owner": {
+        "name": "Sven Silva",
+        "email": "sven.silva@example.com"
+      },
+      "lines": 110,
+      "commits": 25,
+      "written": 571
+    },
+    {
+      "identityId": 9,
+      "owner": {
+        "name": "Hugo Varga",
+        "email": "hugo.varga@example.com"
+      },
+      "lines": 109,
+      "commits": 38,
+      "written": 776
+    },
+    {
+      "identityId": 18,
+      "owner": {
+        "name": "Freja Eriksen",
+        "email": "freja.eriksen@example.com"
+      },
+      "lines": 105,
+      "commits": 58,
+      "written": 931
+    },
+    {
+      "identityId": 13,
+      "owner": {
+        "name": "Beatrix Varga",
+        "email": "beatrix.varga@example.com"
+      },
+      "lines": 103,
+      "commits": 44,
+      "written": 1037
+    },
+    {
+      "identityId": 17,
+      "owner": {
+        "name": "Farid Costa",
+        "email": "farid.costa@example.com"
+      },
+      "lines": 97,
+      "commits": 49,
+      "written": 703
+    },
+    {
+      "identityId": 19,
+      "owner": {
+        "name": "Kasimir Zeller",
+        "email": "kasimir.zeller@example.com"
+      },
+      "lines": 81,
+      "commits": 37,
+      "written": 611
+    },
+    {
+      "identityId": 28,
+      "owner": {
+        "name": "Casper Dahl",
+        "email": "casper.dahl@example.com"
+      },
+      "lines": 80,
+      "commits": 16,
+      "written": 340
+    },
+    {
+      "identityId": 35,
+      "owner": {
+        "name": "Cleo Bianchi",
+        "email": "cleo.bianchi@example.com"
+      },
+      "lines": 69,
+      "commits": 40,
+      "written": 534
     },
     {
       "identityId": 3,
       "owner": {
-        "name": "Carol",
-        "email": "carol@example.com"
+        "name": "Emil Weber",
+        "email": "emil.weber@example.com"
       },
-      "lines": 1,
+      "lines": 68,
+      "commits": 17,
+      "written": 280
+    },
+    {
+      "identityId": 26,
+      "owner": {
+        "name": "Bruno Tanaka",
+        "email": "bruno.tanaka@example.com"
+      },
+      "lines": 63,
+      "commits": 28,
+      "written": 598
+    },
+    {
+      "identityId": 21,
+      "owner": {
+        "name": "Yusuf Ulrich",
+        "email": "yusuf.ulrich@example.com"
+      },
+      "lines": 63,
+      "commits": 57,
+      "written": 590
+    },
+    {
+      "identityId": 40,
+      "owner": {
+        "name": "Dmitri Moreau",
+        "email": "dmitri.moreau@example.com"
+      },
+      "lines": 52,
+      "commits": 8,
+      "written": 241
+    },
+    {
+      "identityId": 15,
+      "owner": {
+        "name": "Gustav Quist",
+        "email": "gustav.quist@example.com"
+      },
+      "lines": 45,
+      "commits": 34,
+      "written": 400
+    },
+    {
+      "identityId": 2,
+      "owner": {
+        "name": "depbot[bot]",
+        "email": "depbot@example.com"
+      },
+      "lines": 35,
+      "commits": 124,
+      "written": 126
+    },
+    {
+      "identityId": 34,
+      "owner": {
+        "name": "Aron Okafor",
+        "email": "aron.okafor@example.com"
+      },
+      "lines": 33,
+      "commits": 15,
+      "written": 199
+    },
+    {
+      "identityId": 33,
+      "owner": {
+        "name": "Jonas Petrov",
+        "email": "jonas.petrov@example.com"
+      },
+      "lines": 29,
+      "commits": 16,
+      "written": 225
+    },
+    {
+      "identityId": 36,
+      "owner": {
+        "name": "Lars Eriksen",
+        "email": "lars.eriksen@example.com"
+      },
+      "lines": 28,
+      "commits": 4,
+      "written": 117
+    },
+    {
+      "identityId": 7,
+      "owner": {
+        "name": "Tove Andersen",
+        "email": "tove.andersen@example.com"
+      },
+      "lines": 23,
+      "commits": 31,
+      "written": 320
+    },
+    {
+      "identityId": 30,
+      "owner": {
+        "name": "Xenia Moreau",
+        "email": "xenia.moreau@example.com"
+      },
+      "lines": 17,
+      "commits": 8,
+      "written": 110
+    },
+    {
+      "identityId": 10,
+      "owner": {
+        "name": "Kaia Weber",
+        "email": "kaia.weber@example.com"
+      },
+      "lines": 14,
+      "commits": 15,
+      "written": 132
+    },
+    {
+      "identityId": 29,
+      "owner": {
+        "name": "Hedda Yilmaz",
+        "email": "hedda.yilmaz@example.com"
+      },
+      "lines": 12,
+      "commits": 3,
+      "written": 42
+    },
+    {
+      "identityId": 24,
+      "owner": {
+        "name": "Linnea Garcia",
+        "email": "linnea.garcia@example.com"
+      },
+      "lines": 12,
+      "commits": 9,
+      "written": 163
+    },
+    {
+      "identityId": 11,
+      "owner": {
+        "name": "Quinn Zeller",
+        "email": "quinn.zeller@example.com"
+      },
+      "lines": 12,
+      "commits": 8,
+      "written": 209
+    },
+    {
+      "identityId": 39,
+      "owner": {
+        "name": "Elif Ulrich",
+        "email": "elif.ulrich@example.com"
+      },
+      "lines": 5,
       "commits": 1,
-      "written": 2
+      "written": 9
     }
   ],
   "lines": [
     {
-      "text": "}",
-      "binary": false,
-      "path": "a.js",
-      "lines": 3,
-      "owner": {
-        "name": "Alice",
-        "email": "alice@example.com"
-      },
-      "origin": "alpha"
-    },
-    {
-      "text": null,
-      "binary": true,
-      "path": "logo.png",
-      "lines": 2,
-      "owner": {
-        "name": "Kate",
-        "email": "kate@example.com"
-      },
-      "origin": "beta"
-    },
-    {
-      "text": "function a() {",
-      "binary": false,
-      "path": "a.js",
-      "lines": 2,
-      "owner": {
-        "name": "Alice",
-        "email": "alice@example.com"
-      },
-      "origin": "alpha"
-    },
-    {
-      "text": "  return 1;",
-      "binary": false,
-      "path": "a.js",
-      "lines": 2,
-      "owner": {
-        "name": "Alice",
-        "email": "alice@example.com"
-      },
-      "origin": "alpha"
-    },
-    {
-      "text": "tie();",
-      "binary": false,
-      "path": "a.js",
-      "lines": 2,
-      "owner": {
-        "name": "Heidi",
-        "email": "heidi@example.com"
-      },
-      "origin": "alpha"
-    },
-    {
-      "text": "const shared = true;",
-      "binary": false,
-      "path": "shared.js",
-      "lines": 2,
-      "owner": {
-        "name": "Grace",
-        "email": "grace@example.com"
-      },
-      "origin": "beta"
-    },
-    {
       "text": "",
       "binary": false,
-      "path": "copy.js",
-      "lines": 2,
+      "path": "src/config-format.js",
+      "lines": 3578,
       "owner": {
-        "name": "Frank",
-        "email": "frank@example.com"
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
       },
-      "origin": "beta"
+      "origin": "platform"
     },
     {
-      "text": "// beta only",
+      "text": "}",
       "binary": false,
-      "path": "copy.js",
-      "lines": 1,
+      "path": "package.json",
+      "lines": 1118,
       "owner": {
-        "name": "Frank",
-        "email": "frank@example.com"
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
       },
-      "origin": "beta"
+      "origin": "platform"
     },
     {
-      "text": "}\r",
+      "text": "  }",
       "binary": false,
-      "path": "win.js",
-      "lines": 1,
+      "path": "package.json",
+      "lines": 1105,
       "owner": {
-        "name": "Judy",
-        "email": "judy@example.com"
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
       },
-      "origin": "beta"
+      "origin": "platform"
     },
     {
-      "text": "function a() {\r",
+      "text": "    }",
       "binary": false,
-      "path": "win.js",
-      "lines": 1,
+      "path": "src/event-create.js",
+      "lines": 583,
       "owner": {
-        "name": "Judy",
-        "email": "judy@example.com"
+        "name": "Mira Quist",
+        "email": "mira.quist@example.com"
       },
-      "origin": "beta"
+      "origin": "api-gateway"
+    },
+    {
+      "text": "    return null;",
+      "binary": false,
+      "path": "src/config-format.js",
+      "lines": 533,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": "        return null;",
+      "binary": false,
+      "path": "src/event-create.js",
+      "lines": 288,
+      "owner": {
+        "name": "Mira Quist",
+        "email": "mira.quist@example.com"
+      },
+      "origin": "api-gateway"
+    },
+    {
+      "text": "        return None",
+      "binary": false,
+      "path": "data_pipeline/account_save.py",
+      "lines": 224,
+      "owner": {
+        "name": "Umar Lindqvist",
+        "email": "umar.lindqvist@example.com"
+      },
+      "origin": "data-pipeline"
+    },
+    {
+      "text": "/*",
+      "binary": false,
+      "path": "src/config-format.js",
+      "lines": 198,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": " * Copyright Example Corp. All rights reserved.",
+      "binary": false,
+      "path": "src/config-format.js",
+      "lines": 193,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": " * Licensed under the Example Corp internal license.",
+      "binary": false,
+      "path": "src/config-format.js",
+      "lines": 189,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": " */",
+      "binary": false,
+      "path": "src/config-format.js",
+      "lines": 186,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": "'use strict';",
+      "binary": false,
+      "path": "src/config-format.js",
+      "lines": 180,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": "  return result;",
+      "binary": false,
+      "path": "src/event-update.js",
+      "lines": 76,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": "  return value;",
+      "binary": false,
+      "path": "src/order-remove.js",
+      "lines": 70,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
+    },
+    {
+      "text": "  if (!result) {",
+      "binary": false,
+      "path": "src/event-update.js",
+      "lines": 70,
+      "owner": {
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
+      },
+      "origin": "platform"
     }
   ],
   "methods": {
     "commits": {
       "owner": {
-        "name": "Alice",
-        "email": "alice@example.com"
+        "name": "Rosa Garcia",
+        "email": "rosa.garcia@example.com"
       },
-      "identityId": 1,
-      "count": 2,
-      "total": 13,
-      "share": 0.15384615384615385
+      "identityId": 22,
+      "count": 156,
+      "total": 1562,
+      "share": 0.0998719590268886
     },
     "blame": {
       "owner": {
-        "name": "Frank",
-        "email": "frank@example.com"
+        "name": "Fiona Format",
+        "email": "fiona.format@example.com"
       },
-      "identityId": 9,
-      "count": 5,
-      "total": 21,
-      "share": 0.23809523809523808
+      "identityId": 23,
+      "count": 2759,
+      "total": 17456,
+      "share": 0.1580545371219065
     },
     "hash": {
       "owner": {
-        "name": "Alice",
-        "email": "alice@example.com"
+        "name": "Ada Lindqvist",
+        "email": "ada.lindqvist@example.com"
       },
-      "identityId": 1,
-      "count": 8,
-      "total": 24,
-      "share": 0.3333333333333333
+      "identityId": 32,
+      "count": 9490,
+      "total": 17456,
+      "share": 0.5436526122823098
     },
     "agree": false
   },
   "repos": [
     {
-      "name": "alpha",
+      "name": "api-gateway",
       "methods": {
         "commits": {
           "owner": {
-            "name": "Alice",
-            "email": "alice@example.com"
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
           },
-          "identityId": 1,
-          "count": 2,
-          "total": 8,
-          "share": 0.25
+          "identityId": 6,
+          "count": 46,
+          "total": 264,
+          "share": 0.17424242424242425
         },
         "blame": {
           "owner": {
-            "name": "Alice",
-            "email": "alice@example.com"
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
           },
-          "identityId": 1,
-          "count": 4,
-          "total": 11,
-          "share": 0.36363636363636365
+          "identityId": 23,
+          "count": 819,
+          "total": 3528,
+          "share": 0.23214285714285715
         },
         "hash": {
           "owner": {
-            "name": "Alice",
-            "email": "alice@example.com"
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
           },
-          "identityId": 1,
-          "count": 5,
-          "total": 13,
-          "share": 0.38461538461538464
+          "identityId": 32,
+          "count": 2023,
+          "total": 3528,
+          "share": 0.5734126984126984
         },
-        "blamedFiles": 6,
-        "files": 6,
-        "agree": true
+        "blamedFiles": 52,
+        "files": 52,
+        "agree": false
       },
-      "lines": 13,
-      "foreign": 3,
-      "absentee": 3,
+      "lines": 3528,
+      "foreign": 2336,
+      "absentee": 2026,
       "owners": [
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "lines": 2023,
+          "contributor": false
+        },
         {
           "identityId": 1,
           "owner": {
-            "name": "Alice",
-            "email": "alice@example.com"
+            "name": "Mira Quist",
+            "email": "mira.quist@example.com"
           },
-          "lines": 5,
+          "lines": 491,
           "contributor": true
         },
         {
-          "identityId": 7,
+          "identityId": 23,
           "owner": {
-            "name": "Leo",
-            "email": "leo@example.com"
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
           },
-          "lines": 2,
+          "lines": 398,
+          "contributor": true
+        },
+        {
+          "identityId": 6,
+          "owner": {
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "lines": 95,
+          "contributor": true
+        },
+        {
+          "identityId": 9,
+          "owner": {
+            "name": "Hugo Varga",
+            "email": "hugo.varga@example.com"
+          },
+          "lines": 90,
+          "contributor": true
+        },
+        {
+          "identityId": 5,
+          "owner": {
+            "name": "Nils Yilmaz",
+            "email": "nils.yilmaz@example.com"
+          },
+          "lines": 85,
+          "contributor": true
+        },
+        {
+          "identityId": 12,
+          "owner": {
+            "name": "Dagny Petrov",
+            "email": "dagny.petrov@example.com"
+          },
+          "lines": 80,
+          "contributor": true
+        },
+        {
+          "identityId": 25,
+          "owner": {
+            "name": "Sven Silva",
+            "email": "sven.silva@example.com"
+          },
+          "lines": 49,
+          "contributor": true
+        },
+        {
+          "identityId": 27,
+          "owner": {
+            "name": "Umar Lindqvist",
+            "email": "umar.lindqvist@example.com"
+          },
+          "lines": 41,
+          "contributor": true
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Ines Dahl",
+            "email": "ines.dahl@example.com"
+          },
+          "lines": 26,
+          "contributor": true
+        },
+        {
+          "identityId": 16,
+          "owner": {
+            "name": "Pavel Rasmussen",
+            "email": "pavel.rasmussen@example.com"
+          },
+          "lines": 25,
+          "contributor": true
+        },
+        {
+          "identityId": 14,
+          "owner": {
+            "name": "Vera Tanaka",
+            "email": "vera.tanaka@example.com"
+          },
+          "lines": 22,
+          "contributor": true
+        },
+        {
+          "identityId": 26,
+          "owner": {
+            "name": "Bruno Tanaka",
+            "email": "bruno.tanaka@example.com"
+          },
+          "lines": 15,
           "contributor": true
         },
         {
           "identityId": 2,
           "owner": {
-            "name": "Bob",
-            "email": "bob@example.com"
+            "name": "depbot[bot]",
+            "email": "depbot@example.com"
           },
-          "lines": 1,
+          "lines": 10,
+          "contributor": true
+        },
+        {
+          "identityId": 15,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          },
+          "lines": 9,
+          "contributor": true
+        },
+        {
+          "identityId": 4,
+          "owner": {
+            "name": "Ivar Fischer",
+            "email": "ivar.fischer@example.com"
+          },
+          "lines": 9,
+          "contributor": true
+        },
+        {
+          "identityId": 17,
+          "owner": {
+            "name": "Farid Costa",
+            "email": "farid.costa@example.com"
+          },
+          "lines": 8,
+          "contributor": true
+        },
+        {
+          "identityId": 10,
+          "owner": {
+            "name": "Kaia Weber",
+            "email": "kaia.weber@example.com"
+          },
+          "lines": 8,
+          "contributor": true
+        },
+        {
+          "identityId": 22,
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "lines": 6,
+          "contributor": true
+        },
+        {
+          "identityId": 21,
+          "owner": {
+            "name": "Yusuf Ulrich",
+            "email": "yusuf.ulrich@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 13,
+          "owner": {
+            "name": "Beatrix Varga",
+            "email": "beatrix.varga@example.com"
+          },
+          "lines": 4,
           "contributor": true
         },
         {
           "identityId": 3,
           "owner": {
-            "name": "Carol",
-            "email": "carol@example.com"
+            "name": "Emil Weber",
+            "email": "emil.weber@example.com"
           },
-          "lines": 1,
+          "lines": 4,
           "contributor": true
         },
         {
-          "identityId": 9,
+          "identityId": 18,
           "owner": {
-            "name": "Frank",
-            "email": "frank@example.com"
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
           },
-          "lines": 1,
-          "contributor": false
-        },
-        {
-          "identityId": 8,
-          "owner": {
-            "name": "Grace",
-            "email": "grace@example.com"
-          },
-          "lines": 1,
-          "contributor": false
-        },
-        {
-          "identityId": 6,
-          "owner": {
-            "name": "Heidi",
-            "email": "heidi@example.com"
-          },
-          "lines": 1,
+          "lines": 4,
           "contributor": true
         },
         {
-          "identityId": 12,
+          "identityId": 19,
           "owner": {
-            "name": "Kate",
-            "email": "kate@example.com"
+            "name": "Kasimir Zeller",
+            "email": "kasimir.zeller@example.com"
           },
-          "lines": 1,
-          "contributor": false
-        }
-      ],
-      "origins": [
-        {
-          "repo": "alpha",
-          "lines": 10
+          "lines": 4,
+          "contributor": true
         },
         {
-          "repo": "beta",
-          "lines": 3
-        }
-      ]
-    },
-    {
-      "name": "beta",
-      "methods": {
-        "commits": {
+          "identityId": 7,
           "owner": {
-            "name": "Frank",
-            "email": "frank@example.com"
+            "name": "Tove Andersen",
+            "email": "tove.andersen@example.com"
           },
-          "identityId": 9,
-          "count": 1,
-          "total": 5,
-          "share": 0.2
-        },
-        "blame": {
-          "owner": {
-            "name": "Frank",
-            "email": "frank@example.com"
-          },
-          "identityId": 9,
-          "count": 5,
-          "total": 10,
-          "share": 0.5
-        },
-        "hash": {
-          "owner": {
-            "name": "Alice",
-            "email": "alice@example.com"
-          },
-          "identityId": 1,
-          "count": 3,
-          "total": 11,
-          "share": 0.2727272727272727
-        },
-        "blamedFiles": 4,
-        "files": 4,
-        "agree": false
-      },
-      "lines": 11,
-      "foreign": 4,
-      "absentee": 4,
-      "owners": [
-        {
-          "identityId": 1,
-          "owner": {
-            "name": "Alice",
-            "email": "alice@example.com"
-          },
-          "lines": 3,
-          "contributor": false
+          "lines": 4,
+          "contributor": true
         },
         {
-          "identityId": 11,
+          "identityId": 28,
           "owner": {
-            "name": "Judy",
-            "email": "judy@example.com"
+            "name": "Casper Dahl",
+            "email": "casper.dahl@example.com"
           },
           "lines": 3,
           "contributor": true
         },
         {
-          "identityId": 9,
+          "identityId": 24,
           "owner": {
-            "name": "Frank",
-            "email": "frank@example.com"
+            "name": "Linnea Garcia",
+            "email": "linnea.garcia@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 29,
+          "owner": {
+            "name": "Hedda Yilmaz",
+            "email": "hedda.yilmaz@example.com"
           },
           "lines": 2,
           "contributor": true
         },
         {
-          "identityId": 8,
+          "identityId": 33,
           "owner": {
-            "name": "Grace",
-            "email": "grace@example.com"
+            "name": "Jonas Petrov",
+            "email": "jonas.petrov@example.com"
+          },
+          "lines": 2,
+          "contributor": false
+        },
+        {
+          "identityId": 31,
+          "owner": {
+            "name": "Zora Costa",
+            "email": "zora.costa@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 35,
+          "owner": {
+            "name": "Cleo Bianchi",
+            "email": "cleo.bianchi@example.com"
           },
           "lines": 1,
+          "contributor": false
+        }
+      ],
+      "origins": [
+        {
+          "repo": "platform",
+          "lines": 2240
+        },
+        {
+          "repo": "api-gateway",
+          "lines": 1192
+        },
+        {
+          "repo": "web-frontend",
+          "lines": 64
+        },
+        {
+          "repo": "billing-service",
+          "lines": 32
+        }
+      ]
+    },
+    {
+      "name": "billing-service",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
+          },
+          "identityId": 18,
+          "count": 28,
+          "total": 224,
+          "share": 0.125
+        },
+        "blame": {
+          "owner": {
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "identityId": 6,
+          "count": 350,
+          "total": 2089,
+          "share": 0.1675442795595979
+        },
+        "hash": {
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "identityId": 32,
+          "count": 1316,
+          "total": 2089,
+          "share": 0.6299664911440881
+        },
+        "blamedFiles": 30,
+        "files": 30,
+        "agree": false
+      },
+      "lines": 2089,
+      "foreign": 1662,
+      "absentee": 229,
+      "owners": [
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "lines": 1316,
+          "contributor": true
+        },
+        {
+          "identityId": 1,
+          "owner": {
+            "name": "Mira Quist",
+            "email": "mira.quist@example.com"
+          },
+          "lines": 213,
+          "contributor": false
+        },
+        {
+          "identityId": 23,
+          "owner": {
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
+          },
+          "lines": 133,
           "contributor": true
         },
         {
           "identityId": 6,
           "owner": {
-            "name": "Heidi",
-            "email": "heidi@example.com"
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "lines": 61,
+          "contributor": true
+        },
+        {
+          "identityId": 14,
+          "owner": {
+            "name": "Vera Tanaka",
+            "email": "vera.tanaka@example.com"
+          },
+          "lines": 60,
+          "contributor": true
+        },
+        {
+          "identityId": 31,
+          "owner": {
+            "name": "Zora Costa",
+            "email": "zora.costa@example.com"
+          },
+          "lines": 49,
+          "contributor": true
+        },
+        {
+          "identityId": 18,
+          "owner": {
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
+          },
+          "lines": 45,
+          "contributor": true
+        },
+        {
+          "identityId": 16,
+          "owner": {
+            "name": "Pavel Rasmussen",
+            "email": "pavel.rasmussen@example.com"
+          },
+          "lines": 24,
+          "contributor": true
+        },
+        {
+          "identityId": 28,
+          "owner": {
+            "name": "Casper Dahl",
+            "email": "casper.dahl@example.com"
+          },
+          "lines": 21,
+          "contributor": true
+        },
+        {
+          "identityId": 34,
+          "owner": {
+            "name": "Aron Okafor",
+            "email": "aron.okafor@example.com"
+          },
+          "lines": 20,
+          "contributor": true
+        },
+        {
+          "identityId": 15,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          },
+          "lines": 17,
+          "contributor": true
+        },
+        {
+          "identityId": 35,
+          "owner": {
+            "name": "Cleo Bianchi",
+            "email": "cleo.bianchi@example.com"
+          },
+          "lines": 16,
+          "contributor": true
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Ines Dahl",
+            "email": "ines.dahl@example.com"
+          },
+          "lines": 14,
+          "contributor": false
+        },
+        {
+          "identityId": 17,
+          "owner": {
+            "name": "Farid Costa",
+            "email": "farid.costa@example.com"
+          },
+          "lines": 13,
+          "contributor": true
+        },
+        {
+          "identityId": 4,
+          "owner": {
+            "name": "Ivar Fischer",
+            "email": "ivar.fischer@example.com"
+          },
+          "lines": 12,
+          "contributor": true
+        },
+        {
+          "identityId": 29,
+          "owner": {
+            "name": "Hedda Yilmaz",
+            "email": "hedda.yilmaz@example.com"
+          },
+          "lines": 10,
+          "contributor": true
+        },
+        {
+          "identityId": 26,
+          "owner": {
+            "name": "Bruno Tanaka",
+            "email": "bruno.tanaka@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 2,
+          "owner": {
+            "name": "depbot[bot]",
+            "email": "depbot@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 36,
+          "owner": {
+            "name": "Lars Eriksen",
+            "email": "lars.eriksen@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 27,
+          "owner": {
+            "name": "Umar Lindqvist",
+            "email": "umar.lindqvist@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 5,
+          "owner": {
+            "name": "Nils Yilmaz",
+            "email": "nils.yilmaz@example.com"
+          },
+          "lines": 6,
+          "contributor": true
+        },
+        {
+          "identityId": 19,
+          "owner": {
+            "name": "Kasimir Zeller",
+            "email": "kasimir.zeller@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 12,
+          "owner": {
+            "name": "Dagny Petrov",
+            "email": "dagny.petrov@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 9,
+          "owner": {
+            "name": "Hugo Varga",
+            "email": "hugo.varga@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 10,
+          "owner": {
+            "name": "Kaia Weber",
+            "email": "kaia.weber@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 22,
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 37,
+          "owner": {
+            "name": "Wim Bianchi",
+            "email": "wim.bianchi@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 13,
+          "owner": {
+            "name": "Beatrix Varga",
+            "email": "beatrix.varga@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 20,
+          "owner": {
+            "name": "Greta Okafor",
+            "email": "greta.okafor@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 38,
+          "owner": {
+            "name": "Olga Fischer",
+            "email": "olga.fischer@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 3,
+          "owner": {
+            "name": "Emil Weber",
+            "email": "emil.weber@example.com"
           },
           "lines": 1,
           "contributor": false
         },
         {
-          "identityId": 12,
+          "identityId": 33,
           "owner": {
-            "name": "Kate",
-            "email": "kate@example.com"
+            "name": "Jonas Petrov",
+            "email": "jonas.petrov@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 24,
+          "owner": {
+            "name": "Linnea Garcia",
+            "email": "linnea.garcia@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 11,
+          "owner": {
+            "name": "Quinn Zeller",
+            "email": "quinn.zeller@example.com"
+          },
+          "lines": 1,
+          "contributor": false
+        },
+        {
+          "identityId": 21,
+          "owner": {
+            "name": "Yusuf Ulrich",
+            "email": "yusuf.ulrich@example.com"
           },
           "lines": 1,
           "contributor": true
@@ -827,12 +1915,1193 @@
       ],
       "origins": [
         {
-          "repo": "beta",
-          "lines": 7
+          "repo": "platform",
+          "lines": 1377
         },
         {
-          "repo": "alpha",
-          "lines": 4
+          "repo": "billing-service",
+          "lines": 427
+        },
+        {
+          "repo": "api-gateway",
+          "lines": 251
+        },
+        {
+          "repo": "web-frontend",
+          "lines": 34
+        }
+      ]
+    },
+    {
+      "name": "data-pipeline",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "identityId": 22,
+          "count": 99,
+          "total": 223,
+          "share": 0.4439461883408072
+        },
+        "blame": {
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "identityId": 22,
+          "count": 1188,
+          "total": 3189,
+          "share": 0.37253057384760113
+        },
+        "hash": {
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "identityId": 32,
+          "count": 1020,
+          "total": 3189,
+          "share": 0.3198494825964252
+        },
+        "blamedFiles": 56,
+        "files": 56,
+        "agree": false
+      },
+      "lines": 3189,
+      "foreign": 987,
+      "absentee": 0,
+      "owners": [
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "lines": 1020,
+          "contributor": true
+        },
+        {
+          "identityId": 27,
+          "owner": {
+            "name": "Umar Lindqvist",
+            "email": "umar.lindqvist@example.com"
+          },
+          "lines": 979,
+          "contributor": true
+        },
+        {
+          "identityId": 22,
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "lines": 423,
+          "contributor": true
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Ines Dahl",
+            "email": "ines.dahl@example.com"
+          },
+          "lines": 180,
+          "contributor": true
+        },
+        {
+          "identityId": 38,
+          "owner": {
+            "name": "Olga Fischer",
+            "email": "olga.fischer@example.com"
+          },
+          "lines": 125,
+          "contributor": true
+        },
+        {
+          "identityId": 37,
+          "owner": {
+            "name": "Wim Bianchi",
+            "email": "wim.bianchi@example.com"
+          },
+          "lines": 118,
+          "contributor": true
+        },
+        {
+          "identityId": 4,
+          "owner": {
+            "name": "Ivar Fischer",
+            "email": "ivar.fischer@example.com"
+          },
+          "lines": 61,
+          "contributor": true
+        },
+        {
+          "identityId": 28,
+          "owner": {
+            "name": "Casper Dahl",
+            "email": "casper.dahl@example.com"
+          },
+          "lines": 56,
+          "contributor": true
+        },
+        {
+          "identityId": 17,
+          "owner": {
+            "name": "Farid Costa",
+            "email": "farid.costa@example.com"
+          },
+          "lines": 53,
+          "contributor": true
+        },
+        {
+          "identityId": 3,
+          "owner": {
+            "name": "Emil Weber",
+            "email": "emil.weber@example.com"
+          },
+          "lines": 48,
+          "contributor": true
+        },
+        {
+          "identityId": 13,
+          "owner": {
+            "name": "Beatrix Varga",
+            "email": "beatrix.varga@example.com"
+          },
+          "lines": 26,
+          "contributor": true
+        },
+        {
+          "identityId": 40,
+          "owner": {
+            "name": "Dmitri Moreau",
+            "email": "dmitri.moreau@example.com"
+          },
+          "lines": 22,
+          "contributor": true
+        },
+        {
+          "identityId": 16,
+          "owner": {
+            "name": "Pavel Rasmussen",
+            "email": "pavel.rasmussen@example.com"
+          },
+          "lines": 19,
+          "contributor": true
+        },
+        {
+          "identityId": 12,
+          "owner": {
+            "name": "Dagny Petrov",
+            "email": "dagny.petrov@example.com"
+          },
+          "lines": 18,
+          "contributor": true
+        },
+        {
+          "identityId": 33,
+          "owner": {
+            "name": "Jonas Petrov",
+            "email": "jonas.petrov@example.com"
+          },
+          "lines": 8,
+          "contributor": true
+        },
+        {
+          "identityId": 34,
+          "owner": {
+            "name": "Aron Okafor",
+            "email": "aron.okafor@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 26,
+          "owner": {
+            "name": "Bruno Tanaka",
+            "email": "bruno.tanaka@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 39,
+          "owner": {
+            "name": "Elif Ulrich",
+            "email": "elif.ulrich@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 18,
+          "owner": {
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
+          },
+          "lines": 4,
+          "contributor": true
+        },
+        {
+          "identityId": 31,
+          "owner": {
+            "name": "Zora Costa",
+            "email": "zora.costa@example.com"
+          },
+          "lines": 4,
+          "contributor": true
+        },
+        {
+          "identityId": 24,
+          "owner": {
+            "name": "Linnea Garcia",
+            "email": "linnea.garcia@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 15,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 10,
+          "owner": {
+            "name": "Kaia Weber",
+            "email": "kaia.weber@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 19,
+          "owner": {
+            "name": "Kasimir Zeller",
+            "email": "kasimir.zeller@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        }
+      ],
+      "origins": [
+        {
+          "repo": "data-pipeline",
+          "lines": 2202
+        },
+        {
+          "repo": "platform",
+          "lines": 987
+        }
+      ]
+    },
+    {
+      "name": "infra-config",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Yusuf Ulrich",
+            "email": "yusuf.ulrich@example.com"
+          },
+          "identityId": 21,
+          "count": 40,
+          "total": 163,
+          "share": 0.24539877300613497
+        },
+        "blame": {
+          "owner": {
+            "name": "Cleo Bianchi",
+            "email": "cleo.bianchi@example.com"
+          },
+          "identityId": 35,
+          "count": 107,
+          "total": 365,
+          "share": 0.29315068493150687
+        },
+        "hash": {
+          "owner": {
+            "name": "Greta Okafor",
+            "email": "greta.okafor@example.com"
+          },
+          "identityId": 20,
+          "count": 192,
+          "total": 365,
+          "share": 0.5260273972602739
+        },
+        "blamedFiles": 13,
+        "files": 13,
+        "agree": false
+      },
+      "lines": 365,
+      "foreign": 60,
+      "absentee": 0,
+      "owners": [
+        {
+          "identityId": 20,
+          "owner": {
+            "name": "Greta Okafor",
+            "email": "greta.okafor@example.com"
+          },
+          "lines": 192,
+          "contributor": true
+        },
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "lines": 66,
+          "contributor": true
+        },
+        {
+          "identityId": 21,
+          "owner": {
+            "name": "Yusuf Ulrich",
+            "email": "yusuf.ulrich@example.com"
+          },
+          "lines": 40,
+          "contributor": true
+        },
+        {
+          "identityId": 6,
+          "owner": {
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "lines": 24,
+          "contributor": true
+        },
+        {
+          "identityId": 7,
+          "owner": {
+            "name": "Tove Andersen",
+            "email": "tove.andersen@example.com"
+          },
+          "lines": 14,
+          "contributor": true
+        },
+        {
+          "identityId": 35,
+          "owner": {
+            "name": "Cleo Bianchi",
+            "email": "cleo.bianchi@example.com"
+          },
+          "lines": 13,
+          "contributor": true
+        },
+        {
+          "identityId": 22,
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 13,
+          "owner": {
+            "name": "Beatrix Varga",
+            "email": "beatrix.varga@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 40,
+          "owner": {
+            "name": "Dmitri Moreau",
+            "email": "dmitri.moreau@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 15,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          },
+          "lines": 2,
+          "contributor": true
+        },
+        {
+          "identityId": 17,
+          "owner": {
+            "name": "Farid Costa",
+            "email": "farid.costa@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 18,
+          "owner": {
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 4,
+          "owner": {
+            "name": "Ivar Fischer",
+            "email": "ivar.fischer@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 10,
+          "owner": {
+            "name": "Kaia Weber",
+            "email": "kaia.weber@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 36,
+          "owner": {
+            "name": "Lars Eriksen",
+            "email": "lars.eriksen@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 24,
+          "owner": {
+            "name": "Linnea Garcia",
+            "email": "linnea.garcia@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        },
+        {
+          "identityId": 5,
+          "owner": {
+            "name": "Nils Yilmaz",
+            "email": "nils.yilmaz@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        }
+      ],
+      "origins": [
+        {
+          "repo": "infra-config",
+          "lines": 305
+        },
+        {
+          "repo": "platform",
+          "lines": 60
+        }
+      ]
+    },
+    {
+      "name": "platform",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Pavel Rasmussen",
+            "email": "pavel.rasmussen@example.com"
+          },
+          "identityId": 16,
+          "count": 55,
+          "total": 384,
+          "share": 0.14322916666666666
+        },
+        "blame": {
+          "owner": {
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
+          },
+          "identityId": 23,
+          "count": 1057,
+          "total": 4551,
+          "share": 0.23225664689079323
+        },
+        "hash": {
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "identityId": 32,
+          "count": 2698,
+          "total": 4551,
+          "share": 0.5928367391782026
+        },
+        "blamedFiles": 68,
+        "files": 68,
+        "agree": false
+      },
+      "lines": 4551,
+      "foreign": 908,
+      "absentee": 12,
+      "owners": [
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "lines": 2698,
+          "contributor": true
+        },
+        {
+          "identityId": 1,
+          "owner": {
+            "name": "Mira Quist",
+            "email": "mira.quist@example.com"
+          },
+          "lines": 775,
+          "contributor": true
+        },
+        {
+          "identityId": 23,
+          "owner": {
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
+          },
+          "lines": 364,
+          "contributor": true
+        },
+        {
+          "identityId": 16,
+          "owner": {
+            "name": "Pavel Rasmussen",
+            "email": "pavel.rasmussen@example.com"
+          },
+          "lines": 125,
+          "contributor": true
+        },
+        {
+          "identityId": 19,
+          "owner": {
+            "name": "Kasimir Zeller",
+            "email": "kasimir.zeller@example.com"
+          },
+          "lines": 66,
+          "contributor": true
+        },
+        {
+          "identityId": 4,
+          "owner": {
+            "name": "Ivar Fischer",
+            "email": "ivar.fischer@example.com"
+          },
+          "lines": 52,
+          "contributor": true
+        },
+        {
+          "identityId": 18,
+          "owner": {
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
+          },
+          "lines": 42,
+          "contributor": true
+        },
+        {
+          "identityId": 14,
+          "owner": {
+            "name": "Vera Tanaka",
+            "email": "vera.tanaka@example.com"
+          },
+          "lines": 42,
+          "contributor": true
+        },
+        {
+          "identityId": 35,
+          "owner": {
+            "name": "Cleo Bianchi",
+            "email": "cleo.bianchi@example.com"
+          },
+          "lines": 38,
+          "contributor": true
+        },
+        {
+          "identityId": 6,
+          "owner": {
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "lines": 37,
+          "contributor": true
+        },
+        {
+          "identityId": 26,
+          "owner": {
+            "name": "Bruno Tanaka",
+            "email": "bruno.tanaka@example.com"
+          },
+          "lines": 36,
+          "contributor": true
+        },
+        {
+          "identityId": 5,
+          "owner": {
+            "name": "Nils Yilmaz",
+            "email": "nils.yilmaz@example.com"
+          },
+          "lines": 32,
+          "contributor": true
+        },
+        {
+          "identityId": 12,
+          "owner": {
+            "name": "Dagny Petrov",
+            "email": "dagny.petrov@example.com"
+          },
+          "lines": 30,
+          "contributor": true
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Ines Dahl",
+            "email": "ines.dahl@example.com"
+          },
+          "lines": 23,
+          "contributor": true
+        },
+        {
+          "identityId": 22,
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "lines": 23,
+          "contributor": true
+        },
+        {
+          "identityId": 31,
+          "owner": {
+            "name": "Zora Costa",
+            "email": "zora.costa@example.com"
+          },
+          "lines": 23,
+          "contributor": true
+        },
+        {
+          "identityId": 25,
+          "owner": {
+            "name": "Sven Silva",
+            "email": "sven.silva@example.com"
+          },
+          "lines": 16,
+          "contributor": true
+        },
+        {
+          "identityId": 30,
+          "owner": {
+            "name": "Xenia Moreau",
+            "email": "xenia.moreau@example.com"
+          },
+          "lines": 16,
+          "contributor": true
+        },
+        {
+          "identityId": 36,
+          "owner": {
+            "name": "Lars Eriksen",
+            "email": "lars.eriksen@example.com"
+          },
+          "lines": 13,
+          "contributor": true
+        },
+        {
+          "identityId": 3,
+          "owner": {
+            "name": "Emil Weber",
+            "email": "emil.weber@example.com"
+          },
+          "lines": 12,
+          "contributor": true
+        },
+        {
+          "identityId": 33,
+          "owner": {
+            "name": "Jonas Petrov",
+            "email": "jonas.petrov@example.com"
+          },
+          "lines": 12,
+          "contributor": true
+        },
+        {
+          "identityId": 27,
+          "owner": {
+            "name": "Umar Lindqvist",
+            "email": "umar.lindqvist@example.com"
+          },
+          "lines": 12,
+          "contributor": true
+        },
+        {
+          "identityId": 21,
+          "owner": {
+            "name": "Yusuf Ulrich",
+            "email": "yusuf.ulrich@example.com"
+          },
+          "lines": 11,
+          "contributor": true
+        },
+        {
+          "identityId": 2,
+          "owner": {
+            "name": "depbot[bot]",
+            "email": "depbot@example.com"
+          },
+          "lines": 10,
+          "contributor": true
+        },
+        {
+          "identityId": 15,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          },
+          "lines": 9,
+          "contributor": true
+        },
+        {
+          "identityId": 11,
+          "owner": {
+            "name": "Quinn Zeller",
+            "email": "quinn.zeller@example.com"
+          },
+          "lines": 8,
+          "contributor": false
+        },
+        {
+          "identityId": 17,
+          "owner": {
+            "name": "Farid Costa",
+            "email": "farid.costa@example.com"
+          },
+          "lines": 7,
+          "contributor": true
+        },
+        {
+          "identityId": 7,
+          "owner": {
+            "name": "Tove Andersen",
+            "email": "tove.andersen@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 13,
+          "owner": {
+            "name": "Beatrix Varga",
+            "email": "beatrix.varga@example.com"
+          },
+          "lines": 4,
+          "contributor": false
+        },
+        {
+          "identityId": 24,
+          "owner": {
+            "name": "Linnea Garcia",
+            "email": "linnea.garcia@example.com"
+          },
+          "lines": 4,
+          "contributor": true
+        },
+        {
+          "identityId": 34,
+          "owner": {
+            "name": "Aron Okafor",
+            "email": "aron.okafor@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 9,
+          "owner": {
+            "name": "Hugo Varga",
+            "email": "hugo.varga@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        }
+      ],
+      "origins": [
+        {
+          "repo": "platform",
+          "lines": 3643
+        },
+        {
+          "repo": "api-gateway",
+          "lines": 848
+        },
+        {
+          "repo": "web-frontend",
+          "lines": 52
+        },
+        {
+          "repo": "billing-service",
+          "lines": 8
+        }
+      ]
+    },
+    {
+      "name": "web-frontend",
+      "methods": {
+        "commits": {
+          "owner": {
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "identityId": 6,
+          "count": 43,
+          "total": 304,
+          "share": 0.14144736842105263
+        },
+        "blame": {
+          "owner": {
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
+          },
+          "identityId": 23,
+          "count": 551,
+          "total": 3734,
+          "share": 0.14756293519014463
+        },
+        "hash": {
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "identityId": 32,
+          "count": 2367,
+          "total": 3734,
+          "share": 0.6339046598821639
+        },
+        "blamedFiles": 59,
+        "files": 59,
+        "agree": false
+      },
+      "lines": 3734,
+      "foreign": 2919,
+      "absentee": 14,
+      "owners": [
+        {
+          "identityId": 32,
+          "owner": {
+            "name": "Ada Lindqvist",
+            "email": "ada.lindqvist@example.com"
+          },
+          "lines": 2367,
+          "contributor": true
+        },
+        {
+          "identityId": 1,
+          "owner": {
+            "name": "Mira Quist",
+            "email": "mira.quist@example.com"
+          },
+          "lines": 377,
+          "contributor": true
+        },
+        {
+          "identityId": 23,
+          "owner": {
+            "name": "Fiona Format",
+            "email": "fiona.format@example.com"
+          },
+          "lines": 216,
+          "contributor": true
+        },
+        {
+          "identityId": 6,
+          "owner": {
+            "name": "Juno Rasmussen",
+            "email": "juno.rasmussen@example.com"
+          },
+          "lines": 134,
+          "contributor": true
+        },
+        {
+          "identityId": 27,
+          "owner": {
+            "name": "Umar Lindqvist",
+            "email": "umar.lindqvist@example.com"
+          },
+          "lines": 93,
+          "contributor": true
+        },
+        {
+          "identityId": 4,
+          "owner": {
+            "name": "Ivar Fischer",
+            "email": "ivar.fischer@example.com"
+          },
+          "lines": 89,
+          "contributor": true
+        },
+        {
+          "identityId": 13,
+          "owner": {
+            "name": "Beatrix Varga",
+            "email": "beatrix.varga@example.com"
+          },
+          "lines": 65,
+          "contributor": true
+        },
+        {
+          "identityId": 8,
+          "owner": {
+            "name": "Ines Dahl",
+            "email": "ines.dahl@example.com"
+          },
+          "lines": 57,
+          "contributor": true
+        },
+        {
+          "identityId": 22,
+          "owner": {
+            "name": "Rosa Garcia",
+            "email": "rosa.garcia@example.com"
+          },
+          "lines": 54,
+          "contributor": true
+        },
+        {
+          "identityId": 25,
+          "owner": {
+            "name": "Sven Silva",
+            "email": "sven.silva@example.com"
+          },
+          "lines": 45,
+          "contributor": true
+        },
+        {
+          "identityId": 31,
+          "owner": {
+            "name": "Zora Costa",
+            "email": "zora.costa@example.com"
+          },
+          "lines": 37,
+          "contributor": true
+        },
+        {
+          "identityId": 40,
+          "owner": {
+            "name": "Dmitri Moreau",
+            "email": "dmitri.moreau@example.com"
+          },
+          "lines": 28,
+          "contributor": true
+        },
+        {
+          "identityId": 16,
+          "owner": {
+            "name": "Pavel Rasmussen",
+            "email": "pavel.rasmussen@example.com"
+          },
+          "lines": 28,
+          "contributor": true
+        },
+        {
+          "identityId": 20,
+          "owner": {
+            "name": "Greta Okafor",
+            "email": "greta.okafor@example.com"
+          },
+          "lines": 24,
+          "contributor": true
+        },
+        {
+          "identityId": 14,
+          "owner": {
+            "name": "Vera Tanaka",
+            "email": "vera.tanaka@example.com"
+          },
+          "lines": 16,
+          "contributor": true
+        },
+        {
+          "identityId": 17,
+          "owner": {
+            "name": "Farid Costa",
+            "email": "farid.costa@example.com"
+          },
+          "lines": 15,
+          "contributor": true
+        },
+        {
+          "identityId": 9,
+          "owner": {
+            "name": "Hugo Varga",
+            "email": "hugo.varga@example.com"
+          },
+          "lines": 13,
+          "contributor": true
+        },
+        {
+          "identityId": 5,
+          "owner": {
+            "name": "Nils Yilmaz",
+            "email": "nils.yilmaz@example.com"
+          },
+          "lines": 10,
+          "contributor": true
+        },
+        {
+          "identityId": 18,
+          "owner": {
+            "name": "Freja Eriksen",
+            "email": "freja.eriksen@example.com"
+          },
+          "lines": 9,
+          "contributor": true
+        },
+        {
+          "identityId": 2,
+          "owner": {
+            "name": "depbot[bot]",
+            "email": "depbot@example.com"
+          },
+          "lines": 8,
+          "contributor": true
+        },
+        {
+          "identityId": 36,
+          "owner": {
+            "name": "Lars Eriksen",
+            "email": "lars.eriksen@example.com"
+          },
+          "lines": 7,
+          "contributor": false
+        },
+        {
+          "identityId": 15,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          },
+          "lines": 6,
+          "contributor": true
+        },
+        {
+          "identityId": 33,
+          "owner": {
+            "name": "Jonas Petrov",
+            "email": "jonas.petrov@example.com"
+          },
+          "lines": 6,
+          "contributor": false
+        },
+        {
+          "identityId": 21,
+          "owner": {
+            "name": "Yusuf Ulrich",
+            "email": "yusuf.ulrich@example.com"
+          },
+          "lines": 6,
+          "contributor": true
+        },
+        {
+          "identityId": 19,
+          "owner": {
+            "name": "Kasimir Zeller",
+            "email": "kasimir.zeller@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 37,
+          "owner": {
+            "name": "Wim Bianchi",
+            "email": "wim.bianchi@example.com"
+          },
+          "lines": 5,
+          "contributor": true
+        },
+        {
+          "identityId": 34,
+          "owner": {
+            "name": "Aron Okafor",
+            "email": "aron.okafor@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 3,
+          "owner": {
+            "name": "Emil Weber",
+            "email": "emil.weber@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 38,
+          "owner": {
+            "name": "Olga Fischer",
+            "email": "olga.fischer@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 11,
+          "owner": {
+            "name": "Quinn Zeller",
+            "email": "quinn.zeller@example.com"
+          },
+          "lines": 3,
+          "contributor": true
+        },
+        {
+          "identityId": 35,
+          "owner": {
+            "name": "Cleo Bianchi",
+            "email": "cleo.bianchi@example.com"
+          },
+          "lines": 1,
+          "contributor": false
+        },
+        {
+          "identityId": 30,
+          "owner": {
+            "name": "Xenia Moreau",
+            "email": "xenia.moreau@example.com"
+          },
+          "lines": 1,
+          "contributor": true
+        }
+      ],
+      "origins": [
+        {
+          "repo": "platform",
+          "lines": 2499
+        },
+        {
+          "repo": "web-frontend",
+          "lines": 815
+        },
+        {
+          "repo": "api-gateway",
+          "lines": 376
+        },
+        {
+          "repo": "billing-service",
+          "lines": 44
         }
       ]
     }
@@ -843,25 +3112,19 @@
       "title": "The most-owned line has no letters or digits",
       "detail": [
         {
-          "code": "\"}\""
+          "code": "\"\""
         },
         {
-          "text": " appears 3 times (12.5% of all lines) and belongs to Alice, who wrote it first in alpha."
+          "text": " appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform."
         }
       ]
     },
     {
       "kind": "trivial-lines",
-      "title": "3 of the top 10 lines are whitespace or punctuation",
+      "title": "6 of the top 15 lines are whitespace or punctuation",
       "detail": [
         {
-          "text": "Together they hold 25.0% of all lines: "
-        },
-        {
-          "code": "\"}\""
-        },
-        {
-          "text": ", "
+          "text": "Together they hold 38.8% of all lines: "
         },
         {
           "code": "\"\""
@@ -870,7 +3133,28 @@
           "text": ", "
         },
         {
-          "code": "\"}\\r\""
+          "code": "\"}\""
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "\"  }\""
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "\"    }\""
+        },
+        {
+          "text": ", "
+        },
+        {
+          "code": "\"/*\""
+        },
+        {
+          "text": ", and 1 more"
         },
         {
           "text": "."
@@ -878,82 +3162,92 @@
       ]
     },
     {
-      "kind": "crlf-twin",
-      "title": "The same line, owned twice",
+      "kind": "outsourced",
+      "title": "web-frontend was mostly written somewhere else",
       "detail": [
         {
-          "code": "\"}\""
-        },
-        {
-          "text": " belongs to Alice and "
-        },
-        {
-          "code": "\"}\\r\""
-        },
-        {
-          "text": " (Windows line ending) to Judy."
+          "text": "66.9% of its lines were first written in platform; 21.8% in web-frontend itself."
         }
       ]
     },
     {
-      "kind": "crlf-twin",
-      "title": "The same line, owned twice",
+      "kind": "outsourced",
+      "title": "billing-service was mostly written somewhere else",
       "detail": [
         {
-          "code": "\"function a() {\""
-        },
-        {
-          "text": " belongs to Alice and "
-        },
-        {
-          "code": "\"function a() {\\r\""
-        },
-        {
-          "text": " (Windows line ending) to Judy."
+          "text": "65.9% of its lines were first written in platform; 20.4% in billing-service itself."
         }
       ]
     },
     {
-      "kind": "binary-duplicate",
-      "title": "A binary file is one of the most-owned lines",
+      "kind": "outsourced",
+      "title": "api-gateway was mostly written somewhere else",
       "detail": [
         {
-          "text": "The file first committed as "
-        },
-        {
-          "code": "logo.png"
-        },
-        {
-          "text": " exists 2 times with identical content. Each copy is one line, owned by Kate."
+          "text": "63.5% of its lines were first written in platform; 33.8% in api-gateway itself."
         }
       ]
     },
     {
       "kind": "absentee-owner",
-      "title": "1 of 2 repositories is owned by someone who never committed to it",
+      "title": "1 of 6 repositories is owned by someone who never committed to it",
       "detail": [
         {
-          "text": "beta (Alice, 27.3%)."
+          "text": "api-gateway (Ada Lindqvist, 57.3%)."
+        }
+      ]
+    },
+    {
+      "kind": "non-contributor-majority",
+      "title": "In 1 repository, most lines belong to people who never committed there",
+      "detail": [
+        {
+          "text": "api-gateway (57.4%)."
+        }
+      ]
+    },
+    {
+      "kind": "three-way-split",
+      "title": "Three methods, three owners, in 5 repositories",
+      "detail": [
+        {
+          "text": "api-gateway (Juno Rasmussen / Fiona Format / Ada Lindqvist), billing-service (Freja Eriksen / Juno Rasmussen / Ada Lindqvist), infra-config (Yusuf Ulrich / Cleo Bianchi / Greta Okafor), platform (Pavel Rasmussen / Fiona Format / Ada Lindqvist), web-frontend (Juno Rasmussen / Fiona Format / Ada Lindqvist)."
         }
       ]
     },
     {
       "kind": "demolition",
-      "title": "Carol has removed 2 lines that belonged to others",
+      "title": "Fiona Format has removed 5,053 lines that belonged to others",
       "detail": [
         {
-          "text": "More than anyone else, against 0 of their own."
+          "text": "More than anyone else, against 21 of their own."
+        }
+      ]
+    },
+    {
+      "kind": "most-removed-line",
+      "title": "The most-deleted line",
+      "detail": [
+        {
+          "code": "\"  }\""
+        },
+        {
+          "text": " has been removed 1,562 times. It belongs to Ada Lindqvist."
         }
       ]
     },
     {
       "kind": "restored",
-      "title": "1 line was added again after being deleted",
+      "title": "22,013 lines were added again after being deleted",
       "detail": [
         {
-          "text": "Each went straight back to its original owner (1 distinct line)."
+          "text": "Each went straight back to its original owner (983 distinct lines)."
         }
       ]
     }
-  ]
+  ],
+  "generated": {
+    "database": "sample.db",
+    "at": "2026-10-10 11:50 UTC"
+  }
 }

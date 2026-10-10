@@ -1,10 +1,41 @@
 rank,name,email,lines,share
-1,Alice,alice@example.com,8,0.3333333333333333
-2,Frank,frank@example.com,3,0.125
-3,Judy,judy@example.com,3,0.125
-4,Grace,grace@example.com,2,0.08333333333333333
-5,Heidi,heidi@example.com,2,0.08333333333333333
-6,Kate,kate@example.com,2,0.08333333333333333
-7,Leo,leo@example.com,2,0.08333333333333333
-8,Bob,bob@example.com,1,0.041666666666666664
-9,Carol,carol@example.com,1,0.041666666666666664
+1,Ada Lindqvist,ada.lindqvist@example.com,9490,0.5436526122823098
+2,Mira Quist,mira.quist@example.com,1856,0.10632447296058661
+3,Umar Lindqvist,umar.lindqvist@example.com,1132,0.06484876260311641
+4,Fiona Format,fiona.format@example.com,1111,0.06364573785517874
+5,Rosa Garcia,rosa.garcia@example.com,512,0.02933088909257562
+6,Juno Rasmussen,juno.rasmussen@example.com,351,0.020107699358386803
+7,Ines Dahl,ines.dahl@example.com,300,0.017186067827681027
+8,Ivar Fischer,ivar.fischer@example.com,224,0.012832263978001834
+9,Pavel Rasmussen,pavel.rasmussen@example.com,221,0.012660403299725023
+10,Greta Okafor,greta.okafor@example.com,218,0.012488542621448212
+11,Vera Tanaka,vera.tanaka@example.com,140,0.008020164986251146
+12,Nils Yilmaz,nils.yilmaz@example.com,134,0.007676443629697525
+13,Dagny Petrov,dagny.petrov@example.com,131,0.007504582951420715
+14,Olga Fischer,olga.fischer@example.com,130,0.0074472960586617785
+15,Wim Bianchi,wim.bianchi@example.com,126,0.007218148487626031
+16,Zora Costa,zora.costa@example.com,115,0.006587992667277727
+17,Sven Silva,sven.silva@example.com,110,0.006301558203483043
+18,Hugo Varga,hugo.varga@example.com,109,0.006244271310724106
+19,Freja Eriksen,freja.eriksen@example.com,105,0.006015123739688359
+20,Beatrix Varga,beatrix.varga@example.com,103,0.005900549954170485
+21,Farid Costa,farid.costa@example.com,97,0.0055568285976168655
+22,Kasimir Zeller,kasimir.zeller@example.com,81,0.004640238313473878
+23,Casper Dahl,casper.dahl@example.com,80,0.00458295142071494
+24,Cleo Bianchi,cleo.bianchi@example.com,69,0.003952795600366636
+25,Emil Weber,emil.weber@example.com,68,0.003895508707607699
+26,Bruno Tanaka,bruno.tanaka@example.com,63,0.0036090742438130157
+27,Yusuf Ulrich,yusuf.ulrich@example.com,63,0.0036090742438130157
+28,Dmitri Moreau,dmitri.moreau@example.com,52,0.0029789184234647113
+29,Gustav Quist,gustav.quist@example.com,45,0.002577910174152154
+30,depbot[bot],depbot@example.com,35,0.0020050412465627866
+31,Aron Okafor,aron.okafor@example.com,33,0.001890467461044913
+32,Jonas Petrov,jonas.petrov@example.com,29,0.0016613198900091658
+33,Lars Eriksen,lars.eriksen@example.com,28,0.0016040329972502293
+34,Tove Andersen,tove.andersen@example.com,23,0.0013175985334555453
+35,Xenia Moreau,xenia.moreau@example.com,17,0.0009738771769019248
+36,Kaia Weber,kaia.weber@example.com,14,0.0008020164986251146
+37,Hedda Yilmaz,hedda.yilmaz@example.com,12,0.000687442713107241
+38,Linnea Garcia,linnea.garcia@example.com,12,0.000687442713107241
+39,Quinn Zeller,quinn.zeller@example.com,12,0.000687442713107241
+40,Elif Ulrich,elif.ulrich@example.com,5,0.00028643446379468377

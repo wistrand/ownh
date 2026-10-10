@@ -104,35 +104,47 @@
 <line class="grid" x1="72" x2="630" y1="364.0" y2="364.0"/>
 <text class="muted" x="64" y="368.0" text-anchor="end">0</text>
 <line class="grid" x1="72" x2="630" y1="296.0" y2="296.0"/>
-<text class="muted" x="64" y="300.0" text-anchor="end">2</text>
+<text class="muted" x="64" y="300.0" text-anchor="end">2.5k</text>
 <line class="grid" x1="72" x2="630" y1="228.0" y2="228.0"/>
-<text class="muted" x="64" y="232.0" text-anchor="end">4</text>
+<text class="muted" x="64" y="232.0" text-anchor="end">5k</text>
 <line class="grid" x1="72" x2="630" y1="160.0" y2="160.0"/>
-<text class="muted" x="64" y="164.0" text-anchor="end">6</text>
+<text class="muted" x="64" y="164.0" text-anchor="end">7.5k</text>
 <line class="grid" x1="72" x2="630" y1="92.0" y2="92.0"/>
-<text class="muted" x="64" y="96.0" text-anchor="end">8</text>
-<text class="muted" x="72.0" y="384" text-anchor="middle">2024</text>
-<text class="muted" x="203.3" y="384" text-anchor="middle">2025</text>
-<text class="muted" x="334.6" y="384" text-anchor="middle">2026</text>
-<text class="muted" x="465.9" y="384" text-anchor="middle">2027</text>
-<text class="muted" x="597.2" y="384" text-anchor="middle">2028</text>
-<line class="grid" x1="367.4" x2="367.4" y1="92" y2="364"/>
-<text class="muted" x="371.4" y="358">2026 Q2</text>
-<line class="target" x1="72" x2="630" y1="194.0" y2="194.0"/>
-<text class="muted" x="638" y="198.0">5</text>
-<path class="trend ln1" d="M 72.0 364.0 L 104.8 296.0 L 137.6 296.0 L 170.5 296.0 L 203.3 296.0 L 236.1 296.0 L 268.9 296.0 L 301.8 296.0 L 334.6 296.0 L 367.4 296.0"/>
-<path class="trend projected ln1" d="M 367.4 296.0 L 400.2 292.3 L 433.1 288.6 L 465.9 284.9 L 498.7 281.2 L 531.5 277.5 L 564.4 273.7 L 597.2 270.0 L 630.0 266.3"/>
-<circle class="hit" cx="72.0" cy="364.0" r="6"><title>Blank lines committed, 2024 Q1: 0</title></circle>
-<circle class="hit" cx="104.8" cy="296.0" r="6"><title>Blank lines committed, 2024 Q2: 2</title></circle>
-<circle class="hit" cx="137.6" cy="296.0" r="6"><title>Blank lines committed, 2024 Q3: 2</title></circle>
-<circle class="hit" cx="170.5" cy="296.0" r="6"><title>Blank lines committed, 2024 Q4: 2</title></circle>
-<circle class="hit" cx="203.3" cy="296.0" r="6"><title>Blank lines committed, 2025 Q1: 2</title></circle>
-<circle class="hit" cx="236.1" cy="296.0" r="6"><title>Blank lines committed, 2025 Q2: 2</title></circle>
-<circle class="hit" cx="268.9" cy="296.0" r="6"><title>Blank lines committed, 2025 Q3: 2</title></circle>
-<circle class="hit" cx="301.8" cy="296.0" r="6"><title>Blank lines committed, 2025 Q4: 2</title></circle>
-<circle class="hit" cx="334.6" cy="296.0" r="6"><title>Blank lines committed, 2026 Q1: 2</title></circle>
-<circle class="hit" cx="367.4" cy="296.0" r="6"><title>Blank lines committed, 2026 Q2: 2</title></circle>
-<circle class="point rp1" cx="367.4" cy="296.0" r="4.5"/>
+<text class="muted" x="64" y="96.0" text-anchor="end">10k</text>
+<text class="muted" x="113.3" y="384" text-anchor="middle">2022</text>
+<text class="muted" x="196.0" y="384" text-anchor="middle">2023</text>
+<text class="muted" x="278.7" y="384" text-anchor="middle">2024</text>
+<text class="muted" x="361.3" y="384" text-anchor="middle">2025</text>
+<text class="muted" x="444.0" y="384" text-anchor="middle">2026</text>
+<text class="muted" x="526.7" y="384" text-anchor="middle">2027</text>
+<text class="muted" x="609.3" y="384" text-anchor="middle">2028</text>
+<line class="grid" x1="464.7" x2="464.7" y1="92" y2="364"/>
+<text class="muted" x="468.7" y="358">2026 Q2</text>
+<line class="target" x1="72" x2="630" y1="92.0" y2="92.0"/>
+<text class="muted" x="638" y="96.0">10k</text>
+<path class="trend ln1" d="M 72.0 348.3 L 92.7 344.6 L 113.3 337.8 L 134.0 327.9 L 154.7 321.7 L 175.3 314.7 L 196.0 308.0 L 216.7 302.6 L 237.3 296.4 L 258.0 288.9 L 278.7 283.1 L 299.3 278.1 L 320.0 274.3 L 340.7 267.9 L 361.3 261.4 L 382.0 252.5 L 402.7 246.3 L 423.3 240.9 L 444.0 232.3 L 464.7 225.4"/>
+<path class="trend projected ln1" d="M 464.7 225.4 L 485.3 219.1 L 506.0 212.7 L 526.7 206.4 L 547.3 200.0 L 568.0 193.7 L 588.7 187.3 L 609.3 181.0 L 630.0 174.6"/>
+<circle class="hit" cx="72.0" cy="348.3" r="6"><title>Blank lines committed, 2021 Q3: 576</title></circle>
+<circle class="hit" cx="92.7" cy="344.6" r="6"><title>Blank lines committed, 2021 Q4: 713</title></circle>
+<circle class="hit" cx="113.3" cy="337.8" r="6"><title>Blank lines committed, 2022 Q1: 963</title></circle>
+<circle class="hit" cx="134.0" cy="327.9" r="6"><title>Blank lines committed, 2022 Q2: 1.3k</title></circle>
+<circle class="hit" cx="154.7" cy="321.7" r="6"><title>Blank lines committed, 2022 Q3: 1.6k</title></circle>
+<circle class="hit" cx="175.3" cy="314.7" r="6"><title>Blank lines committed, 2022 Q4: 1.8k</title></circle>
+<circle class="hit" cx="196.0" cy="308.0" r="6"><title>Blank lines committed, 2023 Q1: 2.1k</title></circle>
+<circle class="hit" cx="216.7" cy="302.6" r="6"><title>Blank lines committed, 2023 Q2: 2.3k</title></circle>
+<circle class="hit" cx="237.3" cy="296.4" r="6"><title>Blank lines committed, 2023 Q3: 2.5k</title></circle>
+<circle class="hit" cx="258.0" cy="288.9" r="6"><title>Blank lines committed, 2023 Q4: 2.8k</title></circle>
+<circle class="hit" cx="278.7" cy="283.1" r="6"><title>Blank lines committed, 2024 Q1: 3k</title></circle>
+<circle class="hit" cx="299.3" cy="278.1" r="6"><title>Blank lines committed, 2024 Q2: 3.2k</title></circle>
+<circle class="hit" cx="320.0" cy="274.3" r="6"><title>Blank lines committed, 2024 Q3: 3.3k</title></circle>
+<circle class="hit" cx="340.7" cy="267.9" r="6"><title>Blank lines committed, 2024 Q4: 3.5k</title></circle>
+<circle class="hit" cx="361.3" cy="261.4" r="6"><title>Blank lines committed, 2025 Q1: 3.8k</title></circle>
+<circle class="hit" cx="382.0" cy="252.5" r="6"><title>Blank lines committed, 2025 Q2: 4.1k</title></circle>
+<circle class="hit" cx="402.7" cy="246.3" r="6"><title>Blank lines committed, 2025 Q3: 4.3k</title></circle>
+<circle class="hit" cx="423.3" cy="240.9" r="6"><title>Blank lines committed, 2025 Q4: 4.5k</title></circle>
+<circle class="hit" cx="444.0" cy="232.3" r="6"><title>Blank lines committed, 2026 Q1: 4.8k</title></circle>
+<circle class="hit" cx="464.7" cy="225.4" r="6"><title>Blank lines committed, 2026 Q2: 5.1k</title></circle>
+<circle class="point rp1" cx="464.7" cy="225.4" r="4.5"/>
 <line class="trend ln1" x1="72" x2="90" y1="404" y2="404"/>
 <text class="label" x="96" y="408">Blank lines committed</text>
 <line class="trend projected key" x1="281.5" x2="299.5" y1="404" y2="404"/>

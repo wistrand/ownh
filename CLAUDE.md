@@ -11,50 +11,52 @@ onto one "owner", formatters and renames transfer ownership wholesale, and the
 resulting leaderboard exposes how arbitrary any ownership metric is. The point
 lands only if the tool is presented deadpan and the numbers come from real repos.
 
-Pieces (status in [agent_docs/plan.md](agent_docs/plan.md)):
+Pieces (details in [agent_docs/architecture.md](agent_docs/architecture.md)):
 
 ```
-git history (1..n repos) ──> line-hash indexer ──> first-introducer table ──> reports
-                                                                             ├─ leaderboard
-                                                                             ├─ "ownership by line hash" pie chart
-                                                                             ├─ cross-repository ownership
-                                                                             └─ three-way comparison (commits / blame / hash)
+git history (1..n repos) ──> index / add ──> .db ──> blame (optional)
+                                              │
+                                              └──> collectStats ──> summary, report
+                                                                     ├─ owners, lines, pie, cross-repo heatmap
+                                                                     ├─ spider charts, three-way comparison
+                                                                     ├─ leverage, demolition, survival
+                                                                     └─ outlook (projections), oddities
 ```
 
 ## Layout
 
-| Path              | Role                                                                       |
-|-------------------|----------------------------------------------------------------------------|
-| `bin/ownh.js`     | CLI: `index`, `add`, `summary`, `report`, `blame`                          |
-| `src/indexer.js`  | history walk, first-introducer upsert, HEAD scoring                        |
-| `src/git.js`      | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame`      |
-| `src/exclude.js`  | exclude-file parsing, patterns to git pathspecs                            |
-| `ownh.exclude`    | optional default exclude list, git-ignored                                 |
-| `src/db.js`       | SQLite schema (`node:sqlite`)                                              |
-| `src/hash.js`     | line and file hash                                                         |
-| `src/stats.js`    | `collectStats`: every number summary and report show                       |
-| `src/summary.js`  | plain-text summary                                                         |
-| `src/report.js`   | report files: leaderboard.md, JSON, CSV                                    |
-| `src/charts.js`   | SVG pie, cross-ownership heatmap, radar charts                             |
-| `src/oddities.js` | "Oddities" report section: odd findings derived from the stats             |
-| `src/profiles.js` | data for the radar charts (owner and repository profiles)                  |
-| `src/timeline.js` | quarterly series and projections for the report's Outlook                  |
-| `src/outlook.js`  | Outlook statements and charts (shared by Markdown and HTML)                |
-| `src/churn.js`    | churn analyses: true ownership history, deletions, survival (Kaplan-Meier) |
-| `src/sections.js` | leverage, code demolition, and code survival report pieces                 |
-| `src/html.js`     | self-contained report.html (inline charts, sortable tables)                |
-| `src/blame.js`    | `ownh blame`: git blame per HEAD file, parallel, resumable                 |
-| `src/sample.js`   | deterministic blame file sample                                            |
-| `test/`           | fixture repo builder and `node:test` suite                                 |
-| `docs/`           | pitch site, served at https://ownh.org (GitHub Pages)                      |
-| `docs/CNAME`      | GitHub Pages custom domain (`ownh.org`); keep it                           |
-| `docs/sample/`    | sample report from the test fixtures; generated, run `npm run sample`      |
-| `docs/og.png`     | link-preview image, rendered from `scripts/og.svg`                         |
-| `scripts/`        | `build-sample.js` (sample report), `og.svg` (preview image source)         |
-| `README.md`       | human-facing deadpan pitch and usage                                       |
-| `LICENSE`         | Apache License 2.0 (canonical text, unmodified)                            |
-| `agent_docs/`     | research, design, plan, gotchas (linked below)                             |
-| `AGENTS.md`       | symlink to this file                                                       |
+| Path              | Role                                                                                                                            |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `bin/ownh.js`     | CLI: `index`, `add`, `summary`, `report`, `blame`                                                                               |
+| `src/indexer.js`  | history walk, first-introducer upsert, HEAD scoring                                                                             |
+| `src/git.js`      | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame`                                                           |
+| `src/exclude.js`  | exclude-file parsing, patterns to git pathspecs                                                                                 |
+| `ownh.exclude`    | optional default exclude list, git-ignored                                                                                      |
+| `src/db.js`       | SQLite schema (`node:sqlite`)                                                                                                   |
+| `src/hash.js`     | line and file hash                                                                                                              |
+| `src/stats.js`    | `collectStats`: every number summary and report show                                                                            |
+| `src/summary.js`  | plain-text summary                                                                                                              |
+| `src/report.js`   | report files: leaderboard.md, JSON, CSV                                                                                         |
+| `src/charts.js`   | SVG pie, cross-ownership heatmap, radar charts                                                                                  |
+| `src/oddities.js` | "Oddities" report section: odd findings derived from the stats                                                                  |
+| `src/profiles.js` | data for the radar charts (owner and repository profiles)                                                                       |
+| `src/timeline.js` | quarterly series and projections for the report's Outlook                                                                       |
+| `src/outlook.js`  | Outlook statements and charts (shared by Markdown and HTML)                                                                     |
+| `src/churn.js`    | churn analyses: true ownership history, deletions, survival (Kaplan-Meier)                                                      |
+| `src/sections.js` | leverage, code demolition, and code survival report pieces                                                                      |
+| `src/html.js`     | self-contained report.html (inline charts, sortable tables)                                                                     |
+| `src/blame.js`    | `ownh blame`: git blame per HEAD file, parallel, resumable                                                                      |
+| `src/sample.js`   | deterministic blame file sample                                                                                                 |
+| `test/`           | fixture repo builder and `node:test` suite                                                                                      |
+| `docs/`           | pitch site, served at https://ownh.org (GitHub Pages)                                                                           |
+| `docs/CNAME`      | GitHub Pages custom domain (`ownh.org`); keep it                                                                                |
+| `docs/sample/`    | sample report from the test fixtures; generated, run `npm run sample`                                                           |
+| `docs/og.png`     | link-preview image, rendered from `scripts/og.svg`                                                                              |
+| `scripts/`        | `build-sample.js` (sample report), `og.svg` (preview image source), `screenshot.mjs` (render-then-capture via headless Firefox) |
+| `README.md`       | human-facing deadpan pitch and usage                                                                                            |
+| `LICENSE`         | Apache License 2.0 (canonical text, unmodified)                                                                                 |
+| `agent_docs/`     | research, design, plan, gotchas (linked below)                                                                                  |
+| `AGENTS.md`       | symlink to this file                                                                                                            |
 
 The pitch site is `docs/index.html`, published by GitHub Pages from `docs/` on the
 default branch of https://github.com/wistrand/ownh to https://ownh.org (DNS at
@@ -81,7 +83,7 @@ rsvg-convert scripts/og.svg -o docs/og.png   # after editing the preview image
 
 - [agent_docs/research.md](agent_docs/research.md): prior art on line-level ownership and content hashing, with sources. Read before claiming anything about the literature.
 - [agent_docs/design.md](agent_docs/design.md): the satire concept, naming, the absurdities to surface, presentation ideas, and the pitch copy.
-- [agent_docs/plan.md](agent_docs/plan.md): phased plan for the analyzer and reports, plus open questions.
+- [agent_docs/architecture.md](agent_docs/architecture.md): how it works: history walk, database schema, blame, statistics, reports, sample; the decisions behind them, verification, performance, open questions. Read before changing `src/`. (Promoted from the former plan.md once all phases were built.)
 - [agent_docs/gotchas.md](agent_docs/gotchas.md): traps in the hashing method and in the tone. Skim before writing algorithm code or any public copy.
 
 ## Invariants

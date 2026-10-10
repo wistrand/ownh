@@ -171,6 +171,8 @@ test('report files agree with the summary', async () => {
     'owner-profile.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
   ]);
   const json = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
+  assert.equal(json.generated.database, 'report.db');
+  assert.match(json.generated.at, /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC$/);
   assert.equal(json.total, 24);
   assert.equal(json.owners[0].owner.email, ALICE);
   assert.equal(json.owners[0].lines, 8);
