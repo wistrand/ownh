@@ -67,7 +67,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `scripts/`           | `build-sample.js`, `demo-repos.js` (sample), `build-whitepaper.js`, `og.svg` (preview), `screenshot.mjs` (headless Firefox) |
 | `README.md`          | human-facing deadpan pitch and usage                                                                                        |
 | `LICENSE`            | Apache License 2.0 (canonical text, unmodified)                                                                             |
-| `agent_docs/`        | architecture, research, design, gotchas (linked below)                                                                      |
+| `agent_docs/`        | architecture, research, design, gotchas, plan (linked below)                                                                |
 | `AGENTS.md`          | symlink to this file                                                                                                        |
 
 The pitch site is `docs/index.html`, published by GitHub Pages from `docs/` on the
@@ -100,6 +100,7 @@ npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing 
 - [agent_docs/research.md](agent_docs/research.md): prior art on line-level ownership and content hashing, with sources. Read before claiming anything about the literature.
 - [agent_docs/design.md](agent_docs/design.md): the satire concept, naming, the absurdities to surface, presentation ideas, the pitch copy, and the pitch site and whitepaper rules. Read before editing `docs/` or `whitepaper/`.
 - [agent_docs/architecture.md](agent_docs/architecture.md): how it works: history walk, database schema, blame, statistics, reports, sample; the decisions behind them, verification, performance, open questions. Read before changing `src/`.
+- [agent_docs/plan-mcp.md](agent_docs/plan-mcp.md): planned, not built: `ownh mcp`, the agent tools over MCP with real names (user decision). Read before building it.
 - [agent_docs/gotchas.md](agent_docs/gotchas.md): traps in the hashing method and in the tone. Skim before writing algorithm code or any public copy.
 
 ## Invariants
