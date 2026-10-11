@@ -96,12 +96,135 @@ export function agentPseudonyms(stats, people = null) {
     }
   }
   rules.sort((a, b) => b.len - a.len);
+
+  // Partial names, matched against the people as they are now, per question
+  // (no prebuilt index): case and accents ignored, whole words only.
+  const fold = (x) => x.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase();
+  const wordsOf = (x) => fold(x).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  const namesOf = ({ owner, aliases }) => [owner.name, ...aliases].filter(Boolean);
+  // People one word of the user's text names: a whole word of a multi-word
+  // name ("hoare" in "Graydon Hoare") of exactly one person. A one-word name
+  // ("Mark") only matches in exact case (the rules above), so the ordinary
+  // word "mark" survives. Several people, or none, leave the word alone.
+  // Words of repository names ("analyzer" in "rust-analyzer") are never taken
+  // as a person's name: users mention repos by such words.
+  const repoWords = new Set(stats.repos.flatMap((r) => wordsOf(r.name)));
+  // The agent's own vocabulary (words of its prompt and tool descriptions, set
+  // by agentSession): "hash" in "line hash" is never a name, even if someone
+  // is called Hash.
+  p.vocabulary = new Set();
+  const onePerson = (word) => {
+    const w = fold(word);
+    if (repoWords.has(w) || p.vocabulary.has(w)) return null;
+    let hit = null;
+    for (const person of everyone) {
+      if (!namesOf(person).some((n) => { const ws = wordsOf(n); return ws.length >= 2 && ws.includes(w); })) continue;
+      if (hit && hit.owner.email !== person.owner.email) return null;
+      hit = person;
+    }
+    return hit;
+  };
   p.question = (text) => {
     let out = text;
     for (const { re, to } of rules) out = out.replace(re, to);
-    return out;
+    // Then any remaining word of four or more letters that names exactly one
+    // person ("hoare"): the fragment would otherwise leave the machine.
+    return out.replace(/(?<![\p{L}\p{N}[@.])\p{L}[\p{L}\p{M}'’-]{3,}(?![\p{L}\p{N}\]@])/gu, (word) => {
+      const person = onePerson(word);
+      return person ? p.owner(person.owner) : word;
+    });
+  };
+
+  // Repository part of the find tool: repositories whose name matches `query`,
+  // the same way as people (exact, whole word, part, then the closest typos).
+  // The user's partial repository names are sent as typed (user decision); only
+  // the matched names stay local.
+  p.findRepos = (query) => {
+    // A phrase that matches nothing as a whole ("the analyzer") is tried word by
+    // word (four letters or more).
+    const whole = findReposOf(query);
+    if (whole.length) return whole;
+    const words = wordsOf(String(query ?? '')).filter((w) => w.length >= 4);
+    if (words.length < 2 && words[0] === fold(String(query ?? '')).trim()) return whole;
+    const seen = new Map();
+    for (const w of words) for (const f of findReposOf(w)) seen.set(f.owner?.email ?? f.name, f);
+    return [...seen.values()];
+  };
+  const findReposOf = (query) => {
+    const q = fold(String(query ?? '')).trim();
+    if (q.length < 2) return [];
+    const found = [];
+    for (const r of stats.repos) {
+      const n = fold(r.name);
+      const match = n === q ? 'exact' : wordsOf(r.name).includes(q) ? 'word' : n.includes(q) ? 'partial' : null;
+      if (match) found.push({ name: r.name, match });
+    }
+    if (found.length || q.length < 4) return found;
+    const limit = q.length >= 6 ? 2 : 1;
+    const near = stats.repos.map((r) => ({ name: r.name, d: Math.min(editDistance(fold(r.name), q), ...wordsOf(r.name).map((w) => editDistance(w, q))) }))
+      .filter((x) => x.d <= limit);
+    const best = Math.min(Infinity, ...near.map((x) => x.d));
+    return near.filter((x) => x.d === best).map(({ name }) => ({ name, match: 'similar' }));
+  };
+
+  // People part of the find tool: people whose names or email name match
+  // `query`, exact name first, then a whole word, then any part of a word.
+  p.findPeople = (query) => {
+    // A phrase that matches nothing as a whole ("the analyzer") is tried word by
+    // word (four letters or more).
+    const whole = findPeopleOf(query);
+    if (whole.length) return whole;
+    const words = wordsOf(String(query ?? '')).filter((w) => w.length >= 4);
+    if (words.length < 2 && words[0] === fold(String(query ?? '')).trim()) return whole;
+    const seen = new Map();
+    for (const w of words) for (const f of findPeopleOf(w)) seen.set(f.owner?.email ?? f.name, f);
+    return [...seen.values()];
+  };
+  const findPeopleOf = (query) => {
+    const q = fold(String(query ?? '')).trim();
+    if (q.length < 2) return [];
+    const found = [];
+    for (const person of everyone) {
+      const names = namesOf(person);
+      const local = person.owner.email ? person.owner.email.split('@')[0] : '';
+      const all = [...names, local].filter(Boolean);
+      let match = null;
+      if (names.some((n) => fold(n) === q)) match = 'exact';
+      else if (all.some((n) => wordsOf(n).includes(q))) match = 'word';
+      else if (all.some((n) => fold(n).includes(q))) match = 'partial';
+      if (match) found.push({ owner: person.owner, match });
+    }
+    if (found.length || q.length < 4) return found;
+    // Nothing matched: try near misses (a typo in a name word), one edit for
+    // short words, two from six letters on.
+    // Only the closest near misses are kept, so a typo does not return everyone
+    // whose name is two letters away.
+    const limit = q.length >= 6 ? 2 : 1;
+    let best = limit + 1;
+    const near = [];
+    for (const person of everyone) {
+      const words = [...namesOf(person), person.owner.email ? person.owner.email.split('@')[0] : ''].flatMap(wordsOf);
+      let d = limit + 1;
+      for (const w of words) if (w.length >= 4 && Math.abs(w.length - q.length) <= limit) d = Math.min(d, editDistance(w, q));
+      if (d <= limit) {
+        near.push({ owner: person.owner, match: 'similar', d });
+        best = Math.min(best, d);
+      }
+    }
+    return near.filter((x) => x.d === best).map(({ owner, match }) => ({ owner, match }));
   };
   return p;
+}
+
+// Levenshtein distance, for the find tool's near misses.
+function editDistance(a, b) {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
 }
 
 const share = (n, total) => (total ? Math.round((n / total) * 1000) / 10 : 0);
@@ -134,6 +257,12 @@ export function agentTools(stats, p, db = null) {
     if (!r) throw new Error(`unknown repository token ${t}`);
     return r;
   };
+  // Commits and last commit time for someone who owns no lines (needs db).
+  const activityOf = db ? db.prepare(`
+    SELECT COUNT(*) AS commits, MAX(c.author_time) AS last
+    FROM commits c JOIN identities i ON i.id = c.identity_id WHERE i.email = ?
+  `) : null;
+  const personActivity = (email) => (activityOf ? activityOf.get(email) : null);
   // Row counts from the model: a missing, null, or silly value means the default.
   const count = (v, d) => (Number.isInteger(v) && v > 0 ? Math.min(v, 500) : d);
   const ownerRow = (o, total) => ({
@@ -150,13 +279,47 @@ export function agentTools(stats, p, db = null) {
       now_quarter: now === null ? null : quarterLabel(now),
       now_quarter_in_progress: Boolean(stats.timeline?.inProgress),
     }),
-    owners: ({ repo, limit } = {}) => {
+    owners: ({ repo, limit, rank_by } = {}) => {
       const n = count(limit, 15);
+      // Rankings can be by kind of line (each owner's composition, overall or in
+      // the repository): "most punctuation" ranks every owner, not just the
+      // owners of the top lines.
+      const kind = ['code', 'blank', 'punctuation', 'binary'].includes(rank_by) ? rank_by : null;
       if (repo) {
         const r = repoArg(repo);
-        return { repo: p.repo(r.name), lines: r.lines, owners: r.owners.slice(0, n).map((o) => ({ owner: p.owner(o.owner), lines: o.lines, share_pct: share(o.lines, r.lines), committed_here: o.contributor })) };
+        const list = r.owners.filter((o) => o.owner);
+        const rankedHere = kind
+          ? list.filter((o) => o.composition && o.composition[kind] > 0)
+            .sort((a, b) => b.composition[kind] - a.composition[kind] || (a.owner.email < b.owner.email ? -1 : 1))
+          : list;
+        const totalHere = kind ? list.reduce((t, o) => t + (o.composition?.[kind] ?? 0), 0) : r.lines;
+        return {
+          repo: p.repo(r.name),
+          lines: r.lines,
+          ranked_by: kind ? `${kind} lines owned in this repository` : 'lines owned in this repository',
+          ...(kind ? { [`${kind}_lines_total`]: totalHere } : {}),
+          owners: rankedHere.slice(0, n).map((o) => ({
+            owner: p.owner(o.owner), lines: o.lines, share_pct: share(o.lines, r.lines), committed_here: o.contributor,
+            ...(kind ? { [`${kind}_lines`]: o.composition[kind], [`share_of_${kind}_lines_here_pct`]: share(o.composition[kind], totalHere) } : {}),
+            composition: o.composition,
+          })),
+        };
       }
-      return { lines_total: stats.total, owners: owners.slice(0, n).map((o) => ({ ...ownerRow(o, stats.total), commits: o.commits })) };
+      const ranked = kind
+        ? owners.filter((o) => o.composition && o.composition[kind] > 0)
+          .sort((a, b) => b.composition[kind] - a.composition[kind] || (a.owner.email < b.owner.email ? -1 : 1))
+        : owners;
+      const total = kind ? owners.reduce((t, o) => t + (o.composition?.[kind] ?? 0), 0) : stats.total;
+      return {
+        ranked_by: kind ? `${kind} lines owned` : 'lines owned',
+        ...(kind ? { [`${kind}_lines_total`]: total } : { lines_total: stats.total }),
+        owners: ranked.slice(0, n).map((o) => ({
+          ...ownerRow(o, stats.total),
+          ...(kind ? { [`${kind}_lines`]: o.composition[kind], [`share_of_all_${kind}_lines_pct`]: share(o.composition[kind], total) } : {}),
+          composition: o.composition,
+          commits: o.commits,
+        })),
+      };
     },
     owner_profile: ({ owner }) => {
       const o = ownerArg(owner);
@@ -263,6 +426,28 @@ export function agentTools(stats, p, db = null) {
     },
     // The report's Oddities, with names and repositories in their text replaced
     // like the user's questions, and quoted lines, paths, and patterns as tokens.
+    // Name lookup for people and repositories the model has no token for.
+    // Runs locally; results carry tokens only, never the matched names. One
+    // tool for both, so the model need not guess which kind a name is.
+    find: ({ query, limit } = {}) => {
+      const rank = { exact: 0, word: 1, partial: 2, similar: 3 };
+      const n = count(limit, 10);
+      const people = p.findPeople(query).map((f) => {
+        const o = byEmail.get(f.owner.email);
+        const activity = o ? null : personActivity(f.owner.email);
+        const t = o ? o.lastCommit : activity?.last;
+        return {
+          person: p.owner(f.owner),
+          match: f.match,
+          lines_owned: o ? o.lines : 0,
+          commits: o ? o.commits : activity?.commits ?? null,
+          last_commit_quarter: t === null || t === undefined ? null : quarterLabel(quarterOf(t)),
+        };
+      }).sort((a, b) => rank[a.match] - rank[b.match] || b.lines_owned - a.lines_owned || (b.commits ?? 0) - (a.commits ?? 0));
+      const repositories = p.findRepos(query).map((f) => ({ repo: p.repo(f.name), match: f.match, lines: stats.repos.find((x) => x.name === f.name).lines }))
+        .sort((a, b) => rank[a.match] - rank[b.match] || b.lines - a.lines);
+      return { query, people: people.slice(0, n), more_people: Math.max(0, people.length - n), repositories: repositories.slice(0, n) };
+    },
     // The report's Oddities, built with tokens for every name (findOddities'
     // naming adapter), never by rewriting finished prose.
     oddities: () => findOddities(stats, {
@@ -278,8 +463,16 @@ export function agentTools(stats, p, db = null) {
   const repoParam = { repo: { type: 'string', description: 'repository token, e.g. [R2]' } };
   const limitParam = { limit: { type: 'integer', description: 'how many rows (default 15)' } };
   const tools = [
+    fn('find', 'Find people and repositories by name, part of a name, or email name, tolerating typos; returns their tokens, best match first (match: exact, word, partial, or similar). Use it whenever the user names a person or repository you have no token for.', {
+      query: { type: 'string', description: 'the name or part of a name, as the user wrote it' },
+      ...limitParam,
+    }, ['query']),
     fn('overview', 'Totals, repositories, top owners, and whether commit count, git blame, and line hash agree on the top owner overall.'),
-    fn('owners', 'Owners ranked by lines owned, overall or in one repository.', { ...repoParam, ...limitParam }),
+    fn('owners', 'Owners ranked by lines owned, overall or in one repository. rank_by ranks every owner by one kind of line they own (code, blank, punctuation = whitespace or punctuation only, binary), overall or in the repository; each row includes the owner\'s composition.', {
+      ...repoParam,
+      ...limitParam,
+      rank_by: { type: 'string', enum: ['lines', 'code', 'blank', 'punctuation', 'binary'], description: 'what to rank by; default lines' },
+    }),
     fn('owner_profile', 'Everything about one owner: lines, share, commits, lines written, leverage, what kind of lines they own, last commit quarter, per-repository standing.', ownerParam, ['owner']),
     fn('repositories', 'Per repository: lines, share written in other repositories, share owned by non-contributors, where lines came from, and the top owner by commits, blame, and line hash.'),
     fn('top_lines', 'The most frequent lines (by exact content) and who owns them.', limitParam),
@@ -291,6 +484,12 @@ export function agentTools(stats, p, db = null) {
     fn('leverage', 'Owners ranked by lines owned per line written: the highest, and the lowest among the most prolific writers.'),
     fn('oddities', "The report's list of odd findings (trivial lines owning the codebase, outsourced repositories, method splits, bots, demolition, CODEOWNERS)."),
     ...(db ? [
+      fn('ownership_change', 'Who gained and who lost owned lines in a period (lines added minus removed, per owner of the lines), and who removed the most lines owned by others. Use for "took over", "gained", "grew", "lost". Quarters optional (default all history); optionally one repository.', {
+        from_quarter: { type: 'string', description: 'first quarter, e.g. "2025 Q1" (optional)' },
+        to_quarter: { type: 'string', description: 'last quarter, inclusive (optional)' },
+        ...repoParam,
+        ...limitParam,
+      }),
       fn('removals', 'Lines removed in a range of quarters (removals are recorded per quarter): who removed lines owned by others, and whose lines were lost to others. Optionally one repository.', {
         from_quarter: { type: 'string', description: 'first quarter, e.g. "2026 Q3"' },
         to_quarter: { type: 'string', description: 'last quarter, inclusive, e.g. "2026 Q4"' },
@@ -339,6 +538,38 @@ function timeTools(db, p) {
   const who = (id) => p.owner(identities.get(id) ?? null);
   const ranked = (m, n = 10) => [...m].sort((a, b) => b[1] - a[1] || (identities.get(a[0])?.email ?? '').localeCompare(identities.get(b[0])?.email ?? '')).slice(0, n);
   return {
+    // Who gained and who lost owned lines in a period: lines added minus lines
+    // removed, per owner of the lines (the churn table, per quarter). Without a
+    // range: all history. "Took over" means gaining owned lines, often by
+    // replacing someone else's, so removers of others' lines are included.
+    ownership_change: ({ from_quarter: from, to_quarter: to, repo, limit } = {}) => {
+      if (!hasChurn) return { available: false, reason: 'this database records no history' };
+      const q0 = from ? quarterArg(from) : 0;
+      const q1 = to ? quarterArg(to) : 10_000 * 4;
+      if (q0 > q1) throw new Error(`from_quarter ${from} is after to_quarter ${to}`);
+      const rid = repoFilter(repo);
+      const n = Number.isInteger(limit) && limit > 0 ? Math.min(limit, 100) : 10;
+      const net = new Map(db.prepare(`
+        SELECT c.identity_id AS owner, SUM(ch.added) - SUM(ch.removed) AS n
+        FROM churn ch JOIN line_hashes l ON l.hash = ch.hash JOIN commits c ON c.id = l.commit_id
+        WHERE ch.q BETWEEN ? AND ? AND (? IS NULL OR ch.repo_id = ?)
+        GROUP BY c.identity_id
+      `).all(q0, q1, rid, rid).map((r) => [r.owner, r.n]));
+      const replaced = new Map(db.prepare(`
+        SELECT ch.identity_id AS remover, SUM(ch.removed) AS n
+        FROM churn ch JOIN line_hashes l ON l.hash = ch.hash JOIN commits c ON c.id = l.commit_id
+        WHERE ch.removed > 0 AND ch.identity_id <> c.identity_id AND ch.q BETWEEN ? AND ? AND (? IS NULL OR ch.repo_id = ?)
+        GROUP BY ch.identity_id
+      `).all(q0, q1, rid, rid).map((r) => [r.remover, r.n]));
+      const row = ([id, v]) => ({ owner: who(id), lines: v });
+      return {
+        period: from || to ? `${from ? quarterLabel(q0) : 'start'} to ${to ? quarterLabel(q1) : 'now'}` : 'all history',
+        ...(rid !== null ? { repo } : {}),
+        gained_most_owned_lines: ranked(new Map([...net].filter(([, v]) => v > 0)), n).map(row),
+        lost_most_owned_lines: [...net].filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]).slice(0, n).map(([id, v]) => ({ owner: who(id), lines: -v })),
+        removed_most_lines_owned_by_others: ranked(replaced, n).map(row),
+      };
+    },
     removals: ({ from_quarter: from, to_quarter: to, repo } = {}) => {
       if (!hasChurn) return { available: false, reason: 'this database records no removals' };
       const q0 = quarterArg(from);
@@ -400,7 +631,13 @@ Names are replaced by tokens for privacy: [O#] owners, [R#] repositories, [F#] p
 
 Time: removals and the ownership history are recorded per quarter, so for a period shorter than a quarter (a month, a week) use the quarter that contains it and say so. Commits have exact dates (the activity tool).
 
-Call tools to get facts before answering; never guess numbers. Answer briefly and directly, in plain text (no Markdown: the answer is shown in a terminal), with the numbers that support the answer. "Inactive" means no commit in the last four quarters. If a quarter is marked in progress, its figures cover only part of it.`;
+Questions about change ("who took over", "who gained", "whose code shrank") are about ownership_change, not current owners; if no period is given, use the last four quarters and say so.
+
+When the user names a person or a repository you have no token for (a first name, a surname, part of a repository name like "the analyzer", a misspelling), call find with what they wrote before saying you cannot identify it. If several match, answer for the best match and name the other candidates, or ask.
+
+Call tools to get facts before answering; never guess numbers. Answer briefly, in plain text (no Markdown: the answer is shown in a terminal), with the numbers that support the answer. "Inactive" means no commit in the last four quarters. If a quarter is marked in progress, its figures cover only part of it.
+
+Voice: you speak for OWNH, and OWNH's ownership is the answer, stated as fact. Lead with the conclusion in a short first sentence ("Nothing happens.", "[O3]."), then the numbers. Background, not a line to recite: ownership is permanent and does not depend on activity, employment, or what the lines contain, so answer accordingly. State results, not the rules behind them, and do not end answers with a stock sentence or repeat one across answers. Never qualify the method: do not call it a proxy, an approximation, an artifact, naive, or "by this measure", and never explain why a result looks odd or suggest a better measure. Do not hedge ("it depends", "appears", "may"). Every number still comes from the tools.`;
 
 // One question, with tool rounds; returns the answer with names restored.
 export async function ask(session, question, { onTool = () => {} } = {}) {
@@ -452,6 +689,7 @@ function peopleOf(db) {
 export function agentSession(stats, config, outDir, { db = null, today = new Date() } = {}) {
   const p = agentPseudonyms(stats, db ? peopleOf(db) : null);
   const { tools, handlers } = agentTools(stats, p, db);
+  p.vocabulary = new Set(`${SYSTEM} ${JSON.stringify(tools)}`.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4));
   // The user's local date: "today" and "yesterday" mean their calendar.
   const pad = (n) => String(n).padStart(2, '0');
   const date = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
@@ -464,16 +702,42 @@ export function agentSession(stats, config, outDir, { db = null, today = new Dat
   };
 }
 
+// Launch screen, terminals only (piped sessions stay plain text).
+const LOGO = [
+  '  ___  __      __ _  _  _  _ ',
+  ' / _ \\ \\ \\    / /| \\| || || |',
+  '| (_) | \\ \\/\\/ / | .` || __ |',
+  ' \\___/   \\_/\\_/  |_|\\_||_||_|',
+];
+
+// Colors only on a terminal and only without NO_COLOR (https://no-color.org:
+// any non-empty value turns color off). Cursor control (redrawing the
+// progress line) is not color and stays.
+export function useColor(stream = process.stdout, env = process.env) {
+  return Boolean(stream.isTTY) && !env.NO_COLOR;
+}
+
+const paint = (on, code) => (x) => (on ? `\x1b[${code}m${x}\x1b[0m` : x);
+
+export function agentBanner(version, color = useColor()) {
+  const blue = paint(color, '1;38;5;33');
+  const dim = paint(color, '2');
+  return `\n${LOGO.map(blue).join('\n')}\n\n  Objective Weighted Normalized Heuristics ${dim(`v${version}`)}\n  ${dim('Ownership, solved. Mathematically.')}\n\n`;
+}
+
 // The terminal session. Works on a TTY and on piped input (one question per
 // line). Commands: /help, /clear (forget the conversation), /quit.
 export async function runAgent({ stats, config, outDir, db = null, input = process.stdin, output = process.stdout }) {
   const tty = Boolean(output.isTTY);
-  const dim = (s) => (tty ? `\x1b[2m${s}\x1b[0m` : s);
+  const color = useColor(output);
+  const dim = paint(color, '2');
   const say = (s = '') => output.write(`${s}\n`);
   const session = agentSession(stats, config, outDir, { db });
-  say(`OWNH agent: ${stats.repos.length} repositories, ${stats.total.toLocaleString('en-US')} lines. Model ${config.model}.`);
-  say(dim('Names are sent to the model as tokens; counts and quarters as they are. Requests are logged to agent-requests.jsonl. /help for commands.'));
-  const rl = createInterface({ input, output, terminal: tty, prompt: 'ownh> ' });
+  say(`${stats.repos.length} repositories, ${stats.total.toLocaleString('en-US')} lines under management. Model ${config.model}.`);
+  say(dim('Names are sent to the model as tokens; counts and quarters as they are. Requests are logged to agent-requests.jsonl.'));
+  if (tty) say(`\n${paint(color, '1;32')('Ready.')} Ask a question about ownership, or /help.\n`);
+  // A bold, colored prompt on a terminal, so it is clear when input is wanted.
+  const rl = createInterface({ input, output, terminal: tty, prompt: `${paint(color, '1;38;5;33')('ownh>')} ` });
   // Piped input can end while an answer is pending; lines already read are still
   // answered, but the closed interface must not be prompted again. No prompt
   // at all without a terminal.

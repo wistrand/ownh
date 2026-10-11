@@ -35,7 +35,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `src/db.js`          | SQLite schema (`node:sqlite`)                                                                                               |
 | `src/hash.js`        | line and file hash                                                                                                          |
 | `src/stats.js`       | `collectStats`: every number summary and report show                                                                        |
-| `src/head.js`        | head-line passes cached as stats stages: owners per repo, top lines                                                         |
+| `src/head.js`        | head-line passes cached as stats stages: owners, line kinds, top lines                                                      |
 | `src/blamecounts.js` | blame counts per repo (full or sampled), cached as a stats stage                                                            |
 | `src/rank.js`        | owner ranking helpers (`rankOwners`, `topOf`, `share`) shared by stats and stages                                           |
 | `src/stagecache.js`  | per-stage stats cache (`stats-cache.json`): code hash over a module's imports, cache file                                   |

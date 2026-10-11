@@ -268,6 +268,11 @@ ownership archetypes, oddities, repositories, excluded patterns.
   (`src/sections.js`); radar data in `src/profiles.js`.
 - Oddities (`src/oddities.js`) are facts derived from the stats; each claim is
   checked by the code that prints it.
+- Line kinds (`KIND` in `src/head.js`: code, blank, punctuation only, binary):
+  each `head` row carries a kind; `collectStats` sums them into
+  `owners[].composition` and per repository into `repos[].owners[].composition`.
+  Both come from the cached `head` stage, so adding a breakdown needs no new
+  stage.
 - Stats cache (`cachedStats` in `src/report.js`, `src/stagecache.js`):
   `collectStats` is nearly all of a report's run time. Its expensive passes are
   stages, each cached in `stats-cache.json` in the report directory under its
@@ -382,14 +387,36 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
 - **Tools.** The model answers through OpenAI-style function calling
   (`chatMessage` in `src/ai.js`, `tools`), at most 8 rounds per question. The
   tools are read-only views of the stats (`agentTools`): overview, owners
-  (overall or per repo), owner profile, repositories, top lines, outlook (with
-  the head-line total and why the history series differs from it), deletions,
+  (overall or per repo, ranked by lines owned or by kind of line,
+  `rank_by`), owner profile, repositories, top lines, outlook (with the
+  head-line total and why the history series differs from it), deletions,
   survival, CODEOWNERS, archetypes, leverage ranking, and the report's
   oddities (their text with names replaced as in questions, quoted lines and
   paths as tokens). A question the tools cannot answer directly makes the
   model fan out many calls (it once called owner_profile 18 times to rank
   leverage): add a tool rather than relying on that. No SQL from the model (user
   decision: curated tools).
+- **Finding names.** The `find` tool resolves a person or repository the
+  model has no token for, locally and per query (no prebuilt index): exact
+  name, whole word, part of a word, then the closest typos (one edit, two
+  from six letters on), with case and accents ignored; a phrase that matches
+  nothing whole is tried word by word ("the analyzer"). It returns tokens with
+  lines and commits, never names. The question filter also replaces a word of
+  four or more letters that is a whole word of exactly one person's multi-word
+  name ("hoare"), unless it is a word of a repository name or of the agent's
+  own vocabulary (words of its prompt and tool descriptions, so "line hash"
+  keeps "hash" even when someone is named Hash); partial repository names are
+  sent as typed (user decision).
+- **Change over time.** `ownership_change` (optional quarter range and repo):
+  who gained and lost owned lines (added minus removed, per owner of the
+  lines) and who removed the most lines owned by others. The prompt sends
+  "took over", "gained", "lost" questions there, defaulting to the last four
+  quarters, instead of answering with current holdings.
+- **Launch.** On a terminal: the logo, one progress line while stats load
+  (cached stages are not listed), the database summary, a green "Ready." line,
+  and a bold colored `ownh>` prompt. Piped sessions get plain text only.
+  Colors respect `NO_COLOR` (any non-empty value turns them off, `useColor`);
+  the progress line still redraws in place, which is cursor control, not color.
 - **Time.** The system prompt carries today's date and quarter. Two tools
   query the database directly over a read-only connection: `removals` for a
   range of quarters (the churn table is per quarter, so "last month" becomes
@@ -414,6 +441,13 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
   answers; emails still never reach the model.
   Counts, percentages, and quarter labels are sent as they are. Every request
   body is appended to `agent-requests.jsonl` in the report directory.
+- **Voice.** The system prompt makes the agent speak for OWNH, deadpan like
+  the site: ownership stated as fact, conclusion first ("Nothing changes in
+  ownership: ..."), no hedging, and never a disclaimer about the method ("a
+  proxy", "an artifact") or a suggestion of a better measure. Numbers still
+  come only from the tools. Without this it explained the joke. Rules of the
+  method (ownership is permanent) are given as background, not as wording:
+  phrased as "say so", the model ended every answer with the same sentence.
 - **Session.** Works on a terminal and on piped input (one question per
   line). `/clear` forgets the conversation, `/quit` leaves; a failed request
   rolls the conversation back to before the question. Answers are plain text.

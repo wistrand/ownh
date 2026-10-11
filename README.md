@@ -112,11 +112,12 @@ OPENROUTER_API_KEY=... ownh agent --db acme.db
 ```
 
 Opens a terminal session where you can ask questions about the database ("who
-owns the most of the payments repo?", "what does our principal owner actually
-own?", "who committed most last month?"). It uses the same AI settings as `--ai`.
-Removals are recorded per quarter, so questions about a shorter period are
-answered for the quarter that contains it. Names, emails, repositories,
-paths, and code never leave the machine: the model sees tokens, and answers are
+owns the most of the payments repo?", "who owns the most punctuation in
+payments?", "what does our principal owner actually own?", "who committed most
+last month?"). It uses the same AI settings as `--ai`. Removals are recorded
+per quarter, so questions about a shorter period are answered for the quarter
+that contains it. Set `NO_COLOR=1` for output without colors. Names, emails,
+repositories, paths, and code never leave the machine: the model sees tokens, and answers are
 translated back locally. Counts, percentages, and quarters are sent. Every
 request is logged to `report/<db>/agent-requests.jsonl`.
 

@@ -64,7 +64,7 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
 
   const head = cache.run('head', { code: CODE.head, data: fp.index }, () => headPass(db, repos, log));
   const byRepo = new Map(repos.map((r) => [r.id, {
-    name: r.name, lines: 0, foreign: 0, absentee: 0, owners: new Map(), origins: new Map(),
+    name: r.name, lines: 0, foreign: 0, absentee: 0, owners: new Map(), origins: new Map(), composition: new Map(),
   }]));
   const overall = new Map();
   let total = 0;
@@ -74,11 +74,14 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
   const composition = new Map();
   for (const { repoId, identityId, originId, q, kind, n } of head.rows) {
     if (identityId !== null) cohorts.push({ repoId, identityId, q, n });
+    const repo = byRepo.get(repoId);
     if (identityId !== null && kind) {
       if (!composition.has(identityId)) composition.set(identityId, { blank: 0, punctuation: 0, code: 0, binary: 0 });
       composition.get(identityId)[kind] += n;
+      // The same breakdown per repository.
+      if (!repo.composition.has(identityId)) repo.composition.set(identityId, { blank: 0, punctuation: 0, code: 0, binary: 0 });
+      repo.composition.get(identityId)[kind] += n;
     }
-    const repo = byRepo.get(repoId);
     repo.lines += n;
     if (originId !== null && originId !== repoId) repo.foreign += n;
     if (identityId !== null && !contributed.has(`${repoId}:${identityId}`)) repo.absentee += n;
@@ -191,6 +194,8 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
       owners: rankOwners(r.owners, identities).map((o) => ({
         ...o,
         contributor: o.owner !== null && contributed.has(`${id}:${o.identityId}`),
+        // What their lines in this repository are: blank, punctuation, code, binary.
+        composition: o.identityId === null ? null : (r.composition.get(o.identityId) ?? null),
       })),
       // Where this repo's lines were first written; null = unattributed.
       origins: [...r.origins]

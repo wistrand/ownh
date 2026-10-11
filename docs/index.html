@@ -233,6 +233,10 @@ th.c { text-align: center; }
 .ai-strip-links a { font-size: 14px; font-weight: 600; padding: 7px 12px; border: 1px solid var(--border); border-radius: 999px; color: var(--text); white-space: nowrap; }
 .ai-strip-links a:hover { border-color: var(--text-3); text-decoration: none; }
 
+.ai-ask { grid-column: 1 / -1; border-top: 1px solid var(--border); padding-top: 18px; }
+.ai-ask p { max-width: 52em; margin-bottom: 14px; }
+.ai-term { white-space: pre-wrap; font-size: 13px; line-height: 1.7; }
+
 /* OKRs */
 .okr { display: grid; gap: 24px; align-items: start; }
 @media (min-width: 960px) { .okr { grid-template-columns: 1fr 1.25fr; } }
@@ -532,6 +536,15 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
         <a href="sample/report.html#okr-draft">OKR draft</a>
         <a href="sample/report.html#ownership-archetypes">Owner archetypes</a>
       </div>
+      <div class="ai-ask">
+        <h3>Ask the database</h3>
+        <p><code>ownh agent</code> answers questions about ownership in your terminal. Names, repositories, paths, and code are replaced with tokens before anything leaves your machine; the AI sees counts, never identities. From the sample:</p>
+        <pre class="term ai-term"><span class="p">ownh&gt; </span>Who owns the most lines, and what kind of lines are they?
+Ada Lindqvist owns the most: 9,490 lines (54.2% of all lines). Most are blank or whitespace/punctuation-only: 3,578 blank and 2,611 punctuation-only lines. The remaining 3,301 are code.
+
+<span class="p">ownh&gt; </span>If Ada Lindqvist leaves, what happens?
+Nothing changes in ownership. Ada Lindqvist still owns 9,490 lines (54.2% of the codebase) and is already inactive; their last commit was in 2022 Q4.</pre>
+      </div>
     </div>
     <div class="cta-row" style="margin-top: 32px;">
       <a class="btn btn-primary" href="sample/report.html">View a sample report</a>
@@ -616,7 +629,10 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 <span class="p">$ </span>ownh blame --db acme.db --sample 2000
 
 <span class="c"># Generate the executive report</span>
-<span class="p">$ </span>ownh report --db acme.db --ai</pre>
+<span class="p">$ </span>ownh report --db acme.db --ai
+
+<span class="c"># Ask questions about ownership</span>
+<span class="p">$ </span>ownh agent --db acme.db</pre>
   </div>
 </section>
 

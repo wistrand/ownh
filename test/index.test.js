@@ -897,3 +897,85 @@ test('agent question filter: everyone known, exact case for one-word names, plai
   assert.equal(tools.handlers.owners({ limit: null }).owners.length, 1, 'limit null means the default');
   assert.equal(tools.handlers.owner_profile({ owner: p.owner(people[2].owner) }).lines_owned, 0);
 });
+
+test('agent: partial names are matched per question and found by find', () => {
+  const stats = { owners: [{ owner: { name: 'Petra Ströbel', email: 'petra@example.com' }, lines: 50, commits: 3, lastCommit: null }], repos: [] };
+  const people = [
+    { owner: { name: 'Petra Ströbel', email: 'petra@example.com' }, aliases: [] },
+    { owner: { name: 'Juno Rasmussen', email: 'juno@example.com' }, aliases: [] },
+    { owner: { name: 'Pavel Rasmussen', email: 'pavel@example.com' }, aliases: [] },
+    { owner: { name: 'Mark', email: 'mark@example.com' }, aliases: [] },
+  ];
+  const p = agentPseudonyms(stats, people);
+  // One person's surname, any case, accents ignored: replaced. Two people's
+  // surname, a one-word name in the wrong case, and short words: left alone.
+  const q = p.question('what did strobel do, and rasmussen, and did they mark it?');
+  assert.match(q, /^what did \[O\d+\] do, and rasmussen, and did they mark it\?$/);
+  const { handlers } = agentTools(stats, p);
+  const found = handlers.find({ query: 'rasmus' });
+  assert.equal(found.people.length, 2);
+  assert.ok(found.people.every((x) => /^\[O\d+\]$/.test(x.person) && x.match === 'partial'));
+  const exact = handlers.find({ query: 'petra ströbel' });
+  assert.equal(exact.people[0].match, 'exact');
+  assert.equal(exact.people[0].lines_owned, 50);
+  assert.ok(!JSON.stringify(found).includes('Rasmussen'), 'results carry tokens, not names');
+  const typo = handlers.find({ query: 'rasmusen' });
+  assert.equal(typo.people.length, 2);
+  assert.ok(typo.people.every((x) => x.match === 'similar'));
+  assert.equal(handlers.find({ query: 'zzzzzz' }).people.length, 0);
+});
+
+test('agent: find matches repository names, parts, and typos, returning tokens', () => {
+  const stats = { owners: [], repos: [{ name: 'billing-service', lines: 10 }, { name: 'api-gateway', lines: 30 }, { name: 'platform', lines: 50 }] };
+  const p = agentPseudonyms(stats, []);
+  const { handlers } = agentTools(stats, p);
+  const find = (q) => handlers.find({ query: q }).repositories;
+  assert.equal(find('platform')[0].match, 'exact');
+  assert.equal(find('gateway')[0].match, 'word');
+  assert.equal(find('bill')[0].match, 'partial');
+  assert.deepEqual(find('platfrom').map((r) => r.match), ['similar']);
+  assert.equal(find('nothing-like-it').length, 0);
+  assert.equal(find('the gateway thing')[0].match, 'word', 'a phrase is tried word by word');
+  assert.ok(find('gateway').every((r) => /^\[R\d+\]$/.test(r.repo)));
+});
+
+test('agent: colors only on a terminal and never with NO_COLOR', async () => {
+  const { agentBanner, useColor } = await import('../src/agent.js');
+  const tty = { isTTY: true };
+  assert.equal(useColor(tty, {}), true);
+  assert.equal(useColor(tty, { NO_COLOR: '1' }), false);
+  assert.equal(useColor(tty, { NO_COLOR: '' }), true, 'an empty NO_COLOR does not count');
+  assert.equal(useColor({ isTTY: false }, {}), false);
+  assert.doesNotMatch(agentBanner('1.0.1', false), /\x1b/);
+  assert.match(agentBanner('1.0.1', true), /\x1b\[/);
+});
+
+test('agent: owners can be ranked by kind of line', () => {
+  const owner = (name, lines, composition) => ({ owner: { name, email: `${name}@example.com` }, lines, commits: 1, composition });
+  const stats = { owners: [owner('Ada', 100, { blank: 60, punctuation: 30, code: 10, binary: 0 }), owner('Juno', 80, { blank: 0, punctuation: 5, code: 75, binary: 0 })], repos: [], total: 180 };
+  const p = agentPseudonyms(stats, null);
+  const { handlers } = agentTools(stats, p);
+  const code = handlers.owners({ rank_by: 'code' });
+  assert.equal(code.code_lines_total, 85);
+  assert.equal(code.owners[0].owner, p.owner(stats.owners[1].owner));
+  assert.equal(code.owners[0].code_lines, 75);
+  assert.equal(handlers.owners({ rank_by: 'punctuation' }).owners[0].punctuation_lines, 30);
+  assert.equal(handlers.owners({}).ranked_by, 'lines owned');
+});
+
+test('agent: owners in one repository can be ranked by kind of line', async () => {
+  const db = join(dir, 'agent-kinds.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  const stats = withDb(db, (conn) => collectStats(conn));
+  const alpha = stats.repos.find((r) => r.name === 'alpha');
+  // Per-repo composition adds up to each owner's lines there.
+  for (const o of alpha.owners.filter((x) => x.owner)) {
+    assert.equal(Object.values(o.composition).reduce((a, b) => a + b, 0), o.lines);
+  }
+  const p = agentPseudonyms(stats, null);
+  const { handlers } = agentTools(stats, p);
+  const r = handlers.owners({ repo: p.repo('alpha'), rank_by: 'code' });
+  const expected = alpha.owners.filter((o) => o.owner && o.composition.code > 0).sort((a, b) => b.composition.code - a.composition.code || (a.owner.email < b.owner.email ? -1 : 1))[0];
+  assert.equal(r.owners[0].owner, p.owner(expected.owner));
+  assert.equal(r.code_lines_total, alpha.owners.reduce((t, o) => t + (o.composition?.code ?? 0), 0));
+});

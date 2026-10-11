@@ -7,7 +7,7 @@ import { DEFAULT_EXCLUDE_FILE, readDefaultExcludes, readExcludeFile } from '../s
 import { add, index } from '../src/indexer.js';
 import { cachedStats, report } from '../src/report.js';
 import { aiConfig } from '../src/ai.js';
-import { runAgent } from '../src/agent.js';
+import { agentBanner, runAgent, useColor } from '../src/agent.js';
 import { quarterOf } from '../src/quarters.js';
 import { openDb } from '../src/db.js';
 import { summary } from '../src/summary.js';
@@ -143,7 +143,14 @@ async function main([command, ...args]) {
     // Same directory and stats cache as `report`, so a reported database starts fast.
     const out = values.out ?? join('report', basename(values.db).replace(/\.db$/, ''));
     mkdirSync(out, { recursive: true });
-    const stats = cachedStats({ dbPath: values.db, outDir: out, top, log, cache: true });
+    // On a terminal: the logo first, then one progress line that is replaced
+    // as the stats load (stage-by-stage lines only when something is computed).
+    const tty = process.stdout.isTTY;
+    if (tty) process.stdout.write(agentBanner(JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version));
+    const dim = useColor() ? (m) => `\x1b[2m${m}\x1b[0m` : (m) => m;
+    const status = (msg) => (tty ? process.stdout.write(`\r\x1b[2K${dim(msg.slice(0, (process.stdout.columns || 80) - 1))}`) : log(msg));
+    const stats = cachedStats({ dbPath: values.db, outDir: out, top, log: (m) => { if (!/^stats: \w+: cached$/.test(m)) status(m); }, cache: true });
+    if (tty) process.stdout.write('\r\x1b[2K');
     if (stats.timeline) stats.timeline.inProgress = quarterOf(Date.now() / 1000) === stats.timeline.now;
     // Read-only connection for the time-scoped tools, open for the session.
     const db = openDb(values.db);

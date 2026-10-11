@@ -115,6 +115,13 @@ claim to its source; keep it accurate if that changes.
   - Every statement must match `src/`: update it when the definitions,
     attribution, or metrics change. Same deadpan voice and citation rule as
     the site.
+- The "Ask the database" transcript in the AI strip is real `ownh agent`
+  output on `report/sample.db` (fictional data), pasted verbatim minus the
+  tool-call lines. It is a snapshot: `npm run sample` does not regenerate it,
+  and the model words answers differently each run. If the sample's numbers
+  change, rerun the same two questions ("Who owns the most lines, and what
+  kind of lines are they?" and "If Ada Lindqvist leaves, what happens?") and
+  paste the new answers; never edit an answer by hand.
 - `docs/install.sh` is the installer (`curl -fsSL https://ownh.org/install.sh | sh`):
   clones the repo into `~/.ownh` and links `ownh` into `~/.local/bin`, no npm
   (npm 12 refuses `github:` and remote tarball specs by default). The whole
