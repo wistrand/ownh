@@ -27,7 +27,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 
 | Path                  | Role                                                                                                                        |
 |-----------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `bin/ownh.js`         | CLI: `index`, `add`, `summary`, `report`, `blame`, `agent`, `update`                                                        |
+| `bin/ownh.js`         | CLI: `index`, `summary`, `report`, `blame`, `agent`, `update`, `info` (`add`: hidden alias for appending)                   |
 | `src/indexer.js`      | history walk, first-introducer upsert, HEAD scoring                                                                         |
 | `src/git.js`          | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame`                                                       |
 | `src/exclude.js`      | exclude-file parsing, patterns to git pathspecs                                                                             |
@@ -82,8 +82,8 @@ per analysis; reports are generated from it.
 ## Commands
 
 ```bash
-bin/ownh.js index --db out.db [--exclude-file f]... [--no-excludes] [--force] <repo>...
-bin/ownh.js add --db out.db [--exclude-file f]... [--no-excludes] <repo>...   # same excludes as the .db
+# --db is optional everywhere: it defaults to ./ownh.db (only index creates it)
+bin/ownh.js index --db out.db [--exclude-file f]... [--no-excludes] [--force] <repo>...   # existing .db: appends, with its stored excludes
 bin/ownh.js summary --db out.db [--top 10]
 bin/ownh.js report --db out.db [--out dir] [--top 20] [--ai | --ai-dry-run] [--no-cache] [--pseudonymize]   # default out: report/out/ (report/out-pseudonymized/); stats-cache.json in report/out/
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
@@ -106,8 +106,8 @@ npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing 
 
 ## Invariants
 
-- Owner of a hash is the commit with the smallest `(author_time, repo name, topo)` key that adds it (`UPSERT_HASH` in `src/indexer.js`). Never compare `repos.id` for the tiebreak: ids follow insertion order and `add` appends.
-- `add` must give the same result as a full `index` of all repos. Anything order-dependent (tiebreaks, identity display names) breaks that.
+- Owner of a hash is the commit with the smallest `(author_time, repo name, topo)` key that adds it (`UPSERT_HASH` in `src/indexer.js`). Never compare `repos.id` for the tiebreak: ids follow insertion order and appending adds repos later.
+- Appending (`index` on an existing `.db`) must give the same result as a full `index` of all repos. Anything order-dependent (tiebreaks, identity display names) breaks that.
 - No normalization. A line is the exact bytes between `\n` separators: whitespace, blank lines, and a trailing `\r` (CRLF) are all part of the line. A binary file is one line: the SHA-256 of its full content. Binary means whatever git decides (attributes plus content check), never our own heuristic. Lines are hashed as raw bytes, never decoded first (`BYTES` in `src/git.js`). History and HEAD must split, classify, exclude, and hash identically (`src/hash.js`, `lines()` and `binaryPaths()` in `src/git.js`; each side of a "Binary files differ" diff is classified on its own in `src/indexer.js`).
 - One shared first-introducer table across all input repos. A single repo is the n=1 case, never a separate code path.
 - AI-written report text (`--ai`) may only state numbers OWNH computed; `checkAnswer` in `src/ai.js` enforces it. Never send names, emails, repository names, dates, absolute counts, or code text to the model: tokens, percentages, and size bands only (`buildFacts`). Review a new database's payload with `--ai-dry-run` before the first real request. `ownh agent` (user decision) sends counts, percentages, and quarters too, but the same never-send list holds: names, emails, repository names, paths, CODEOWNERS handles, and line text are tokens in tool results and in the user's questions (`agentPseudonyms` in `src/agent.js`).

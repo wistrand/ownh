@@ -35,12 +35,16 @@ ownh index --db acme.db ~/src/frontend ~/src/backend
 ownh summary --db acme.db
 ```
 
-`--force` rebuilds an existing database. To add repositories to an existing
-database without rebuilding it:
+`--db` is optional: without it, every command uses `ownh.db` in the current
+directory. Running `index` again on an existing database adds the new
+repositories to it, with the same result as indexing them all at once:
 
 ```bash
-ownh add --db acme.db ~/src/another-repo
+ownh index --db acme.db ~/src/another-repo
 ```
+
+A repository already in the database is refused; `--force` rebuilds the
+database from the repositories given.
 
 Files and directories listed in `ownh.exclude` next to the tool (`~/.ownh/ownh.exclude`
 after installing; optional, not committed) are

@@ -63,11 +63,14 @@ function throttled(fn) {
 
 // `excludes` are patterns in the ownh.exclude syntax (see src/exclude.js). They
 // apply to every repo, to history and HEAD alike.
-// With --force the new .db is built in a temporary file next to it and renamed
-// over the old one only on success, so a failed rebuild keeps the old .db.
-export async function index({ dbPath, repoPaths, excludes = [], force = false, log: report = () => {} }) {
+// A new .db is built in a temporary file next to it and renamed into place
+// only on success, so a failed rebuild (--force) keeps the old .db.
+// An existing .db without `force` gets the repos appended (see add).
+// `excludes` null: none for a new .db, the stored list for an existing one.
+export async function index({ dbPath, repoPaths, excludes = null, force = false, log: report = () => {} }) {
+  if (existsSync(dbPath) && !force) return add({ dbPath, repoPaths, excludes, log: report });
+  excludes ??= [];
   const repos = describeRepos(repoPaths);
-  if (existsSync(dbPath) && !force) throw new Error(`${dbPath} exists; pass --force to rebuild it, or use add`);
   const tmpPath = `${dbPath}.building-${process.pid}`;
   rmSync(tmpPath, { force: true });
   const db = createDb(tmpPath);
@@ -85,9 +88,10 @@ export async function index({ dbPath, repoPaths, excludes = [], force = false, l
 
 // Adds repos to an existing .db. The result is the same as indexing all repos
 // from scratch, provided the exclude list is the same; anything else is refused.
-export async function add({ dbPath, repoPaths, excludes = [], log: report = () => {} }) {
+// `excludes` null uses the list the .db was built with.
+export async function add({ dbPath, repoPaths, excludes = null, log: report = () => {} }) {
   const repos = describeRepos(repoPaths);
-  if (!existsSync(dbPath)) throw new Error(`${dbPath} does not exist; use index to create it`);
+  if (!existsSync(dbPath)) throw new Error(`${dbPath} does not exist; run index to create it`);
   const db = openDbForWrite(dbPath);
   try {
     const columns = new Set(db.prepare("SELECT name FROM pragma_table_info('commits')").all().map((c) => c.name));
@@ -98,12 +102,13 @@ export async function add({ dbPath, repoPaths, excludes = [], log: report = () =
     const stored = db.prepare('SELECT excludes FROM runs ORDER BY id LIMIT 1').get();
     if (!stored) throw new Error(`${dbPath} has no completed index run`);
     const storedExcludes = JSON.parse(stored.excludes);
+    excludes ??= storedExcludes;
     if (!sameExcludes(storedExcludes, excludes)) {
       throw new Error(`exclude list differs from the one ${dbPath} was built with: [${storedExcludes.join(', ')}]`);
     }
     const existing = db.prepare('SELECT name FROM repos WHERE name = ?');
     for (const repo of repos) {
-      if (existing.get(repo.name)) throw new Error(`${dbPath} already has a repo named "${repo.name}"`);
+      if (existing.get(repo.name)) throw new Error(`${dbPath} already has a repo named "${repo.name}"; pass --force to rebuild it`);
     }
     await indexInto(db, repos, excludes, report);
   } finally {

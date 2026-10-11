@@ -106,10 +106,10 @@ test('repo argument order does not change the result', async () => {
   assert.equal(summary({ dbPath: ab }), summary({ dbPath: ba }));
 });
 
-test('refuses to overwrite an existing db without force', async () => {
+test('never indexes a repo twice without force', async () => {
   const db = join(dir, 'exists.db');
   await index({ dbPath: db, repoPaths: [repos.alpha] });
-  await assert.rejects(index({ dbPath: db, repoPaths: [repos.alpha] }), /exists/);
+  await assert.rejects(index({ dbPath: db, repoPaths: [repos.alpha] }), /already has a repo named "alpha"; pass --force/);
   await index({ dbPath: db, repoPaths: [repos.alpha], force: true });
 });
 
@@ -132,24 +132,30 @@ test('exclude patterns become git exclude pathspecs', () => {
   ]);
 });
 
-test('add gives the same result as indexing everything at once', async () => {
+test('indexing into an existing database gives the same result as indexing everything at once', async () => {
   const full = join(dir, 'full.db');
   const added = join(dir, 'added.db');
   await index({ dbPath: full, repoPaths: [repos.alpha, repos.beta] });
   // beta first, so alpha gets the higher repo id; the heidi/ivan tie must still go to alpha
   await index({ dbPath: added, repoPaths: [repos.beta] });
-  await add({ dbPath: added, repoPaths: [repos.alpha] });
+  await index({ dbPath: added, repoPaths: [repos.alpha] });
   assert.deepEqual(owners(added), owners(full));
   assert.equal(owners(added)['beta/shared.js:2'], 'heidi@example.com');
   assert.equal(summary({ dbPath: added }), summary({ dbPath: full }));
 });
 
-test('add refuses a different exclude list or a repo already present', async () => {
+test('appending refuses a different exclude list or a repo already present', async () => {
   const db = join(dir, 'add-guards.db');
   await index({ dbPath: db, repoPaths: [repos.beta], excludes: ['*.png'] });
-  await assert.rejects(add({ dbPath: db, repoPaths: [repos.alpha] }), /exclude list differs/);
-  await assert.rejects(add({ dbPath: db, repoPaths: [repos.beta], excludes: ['*.png'] }), /already has a repo named "beta"/);
+  await assert.rejects(index({ dbPath: db, repoPaths: [repos.alpha], excludes: [] }), /exclude list differs/);
+  await assert.rejects(index({ dbPath: db, repoPaths: [repos.beta] }), /already has a repo named "beta"/);
   await assert.rejects(add({ dbPath: join(dir, 'missing.db'), repoPaths: [repos.alpha] }), /does not exist/);
+  // Without an exclude list, appending uses the stored one.
+  await index({ dbPath: db, repoPaths: [repos.alpha] });
+  const conn = openDb(db);
+  const runs = conn.prepare('SELECT excludes FROM runs ORDER BY id').all().map((r) => JSON.parse(r.excludes));
+  conn.close();
+  assert.deepEqual(runs, [['*.png'], ['*.png']]);
 });
 
 test('display name is the most-used name for an email', async () => {

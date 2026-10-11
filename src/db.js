@@ -1,7 +1,7 @@
 import { DatabaseSync } from 'node:sqlite';
 
 // The first-introducer tiebreak compares repos.name, never repos.id: ids follow
-// insertion order, and `ownh add` appends. See UPSERT_HASH in indexer.js.
+// insertion order, and appending to a .db adds repos later. See UPSERT_HASH in indexer.js.
 //
 // line_hashes.text is NULL for binary files, which count as one line whose hash
 // covers the whole file.

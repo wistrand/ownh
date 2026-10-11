@@ -36,17 +36,22 @@ reports are derived from it and regenerated, never edited. Runtime is Node.js
 (>= 22.13, for unflagged `node:sqlite`; inferred, not verified) with no npm
 dependencies. Git does all repository work through subprocesses (`src/git.js`).
 
-**Key files**: `bin/ownh.js` (CLI), `src/indexer.js` (`index`, `add`,
+**Key files**: `bin/ownh.js` (CLI), `src/indexer.js` (`index`, `add` for appending,
 `indexHistory`, `indexHead`), `src/git.js` (`log`, `blame`, `catBlobs`,
 `headFiles`, `binaryPaths`, `blameClone`), `src/db.js` (`SCHEMA`),
 `src/stats.js` (`collectStats`), `src/report.js` (`report`).
 
 ## Commands
 
+Without `--db`, every command uses `./ownh.db` (`dbFrom` in `bin/ownh.js`) and
+logs `using ./ownh.db` to stderr, so a run in the wrong directory shows it.
+Only `index` may create it; the others fail when it is missing.
+
 | Command   | Does                                                                                            |
 |-----------|-------------------------------------------------------------------------------------------------|
-| `index`   | New `.db` from repos, built in a temp file and renamed on success; `--force` replaces a `.db`.  |
-| `add`     | Appends repos to an existing `.db`; same result as indexing all at once. One transaction.       |
+| `index`   | New `.db` built in a temp file, renamed on success; `--force` replaces a `.db`.                 |
+|           | Existing `.db`: appends the repos in one transaction, same result as indexing all at once.      |
+|           | Refuses a repo already present. `add` is a hidden alias that never creates a `.db`.             |
 | `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.                 |
 | `summary` | Plain-text summary to stdout.                                                                   |
 | `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).      |
@@ -63,7 +68,8 @@ Excludes: `--exclude-file` (repeatable), `--no-excludes`, or the optional,
 git-ignored `ownh.exclude` next to the tool (missing is fine; an explicit
 missing file is an error). Patterns become git exclude pathspecs
 (`toPathspecs` in `src/exclude.js`), applied identically to history and HEAD.
-`add` refuses a different exclude list than the `.db` was built with.
+Appending uses the `.db`'s stored list unless exclude flags are given, and
+refuses an explicit list that differs.
 
 All long commands report progress on stderr every 5 seconds.
 
@@ -86,7 +92,7 @@ heuristic) and the output encoding of names, to git's defaults.
   smallest key `(author_time, repo name, topo)` (`UPSERT_HASH`). The owner is the
   author of the commit holding that key. Taking the minimum gives the same answer
   as one merged timeline, whatever order repos and commits are processed in,
-  which is what makes `add` equal to a full `index`.
+  which is what makes appending equal to a full `index`.
 - **Merges.** Diffed with remerge: git redoes the automatic merge and diffs it
   against the recorded result, so a merge's added lines are what its author
   wrote by hand (conflict resolutions, new code). Taking one side unchanged adds
@@ -146,7 +152,7 @@ timeout so a report and a blame run can overlap.
 | `blame_repos` | per repo: blame sample size, or NULL for full (created by `blame`)                              |
 
 Older databases missing `churn` or the newer `commits` columns still report
-(features degrade), but `add` refuses them: rebuild with `index`.
+(features degrade), but appending refuses them: rebuild with `index --force`.
 
 ## Blame
 
@@ -502,7 +508,7 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
 | Submodules       | Skipped.                                                                                                                                                                                                          |
 | Cross-repo order | Author date; tiebreak by repo name, then topo index.                                                                                                                                                              |
 | Repo name        | Directory basename (minus `.git`); duplicates are an error.                                                                                                                                                       |
-| Reruns           | `index` rebuilds; `add` appends new repos; updating a repo in place is not supported.                                                                                                                             |
+| Reruns           | `index` appends new repos, `--force` rebuilds; updating a repo in place is not supported.                                                                                                                         |
 | Display names    | Most-used name per email across the `.db` (user decision).                                                                                                                                                        |
 | Line encoding    | Raw bytes on both paths (`BYTES`), never decoded before hashing; only names, paths, and display text are UTF-8 decoded.                                                                                           |
 | Excludes         | Gitignore-like patterns as git exclude pathspecs (user decision).                                                                                                                                                 |
@@ -523,7 +529,7 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
 - `npm test` (`node --test "test/*.test.js"`); agents run it only when asked.
   `test/fixtures.js` builds two repos with scripted history; the header comment
   lists it. Tests cover every HEAD line's owner, mailmap, repo-order
-  independence, `--force`, excludes and pathspecs, `add` equal to `index`,
+  independence, `--force`, excludes and pathspecs, appending equal to `index`,
   display names, report/summary agreement, the three methods, blame sampling,
   history simplification, shallow clones, stream cleanup, large blobs,
   oddities, timeline math, and merge-resolution ownership.

@@ -69,7 +69,7 @@
   touch only excluded files, so `commits.topo` and commit counts differ between
   runs with different exclude lists. Compare runs only with the same excludes;
   the list is stored in `runs.excludes`.
-- **Old `.db` files can't take `add`.** `add` refuses files missing the `churn`
+- **Old `.db` files can't be appended to.** `add` refuses files missing the `churn`
   table or the `commits` columns `author_name`, `added_blank`, or `is_merge`
   (newer runs would write rows older ones lack). Rebuild with `index`.
 - **Hashing changed for non-UTF-8 lines.** Databases built before raw-byte
@@ -77,9 +77,11 @@
   older history walks treated a binary/text switch as one binary file.
   Re-index to compare such a database with a new one; valid UTF-8 lines hash
   the same either way.
-- **`add` needs the original exclude list.** The check compares against the first
-  run in `runs`. If `ownh.exclude` changed since the `.db` was built, pass the old
-  list with `--exclude-file` or rebuild.
+- **Appending uses the original exclude list.** Without exclude flags, `index`
+  on an existing `.db` takes the list from the first run in `runs`, so a changed
+  `ownh.exclude` does not apply to the new repos. An explicit `--exclude-file`
+  or `--no-excludes` must match that list or is refused; rebuild with `--force`
+  to change it.
 - **No CSS variables in the SVGs.** rsvg, Inkscape, and slide tools ignore
   `var()` and render everything black. `src/charts.js` writes plain hex in class
   rules, with dark values in a `prefers-color-scheme` block.

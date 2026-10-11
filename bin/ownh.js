@@ -15,20 +15,25 @@ import { git } from '../src/git.js';
 import { fileURLToPath } from 'node:url';
 
 const USAGE = `usage:
-  ownh index --db <file> [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
-  ownh add --db <file> [--exclude-file <file>]... [--no-excludes] <repo>...
-  ownh summary --db <file> [--top <n>]
-  ownh report --db <file> [--out <dir>] [--top <n>] [--ai | --ai-dry-run] [--no-cache] [--pseudonymize]
+  ownh index [--db <file>] [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
+  ownh summary [--db <file>] [--top <n>]
+  ownh report [--db <file>] [--out <dir>] [--top <n>] [--ai | --ai-dry-run] [--no-cache] [--pseudonymize]
       (default --out: report/<db name>/, or report/<db name>-pseudonymized/)
-  ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
-  ownh agent --db <file> [--out <dir>] [--top <n>]   (ask questions about the database; same AI settings as --ai)
+  ownh blame [--db <file>] [--jobs <n>] [--sample <files>] [--repo <name>]...
+  ownh agent [--db <file>] [--out <dir>] [--top <n>]   (ask questions about the database; same AI settings as --ai)
   ownh update   (git pull the checkout this command runs from)
   ownh info     (where this command and its source are, version, git commit)
 
+  Without --db, commands use ownh.db in the current directory; only index
+  creates it.
+
+  index creates the .db, or adds the repos to an existing one; the result is
+  the same as indexing them all at once. A repo already in the .db is
+  refused; --force rebuilds the .db from the repos given.
+
   Without --exclude-file, patterns come from ownh.exclude next to the tool,
-  if it exists.
-  --no-excludes indexes everything. add requires the same exclude list the
-  .db was built with.
+  if it exists. --no-excludes indexes everything. Adding to an existing .db
+  uses the exclude list it was built with; an explicit list must match it.
 
   --ai adds AI-written prose (summary, OKR draft, archetype names) via any
   OpenAI-compatible chat API, hosted or local: OWNH_AI_KEY or
@@ -70,19 +75,35 @@ function excludesFrom(values) {
   return defaults;
 }
 
+// Without --db, every command uses ownh.db in the current directory and says
+// so on stderr. Only `index` may create it; the others need it to exist.
+const DEFAULT_DB = 'ownh.db';
+function dbFrom(values, { create = false } = {}) {
+  if (values.db) return values.db;
+  if (!create && !existsSync(DEFAULT_DB)) {
+    throw new Error(`no ${DEFAULT_DB} here; run \`ownh index <repo>...\` or pass --db`);
+  }
+  log(`using ./${DEFAULT_DB}`);
+  return DEFAULT_DB;
+}
+
 async function main([command, ...args]) {
-  if (command === 'index') {
+  // `add` is the old name for appending; it still works but is not listed,
+  // and unlike index it never creates a .db.
+  if (command === 'index' || command === 'add') {
     const { values, positionals } = parseArgs({
       args,
       allowPositionals: true,
-      options: { ...EXCLUDE_OPTIONS, force: { type: 'boolean', default: false } },
+      options: { ...EXCLUDE_OPTIONS, ...(command === 'index' ? { force: { type: 'boolean', default: false } } : {}) },
     });
-    if (!values.db || positionals.length === 0) return usage();
-    await index({ dbPath: values.db, repoPaths: positionals, excludes: excludesFrom(values), force: values.force, log });
-  } else if (command === 'add') {
-    const { values, positionals } = parseArgs({ args, allowPositionals: true, options: EXCLUDE_OPTIONS });
-    if (!values.db || positionals.length === 0) return usage();
-    await add({ dbPath: values.db, repoPaths: positionals, excludes: excludesFrom(values), log });
+    if (positionals.length === 0) return usage();
+    values.db = dbFrom(values, { create: command === 'index' });
+    const appending = existsSync(values.db) && !values.force;
+    // Appending without exclude flags uses the .db's own list (null), so a
+    // changed ownh.exclude does not block it.
+    const explicit = values['no-excludes'] || values['exclude-file'];
+    const excludes = appending && !explicit ? null : excludesFrom(values);
+    await (command === 'add' ? add : index)({ dbPath: values.db, repoPaths: positionals, excludes, force: values.force, log });
   } else if (command === 'summary') {
     const { values } = parseArgs({
       args,
@@ -92,7 +113,8 @@ async function main([command, ...args]) {
       },
     });
     const top = Number(values.top);
-    if (!values.db || !Number.isInteger(top) || top < 1) return usage();
+    if (!Number.isInteger(top) || top < 1) return usage();
+    values.db = dbFrom(values);
     process.stdout.write(summary({ dbPath: values.db, top, log }));
   } else if (command === 'blame') {
     const { values } = parseArgs({
@@ -108,7 +130,8 @@ async function main([command, ...args]) {
     const jobs = int(values.jobs);
     const sample = int(values.sample);
     const bad = (n) => n !== undefined && (!Number.isInteger(n) || n < 1);
-    if (!values.db || bad(jobs) || bad(sample)) return usage();
+    if (bad(jobs) || bad(sample)) return usage();
+    values.db = dbFrom(values);
     await blame({ dbPath: values.db, repoNames: values.repo ?? [], jobs, sample, log });
   } else if (command === 'report') {
     const { values } = parseArgs({
@@ -124,7 +147,8 @@ async function main([command, ...args]) {
       },
     });
     const top = Number(values.top);
-    if (!values.db || !Number.isInteger(top) || top < 1) return usage();
+    if (!Number.isInteger(top) || top < 1) return usage();
+    values.db = dbFrom(values);
     // Each database gets its own report directory: report/<db name without .db>/.
     // A pseudonymized report goes next to it and shares its stats cache, which
     // holds real names and so never goes into the pseudonymized directory.
@@ -148,7 +172,8 @@ async function main([command, ...args]) {
       },
     });
     const top = Number(values.top);
-    if (!values.db || !Number.isInteger(top) || top < 1) return usage();
+    if (!Number.isInteger(top) || top < 1) return usage();
+    values.db = dbFrom(values);
     if (!existsSync(values.db)) throw new Error(`${values.db} does not exist`);
     const config = aiConfig(process.env);
     if (!config.key && config.requireKey) throw new Error('no API key: set OWNH_AI_KEY or OPENROUTER_API_KEY, or OWNH_AI_BASE_URL for a keyless endpoint');
