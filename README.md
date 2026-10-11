@@ -64,6 +64,14 @@ directory, each on its own, so a second report reruns only what the database or
 code changed (a `blame` run, for example, recomputes only the blame-based parts).
 `--no-cache` recomputes everything.
 
+`--pseudonymize` writes the same report into `report/acme-pseudonymized/` with
+every committer listed as "Contributor N", numbered by lines owned, and every
+CODEOWNERS handle as `@user-N` or `@team-N`, for circulation beyond the
+ownership committee. Automation keeps its name. Names quoted inside lines of
+code are replaced when they match a committer's email or full name; a one-word
+name or a person who never committed stays as written. The statistics cache
+stays in `report/acme/`, which holds real names.
+
 For comparison with conventional methods, `ownh blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add
 `--sample 2000` to blame a random sample of files in large repositories and

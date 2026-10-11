@@ -10,6 +10,7 @@ import { quarterOf } from './timeline.js';
 import { aiConfig, aiInsights } from './ai.js';
 import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js';
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
+import { pseudonymizeStats } from './pseudonymize.js';
 import { stageCache } from './stagecache.js';
 import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, textWidth } from './stats.js';
 
@@ -19,10 +20,15 @@ import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, 
 // `aiDryRun`: write the AI request to ai-request.json without sending it.
 // `aiCacheOnly`: use cached AI text only, never send a request.
 // `complete` replaces the API call (tests).
-// `cache`: reuse cached collectStats stages from outDir/stats-cache.json (see cachedStats).
-export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete, cache = true }) {
+// `cache`: reuse cached collectStats stages from cacheDir/stats-cache.json (see cachedStats).
+// `cacheDir`: where that cache lives, outDir by default. The cache holds real
+// names, so a pseudonymized report keeps it out of its own directory.
+// `pseudonymize`: replace committer names and emails everywhere (pseudonymize.js).
+export async function report({ dbPath, outDir, cacheDir = outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete, cache = true, pseudonymize = false }) {
   mkdirSync(outDir, { recursive: true });
-  const stats = cachedStats({ dbPath, outDir, top, log, cache });
+  if (cache) mkdirSync(cacheDir, { recursive: true });
+  const real = cachedStats({ dbPath, outDir: cacheDir, top, log, cache });
+  const stats = pseudonymize ? pseudonymizeStats(real) : real;
   stats.oddities = findOddities(stats);
   const when = generationTime();
   stats.generated = generatedInfo(dbPath, when);

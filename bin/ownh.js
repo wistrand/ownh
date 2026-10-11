@@ -18,7 +18,8 @@ const USAGE = `usage:
   ownh index --db <file> [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
   ownh add --db <file> [--exclude-file <file>]... [--no-excludes] <repo>...
   ownh summary --db <file> [--top <n>]
-  ownh report --db <file> [--out <dir>] [--top <n>] [--ai | --ai-dry-run] [--no-cache]   (default --out: report/<db name>/)
+  ownh report --db <file> [--out <dir>] [--top <n>] [--ai | --ai-dry-run] [--no-cache] [--pseudonymize]
+      (default --out: report/<db name>/, or report/<db name>-pseudonymized/)
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
   ownh agent --db <file> [--out <dir>] [--top <n>]   (ask questions about the database; same AI settings as --ai)
   ownh update   (git pull the checkout this command runs from)
@@ -40,7 +41,13 @@ const USAGE = `usage:
 
   report caches its statistics passes in stats-cache.json in the output
   directory, each pass on its own, and reruns only those whose database tables
-  or code changed. --no-cache recomputes without reading or writing it.`;
+  or code changed. --no-cache recomputes without reading or writing it.
+
+  --pseudonymize replaces committer names and emails with "Contributor N" in
+  every report file, and CODEOWNERS handles with "@user-N" and "@team-N".
+  Bots keep their names. Names inside line text are replaced only for known
+  emails and names of more than one word. The stats cache stays in
+  report/<db name>/, since it holds real names.`;
 
 const EXCLUDE_OPTIONS = {
   db: { type: 'string' },
@@ -113,13 +120,18 @@ async function main([command, ...args]) {
         ai: { type: 'boolean', default: false },
         'ai-dry-run': { type: 'boolean', default: false },
         'no-cache': { type: 'boolean', default: false },
+        pseudonymize: { type: 'boolean', default: false },
       },
     });
     const top = Number(values.top);
     if (!values.db || !Number.isInteger(top) || top < 1) return usage();
     // Each database gets its own report directory: report/<db name without .db>/.
-    const out = values.out ?? join('report', basename(values.db).replace(/\.db$/, ''));
-    const files = await report({ dbPath: values.db, outDir: out, top, log, ai: values.ai, aiDryRun: values['ai-dry-run'], cache: !values['no-cache'] });
+    // A pseudonymized report goes next to it and shares its stats cache, which
+    // holds real names and so never goes into the pseudonymized directory.
+    const dir = join('report', basename(values.db).replace(/\.db$/, ''));
+    const pseudonymize = values.pseudonymize;
+    const out = values.out ?? (pseudonymize ? `${dir}-pseudonymized` : dir);
+    const files = await report({ dbPath: values.db, outDir: out, cacheDir: pseudonymize ? dir : out, top, log, ai: values.ai, aiDryRun: values['ai-dry-run'], cache: !values['no-cache'], pseudonymize });
     for (const file of files) log(`wrote ${out}/${file}`);
     if (values.ai || values['ai-dry-run']) log(`AI request (when one was made or prepared): ${out}/ai-request.json`);
   } else if (command === 'info') {

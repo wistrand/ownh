@@ -167,6 +167,28 @@ test('display name is the most-used name for an email', async () => {
   }
 });
 
+test('a pseudonymized report names no committer and keeps the cache out', async () => {
+  const db = join(dir, 'pseudo.db');
+  const out = join(dir, 'pseudo');
+  const cacheDir = join(dir, 'pseudo-cache');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  await report({ dbPath: db, outDir: out, cacheDir, top: 5, pseudonymize: true });
+  assert.ok(!readdirSync(out).includes('stats-cache.json'));
+  assert.ok(readdirSync(cacheDir).includes('stats-cache.json'));
+  const conn = openDb(db);
+  const people = conn.prepare('SELECT name, email FROM identities').all();
+  conn.close();
+  for (const file of readdirSync(out)) {
+    const text = readFileSync(join(out, file), 'utf8');
+    for (const { name, email } of people) {
+      assert.ok(!text.includes(email), `${email} in ${file}`);
+      assert.ok(!new RegExp(`\\b${name}\\b`).test(text), `${name} in ${file}`);
+    }
+  }
+  const stats = JSON.parse(readFileSync(join(out, 'report.json'), 'utf8'));
+  assert.equal(stats.owners[0].owner.name, 'Contributor 1');
+});
+
 test('report files agree with the summary', async () => {
   const db = join(dir, 'report.db');
   const out = join(dir, 'report');

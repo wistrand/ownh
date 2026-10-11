@@ -50,6 +50,7 @@ dependencies. Git does all repository work through subprocesses (`src/git.js`).
 | `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.                 |
 | `summary` | Plain-text summary to stdout.                                                                   |
 | `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).      |
+|           | `--pseudonymize`: names replaced, default out `report/<db name>-pseudonymized/` (see Reports).  |
 | `agent`   | Terminal Q&A over one `.db` through tool calls (see Agent); same AI settings as `--ai`.         |
 | `update`  | `git pull --ff-only` in the checkout the command runs from, if it is its own repository root.   |
 | `info`    | Version, the command path and the file it resolves to, source checkout, git commit, Node.       |
@@ -301,6 +302,26 @@ ownership archetypes, oddities, repositories, excluded patterns.
   written to the file at once (temp file, then rename), so a stopped report
   keeps the stages it finished. `--no-cache` neither reads
   nor writes the file; the sample build never caches.
+- Pseudonymized reports (`--pseudonymize`, `pseudonymizeStats` in
+  `src/pseudonymize.js`): the stats are rewritten once, after `cachedStats` and
+  before oddities, archetypes, AI prose, and every renderer, so all files agree.
+  - Every `{ name, email }` object is an identity (no other stats object has
+    exactly those two keys); each is replaced by email with "Contributor N",
+    numbered by rank in `owners`, then by first appearance in the stats.
+  - Bots (`isBot`) keep their names: the bot oddities and the automation
+    archetype read them.
+  - All other strings are scrubbed of committer emails and names with more
+    than one word. One-word names are left (they are ordinary words as often),
+    as are names that never committed, such as copyright holders in line text.
+  - CODEOWNERS handles (`owners` string arrays) become `@user-N`, `@team-N`,
+    or `user-N@example.invalid`.
+  - Oddities about two people sharing a name disappear, since pseudonyms are
+    per email.
+  - The stage cache holds real names, so the CLI keeps it in the plain report
+    directory (`cacheDir`) and writes the pseudonymized files next to it.
+    `ai-cache.json` and `ai-request.json` hold tokens only and go to the
+    output directory; AI text is unmapped to the pseudonyms.
+  - `summary` and `ownh agent` are not pseudonymized.
 - Two rules keep the cache safe. A stage may depend only on code its module
   imports: pass data into a stage, never a function from another module (that
   is why `codeowners.js` imports `topOf` from `rank.js` instead of taking it as
