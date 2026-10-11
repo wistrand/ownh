@@ -40,7 +40,9 @@ export function reportHtml(stats, top, charts) {
       <p class="r-note">Hover a point for the exact value.</p>
       <div class="r-pair"><figure class="r-chart">${charts.owners}</figure><figure class="r-chart">${charts.repos}</figure></div>`),
     section('Principal lines', `
-      <figure class="r-chart">${charts.pie}</figure>
+      ${charts.status
+    ? `<div class="r-pair"><figure class="r-chart">${charts.pie}</figure><figure class="r-chart">${charts.status}</figure></div>`
+    : `<figure class="r-chart">${charts.pie}</figure>`}
       ${table(
         ['Rank', 'Line', 'Lines', 'Share', 'Owner', 'First written in'],
         stats.lines.map((l, k) => [

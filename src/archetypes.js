@@ -7,6 +7,23 @@ import { quarterOf } from './timeline.js';
 // No commit in this many quarters (including the current one) means inactive.
 const ACTIVE_WINDOW = 4;
 
+// All lines split by the status of their owner, for the report's status pie:
+// active (a commit in the last ACTIVE_WINDOW quarters), inactive, automation
+// (isBot, active or not), and no owner. Same rule as the inactive archetype.
+// Returns null without a timeline.
+export function ownerStatus(stats) {
+  const now = stats.timeline?.now ?? null;
+  if (now === null) return null;
+  const lines = { active: 0, inactive: 0, automation: 0, none: 0 };
+  for (const o of stats.owners) {
+    if (!o.owner) lines.none += o.lines;
+    else if (isBot(o.owner)) lines.automation += o.lines;
+    else if (o.lastCommit !== null && quarterOf(o.lastCommit) > now - ACTIVE_WINDOW) lines.active += o.lines;
+    else lines.inactive += o.lines;
+  }
+  return { window: ACTIVE_WINDOW, lines };
+}
+
 // Plain names, used when no AI names are available.
 export const ARCHETYPE_TITLES = {
   principal: 'Principal owner',

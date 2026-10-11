@@ -2,7 +2,7 @@
 
 Repositories: 6. Lines under management: 17,495.
 OWNH 1.0.1.
-Database: `sample.db`. Generated 2026-10-11 07:43 UTC.
+Database: `sample.db`. Generated 2026-10-11 10:04 UTC.
 
 ## AI insights (AI-generated)
 
@@ -47,6 +47,8 @@ _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked
 ## Principal lines
 
 ![Ownership by line hash](ownership-by-line-hash.svg)
+
+![Ownership by owner status](owner-status.svg)
 
 | Rank | Line                                                     | Lines | Share | Owner          | First written in |
 |-----:|----------------------------------------------------------|------:|------:|----------------|------------------|

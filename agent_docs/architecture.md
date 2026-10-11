@@ -241,6 +241,7 @@ its database and generation time (UTC) in the header and in `report.json`
 | `owner-shares.svg`                           | bars, top 10 owners' share of all lines plus everyone else                 |
 | `owner-composition.svg`                      | top 8 owners' lines by kind: code, blank, punctuation only, binary         |
 | `ownership-by-line-hash.svg`                 | pie, top 5 lines plus everything else (never more than 6 segments)         |
+| `owner-status.svg`                           | pie, lines by owner status: active, inactive, automation, no owner         |
 | `cross-ownership.svg`                        | repo x origin-repo heatmap                                                 |
 | `owner-profile.svg`, `repo-profile.svg`      | radar charts, at most 3 series                                             |
 | `ownership-outlook.svg`                      | ownership outlook trend chart                                              |

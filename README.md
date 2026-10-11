@@ -59,9 +59,9 @@ ownh report --db acme.db
 
 Writes into `report/acme/` (one directory per database; `--out` picks another):
 `report.html` (open it in a browser), `leaderboard.md`, SVG charts (principal
-owners and what they own, ownership by line hash, cross-repository ownership,
-ownership profiles, outlook, code survival), and the underlying data as JSON
-and CSV.
+owners and what they own, ownership by line hash and by owner status,
+cross-repository ownership, ownership profiles, outlook, code survival), and
+the underlying data as JSON and CSV.
 
 The expensive statistics passes are cached in `stats-cache.json` in that
 directory, each on its own, so a second report reruns only what the database or

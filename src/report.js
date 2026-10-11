@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { openDb } from './db.js';
-import { compositionSvg, crossOwnershipSvg, lineSharePieSvg, ownerSharesSvg, radarSvg } from './charts.js';
+import { compositionSvg, crossOwnershipSvg, lineSharePieSvg, ownerStatusPieSvg, ownerSharesSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
 import { findOddities } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
@@ -46,6 +46,7 @@ export async function report({ dbPath, outDir, cacheDir = outDir, top = 20, log 
     ownerShares: ownerSharesSvg(stats),
     composition: compositionSvg(stats),
     pie: lineSharePieSvg(stats),
+    status: ownerStatusPieSvg(stats),
     heatmap: crossOwnershipSvg(stats),
     owners: radarSvg(ownerProfile(stats)),
     repos: radarSvg(repoProfile(stats)),
@@ -64,6 +65,7 @@ export async function report({ dbPath, outDir, cacheDir = outDir, top = 20, log 
     ...(charts.ownerShares ? { 'owner-shares.svg': charts.ownerShares } : {}),
     ...(charts.composition ? { 'owner-composition.svg': charts.composition } : {}),
     'ownership-by-line-hash.svg': charts.pie,
+    ...(charts.status ? { 'owner-status.svg': charts.status } : {}),
     'cross-ownership.svg': charts.heatmap,
     'owner-profile.svg': charts.owners,
     'repo-profile.svg': charts.repos,
@@ -124,6 +126,7 @@ function leaderboard(stats, top, charts) {
     '',
     '![Ownership by line hash](ownership-by-line-hash.svg)',
     '',
+    ...(charts.status ? ['![Ownership by owner status](owner-status.svg)', ''] : []),
     ...mdTable(['Rank', 'Line', 'Lines', 'Share', 'Owner', 'First written in'], stats.lines.map((l, k) => [
       String(k + 1),
       l.binary === null ? '(unattributed)' : code(lineLabel(l, 60)),

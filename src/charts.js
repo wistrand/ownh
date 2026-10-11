@@ -3,6 +3,7 @@
 // steps selected by prefers-color-scheme inside the SVG. Every mark carries a
 // <title> so hovering in a browser shows the exact numbers; leaderboard.md is
 // the table view.
+import { ownerStatus } from './archetypes.js';
 import { lineLabel, pct, share } from './stats.js';
 
 const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
@@ -91,6 +92,33 @@ export function lineSharePieSvg(stats) {
     { cls: 'other', label: 'Everything else', detail: `all other lines · ${pct(rest, stats.total)}`, lines: rest, plain: true },
   ];
 
+  return pieSvg('Ownership by line hash', `Share of ${stats.total.toLocaleString('en-US')} lines across ${stats.repos.length} repositories held by each line`, segments, stats.total);
+}
+
+// --- Pie: lines by the status of their owner --------------------------------
+
+export function ownerStatusPieSvg(stats) {
+  const status = ownerStatus(stats);
+  if (!status) return null;
+  const total = Object.values(status.lines).reduce((t, n) => t + n, 0);
+  if (!total) return null;
+  const rows = [
+    { key: 'active', cls: 's1', label: 'Active owners', detail: `a commit in the last ${status.window} quarters` },
+    { key: 'inactive', cls: 's2', label: 'Inactive owners', detail: `no commit in the last ${status.window} quarters` },
+    { key: 'automation', cls: 's3', label: 'Automation', detail: 'bots and release tooling' },
+    { key: 'none', cls: 'other', label: 'No owner', detail: 'no commit reproduces them' },
+  ];
+  const segments = rows.filter((r) => status.lines[r.key] > 0).map((r) => ({
+    cls: r.cls,
+    label: r.label,
+    detail: `${r.detail} · ${pct(status.lines[r.key], total)}`,
+    lines: status.lines[r.key],
+    plain: true,
+  }));
+  return pieSvg('Ownership by owner status', `Share of ${total.toLocaleString('en-US')} lines held by owners who still commit, and by those who do not`, segments, total);
+}
+
+function pieSvg(title, subtitle, segments, total) {
   const width = 760;
   const height = 120 + Math.max(300, segments.length * 46);
   const cx = 190;
@@ -98,10 +126,10 @@ export function lineSharePieSvg(stats) {
   const r = 150;
   let angle = -Math.PI / 2;
   const slices = segments.map((s) => {
-    const sweep = share(s.lines, stats.total) * 2 * Math.PI;
+    const sweep = share(s.lines, total) * 2 * Math.PI;
     const path = arcPath(cx, cy, r, angle, angle + sweep);
     angle += sweep;
-    return `<path class="slice ${s.cls}" d="${path}"><title>${esc(`${s.label}: ${s.lines.toLocaleString('en-US')} lines (${pct(s.lines, stats.total)})`)}</title></path>`;
+    return `<path class="slice ${s.cls}" d="${path}"><title>${esc(`${s.label}: ${s.lines.toLocaleString('en-US')} lines (${pct(s.lines, total)})`)}</title></path>`;
   });
   const legend = segments.map((s, k) => {
     const y = 132 + k * 46;
@@ -113,8 +141,8 @@ export function lineSharePieSvg(stats) {
   });
 
   return svgDoc(width, height, [
-    `<text class="title" x="24" y="40">Ownership by line hash</text>`,
-    `<text class="subtitle" x="24" y="62">Share of ${stats.total.toLocaleString('en-US')} lines across ${stats.repos.length} repositories held by each line</text>`,
+    `<text class="title" x="24" y="40">${esc(title)}</text>`,
+    `<text class="subtitle" x="24" y="62">${esc(subtitle)}</text>`,
     ...slices,
     ...legend,
   ]);

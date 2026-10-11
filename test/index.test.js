@@ -202,7 +202,7 @@ test('report files agree with the summary', async () => {
   await report({ dbPath: db, outDir: out, top: 5 });
   assert.deepEqual(readdirSync(out).sort(), [
     'blank-line-outlook.svg', 'code-survival.svg', 'cross-ownership.csv', 'cross-ownership.svg', 'leaderboard.md', 'lines.csv', 'methods.csv',
-    'owner-composition.svg', 'owner-profile.svg', 'owner-shares.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
+    'owner-composition.svg', 'owner-profile.svg', 'owner-shares.svg', 'owner-status.svg', 'owners.csv', 'ownership-by-line-hash.svg', 'ownership-outlook.svg', 'repo-profile.svg', 'report.html', 'report.json',
     'stats-cache.json',
   ]);
   // Stages are cached separately: a second run reuses all of them and writes
