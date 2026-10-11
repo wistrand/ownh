@@ -8,7 +8,7 @@ import { esc } from './charts.js';
 import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
-import { lineLabel, methodShare, ownerLabel, pct, repoCount, share } from './stats.js';
+import { lineLabel, methodShare, ownerLabel, pct, repoCount, share, SITE } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
   const anchor = repoAnchors(stats.repos);
@@ -19,7 +19,7 @@ export function reportHtml(stats, top, charts) {
   const main = [
     `<header class="r-head">
       <h1>OWNH Ownership Report</h1>
-      <p class="r-meta">${repoCount(stats.repos.length)} · ${num(stats.total)} lines under management · OWNH ${esc(stats.toolVersion)}</p>
+      <p class="r-meta">${repoCount(stats.repos.length)} · ${num(stats.total)} lines under management · <a href="${SITE}">OWNH</a> ${esc(stats.toolVersion)}</p>
       ${stats.generated ? `<p class="r-meta">Database <code>${esc(stats.generated.database)}</code> · generated ${esc(stats.generated.at)}</p>` : ''}
     </header>`,
     ...aiSummaryHtml(stats),

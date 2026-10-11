@@ -333,6 +333,9 @@ export function methodShare(t) {
 
 export const UNATTRIBUTED = '(unattributed)';
 
+// Linked from every report header.
+export const SITE = 'https://ownh.org';
+
 export function ownerLabel(owner) {
   return owner ? `${owner.name} <${owner.email}>` : UNATTRIBUTED;
 }

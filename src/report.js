@@ -12,7 +12,7 @@ import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { pseudonymizeStats } from './pseudonymize.js';
 import { stageCache } from './stagecache.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, repoCount, share, textWidth } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, repoCount, share, SITE, textWidth } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
@@ -104,7 +104,7 @@ function leaderboard(stats, top, charts) {
     '# OWNH Ownership Report',
     '',
     `Repositories: ${stats.repos.length}. Lines under management: ${stats.total.toLocaleString('en-US')}.`,
-    `OWNH ${stats.toolVersion}.`,
+    `[OWNH](${SITE}) ${stats.toolVersion}.`,
     `Database: ${codeSpan(stats.generated.database)}. Generated ${stats.generated.at}.`,
     '',
     ...aiSummaryMd(stats),

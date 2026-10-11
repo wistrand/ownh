@@ -1,8 +1,8 @@
 # OWNH Ownership Report
 
 Repositories: 6. Lines under management: 17,495.
-OWNH 1.0.1.
-Database: `sample.db`. Generated 2026-10-11 11:05 UTC.
+[OWNH](https://ownh.org) 1.0.1.
+Database: `sample.db`. Generated 2026-10-11 11:37 UTC.
 
 ## AI insights (AI-generated)
 
