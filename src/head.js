@@ -100,7 +100,7 @@ function pathChunks(db, repoId) {
   chunks.paths = [];
   let from = '';
   let size = 0;
-  for (const { path, n } of db.prepare('SELECT path, COUNT(*) AS n FROM head_lines WHERE repo_id = ? GROUP BY path').iterate(repoId)) {
+  for (const { path, n } of db.prepare('SELECT path, COUNT(*) AS n FROM head_lines WHERE repo_id = ? GROUP BY path ORDER BY path').iterate(repoId)) {
     if (size >= CHUNK_LINES) {
       chunks.push([from, path]);
       from = path;

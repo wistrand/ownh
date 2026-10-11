@@ -12,3 +12,8 @@ export function quarterOf(seconds) {
 export function quarterLabel(q) {
   return `${Math.floor(q / 4)} Q${(q % 4) + 1}`;
 }
+
+// No commit in this many quarters (the current one included) means inactive:
+// the inactive archetype, the owner-status pie, the Outlook series, and the
+// agent all use it.
+export const ACTIVE_WINDOW = 4;

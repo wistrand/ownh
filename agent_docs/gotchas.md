@@ -21,7 +21,9 @@
   framing), not in it.
 - **Real names in output.** Leaderboards name real people as owners of `}`.
   Check with the user before publishing output from a repo with identifiable
-  contributors.
+  contributors; `report --pseudonymize` replaces committer names, but not
+  repository names, one-word names inside line text, or names of people who
+  never committed (copyright holders).
 - **Author identity splits.** The same person under two emails shows up as two
   owners and dilutes the top slot. Use `.mailmap` or report the raw split knowingly.
 - **Cross-repo order depends on clocks.** First introducer across repos is decided
@@ -69,9 +71,17 @@
   touch only excluded files, so `commits.topo` and commit counts differ between
   runs with different exclude lists. Compare runs only with the same excludes;
   the list is stored in `runs.excludes`.
-- **Old `.db` files can't be appended to.** `add` refuses files missing the `churn`
-  table or the `commits` columns `author_name`, `added_blank`, or `is_merge`
-  (newer runs would write rows older ones lack). Rebuild with `index`.
+- **Old `.db` files can't be appended to.** Appending (`index` on an existing
+  `.db`) refuses files missing the `churn` table or the `commits` columns
+  `author_name`, `added_blank`, or `is_merge` (newer runs would write rows
+  older ones lack). Rebuild with `index --force` and every repo.
+- **`--force` rebuilds from the repos given.** It does not add to the `.db`:
+  `index --force` with one repo drops the others. The refusal for a repo
+  already present lists every repo the `.db` holds for that reason.
+- **Non-UTF-8 file names.** Paths are decoded with `pathText` (`src/git.js`):
+  bytes that are not valid UTF-8 become `\xNN`, so two Latin-1 names stay
+  distinct. Such a path is not the real name to git, so `blame` fails for those
+  files (they are counted as failed, as before).
 - **Hashing changed for non-UTF-8 lines.** Databases built before raw-byte
   hashing store U+FFFD-mangled hashes for lines that are not valid UTF-8, and
   older history walks treated a binary/text switch as one binary file.
@@ -117,13 +127,13 @@
 - **Exclude patterns have no negation.** `!pattern` is taken literally.
 - **A cached stats stage can go stale silently.** Each stage in `collectStats`
   is keyed by its module's import graph and the tables in its data key
-  (architecture.md, Stats cache). Passing a function from another module into
+  ([architecture.md](architecture.md), Stats cache). Passing a function from another module into
   a stage, or reading a table its key does not cover, breaks that: the cache
   keeps serving the old result. Import helpers in the stage module instead,
   and extend `fingerprints` in `src/stats.js` when a stage reads new data.
 - **Churn makes databases larger.** One row per (hash, repo, quarter, author)
   with additions or removals: measured at about 20% on a 4M-line database and
-  about 40% on the largest one (see Performance in architecture.md).
+  about 40% on the largest one (see Performance in [architecture.md](architecture.md)).
 - **Removals in merges are not real removals.** With remerge, a merge's "-"
   lines are relative to git's re-run of the merge (conflict markers, discarded
   sides), so they are skipped. Additions on branches whose changes a merge

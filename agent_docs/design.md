@@ -59,7 +59,7 @@ repo actually exhibits.
   ran the find-and-replace.
 - **Hostile revert.** Reverting restores old hashes, so ownership snaps back to the
   original author, possibly long gone.
-- **Go global** (dropped, out of scope; see Dropped in architecture.md, kept
+- **Go global** (dropped, out of scope; see Dropped in [architecture.md](architecture.md), kept
   so it isn't re-proposed). Hashing across public code (World of Code style)
   would give `import React from 'react'` to someone at Meta and license headers
   to whoever first pasted the Apache boilerplate.
@@ -87,8 +87,9 @@ repo actually exhibits.
 `docs/index.html` is a static, self-contained landing page, live at
 https://ownh.org (GitHub Pages from `docs/`; `docs/CNAME` holds the domain). It
 links to the repo, https://github.com/wistrand/ownh. It is in the deadpan
-corporate voice (user decision: pitch only, no data from real runs). It uses no
-figures from runs, no customer logos, and no testimonials. Code-panel hashes are
+corporate voice (user decision: pitch only, no data from real-repo runs). Its
+figures come only from the sample report in `docs/sample/` (the OKR panel, the
+`ownh agent` transcript); no customer logos, no testimonials. Code-panel hashes are
 real SHA-256 prefixes (`e3b0` for an empty line, `d10b` for `}`, `737d` for
 `  }`). The research section paraphrases [research.md](research.md) and links each
 claim to its source; keep it accurate if that changes.
@@ -97,8 +98,8 @@ claim to its source; keep it accurate if that changes.
   (`scripts/demo-repos.js`, fictional authors, seeded history), built by
   `npm run sample`. Its AI sections come from `docs/sample/ai-cache.json`
   (rebuilds reuse them without a key; `node scripts/build-sample.js --ai` after
-  data changes). It is the one place the site shows
-  tool output; regenerate it whenever report output changes, never edit it.
+  data changes). Every figure the site shows comes from it; regenerate it
+  whenever report output changes, never edit it.
 - `docs/ownh-whitepaper.pdf` is the method whitepaper ("Content-Addressable
   Accountability"), built from `whitepaper/ownh-whitepaper.tex` by
   `npm run whitepaper` (pdflatex; byte-identical rebuilds via `EDITION` in

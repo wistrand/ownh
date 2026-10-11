@@ -2,14 +2,15 @@
 // Membership is computed here, deterministically; the optional AI step only
 // gives each group a name (see ai.js). Groups with no members are left out.
 import { isBot } from './oddities.js';
-import { quarterOf } from './timeline.js';
-
-// No commit in this many quarters (including the current one) means inactive.
-const ACTIVE_WINDOW = 4;
+import { ACTIVE_WINDOW, quarterOf } from './quarters.js';
 
 // All lines split by the status of their owner, for the report's status pie:
 // active (a commit in the last ACTIVE_WINDOW quarters), inactive, automation
-// (isBot, active or not), and no owner. Same rule as the inactive archetype.
+// (isBot, active or not), and no owner; shares of all lines at HEAD.
+// The activity rule is the inactive archetype's, but the pie puts bots in
+// their own slice while the archetype and the Outlook's inactive-owner series
+// count an idle bot as inactive; the Outlook series is also a share of owned
+// lines only. So the three inactive figures can differ slightly.
 // Returns null without a timeline.
 export function ownerStatus(stats) {
   const now = stats.timeline?.now ?? null;

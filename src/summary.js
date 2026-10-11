@@ -1,5 +1,5 @@
 import { openDb } from './db.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, textWidth } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, plural, textWidth } from './stats.js';
 
 export function summary({ dbPath, top = 10, log }) {
   const db = openDb(dbPath);
@@ -48,12 +48,14 @@ function render(stats, top) {
       ...ownerTable(repo.owners, top, repo.lines),
     );
   }
-  return out.join('\n') + '\n';
+  // Names and paths come from commits: a control character (an ANSI escape in
+  // an author name) must not reach the terminal.
+  return out.join('\n').replace(/[\x00-\x08\x0b-\x1f\x7f-\x9f]/g, '\ufffd') + '\n';
 }
 
 function methodRow(name, m) {
   const cell = (t) => (t ? `${t.owner.name} ${methodShare(t)}` : '-');
-  const sampled = m.blame?.estimate?.files ? `blame sampled ${m.blame.estimate.files}/${m.blame.estimate.ofFiles} files` : '';
+  const sampled = m.blame?.estimate?.files ? `blame sampled ${m.blame.estimate.files}/${plural(m.blame.estimate.ofFiles, 'file')}` : '';
   return [name, cell(m.commits), cell(m.blame), cell(m.hash), m.agree ? 'agree' : 'disagree', sampled];
 }
 

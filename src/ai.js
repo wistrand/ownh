@@ -184,7 +184,9 @@ export function buildFacts(stats, archetypes, p) {
     scale: { repositories: stats.repos.length === 1 ? 'one' : countBand(stats.repos.length), owners: countBand(owners.length), lines: lineBand(stats.total) },
     topOwners: owners.slice(0, TOP).map((o) => ({ owner: p.owner(o.owner), sharePct: pct(o.lines / stats.total) })),
     topLines: stats.lines.slice(0, TOP).map((l) => ({ kind: lineKind(l), sharePct: pct(l.lines / stats.total), owner: p.owner(l.owner) })),
-    crossRepository: [...stats.repos].sort((a, b) => b.foreign / (b.lines || 1) - a.foreign / (a.lines || 1)).slice(0, TOP).map((r) => ({
+    // With one repository there is nothing to compare: 0% written elsewhere
+    // would read as a finding.
+    crossRepository: stats.repos.length < 2 ? undefined : [...stats.repos].sort((a, b) => b.foreign / (b.lines || 1) - a.foreign / (a.lines || 1)).slice(0, TOP).map((r) => ({
       repository: p.repo(r.name),
       writtenElsewherePct: wholePct(r.lines ? r.foreign / r.lines : 0),
       ownedByNonContributorsPct: wholePct(r.lines ? r.absentee / r.lines : 0),

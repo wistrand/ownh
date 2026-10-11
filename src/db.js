@@ -43,7 +43,8 @@ CREATE TABLE commits (
   added_lines INTEGER NOT NULL DEFAULT 0,
   added_blank INTEGER NOT NULL DEFAULT 0,
   -- Merges are walked (their hand-written lines get an owner) but are not
-  -- "commits" for commit counts, activity, or contributor checks.
+  -- "commits" for commit counts or the commits method. For activity (who
+  -- worked in a repo, who is inactive) a merge counts (see stats.js).
   is_merge    INTEGER NOT NULL DEFAULT 0,
   UNIQUE (repo_id, sha)
 );

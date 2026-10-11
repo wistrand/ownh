@@ -51,8 +51,9 @@ const USAGE = `usage:
   --pseudonymize replaces committer names and emails with "Contributor N" in
   every report file, and CODEOWNERS handles with "@user-N" and "@team-N".
   Bots keep their names. Names inside line text are replaced only for known
-  emails and names of more than one word. The stats cache stays in
-  report/<db name>/, since it holds real names.`;
+  emails and names of more than one word. Repository names and the database
+  name stay. The stats cache stays in report/<db name>/, since it holds real
+  names; --out must point elsewhere.`;
 
 const EXCLUDE_OPTIONS = {
   db: { type: 'string' },
@@ -76,10 +77,16 @@ function excludesFrom(values) {
 }
 
 // Without --db, every command uses ownh.db in the current directory and says
-// so on stderr. Only `index` may create it; the others need it to exist.
+// so on stderr. Only `index` may create a .db; the others need it to exist,
+// checked here so a typo fails before anything is written (report would
+// otherwise create its directory first).
 const DEFAULT_DB = 'ownh.db';
 function dbFrom(values, { create = false } = {}) {
-  if (values.db) return values.db;
+  if (values.db !== undefined) {
+    if (values.db === '') throw new Error('--db needs a file name');
+    if (!create && !existsSync(values.db)) throw new Error(`${values.db} does not exist; run \`ownh index\` to create it`);
+    return values.db;
+  }
   if (!create && !existsSync(DEFAULT_DB)) {
     throw new Error(`no ${DEFAULT_DB} here; run \`ownh index <repo>...\` or pass --db`);
   }
@@ -94,9 +101,10 @@ async function main([command, ...args]) {
     const { values, positionals } = parseArgs({
       args,
       allowPositionals: true,
-      options: { ...EXCLUDE_OPTIONS, ...(command === 'index' ? { force: { type: 'boolean', default: false } } : {}) },
+      options: { ...EXCLUDE_OPTIONS, force: { type: 'boolean', default: false } },
     });
     if (positionals.length === 0) return usage();
+    if (command === 'add' && values.force) throw new Error('add only appends; use index --force to rebuild');
     values.db = dbFrom(values, { create: command === 'index' });
     const appending = existsSync(values.db) && !values.force;
     // Appending without exclude flags uses the .db's own list (null), so a
@@ -174,7 +182,6 @@ async function main([command, ...args]) {
     const top = Number(values.top);
     if (!Number.isInteger(top) || top < 1) return usage();
     values.db = dbFrom(values);
-    if (!existsSync(values.db)) throw new Error(`${values.db} does not exist`);
     const config = aiConfig(process.env);
     if (!config.key && config.requireKey) throw new Error('no API key: set OWNH_AI_KEY or OPENROUTER_API_KEY, or OWNH_AI_BASE_URL for a keyless endpoint');
     // Same directory and stats cache as `report`, so a reported database starts fast.

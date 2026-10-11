@@ -11,7 +11,7 @@ Claude Desktop, others) can query one database with their own model. No
 `--ai` settings and no API key are needed on the OWNH side.
 
 ```bash
-ownh mcp --db acme.db [--out dir] [--top n]
+bin/ownh.js mcp --db acme.db [--out dir] [--top n]
 ```
 
 ## Decision: real names (user decision)

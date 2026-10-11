@@ -182,5 +182,6 @@ repository together with repositories that are subtree-synced into it.
 27. git-who https://github.com/sinclairtarget/git-who
 
 URLs for sources 2-5 and 7-12 were not recorded with the original research.
-Open question: add them before citing any of those in public copy. Sources [1],
-[6], [13], [15], [17], and [18] are the ones the site and whitepaper cite.
+Open question: add them before citing any of those in public copy. The site
+cites [1], [6], [15], [17], and [18]; the whitepaper cites those plus [13] and
+[23].

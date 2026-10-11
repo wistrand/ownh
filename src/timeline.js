@@ -1,4 +1,4 @@
-import { quarterLabel } from './quarters.js';
+import { ACTIVE_WINDOW, quarterLabel } from './quarters.js';
 
 // Time series and projections for the report's "Outlook" section.
 //
@@ -28,7 +28,6 @@ const MIN_FIT_QUARTERS = 3;
 // A projection further out than this is reported as "beyond" instead of a date.
 const HORIZON_QUARTERS = 40;
 // An owner is inactive in quarter Q without a commit in Q or the 3 quarters before.
-const ACTIVE_WINDOW = 4;
 // The KPI table covers this many quarters.
 export const KPI_QUARTERS = 8;
 

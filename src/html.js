@@ -8,7 +8,7 @@ import { esc } from './charts.js';
 import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
-import { lineLabel, methodShare, ownerLabel, pct, repoCount, share, SITE } from './stats.js';
+import { lineLabel, methodShare, ownerLabel, plural, pct, repoCount, share, SITE } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
   const anchor = repoAnchors(stats.repos);
@@ -244,7 +244,7 @@ function demolitionHtml(stats) {
     ['num', '', 'num', 'num'],
   );
   return [section('Code demolition', `
-    <p class="r-note">${num(d.added)} lines added and ${num(d.removed)} removed in total; ${num(d.removedOfOthers)} of the removed lines (${pct(d.removedOfOthers, d.removed)}) belonged to someone other than the person removing them.</p>
+    <p class="r-note">${plural(d.added, 'line')} added and ${num(d.removed)} removed in total; ${num(d.removedOfOthers)} of the removed lines (${pct(d.removedOfOthers, d.removed)}) belonged to someone other than the person removing them.</p>
     <h4>Most lines removed that belonged to others</h4>${tbl('Remover', d.topRemovers)}
     <h4>Most lines lost to others</h4>${tbl('Owner', d.mostRemovedOwners)}
     <p class="r-note">${esc(DEMOLITION_NOTE)}</p>`)];

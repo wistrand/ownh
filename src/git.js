@@ -8,13 +8,16 @@ export const COMMIT_MARK = '\x01ownh ';
 
 // Pin settings a user's git config could change in ways that break parsing or
 // change results: which lines a diff reports (rename detection limits, merge
-// rename handling for remerge, the indent heuristic) and the encoding of names.
-// Values are git's defaults.
+// rename handling for remerge, the indent heuristic), the order of files in a
+// diff (which path a line added in several files of one commit is recorded
+// under), and the encoding of names. Values are git's defaults.
 const CONFIG = [
   '-c', 'log.showSignature=false', '-c', 'core.quotePath=false',
   '-c', 'diff.renameLimit=1000', '-c', 'merge.renameLimit=7000',
   '-c', 'merge.renames=true', '-c', 'merge.directoryRenames=conflict',
   '-c', 'diff.indentHeuristic=true', '-c', 'i18n.logOutputEncoding=UTF-8',
+  // An empty order file: git's default order (an empty value is an error).
+  '-c', 'diff.orderFile=/dev/null',
 ];
 
 // Byte strings: Node's 'latin1' encoding maps byte n to char n (0-255) and back
@@ -28,9 +31,39 @@ export function utf8(bytes) {
   return Buffer.from(bytes, BYTES).toString('utf8');
 }
 
-export function git(repo, args) {
+// A path as text, without loss: valid UTF-8 decodes as usual, and each byte
+// that is not part of a valid sequence becomes "\xNN". utf8() would turn
+// every such byte into U+FFFD, so two different names (Latin-1 "café" and
+// "cafè") would become the same path. History and HEAD both decode paths
+// with this, so they agree.
+export function pathText(bytes) {
+  const b = Buffer.from(bytes, BYTES);
+  let out = '';
+  let i = 0;
+  while (i < b.length) {
+    const c = b[i];
+    const n = c < 0x80 ? 1 : c >= 0xc2 && c <= 0xdf ? 2 : c >= 0xe0 && c <= 0xef ? 3 : c >= 0xf0 && c <= 0xf4 ? 4 : 0;
+    let ok = n > 0 && i + n <= b.length;
+    for (let k = 1; ok && k < n; k++) ok = (b[i + k] & 0xc0) === 0x80;
+    if (ok && n >= 3) {
+      // Overlong forms, UTF-16 surrogates, and code points above U+10FFFF.
+      const b1 = b[i + 1];
+      if ((c === 0xe0 && b1 < 0xa0) || (c === 0xed && b1 >= 0xa0) || (c === 0xf0 && b1 < 0x90) || (c === 0xf4 && b1 >= 0x90)) ok = false;
+    }
+    if (ok) {
+      out += b.toString('utf8', i, i + n);
+      i += n;
+    } else {
+      out += `\\x${c.toString(16).padStart(2, '0')}`;
+      i += 1;
+    }
+  }
+  return out;
+}
+
+export function git(repo, args, encoding = 'utf8') {
   return execFileSync('git', ['-C', repo, ...CONFIG, ...args], {
-    encoding: 'utf8',
+    encoding,
     maxBuffer: 1 << 30,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -149,8 +182,26 @@ export function attrBinary(repo, paths) {
   });
   const fields = out.split('\0');
   const binary = new Set();
+  // A diff driver ("diff=foo") is binary when the config says so
+  // (diff.foo.binary), as git decides for "Binary files differ".
+  const drivers = new Map();
+  const driverBinary = (name) => {
+    if (!drivers.has(name)) {
+      let value = false;
+      try {
+        value = git(repo, ['config', '--get', '--bool', `diff.${name}.binary`]).trim() === 'true';
+      } catch {
+        // Not set: a text driver.
+      }
+      drivers.set(name, value);
+    }
+    return drivers.get(name);
+  };
   // Records are <path> NUL <attribute> NUL <value> NUL.
-  for (let i = 0; i + 2 < fields.length; i += 3) if (fields[i + 2] === 'unset') binary.add(fields[i]);
+  for (let i = 0; i + 2 < fields.length; i += 3) {
+    const value = fields[i + 2];
+    if (value === 'unset' || (value !== 'set' && value !== 'unspecified' && driverBinary(value))) binary.add(fields[i]);
+  }
   return binary;
 }
 
@@ -216,10 +267,10 @@ export function binaryPaths(repo, rev, pathspecs = []) {
   const out = git(repo, [
     'diff', '--numstat', '-z', '--no-renames', '--no-textconv', '--no-ext-diff', '--no-relative',
     emptyTree(repo), rev, '--', ...pathspecs,
-  ]);
+  ], BYTES);
   const paths = new Set();
   for (const record of out.split('\0')) {
-    if (record.startsWith('-\t-\t')) paths.add(record.slice(4));
+    if (record.startsWith('-\t-\t')) paths.add(pathText(record.slice(4)));
   }
   return paths;
 }
@@ -230,13 +281,13 @@ export function headFiles(repo, rev, pathspecs = []) {
   const out = git(repo, [
     'diff', '--raw', '-z', '--no-abbrev', '--no-renames', '--no-relative',
     emptyTree(repo), rev, '--', ...pathspecs,
-  ]);
+  ], BYTES);
   const fields = out.split('\0');
   const files = [];
   // Records are ":<old mode> <new mode> <old oid> <new oid> <status>" NUL <path> NUL.
   for (let i = 0; i + 1 < fields.length; i += 2) {
     const [, mode, , oid] = fields[i].split(' ');
-    if (mode !== '160000') files.push({ oid, path: fields[i + 1] });
+    if (mode !== '160000') files.push({ oid, path: pathText(fields[i + 1]) });
   }
   return files;
 }

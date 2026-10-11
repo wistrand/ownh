@@ -25,8 +25,9 @@ curl -fsSL https://ownh.org/install.sh | sh
 
 This clones OWNH into `~/.ownh` and links the `ownh` command into
 `~/.local/bin` (`OWNH_HOME` and `OWNH_BIN` change both). `ownh update` (or
-running the installer again) pulls the latest version; `rm -rf ~/.ownh ~/.local/bin/ownh` removes it (`ownh info` shows the exact paths). In a clone of this
-repository, `bin/ownh.js` is the same command.
+running the installer again) pulls the latest version;
+`rm -rf ~/.ownh ~/.local/bin/ownh` removes it (`ownh info` shows the exact
+paths). In a clone of this repository, `bin/ownh.js` is the same command.
 
 ## Quick start
 
@@ -71,10 +72,11 @@ code changed (a `blame` run, for example, recomputes only the blame-based parts)
 `--pseudonymize` writes the same report into `report/acme-pseudonymized/` with
 every committer listed as "Contributor N", numbered by lines owned, and every
 CODEOWNERS handle as `@user-N` or `@team-N`, for circulation beyond the
-ownership committee. Automation keeps its name. Names quoted inside lines of
-code are replaced when they match a committer's email or full name; a one-word
-name or a person who never committed stays as written. The statistics cache
-stays in `report/acme/`, which holds real names.
+ownership committee. Automation keeps its name; its email is replaced unless it
+is an automation address. Names quoted inside lines of code are replaced, in any
+case, when they match a committer's email or any full name they committed under;
+a one-word name or a person who never committed stays as written. The statistics
+cache stays in `report/acme/`, which holds real names.
 
 For comparison with conventional methods, `ownh blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add
@@ -136,8 +138,9 @@ request is logged to `report/<db>/agent-requests.jsonl`.
 ## Website
 
 The site at [ownh.org](https://ownh.org) is `docs/index.html`, served by GitHub
-Pages from the `docs/` folder. Its [sample report](https://ownh.org/sample/report.html)
-is generated from the test repositories with `npm run sample`. The method
+Pages from the `docs/` folder. Its [sample
+report](https://ownh.org/sample/report.html) is generated from six demonstration
+repositories (`scripts/demo-repos.js`) with `npm run sample`. The method
 whitepaper, [ownh-whitepaper.pdf](https://ownh.org/ownh-whitepaper.pdf), is
 built from `whitepaper/ownh-whitepaper.tex` with `npm run whitepaper` (needs
 pdflatex).

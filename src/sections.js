@@ -1,6 +1,7 @@
 // Report pieces built on churn and per-author line counts: leverage, code
 // demolition, and code survival. Shared by leaderboard.md and report.html.
 import { trendSvg } from './charts.js';
+import { plural } from './stats.js';
 
 // Owners below this many lines (or 1% of all lines, if smaller) are left out of
 // the leverage ranking, so three lines from one keystroke don't top the table.
@@ -59,7 +60,7 @@ export function survivalSvg(stats) {
     yFormat: (v) => `${Math.round(v * 100)}%`,
     target: { value: 0.5, label: 'half-life' },
     xTick: (q) => (q % 4 === 0 ? `${q / 4}y` : null),
-    xFormat: (q) => `${q} quarters`,
+    xFormat: (q) => plural(q, 'quarter'),
     nowLine: false,
   });
 }

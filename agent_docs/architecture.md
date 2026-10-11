@@ -25,7 +25,7 @@ in [gotchas.md](gotchas.md); global invariants in [CLAUDE.md](../CLAUDE.md).
 ## Overview
 
 ```
-repos ──> index / add ──> .db (SQLite) ──> blame (optional) ──> .db
+repos ──> index ──────> .db (SQLite) ──> blame (optional) ──> .db
                               │
                               └──> collectStats ──> summary (text)
                                                 └──> report: report.html, leaderboard.md, SVG, JSON, CSV
@@ -49,9 +49,11 @@ Only `index` may create it; the others fail when it is missing.
 
 | Command   | Does                                                                                            |
 |-----------|-------------------------------------------------------------------------------------------------|
-| `index`   | New `.db` built in a temp file, renamed on success; `--force` replaces a `.db`.                 |
+| `index`   | New `.db` built in a temp file, renamed on success; `--force` replaces a `.db`                  |
+|           | (stale `-journal`/`-wal`/`-shm` of the old `.db` are removed first).                            |
 |           | Existing `.db`: appends the repos in one transaction, same result as indexing all at once.      |
-|           | Refuses a repo already present. `add` is a hidden alias that never creates a `.db`.             |
+|           | Refuses a repo already present, listing every repo `--force` must be given.                     |
+|           | `add` is a hidden alias that never creates a `.db` and takes no `--force`.                      |
 | `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.                 |
 | `summary` | Plain-text summary to stdout.                                                                   |
 | `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).      |
@@ -80,12 +82,17 @@ All long commands report progress on stderr every 5 seconds.
 --full-index --unified=0 --diff-algorithm=myers` plus pinned output options.
 `CONFIG` in `src/git.js` pins the user config that changes which lines a diff
 reports (rename limits, merge rename handling for remerge, the indent
-heuristic) and the output encoding of names, to git's defaults.
+heuristic), the order of files in a diff (`diff.orderFile=/dev/null`, an empty
+order file, since an empty value is an error), and the output encoding of
+names, to git's defaults.
 
 - **Raw bytes.** The walk output is read as byte strings (`BYTES`: Node's
   `latin1`, used only as a lossless byte-to-char round trip) and lines are hashed
   as those bytes, so lines in any encoding, valid UTF-8 or not, keep distinct
-  hashes. Names, emails, and paths are decoded as UTF-8 (`utf8()`); the stored
+  hashes. Names and emails are decoded as UTF-8 (`utf8()`); paths, in history
+  and at HEAD alike, with `pathText()`, which keeps bytes that are not valid
+  UTF-8 as `\xNN` so two such names stay distinct; C-quoted names are unquoted
+  as bytes first (`unquote` in `src/indexer.js`). The stored
   display `text` is UTF-8 decoded too. Valid UTF-8 lines hash as before.
 - **Ownership rule.** Every added line is hashed exactly as written (SHA-256,
   `src/hash.js`; no normalization) and upserted into `line_hashes`, keeping the
@@ -104,7 +111,8 @@ heuristic) and the output encoding of names, to git's defaults.
   diff carries only blob ids (`--full-index`); blobs are read afterwards with
   `cat-file --batch`. git prints "Binary files differ" when either side is
   binary, so each side is classified on its own, as HEAD scoring would:
-  gitattributes for its path (`attrBinary`) or git's content check (a NUL in the
+  gitattributes for its path (`attrBinary`: `-diff`, or a diff driver whose
+  config sets `diff.<driver>.binary`) or git's content check (a NUL in the
   first 8000 bytes, `looksBinary`). A binary side is one line, hashed whole; a
   text side contributes its lines (a file rewritten from binary to text gets
   owned lines, and text rewritten as binary counts its lines as removed).
@@ -141,7 +149,7 @@ timeout so a report and a blame run can overlap.
 
 | Table         | Holds                                                                                           |
 |---------------|-------------------------------------------------------------------------------------------------|
-| `runs`        | tool version, exclude patterns, start and finish time per `index`/`add`                         |
+| `runs`        | tool version, exclude patterns, start and finish time per `index` run (appends included)        |
 | `repos`       | name (directory basename, unique), path, stored head                                            |
 | `identities`  | lowercased email, display name                                                                  |
 | `commits`     | repo, sha, topo, author time, identity, author name, `added_lines`, `added_blank`, `is_merge`   |
@@ -229,6 +237,15 @@ show, so they cannot disagree.
 `report()` in `src/report.js` writes into `report/<db name>/` by default. Every report names
 its database and generation time (UTC) in the header and in `report.json`
 (`generated`); `SOURCE_DATE_EPOCH` overrides the clock for reproducible output.
+The HTML `<title>` starts with the database name, and "OWNH" in the header of
+`report.html` and `leaderboard.md` links to https://ownh.org (`SITE` in
+`src/stats.js`). Counts in prose go through `plural` and `repoCount`
+(`src/stats.js`), so a single repository reads "1 repository".
+The owner-status pie (`ownerStatus` in `src/archetypes.js`) puts bots in
+their own slice and divides by all lines at HEAD; the inactive archetype and
+the Outlook's inactive-owner series count an idle bot as inactive, and the
+series divides by owned lines. The three inactive figures can differ
+slightly; all use `ACTIVE_WINDOW` from `src/quarters.js`.
 
 | File                                         | Content                                                                    |
 |----------------------------------------------|----------------------------------------------------------------------------|
@@ -300,7 +317,7 @@ ownership archetypes, oddities, repositories, excluded patterns.
   The code key is `codeHash` of the stage's module: its source plus, followed
   through its import and re-export statements, every local module it uses,
   computed when `stats.js` loads, so it describes the running code. Index runs
-  are the completed `runs` rows (any `index` or `add`); blame is the
+  are the completed `runs` rows (every `index` run, appends included); blame is the
   `blame_files` count and `blame_repos` settings. A `blame` run recomputes only
   `blame` and `declared`; editing `churn.js` recomputes only the churn stages;
   editing `stats.js` (the combining code) recomputes nothing. Stage values are
@@ -316,16 +333,26 @@ ownership archetypes, oddities, repositories, excluded patterns.
     exactly those two keys); each is replaced by email with "Contributor N",
     numbered by rank in `owners`, then by first appearance in the stats.
   - Bots (`isBot`) keep their names: the bot oddities and the automation
-    archetype read them.
-  - All other strings are scrubbed of committer emails and names with more
-    than one word. One-word names are left (they are ordinary words as often),
-    as are names that never committed, such as copyright holders in line text.
+    archetype read them. Their email is replaced too (`automation-N@...`)
+    unless it is itself an automation address (`isBotEmail`): a bot-like name
+    can sit on a person's email, and "Bot" is also a surname.
+  - All other strings are scrubbed, in any case, of committer emails, of
+    every multi-word name an email committed under (`commits.author_name`,
+    read by `commitNames` in `src/report.js`), and of CODEOWNERS handles.
+    One-word names are left (they are ordinary words as often), as are names
+    that never committed, such as copyright holders in line text. The words
+    are split into regexes of 2,000 alternatives: V8 refuses one regex with
+    tens of thousands.
   - CODEOWNERS handles (`owners` string arrays) become `@user-N`, `@team-N`,
     or `user-N@example.invalid`.
   - Oddities about two people sharing a name disappear, since pseudonyms are
     per email.
   - The stage cache holds real names, so the CLI keeps it in the plain report
-    directory (`cacheDir`) and writes the pseudonymized files next to it.
+    directory (`cacheDir`) and writes the pseudonymized files next to it;
+    `report()` refuses a pseudonymized run whose output directory is the
+    cache directory. Every run also deletes report files it did not write
+    this time (`REPORT_FILES`), so a plain report's files cannot linger under
+    a pseudonymized one.
     `ai-cache.json` and `ai-request.json` hold tokens only and go to the
     output directory; AI text is unmapped to the pseudonyms.
   - `summary` and `ownh agent` are not pseudonymized.
@@ -365,7 +392,7 @@ and always shown; the AI only names the groups.
     rank or size, so the highest number only counts what was mentioned.
     Quarters are relative: `[T0]` is the newest commit's quarter, `[T-4]`,
     `[T+20]`.
-  - Sizes are bands ("tens of millions" of lines; repositories and owners as "fewer than ten", "ten to two dozen" (10 to 24), "dozens", "hundreds").
+  - Sizes are bands ("tens of millions" of lines; repositories and owners as "fewer than ten", "ten to two dozen" (10 to 24), "dozens", "hundreds"). A single repository is "one", its methods agree in "the repository" or "no repository", and `crossRepository` is left out (nothing to compare), so the model does not describe it as a portfolio.
   - Outlook projections carry a `meaning` next to the status code. With the
     bare code, the model wrote a majority reached years ago ("reached",
     quarter `[T-47]`) as a milestone, "reached at 2015 Q1".
@@ -393,9 +420,11 @@ and always shown; the AI only names the groups.
     `scripts/check-ai-payload.js <db>` checks that file for committer
     names, emails, repository names, and years, and exits 1 on a hit, so it
     can gate the real run. It skips the system prompt (fixed text) and
-    matches one-word names and repository names only as whole JSON values:
-    real committers and repositories are called "may", "two", and "text",
-    words the prompt and the size bands use.
+    matches one-word names and repository names only as whole JSON values,
+    since committers and repositories can be named by ordinary words the
+    prompt and the size bands use (a committer called "two" would match "ten
+    to two dozen"). It also refuses a request file more than an hour old;
+    pass the report directory for `--out` or `--pseudonymize` runs.
   - Residual: the provider sees the API key's account, the IP address, the
     model choice, and the shape of the data (percentages, bands, trends).
 - **Number guard:** `checkAnswer` rejects replies with numbers not in the facts
@@ -413,7 +442,7 @@ and always shown; the AI only names the groups.
 
 ## Agent
 
-`ownh agent --db x.db` (`src/agent.js`, `runAgent`) is a terminal session
+`bin/ownh.js agent --db x.db` (`src/agent.js`, `runAgent`) is a terminal session
 for questions about one database. It loads stats through `cachedStats` with
 the report directory's cache, so a reported database starts in seconds, and
 uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
@@ -436,11 +465,14 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
   from six letters on), with case and accents ignored; a phrase that matches
   nothing whole is tried word by word ("the analyzer"). It returns tokens with
   lines and commits, never names. The question filter also replaces a word of
-  four or more letters that is a whole word of exactly one person's multi-word
-  name ("hoare"), unless it is a word of a repository name or of the agent's
-  own vocabulary (words of its prompt and tool descriptions, so "line hash"
-  keeps "hash" even when someone is named Hash); partial repository names are
-  sent as typed (user decision).
+  four or more letters that is a whole word of one person's multi-word name
+  ("lindqvist"; one person may be several identities under the same name, and
+  then gets all their tokens), unless it is a word of a repository name or of
+  the agent's own vocabulary (words of its prompt and tool descriptions, so
+  "line hash" keeps "hash" even when someone is named Hash). Words are runs of
+  letters, so "lindqvist's" and "lindqvist-style" match, and a leading "@"
+  never protects a name ("@Mark"). Partial repository names are sent as typed
+  (user decision).
 - **Change over time.** `ownership_change` (optional quarter range and repo):
   who gained and lost owned lines (added minus removed, per owner of the
   lines) and who removed the most lines owned by others. The prompt sends
@@ -467,8 +499,12 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
   (`peopleOf`), longest first, whole words: emails and multi-word names in any
   case, one-word names in exact case only (so "Mark" the word survives),
   repository names with a non-letter in any case, and repositories named by
-  an ordinary word ("go", "tools") only in backticks or quotes or next to
-  "repo"; the session shows "sent as" when anything changed, and tokens in
+  an ordinary word ("docs", say) only in backticks or quotes or next to
+  "repo"; paths, CODEOWNERS patterns, and handles that appear in the stats
+  become their tokens too (a path the stats do not know is sent as typed).
+  A lowercase one-word name that is also a word of the agent's prompt ("or")
+  is left alone; other short names ("ff") are replaced.
+  The session shows "sent as" when anything changed, and tokens in
   answers are mapped back locally. A name
   several owners share (one author, several emails) becomes all their tokens
   in a question ("[O1] or [O2]"), and such owners are shown with their email in
@@ -572,7 +608,7 @@ Measured on real runs (repositories not named, see CLAUDE.md conventions):
 - Lines "re-added after deletion" are counted per quarter, so common lines
   (blanks, braces) dominate the figure; it overstates actual reverts.
 - Pitch copy in [design.md](design.md) still has placeholder figures.
-- Whether names in output need anonymization before presenting.
+- `summary` and `ownh agent` show real names; only `report --pseudonymize` replaces them.
 
 ## Dropped
 

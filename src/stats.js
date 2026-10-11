@@ -316,7 +316,12 @@ function agree(m) {
 
 // "1 repository", "3 repositories".
 export function repoCount(n) {
-  return `${n.toLocaleString('en-US')} ${n === 1 ? 'repository' : 'repositories'}`;
+  return plural(n, 'repository', 'repositories');
+}
+
+// "1 line", "2,000 lines".
+export function plural(n, one, many = `${one}s`) {
+  return `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 }
 
 export function pct(n, total) {
@@ -343,7 +348,10 @@ export function ownerLabel(owner) {
 export function lineLabel(line, max = 50) {
   if (line.binary === null) return UNATTRIBUTED;
   const s = line.binary ? `(binary) ${line.path}` : JSON.stringify(line.text);
-  return s.length > max ? `${s.slice(0, max - 3)}...` : s;
+  if (s.length <= max) return s;
+  // Cut by code points, and never inside a JSON escape ("\u00e9", "\n").
+  const cut = [...s].slice(0, max - 3).join('').replace(/(?<!\\)(\\\\)*\\(u[0-9a-fA-F]{0,3})?$/, '$1');
+  return `${cut}...`;
 }
 
 // Column width for text tables: user-perceived characters, not UTF-16 units,

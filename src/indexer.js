@@ -2,7 +2,7 @@ import { existsSync, readFileSync, renameSync, rmSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
 import { createDb, openDbForWrite } from './db.js';
 import { toPathspecs } from './exclude.js';
-import { BYTES, COMMIT_MARK, WALK_OPTIONS, attrBinary, binaryPaths, catBlobs, git, headFiles, isShallow, log, looksBinary, utf8 } from './git.js';
+import { BYTES, COMMIT_MARK, WALK_OPTIONS, attrBinary, binaryPaths, catBlobs, git, headFiles, isShallow, log, looksBinary, pathText, utf8 } from './git.js';
 import { hashFile, hashLine } from './hash.js';
 import { quarterOf } from './timeline.js';
 
@@ -83,6 +83,9 @@ export async function index({ dbPath, repoPaths, excludes = null, force = false,
     throw err;
   }
   db.close();
+  // A journal left by an interrupted write to the old .db (a stopped blame or
+  // append) would be replayed into the new file on its next open.
+  for (const suffix of ['-journal', '-wal', '-shm']) rmSync(`${dbPath}${suffix}`, { force: true });
   renameSync(tmpPath, dbPath);
 }
 
@@ -97,7 +100,7 @@ export async function add({ dbPath, repoPaths, excludes = null, log: report = ()
     const columns = new Set(db.prepare("SELECT name FROM pragma_table_info('commits')").all().map((c) => c.name));
     const hasChurn = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'churn'").get();
     if (!columns.has('author_name') || !columns.has('added_blank') || !columns.has('is_merge') || !hasChurn) {
-      throw new Error(`${dbPath} was built by an older ownh version; rebuild it with index`);
+      throw new Error(`${dbPath} was built by an older ownh version; rebuild it with index --force`);
     }
     const stored = db.prepare('SELECT excludes FROM runs ORDER BY id LIMIT 1').get();
     if (!stored) throw new Error(`${dbPath} has no completed index run`);
@@ -108,7 +111,11 @@ export async function add({ dbPath, repoPaths, excludes = null, log: report = ()
     }
     const existing = db.prepare('SELECT name FROM repos WHERE name = ?');
     for (const repo of repos) {
-      if (existing.get(repo.name)) throw new Error(`${dbPath} already has a repo named "${repo.name}"; pass --force to rebuild it`);
+      if (!existing.get(repo.name)) continue;
+      // --force rebuilds from the repos given, so it must get all of them, or
+      // the others are dropped.
+      const all = db.prepare('SELECT name FROM repos ORDER BY name').all().map((r) => r.name);
+      throw new Error(`${dbPath} already has a repo named "${repo.name}". To index it again, rebuild the whole .db with every repo it should hold: index --force with ${all.join(', ')}`);
     }
     await indexInto(db, repos, excludes, report);
   } finally {
@@ -269,7 +276,7 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
       continue;
     }
     if (line.startsWith('diff --git ')) {
-      headerPath = diffHeaderPath(utf8(line));
+      headerPath = diffHeaderPath(line);
       path = headerPath;
       oldPath = headerPath;
       oldOid = null;
@@ -279,10 +286,10 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
       continue;
     }
     if (!inHunk) {
-      if (line.startsWith('+++ ')) path = parsePath(utf8(line.slice(4)), 'b/');
-      else if (line.startsWith('--- ')) oldPath = parsePath(utf8(line.slice(4)), 'a/');
-      else if (line.startsWith('rename from ')) oldPath = unquote(utf8(line.slice(12)));
-      else if (line.startsWith('rename to ')) path = unquote(utf8(line.slice(10)));
+      if (line.startsWith('+++ ')) path = parsePath(line.slice(4), 'b/');
+      else if (line.startsWith('--- ')) oldPath = parsePath(line.slice(4), 'a/');
+      else if (line.startsWith('rename from ')) oldPath = pathText(unquote(line.slice(12)));
+      else if (line.startsWith('rename to ')) path = pathText(unquote(line.slice(10)));
       else if (SUBMODULE_HEADER.test(line)) skipFile = true;
       else if (line.startsWith('@@')) inHunk = true;
       else if (line.startsWith('Binary files ')) {
@@ -292,7 +299,7 @@ async function indexHistory(db, repo, pathspecs, identityId, report) {
             newOid: newOid && !NULL_OID.test(newOid) ? newOid : null,
             // Removals inside a merge are not real removals (see below).
             oldOid: !commit.isMerge && oldOid && !NULL_OID.test(oldOid) ? oldOid : null,
-            path: path ?? binaryPath(utf8(line)),
+            path: path ?? binaryPath(line),
             oldPath,
           });
         }
@@ -401,21 +408,26 @@ function diffHeaderPath(line) {
   if (!Number.isInteger(half) || rest[half] !== ' ') return null;
   const a = rest.slice(0, half);
   const b = rest.slice(half + 1);
-  return a.startsWith('a/') && b.startsWith('b/') && a.slice(2) === b.slice(2) ? a.slice(2) : null;
+  return a.startsWith('a/') && b.startsWith('b/') && a.slice(2) === b.slice(2) ? pathText(a.slice(2)) : null;
 }
 
 // Paths in "--- a/<p>" and "+++ b/<p>" lines. git appends a tab to an unquoted
 // name that contains a space; it is not part of the name.
+// Diff header lines arrive as byte strings (BYTES); the path is unquoted as
+// bytes and then decoded with pathText(), the same as HEAD paths.
 function parsePath(raw, prefix) {
   if (raw === '/dev/null') return null;
-  let path = raw.startsWith('"') ? unquote(raw) : raw.replace(/\t$/, '');
-  return path.startsWith(prefix) ? path.slice(prefix.length) : path;
+  const path = raw.startsWith('"') ? unquote(raw) : raw.replace(/\t$/, '');
+  return pathText(path.startsWith(prefix) ? path.slice(prefix.length) : path);
 }
 
-// git quotes names with special characters C-style, which JSON can read.
+// git quotes names with special characters C-style: \" \\ \a \b \t \n \v
+// \f \r and octal \NNN for other bytes. Works on byte strings, so octal
+// escapes become the bytes they stand for.
+const C_ESCAPES = { a: '\x07', b: '\b', t: '\t', n: '\n', v: '\v', f: '\f', r: '\r', '"': '"', '\\': '\\' };
 function unquote(raw) {
-  if (!raw.startsWith('"')) return raw;
-  try { return JSON.parse(raw); } catch { return raw; }
+  if (!raw.startsWith('"') || !raw.endsWith('"')) return raw;
+  return raw.slice(1, -1).replace(/\\([0-7]{3}|.)/g, (m, e) => (e.length === 3 ? String.fromCharCode(parseInt(e, 8) & 0xff) : C_ESCAPES[e] ?? e));
 }
 
 async function indexHead(db, repo, pathspecs, report) {

@@ -1,5 +1,5 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { basename, join } from 'node:path';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
 import { openDb } from './db.js';
 import { compositionSvg, crossOwnershipSvg, lineSharePieSvg, ownerStatusPieSvg, ownerSharesSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
@@ -12,7 +12,7 @@ import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { pseudonymizeStats } from './pseudonymize.js';
 import { stageCache } from './stagecache.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, repoCount, share, SITE, textWidth } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, plural, repoCount, share, SITE, textWidth } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
@@ -25,10 +25,13 @@ import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, repoCou
 // names, so a pseudonymized report keeps it out of its own directory.
 // `pseudonymize`: replace committer names and emails everywhere (pseudonymize.js).
 export async function report({ dbPath, outDir, cacheDir = outDir, top = 20, log = () => {}, ai = false, aiDryRun = false, aiCacheOnly = false, aiEnv = process.env, complete, cache = true, pseudonymize = false }) {
+  if (pseudonymize && cache && resolve(outDir) === resolve(cacheDir)) {
+    throw new Error(`${outDir} would hold the stats cache, which has real names; write the pseudonymized report to another directory`);
+  }
   mkdirSync(outDir, { recursive: true });
   if (cache) mkdirSync(cacheDir, { recursive: true });
   const real = cachedStats({ dbPath, outDir: cacheDir, top, log, cache });
-  const stats = pseudonymize ? pseudonymizeStats(real) : real;
+  const stats = pseudonymize ? pseudonymizeStats(real, { aliases: commitNames(dbPath) }) : real;
   stats.oddities = findOddities(stats);
   const when = generationTime();
   stats.generated = generatedInfo(dbPath, when);
@@ -74,7 +77,33 @@ export async function report({ dbPath, outDir, cacheDir = outDir, top = 20, log 
     ...(charts.survival ? { 'code-survival.svg': charts.survival } : {}),
   };
   for (const [name, content] of Object.entries(files)) writeFileSync(join(outDir, name), content);
+  // Files a previous run wrote that this one did not (a chart with no data
+  // now, or a plain report's files under a pseudonymized one) would be read
+  // as part of this report.
+  for (const name of REPORT_FILES) if (!(name in files)) rmSync(join(outDir, name), { force: true });
   return Object.keys(files);
+}
+
+// Every file report() can write.
+const REPORT_FILES = [
+  'report.html', 'leaderboard.md', 'report.json', 'owners.csv', 'lines.csv', 'cross-ownership.csv', 'methods.csv', 'codeowners.csv',
+  'owner-shares.svg', 'owner-composition.svg', 'ownership-by-line-hash.svg', 'owner-status.svg', 'cross-ownership.svg', 'owner-profile.svg',
+  'repo-profile.svg', 'ownership-outlook.svg', 'blank-line-outlook.svg', 'code-survival.svg',
+];
+
+// Every name each email committed under, for pseudonymizing names in text.
+function commitNames(dbPath) {
+  const db = openDb(dbPath);
+  try {
+    const names = new Map();
+    for (const { email, name } of db.prepare('SELECT DISTINCT i.email, c.author_name AS name FROM commits c JOIN identities i ON i.id = c.identity_id WHERE c.author_name IS NOT NULL').all()) {
+      if (!names.has(email)) names.set(email, new Set());
+      names.get(email).add(name);
+    }
+    return names;
+  } finally {
+    db.close();
+  }
 }
 
 // collectStats is nearly all of a report's run time; everything after it is
@@ -352,7 +381,7 @@ function demolitionMd(stats) {
   return [
     '## Code demolition',
     '',
-    `${num(d.added)} lines added and ${num(d.removed)} removed in total; ${num(d.removedOfOthers)} of the removed lines (${pct(d.removedOfOthers, d.removed)}) belonged to someone other than the person removing them.`,
+    `${plural(d.added, 'line')} added and ${num(d.removed)} removed in total; ${num(d.removedOfOthers)} of the removed lines (${pct(d.removedOfOthers, d.removed)}) belonged to someone other than the person removing them.`,
     '',
     '### Most lines removed that belonged to others',
     '',
@@ -489,8 +518,14 @@ function md(s) {
     // A newline in untrusted text (AI prose, a name) would start a new block.
     .replace(/\s*\r?\n\s*/g, ' ')
     .replace(/[\\`*_[\]<>|~&]/g, '\\$&')
-    .replace(/^(\s*)(#|[-+])(?=\s|$)/, '$1\\$2')
-    .replace(/^(\s*\d+)([.)])(?=\s|$)/, '$1\\$2');
+    // Leading spaces would make a code block.
+    .replace(/^\s+/, '')
+    // A heading, a list item, or a rule ("---", "==="); a numbered list.
+    .replace(/^(#|[-+=])/, '\\$1')
+    .replace(/^(\d+)([.)])(?=\s|$)/, '$1\\$2')
+    // GFM links bare URLs and "www." names.
+    .replace(/:\/\//g, '\\://')
+    .replace(/\bwww\./gi, (m) => `${m.slice(0, 3)}\\.`);
 }
 
 function num(n) {

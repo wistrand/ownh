@@ -5,54 +5,51 @@
 // - Identity objects ({ name, email }) are replaced wherever they appear,
 //   keyed by email. N follows rank by lines owned, then the order the rest
 //   appear in the stats, so the same database gives the same numbering.
-// - Committers that are automation (`isBot`) keep their names: they are not
-//   people, and the bot oddities and the automation archetype need them.
-// - Other strings (line text, paths, CODEOWNERS patterns) are searched for
-//   known emails and names of more than one word, which are replaced too.
+// - Committers that are automation (`isBot`) keep their name, since the bot
+//   oddities and the automation archetype need it, but their email is
+//   replaced unless it is itself an automation address: a bot-like name can
+//   sit on a person's email, and "Bot" is also a surname.
+// - Other strings (line text, paths, CODEOWNERS patterns) are searched, in any
+//   case, for known emails, for every name of more than one word an identity
+//   committed under (`aliases`, from the commits), and for CODEOWNERS handles.
 //   One-word names are left, since they are ordinary words as often as names,
 //   and so are names of people who never committed (a copyright holder).
 // - CODEOWNERS handles become "@user-N", "@team-N", or "user-N@example.invalid".
-import { isBot } from './oddities.js';
+// - Repository names and the database name are not replaced.
+import { isBot, isBotEmail } from './oddities.js';
 
 const isIdentity = (x) => x && typeof x === 'object' && !Array.isArray(x)
   && Object.keys(x).length === 2 && typeof x.name === 'string' && typeof x.email === 'string';
 
-export function pseudonymizeStats(stats) {
+// Names per regex: V8 refuses a regex with tens of thousands of alternatives.
+const CHUNK = 2000;
+const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// `aliases`: Map(email -> names committed under), optional.
+export function pseudonymizeStats(stats, { aliases = new Map() } = {}) {
   const byEmail = new Map(); // email -> { name, email } pseudonym
-  const realNames = new Map(); // email -> real name
+  let people = 0;
+  let bots = 0;
   const assign = (o) => {
-    if (isBot(o)) return o;
     let p = byEmail.get(o.email);
     if (!p) {
-      const n = byEmail.size + 1;
-      p = { name: `Contributor ${n}`, email: `contributor-${n}@example.invalid` };
+      if (isBot(o)) {
+        p = isBotEmail(o.email) ? o : { name: o.name, email: `automation-${++bots}@example.invalid` };
+      } else {
+        const n = ++people;
+        p = { name: `Contributor ${n}`, email: `contributor-${n}@example.invalid` };
+      }
       byEmail.set(o.email, p);
-      realNames.set(o.email, o.name);
     }
     return p;
   };
-  for (const o of stats.owners) if (o.owner) assign(o.owner);
-  const collect = (x) => {
-    if (Array.isArray(x)) x.forEach(collect);
-    else if (isIdentity(x)) assign(x);
-    else if (x && typeof x === 'object') Object.values(x).forEach(collect);
+  const realNames = new Map(); // email -> Set of names
+  const addName = (email, name) => {
+    if (!realNames.has(email)) realNames.set(email, new Set());
+    realNames.get(email).add(name);
   };
-  collect(stats);
-
-  // Names and emails inside other text, longest first so a full name wins
-  // over a shorter one it contains.
-  const words = [];
-  for (const [email, p] of byEmail) {
-    words.push([email, p.email]);
-    const name = realNames.get(email);
-    if (/\s/.test(name.trim())) words.push([name, p.name]);
-  }
-  words.sort((a, b) => b[0].length - a[0].length);
-  const replacement = new Map(words);
-  const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const pattern = words.length ? new RegExp(words.map(([w]) => `(?<![\\w@.-])${escape(w)}(?![\\w@-])`).join('|'), 'g') : null;
-  const scrub = (s) => (pattern ? s.replace(pattern, (m) => replacement.get(m) ?? m) : s);
-
+  for (const o of stats.owners) if (o.owner) assign(o.owner);
+  // Identities, and CODEOWNERS handles (string arrays under `owners`).
   const handles = new Map();
   const counters = { user: 0, team: 0, email: 0 };
   const handle = (h) => {
@@ -63,10 +60,39 @@ export function pseudonymizeStats(stats) {
     }
     return handles.get(h);
   };
+  const isHandles = (key, x) => key === 'owners' && Array.isArray(x) && x.every((h) => typeof h === 'string');
+  const collect = (x, key) => {
+    if (isHandles(key, x)) x.forEach(handle);
+    else if (Array.isArray(x)) x.forEach((v) => collect(v));
+    else if (isIdentity(x)) {
+      assign(x);
+      addName(x.email, x.name);
+    } else if (x && typeof x === 'object') for (const [k, v] of Object.entries(x)) collect(v, k);
+  };
+  collect(stats);
+  for (const [email, names] of aliases) if (byEmail.has(email)) for (const n of names) addName(email, n);
+
+  // Text to find inside other strings, matched in any case and looked up
+  // lowercased. Longest first, so a full name wins over a shorter one inside it.
+  const replacement = new Map();
+  for (const [email, p] of byEmail) {
+    if (p.email !== email) replacement.set(email.toLowerCase(), p.email);
+    if (p.name.startsWith('Contributor ')) {
+      for (const n of realNames.get(email) ?? []) if (/\s/.test(n.trim())) replacement.set(n.trim().toLowerCase(), p.name);
+    }
+  }
+  for (const [h, to] of handles) if (h.length >= 3) replacement.set(h.toLowerCase(), to);
+  const words = [...replacement.keys()].sort((a, b) => b.length - a.length);
+  const patterns = [];
+  for (let i = 0; i < words.length; i += CHUNK) {
+    patterns.push(new RegExp(words.slice(i, i + CHUNK).map((w) => `(?<![\\w@.-])${escape(w)}(?![\\w@-])`).join('|'), 'gi'));
+  }
+  const scrub = (s) => patterns.reduce((t, re) => t.replace(re, (m) => replacement.get(m.toLowerCase()) ?? m), s);
 
   const walk = (x, key) => {
     if (typeof x === 'string') return scrub(x);
-    if (Array.isArray(x)) return key === 'owners' && x.every((h) => typeof h === 'string') ? x.map(handle) : x.map((v) => walk(v));
+    if (isHandles(key, x)) return x.map(handle);
+    if (Array.isArray(x)) return x.map((v) => walk(v));
     if (isIdentity(x)) return assign(x);
     if (x && typeof x === 'object') return Object.fromEntries(Object.entries(x).map(([k, v]) => [k, walk(v, k)]));
     return x;

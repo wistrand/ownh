@@ -14,7 +14,7 @@ lands only if the tool is presented deadpan and the numbers come from real repos
 Pieces (details in [agent_docs/architecture.md](agent_docs/architecture.md)):
 
 ```
-git history (1..n repos) ──> index / add ──> .db ──> blame (optional)
+git history (1..n repos) ──> index ──────> .db ──> blame (optional)
                                               │
                                               └──> collectStats ──> summary, report
                                                                      ├─ owners, lines, pie, cross-repo heatmap
@@ -60,7 +60,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `test/`               | fixture repo builder and `node:test` suite                                                                                  |
 | `docs/`               | pitch site, served at https://ownh.org (GitHub Pages)                                                                       |
 | `docs/CNAME`          | GitHub Pages custom domain (`ownh.org`); keep it                                                                            |
-| `docs/install.sh`     | installer: clones into `~/.ownh`, links `ownh` into `~/.local/bin` (`curl ... | sh`)                                        |
+| `docs/install.sh`     | installer: clones into `~/.ownh`, links `ownh` into `~/.local/bin` (piped from `curl` to `sh`)                              |
 | `docs/robots.txt`     | allows all crawlers (Google-Extended explicitly); points to `docs/sitemap.xml`                                              |
 | `docs/sample/`        | sample report of six generated demo repos (`scripts/demo-repos.js`); generated, run `npm run sample`                        |
 | `whitepaper/`         | LaTeX source of the method whitepaper; built to `docs/ownh-whitepaper.pdf`, never edit the PDF                              |
@@ -110,7 +110,7 @@ npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing 
 - Appending (`index` on an existing `.db`) must give the same result as a full `index` of all repos. Anything order-dependent (tiebreaks, identity display names) breaks that.
 - No normalization. A line is the exact bytes between `\n` separators: whitespace, blank lines, and a trailing `\r` (CRLF) are all part of the line. A binary file is one line: the SHA-256 of its full content. Binary means whatever git decides (attributes plus content check), never our own heuristic. Lines are hashed as raw bytes, never decoded first (`BYTES` in `src/git.js`). History and HEAD must split, classify, exclude, and hash identically (`src/hash.js`, `lines()` and `binaryPaths()` in `src/git.js`; each side of a "Binary files differ" diff is classified on its own in `src/indexer.js`).
 - One shared first-introducer table across all input repos. A single repo is the n=1 case, never a separate code path.
-- AI-written report text (`--ai`) may only state numbers OWNH computed; `checkAnswer` in `src/ai.js` enforces it. Never send names, emails, repository names, dates, absolute counts, or code text to the model: tokens, percentages, and size bands only (`buildFacts`). Review a new database's payload with `--ai-dry-run` and `node scripts/check-ai-payload.js <db>` before the first real request. `ownh agent` (user decision) sends counts, percentages, and quarters too, but the same never-send list holds: names, emails, repository names, paths, CODEOWNERS handles, and line text are tokens in tool results and in the user's questions (`agentPseudonyms` in `src/agent.js`).
+- AI-written report text (`--ai`) may only state numbers OWNH computed; `checkAnswer` in `src/ai.js` enforces it. Never send names, emails, repository names, dates, absolute counts, or code text to the model: tokens, percentages, and size bands only (`buildFacts`). Review a new database's payload with `--ai-dry-run` and `node scripts/check-ai-payload.js <db>` before the first real request. `ownh agent` (user decision) sends counts, percentages, and quarters too, but the same never-send list holds: names, emails, repository names, paths, CODEOWNERS handles, and line text are tokens in tool results; in the user's questions, names (including partial, possessive, and @-mentioned ones), emails, repository names, and the paths, patterns, and handles that appear in the stats are tokens (`agentPseudonyms` in `src/agent.js`). A path the stats do not know is sent as typed.
 - Never publish invented numbers. Every percentage, rank, or count in user-facing material comes from a reproducible run on a real repo. Placeholders are marked as placeholders.
 - Never "fix" the absurdities. The algorithm stays faithfully naive (first introducer of a hash owns it); the satire is the output of an honest implementation of a bad idea.
 - Same repos, same output. Runs must be deterministic, independent of the order repos are passed in, so a reader can reproduce the leaderboard.

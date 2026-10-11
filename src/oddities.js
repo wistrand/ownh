@@ -9,7 +9,7 @@
 // Every name in a finding goes through `naming` (NAMES by default): owners,
 // repositories, lines, paths, CODEOWNERS patterns and handles. `ownh agent`
 // passes its pseudonymizer, so the findings it sends contain tokens only.
-import { lineLabel, pct, repoCount, share } from './stats.js';
+import { lineLabel, pct, plural, repoCount, share } from './stats.js';
 import { quarterOf } from './timeline.js';
 
 // Names lists in findings are cut to this many, with "and N more".
@@ -72,7 +72,7 @@ function declaredInactive(stats, N) {
   if (!hits.length) return [];
   hits.sort((a, b) => b.rule.lines - a.rule.lines || cmp(a.repo, b.repo) || cmp(a.rule.pattern, b.rule.pattern));
   const lines = hits.reduce((n, h) => n + h.rule.lines, 0);
-  const detail = [{ text: `Together they cover ${num(lines)} lines. Largest: ` }];
+  const detail = [{ text: `Together they cover ${plural(lines, 'line')}. Largest: ` }];
   hits.slice(0, MAX_NAMES).forEach((h, i) => {
     if (i) detail.push({ text: '; ' });
     detail.push({ code: N.path(h.rule.pattern) }, { text: ` in ${N.repo(h.repo)} declares ${h.rule.owners.map(N.team).join(' ')}; ${N.owner(h.rule.hash.owner)} owns ${pct(h.rule.hash.count, h.rule.hash.total)}` });
@@ -281,7 +281,7 @@ function demolition(stats, N) {
   if (top && top.owner && top.lines > 0) {
     found.push({
       kind: 'demolition',
-      title: `${N.owner(top.owner)} has removed ${num(top.lines)} lines that belonged to others`,
+      title: `${N.owner(top.owner)} has removed ${plural(top.lines, 'line')} that belonged to others`,
       detail: [{ text: `More than anyone else, against ${num(top.ownRemoved)} of their own.` }],
     });
   }
@@ -314,6 +314,11 @@ function unattributed(stats) {
     title: `${num(none.lines)} ${none.lines === 1 ? 'line has' : 'lines have'} no owner`,
     detail: [{ text: 'No commit adds them in a form git can reproduce, for example lines from merges git cannot redo automatically (octopus merges).' }],
   }];
+}
+
+// An email that is itself an automation address ("49699333+dependabot[bot]@...").
+export function isBotEmail(email) {
+  return BOT.test(email);
 }
 
 export function isBot(owner) {

@@ -170,7 +170,7 @@ export function ownerSharesSvg(stats) {
   const height = top + rows.length * rowH + 24;
   const parts = [
     `<text class="title" x="24" y="40">Share of lines by owner</text>`,
-    `<text class="subtitle" x="24" y="62">Share of ${stats.total.toLocaleString('en-US')} lines held by the top ${owners.length} owners</text>`,
+    `<text class="subtitle" x="24" y="62">Share of ${stats.total.toLocaleString('en-US')} lines held by the top ${owners.length === 1 ? 'owner' : `${owners.length} owners`}</text>`,
   ];
   rows.forEach((r, k) => {
     const y = top + k * rowH;
@@ -210,7 +210,7 @@ export function compositionSvg(stats) {
   const height = top + owners.length * rowH + 20;
   const parts = [
     `<text class="title" x="24" y="40">What the principal owners own</text>`,
-    `<text class="subtitle" x="24" y="62">Lines owned by each of the top ${owners.length} owners, by kind of line</text>`,
+    `<text class="subtitle" x="24" y="62">${owners.length === 1 ? 'Lines owned by the top owner' : `Lines owned by each of the top ${owners.length} owners`}, by kind of line</text>`,
   ];
   let lx = 24;
   for (const k of kinds) {

@@ -17,12 +17,11 @@ import { chatMessage } from './ai.js';
 import { ARCHETYPE_TITLES, findArchetypes } from './archetypes.js';
 import { TRIVIAL_LINE, findOddities } from './oddities.js';
 import { leverage } from './sections.js';
-import { quarterLabel, quarterOf } from './quarters.js';
+import { ACTIVE_WINDOW, quarterLabel, quarterOf } from './quarters.js';
 import { repoCount } from './stats.js';
 
 export const AGENT_LOG = 'agent-requests.jsonl';
 const MAX_ROUNDS = 8;
-const ACTIVE_WINDOW = 4;
 // Tokens for every kind of name, in both directions. `people` lists every
 // identity ({ owner: { name, email }, aliases: [names] }), including people
 // who own no lines and every name they committed under; without it, the
@@ -62,11 +61,13 @@ export function agentPseudonyms(stats, people = null) {
   //   emails, and names of more than one word: any case
   //   one-word names ("Mark", "TJ"): exact case only, so ordinary words survive
   //   a name shared by several people: all their tokens ("[O3] or [O9]")
-  //   repository names with a non-letter ("body-parser"): any case
-  //   repository names that are plain words ("go", "tools"): only in backticks
+  //   repository names with a non-letter ("billing-api"): any case
+  //   repository names that are plain words ("tools"): only in backticks
   //   or quotes, or next to "repo"/"repository", since the word means itself
+  //   CODEOWNERS handles and patterns, and paths, that appear in the stats
+  // A leading "@" does not protect a name: "@Mark" is a mention of Mark.
   const word = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const bound = (s) => `(?<![\\w@.-])${word(s)}(?![\\w@-])`;
+  const bound = (s) => `(?<![\\w.-])${word(s)}(?![\\w@-])`;
   const byName = new Map();
   const addName = (name, owner) => {
     if (!name || name.length < 2) return;
@@ -83,7 +84,12 @@ export function agentPseudonyms(stats, people = null) {
   }
   for (const [name, list] of byName) {
     const multi = /\s/.test(name.trim());
-    rules.push({ len: name.length, re: new RegExp(bound(name), multi ? 'gi' : 'g'), to: () => [...list.values()].map(p.owner).join(' or ') });
+    // A lowercase one-word name that is also a word of the agent's own prompt
+    // ("or", "it") would rewrite the question's ordinary words; other short
+    // names ("ff") are still replaced.
+    const common = !multi && name === name.toLowerCase();
+    const to = (m) => (common && p.vocabulary.has(m) ? m : [...list.values()].map(p.owner).join(' or '));
+    rules.push({ len: name.length, re: new RegExp(bound(name), multi ? 'gi' : 'g'), to });
   }
   for (const r of stats.repos) {
     const tok = () => p.repo(r.name);
@@ -96,6 +102,30 @@ export function agentPseudonyms(stats, people = null) {
       rules.push({ len: r.name.length, re: new RegExp(`\\b${n}(\\s+(?:repos?|repository))\\b`, 'gi'), to: (m, w) => `${tok()}${w}` });
     }
   }
+  // Paths, CODEOWNERS patterns, and handles known to the stats: the tools
+  // return them as tokens, so the user's text must not carry them out either.
+  const literal = (text, to) => {
+    if (typeof text === 'string' && text.length >= 3) rules.push({ len: text.length, re: new RegExp(`(?<![\\w./@-])${word(text)}(?![\\w/-])`, 'g'), to });
+  };
+  const seenLiteral = new Set();
+  const collect = (x, key) => {
+    if (Array.isArray(x)) {
+      for (const v of x) {
+        if (typeof v === 'string' && (key === 'owners' || key === 'unmatched' || key === 'shadowed') && !seenLiteral.has(v)) {
+          seenLiteral.add(v);
+          literal(v, () => (key === 'owners' ? p.team(v) : p.path(v)));
+        } else collect(v);
+      }
+    } else if (x && typeof x === 'object') {
+      for (const [k, v] of Object.entries(x)) {
+        if ((k === 'path' || k === 'pattern') && typeof v === 'string' && !seenLiteral.has(v)) {
+          seenLiteral.add(v);
+          literal(v, () => p.path(v));
+        } else collect(v, k);
+      }
+    }
+  };
+  collect(stats);
   rules.sort((a, b) => b.len - a.len);
 
   // Partial names, matched against the people as they are now, per question
@@ -104,36 +134,43 @@ export function agentPseudonyms(stats, people = null) {
   const wordsOf = (x) => fold(x).split(/[^\p{L}\p{N}]+/u).filter(Boolean);
   const namesOf = ({ owner, aliases }) => [owner.name, ...aliases].filter(Boolean);
   // People one word of the user's text names: a whole word of a multi-word
-  // name ("hoare" in "Graydon Hoare") of exactly one person. A one-word name
+  // name ("lindqvist" in "Ada Lindqvist") of exactly one person. A one-word name
   // ("Mark") only matches in exact case (the rules above), so the ordinary
   // word "mark" survives. Several people, or none, leave the word alone.
-  // Words of repository names ("analyzer" in "rust-analyzer") are never taken
+  // Words of repository names ("analyzer" in "log-analyzer") are never taken
   // as a person's name: users mention repos by such words.
   const repoWords = new Set(stats.repos.flatMap((r) => wordsOf(r.name)));
   // The agent's own vocabulary (words of its prompt and tool descriptions, set
   // by agentSession): "hash" in "line hash" is never a name, even if someone
-  // is called Hash.
+  // is called Hash, and a lowercase one-word name such as "or" is left alone.
   p.vocabulary = new Set();
+  // One person can be several identities (an old and a new email) under the
+  // same name; those all match, and get all their tokens.
   const onePerson = (word) => {
     const w = fold(word);
-    if (repoWords.has(w) || p.vocabulary.has(w)) return null;
-    let hit = null;
+    if (repoWords.has(w) || p.vocabulary.has(w)) return [];
+    const hits = new Map();
     for (const person of everyone) {
-      if (!namesOf(person).some((n) => { const ws = wordsOf(n); return ws.length >= 2 && ws.includes(w); })) continue;
-      if (hit && hit.owner.email !== person.owner.email) return null;
-      hit = person;
+      const full = namesOf(person).find((n) => { const ws = wordsOf(n); return ws.length >= 2 && ws.includes(w); });
+      if (full) hits.set(person.owner.email, { person, full: wordsOf(full).join(' ') });
     }
-    return hit;
+    const people = [...hits.values()];
+    if (!people.length || new Set(people.map((h) => h.full)).size > 1) return [];
+    return people.map((h) => h.person);
   };
   p.question = (text) => {
     let out = text;
     for (const { re, to } of rules) out = out.replace(re, to);
     // Then any remaining word of four or more letters that names exactly one
-    // person ("hoare"): the fragment would otherwise leave the machine.
-    return out.replace(/(?<![\p{L}\p{N}[@.])\p{L}[\p{L}\p{M}'’-]{3,}(?![\p{L}\p{N}\]@])/gu, (word) => {
-      const person = onePerson(word);
-      return person ? p.owner(person.owner) : word;
+    // person ("lindqvist"): the fragment would otherwise leave the machine.
+    // Words are runs of letters, so "lindqvist's" and "lindqvist-style" match
+    // too, and a leading "@" does not hide one.
+    out = out.replace(/(?<![\p{L}\p{M}\p{N}[.])\p{L}[\p{L}\p{M}]{3,}(?![\p{L}\p{M}\p{N}\]])/gu, (word) => {
+      const people = onePerson(word);
+      return people.length ? people.map((person) => p.owner(person.owner)).join(' or ') : word;
     });
+    // "smith-jones" became "[O5]-[O5]".
+    return out.replace(/(\[O\d+\])(?:-\1)+/g, '$1');
   };
 
   // Repository part of the find tool: repositories whose name matches `query`,
@@ -265,7 +302,11 @@ export function agentTools(stats, p, db = null) {
   `) : null;
   const personActivity = (email) => (activityOf ? activityOf.get(email) : null);
   // Row counts from the model: a missing, null, or silly value means the default.
-  const count = (v, d) => (Number.isInteger(v) && v > 0 ? Math.min(v, 500) : d);
+  // Some models send numbers as strings ("20").
+  const count = (v, d) => {
+    const n = typeof v === 'string' && /^\d+$/.test(v.trim()) ? Number(v) : v;
+    return Number.isInteger(n) && n > 0 ? Math.min(n, 500) : d;
+  };
   const ownerRow = (o, total) => ({
     owner: p.owner(o.owner), lines: o.lines, share_pct: share(o.lines, total),
   });
@@ -462,7 +503,7 @@ export function agentTools(stats, p, db = null) {
   const fn = (name, description, properties = {}, required = []) => ({ type: 'function', function: { name, description, parameters: { type: 'object', properties, required } } });
   const ownerParam = { owner: { type: 'string', description: 'owner token, e.g. [O3]' } };
   const repoParam = { repo: { type: 'string', description: 'repository token, e.g. [R2]' } };
-  const limitParam = { limit: { type: 'integer', description: 'how many rows (default 15)' } };
+  const limitParam = { limit: { type: 'integer', description: 'how many rows (each tool has its own default)' } };
   const tools = [
     fn('find', 'Find people and repositories by name, part of a name, or email name, tolerating typos; returns their tokens, best match first (match: exact, word, partial, or similar). Use it whenever the user names a person or repository you have no token for.', {
       query: { type: 'string', description: 'the name or part of a name, as the user wrote it' },
@@ -670,7 +711,11 @@ export async function ask(session, question, { onTool = () => {} } = {}) {
       messages.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(result) });
     }
   }
-  return '(No answer after the maximum number of tool rounds.)';
+  // The history ends on tool results; an assistant turn keeps the next
+  // question in the order every API accepts.
+  const stop = '(No answer after the maximum number of tool rounds.)';
+  messages.push({ role: 'assistant', content: stop });
+  return stop;
 }
 
 // With `db`, the question filter knows every identity and every name an author
@@ -690,7 +735,7 @@ function peopleOf(db) {
 export function agentSession(stats, config, outDir, { db = null, today = new Date() } = {}) {
   const p = agentPseudonyms(stats, db ? peopleOf(db) : null);
   const { tools, handlers } = agentTools(stats, p, db);
-  p.vocabulary = new Set(`${SYSTEM} ${JSON.stringify(tools)}`.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4));
+  p.vocabulary = new Set(`${SYSTEM} ${JSON.stringify(tools)}`.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 2));
   // The user's local date: "today" and "yesterday" mean their calendar.
   const pad = (n) => String(n).padStart(2, '0');
   const date = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;

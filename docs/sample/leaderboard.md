@@ -2,7 +2,7 @@
 
 Repositories: 6. Lines under management: 17,495.
 [OWNH](https://ownh.org) 1.0.1.
-Database: `sample.db`. Generated 2026-10-11 11:37 UTC.
+Database: `sample.db`. Generated 2026-10-11 19:03 UTC.
 
 ## AI insights (AI-generated)
 
@@ -296,7 +296,7 @@ _Archetype names written by AI; membership is computed by OWNH._
 
 ## Oddities
 
-- The most-owned line has no letters or digits. `""` appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform.
+- The most-owned line has no letters or digits. `""`appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform.
 - 6 of the top 15 lines are whitespace or punctuation. Together they hold 38.7% of all lines: `""`, `"}"`, `"  }"`, `"    }"`, `"/*"`, and 1 more.
 - web-frontend was mostly written somewhere else. 66.8% of its lines were first written in platform; 21.8% in web-frontend itself.
 - billing-service was mostly written somewhere else. 65.7% of its lines were first written in platform; 20.5% in billing-service itself.
@@ -305,11 +305,11 @@ _Archetype names written by AI; membership is computed by OWNH._
 - In 1 repository, most lines belong to people who never committed there. api-gateway (57.3%).
 - Three methods, three owners, in 5 repositories. api-gateway (Juno Rasmussen / Fiona Format / Ada Lindqvist), billing-service (Freja Eriksen / Juno Rasmussen / Ada Lindqvist), infra-config (Yusuf Ulrich / Cleo Bianchi / Greta Okafor), platform (Pavel Rasmussen / Fiona Format / Ada Lindqvist), web-frontend (Juno Rasmussen / Fiona Format / Ada Lindqvist).
 - Fiona Format has removed 5,053 lines that belonged to others. More than anyone else, against 21 of their own.
-- The most-deleted line. `"  }"` has been removed 1,562 times. It belongs to Ada Lindqvist.
+- The most-deleted line. `"  }"`has been removed 1,562 times. It belongs to Ada Lindqvist.
 - 22,013 lines were added again after being deleted. Each went straight back to its original owner (983 distinct lines).
-- 8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year. Together they cover 17,424 lines. Largest: `*.js` in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%; `*.js` in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%; `*.js` in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%; `*.py` in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%; `*.js` in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%; and 3 more.
-- 12 CODEOWNERS rules match no file, in 6 repositories. `/legacy/` (api-gateway), `/docs/` (api-gateway), `/legacy/` (billing-service), `/docs/` (billing-service), `/legacy/` (data-pipeline), and 7 more.
-- 5 CODEOWNERS rules are overridden by later rules for every file they match, in 5 repositories. `/src/` (api-gateway), `/src/` (billing-service), `/data_pipeline/` (data-pipeline), `/src/` (platform), `/src/` (web-frontend).
+- 8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year. Together they cover 17,424 lines. Largest: `*.js`in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%; `*.js`in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%; `*.js`in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%; `*.py`in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%; `*.js`in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%; and 3 more.
+- 12 CODEOWNERS rules match no file, in 6 repositories. `/legacy/`(api-gateway), `/docs/`(api-gateway), `/legacy/`(billing-service), `/docs/`(billing-service), `/legacy/`(data-pipeline), and 7 more.
+- 5 CODEOWNERS rules are overridden by later rules for every file they match, in 5 repositories. `/src/`(api-gateway), `/src/`(billing-service), `/data_pipeline/`(data-pipeline), `/src/`(platform), `/src/`(web-frontend).
 
 ## Repositories
 

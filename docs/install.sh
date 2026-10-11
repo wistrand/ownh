@@ -16,6 +16,9 @@ main() {
   repo="${OWNH_REPO:-https://github.com/wistrand/ownh.git}"
   home="${OWNH_HOME:-$HOME/.ownh}"
   bindir="${OWNH_BIN:-$HOME/.local/bin}"
+  # The link must not depend on the directory it is made from.
+  case $home in /*) ;; *) home="$PWD/$home" ;; esac
+  case $bindir in /*) ;; *) bindir="$PWD/$bindir" ;; esac
 
   say() { printf '%s\n' "$*"; }
   fail() { printf 'ownh install: %s\n' "$*" >&2; exit 1; }
@@ -28,6 +31,8 @@ main() {
   ' || fail "Node.js 22.13 or newer is required (found $(node --version))"
 
   if [ -d "$home/.git" ]; then
+    origin=$(git -C "$home" remote get-url origin 2>/dev/null || true)
+    [ "$origin" = "$repo" ] || fail "$home is a git clone of ${origin:-an unknown repository}, not $repo; set OWNH_HOME to install elsewhere"
     say "Updating OWNH in $home"
     git -C "$home" pull --ff-only --quiet ||
       fail "could not update $home (local changes, or history rewritten upstream); remove it and run this again: rm -rf $home"

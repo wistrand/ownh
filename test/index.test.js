@@ -109,7 +109,7 @@ test('repo argument order does not change the result', async () => {
 test('never indexes a repo twice without force', async () => {
   const db = join(dir, 'exists.db');
   await index({ dbPath: db, repoPaths: [repos.alpha] });
-  await assert.rejects(index({ dbPath: db, repoPaths: [repos.alpha] }), /already has a repo named "alpha"; pass --force/);
+  await assert.rejects(index({ dbPath: db, repoPaths: [repos.alpha] }), /already has a repo named "alpha"\. To index it again, rebuild the whole \.db with every repo it should hold: index --force with alpha/);
   await index({ dbPath: db, repoPaths: [repos.alpha], force: true });
 });
 
@@ -911,19 +911,66 @@ test('declared ownership: compact table only when one rule decides every line', 
 });
 
 test('agent question filter: everyone known, exact case for one-word names, plain-word repos only when marked', () => {
-  const stats = { owners: [{ owner: { name: 'Fiona Format', email: 'fiona@example.com' }, lines: 5 }], repos: [{ name: 'tools' }, { name: 'body-parser' }] };
+  const stats = { owners: [{ owner: { name: 'Fiona Format', email: 'fiona@example.com' }, lines: 5 }], repos: [{ name: 'tools' }, { name: 'billing-api' }] };
   const people = [
     { owner: { name: 'Fiona Format', email: 'fiona@example.com' }, aliases: ['ff'] },
     { owner: { name: 'Mark', email: 'mark@example.com' }, aliases: [] },
     { owner: { name: 'Ada Lindqvist', email: 'ada@example.com' }, aliases: [] }, // owns no lines
   ];
   const p = agentPseudonyms(stats, people);
-  const q = p.question('Did Ada Lindqvist or Mark mark the tools in body-parser, repo tools, or `tools`? ff?');
-  assert.doesNotMatch(q, /Ada|Lindqvist|body-parser|\bMark\b|\bff\b/);
+  const q = p.question('Did Ada Lindqvist or Mark mark the tools in billing-api, repo tools, or `tools`? ff?');
+  assert.doesNotMatch(q, /Ada|Lindqvist|billing-api|\bMark\b|\bff\b/);
   assert.match(q, /mark the tools in \[R\d+\], repo \[R\d+\], or `\[R\d+\]`/, 'ordinary words survive');
   const tools = agentTools(stats, p);
   assert.equal(tools.handlers.owners({ limit: null }).owners.length, 1, 'limit null means the default');
   assert.equal(tools.handlers.owner_profile({ owner: p.owner(people[2].owner) }).lines_owned, 0);
+});
+
+test('agent question filter: shared surnames, possessives, mentions, and known paths', () => {
+  const o = (name, email) => ({ name, email });
+  const stats = {
+    owners: [], lines: [{ path: 'assets/logo.png', binary: true }],
+    repos: [{ name: 'billing-api', owners: [], declared: { rules: [{ pattern: '/src/payments/', owners: ['@acme/payments-team'] }], unmatched: ['/legacy/'], shadowed: [] } }],
+  };
+  const people = [
+    { owner: o('Ada Quill', 'ada@old.example.com'), aliases: [] },
+    { owner: o('Ada Quill', 'ada@new.example.com'), aliases: [] },
+    { owner: o('Bram Okonkwo', 'bram@example.com'), aliases: [] },
+    { owner: o('Cy Smith-Jones', 'cy@example.com'), aliases: [] },
+    { owner: o('Mark', 'mark@example.com'), aliases: [] },
+  ];
+  const p = agentPseudonyms(stats, people);
+  const q = (text) => p.question(text);
+  assert.match(q('what does quill own'), /^what does \[O\d+\] or \[O\d+\] own$/);
+  assert.doesNotMatch(q("Okonkwo's lines and okonkwo-style code"), /okonkwo/i);
+  assert.doesNotMatch(q('ask @Mark and @Bram Okonkwo'), /Mark|Bram|Okonkwo/);
+  assert.doesNotMatch(q('who did smith-jones replace'), /smith|jones/i);
+  assert.doesNotMatch(q('who owns /src/payments/ for @acme/payments-team, /legacy/, or assets/logo.png'), /payments|legacy|logo/);
+});
+
+test('pseudonymized names: any case, every name an email committed under, handles in text, bots', async () => {
+  const { pseudonymizeStats } = await import('../src/pseudonymize.js');
+  const ada = { name: 'Ada Lindqvist', email: 'ada@example.com' };
+  const stats = {
+    owners: [{ owner: ada, lines: 3 }, { owner: { name: 'Petra Bot', email: 'petra@example.com' }, lines: 1 }, { owner: { name: 'depbot[bot]', email: 'depbot[bot]@example.com' }, lines: 1 }],
+    lines: [{ text: '// (c) ADA LINDQVIST <Ada@Example.com>, A. Old-Name Lindqvist, ask @adal', owner: ada }],
+    repos: [{ name: 'r', declared: { rules: [{ pattern: '*', owners: ['@adal'] }] } }],
+  };
+  const out = pseudonymizeStats(stats, { aliases: new Map([['ada@example.com', new Set(['A. Old-Name Lindqvist'])]]) });
+  assert.equal(out.lines[0].text, '// (c) Contributor 1 <contributor-1@example.invalid>, Contributor 1, ask @user-1');
+  assert.deepEqual(out.owners[1].owner, { name: 'Petra Bot', email: 'automation-1@example.invalid' });
+  assert.deepEqual(out.owners[2].owner, stats.owners[2].owner);
+  // Tens of thousands of names would overflow one regex.
+  const many = Array.from({ length: 20000 }, (_, i) => ({ owner: { name: `Person${i} Surname${i}`, email: `p${i}@example.com` }, lines: 1 }));
+  assert.doesNotThrow(() => pseudonymizeStats({ owners: many, lines: [{ text: 'PERSON7 SURNAME7' }] }));
+});
+
+test('paths that are not UTF-8 stay distinct', async () => {
+  const { pathText } = await import('../src/git.js');
+  const bytes = (b) => Buffer.from(b).toString('latin1');
+  assert.equal(pathText(bytes([0x63, 0x61, 0x66, 0xe9])), 'caf\\xe9');
+  assert.equal(pathText(bytes([0x63, 0x61, 0x66, 0xe8])), 'caf\\xe8');
+  assert.equal(pathText(bytes(Buffer.from('café/ö.txt'))), 'café/ö.txt');
 });
 
 test('agent: partial names are matched per question and found by find', () => {

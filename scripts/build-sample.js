@@ -15,7 +15,7 @@ import { buildDemoRepos } from './demo-repos.js';
 const OUT = fileURLToPath(new URL('../docs/sample', import.meta.url));
 // Kept after the build (git-ignored) for `summary`, `report`, and `report --ai`.
 // The demonstration repositories themselves are temporary, so `blame` and
-// `add` can't run against it later.
+// appending with `index` can't run against it later.
 const DB = fileURLToPath(new URL('../report/sample.db', import.meta.url));
 
 const dir = mkdtempSync(join(tmpdir(), 'ownh-sample-'));
