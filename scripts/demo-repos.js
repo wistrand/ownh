@@ -97,7 +97,7 @@ function yamlBlock(r, service) {
     `  replicas: ${r.int(1, 6)}`, '  env:', `    - name: ${r.pick(VARS).toUpperCase()}_${r.pick(NOUNS).toUpperCase()}`, `      value: "${r.pick(VARS)}"`, ''];
 }
 
-const DEPS = ['left-pad', 'lodash', 'express', 'zod', 'pino', 'undici', 'dayjs', 'uuid', 'yaml', 'chalk'];
+const DEPS = ['left-pad', 'lodash', 'fastify', 'zod', 'pino', 'undici', 'dayjs', 'uuid', 'yaml', 'chalk'];
 
 function newFile(r, lang, service) {
   if (lang === 'js') {

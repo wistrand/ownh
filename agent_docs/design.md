@@ -115,6 +115,12 @@ claim to its source; keep it accurate if that changes.
   - Every statement must match `src/`: update it when the definitions,
     attribution, or metrics change. Same deadpan voice and citation rule as
     the site.
+- `docs/install.sh` is the installer (`curl -fsSL https://ownh.org/install.sh | sh`):
+  clones the repo into `~/.ownh` and links `ownh` into `~/.local/bin`, no npm
+  (npm 12 refuses `github:` and remote tarball specs by default). The whole
+  body is in `main()` so a truncated download runs nothing. Public examples
+  (site, README) use the installed `ownh` command; `CLAUDE.md` and agent docs
+  use `bin/ownh.js` from the checkout.
 - `docs/robots.txt` allows every crawler, Google-Extended explicitly (so
   Gemini may read the site), and points to `docs/sitemap.xml`, which lists the
   public pages: the site, the sample report, and the whitepaper. Add new pages

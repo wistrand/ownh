@@ -17,6 +17,7 @@
 // matching is not modeled. "!" negation and "[a-z]" ranges are not CODEOWNERS
 // syntax on GitHub and are taken literally.
 
+import { execFileSync } from 'node:child_process';
 import { git } from './git.js';
 import { topOf } from './rank.js';
 
@@ -33,6 +34,38 @@ export function readCodeowners(repoPath, head) {
     }
   }
   return null;
+}
+
+// What the declared stage's cache key needs about a repo's CODEOWNERS: the
+// path and blob id of the file used, 'none' when there is none, or
+// 'unreadable' when the clone cannot be read (moved, unmounted). A clone that
+// comes back changes the key, so the stage is recomputed instead of keeping a
+// result computed without it. One `git cat-file --batch-check` per repo.
+export function codeownersFingerprint(repo) {
+  try {
+    const out = execFileSync('git', ['-C', repo.path, 'cat-file', '--batch-check'], {
+      input: CODEOWNERS_PATHS.map((p) => `${repo.head}:${p}`).join('\n') + '\n',
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).split('\n');
+    for (let i = 0; i < CODEOWNERS_PATHS.length; i++) {
+      const [oid, type] = (out[i] ?? '').split(' ');
+      if (type === 'blob') return `${CODEOWNERS_PATHS[i]}:${oid}`;
+    }
+    return 'none';
+  } catch {
+    return 'unreadable';
+  }
+}
+
+// Every file path at `head` (not only files with lines: empty files and
+// excluded paths count as files a rule can match), or null if unreadable.
+function treePaths(repoPath, head) {
+  try {
+    return git(repoPath, ['ls-tree', '-r', '-z', '--name-only', head]).split('\0').filter(Boolean);
+  } catch {
+    return null;
+  }
 }
 
 // Declared ownership for one repo: every line at head resolved to the rule that
@@ -54,7 +87,7 @@ export function declaredOwnership(db, repo, { blameFull, identities }) {
     GROUP BY h.path, c.identity_id, h.blame_identity_id
   `).iterate(repo.id);
   const ruleOf = new Map(); // path -> rule index, resolved once per path
-  const per = rules.map(() => ({ lines: 0, hash: new Map(), blame: new Map() }));
+  const per = rules.map(() => ({ lines: 0, blamed: 0, hash: new Map(), blame: new Map() }));
   let total = 0;
   let noRule = 0;
   for (const { path, owner, blamer, n } of rows) {
@@ -68,7 +101,10 @@ export function declaredOwnership(db, repo, { blameFull, identities }) {
     const r = per[i];
     r.lines += n;
     if (owner !== null) r.hash.set(owner, (r.hash.get(owner) ?? 0) + n);
-    if (blamer !== null) r.blame.set(blamer, (r.blame.get(blamer) ?? 0) + n);
+    if (blamer !== null) {
+      r.blame.set(blamer, (r.blame.get(blamer) ?? 0) + n);
+      r.blamed += n;
+    }
   }
   let unowned = 0;
   const out = rules.map((rule, i) => {
@@ -80,7 +116,9 @@ export function declaredOwnership(db, repo, { blameFull, identities }) {
       owners: rule.owners,
       lines: r.lines,
       hash: top(r.hash, r.lines),
-      blame: blameFull ? top(r.blame, r.lines) : null,
+      // Blame shares are of blamed lines (binary files have none), as in the
+      // three-way comparison.
+      blame: blameFull ? top(r.blame, r.blamed) : null,
     };
   });
   return {
@@ -93,7 +131,7 @@ export function declaredOwnership(db, repo, { blameFull, identities }) {
     // Rules that decide no line, in file order, split by why: `unmatched`
     // patterns match no file at head; `shadowed` ones match files, but a later
     // rule wins for every one of them (last match wins).
-    ...idleRules(rules, out, [...ruleOf.keys()]),
+    ...idleRules(rules, out, treePaths(repo.path, repo.head) ?? [...ruleOf.keys()]),
   };
 }
 
@@ -114,6 +152,8 @@ export function parseCodeowners(text) {
     if (!line || line.startsWith('#') || /^\^?\[[^\]]*\]/.test(line)) return;
     // A pattern can contain escaped spaces ("my\ dir/").
     const tokens = line.match(/(?:\\.|[^\s\\])+/g) ?? [];
+    // A line of only "\" (or other noise) has no pattern: skip it.
+    if (!tokens.length) return;
     const pattern = tokens[0].replace(/\\(.)/g, '$1');
     const owners = [];
     for (const t of tokens.slice(1)) {

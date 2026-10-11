@@ -17,6 +17,7 @@ import { survivalStatements } from '../src/sections.js';
 import { exampleLabels, findArchetypes } from '../src/archetypes.js';
 import { parseCodeowners, patternRegex, ruleFor } from '../src/codeowners.js';
 import { codeHash } from '../src/stagecache.js';
+import { agentPseudonyms, agentSession, agentTools, ask } from '../src/agent.js';
 import { buildTimeline, fitLine, nextRound, quarterLabel } from '../src/timeline.js';
 import { summary } from '../src/summary.js';
 import { catBlobs, log } from '../src/git.js';
@@ -766,6 +767,8 @@ test('declared ownership: CODEOWNERS next to line hash and blame', async () => {
   assert.match(md, /## Declared ownership/);
   assert.match(md, /\| `src\/` +\| @org\/src +\| +5 \| Ada Lindqvist \(60\.0%\) +\| Ada Lindqvist \(60\.0%\) +\|/);
   assert.ok(readdirSync(out).includes('codeowners.csv'));
+  assert.match(readFileSync(join(out, 'codeowners.csv'), 'utf8'), /,'@org\/src,/, 'handles cannot become spreadsheet formulas');
+  assert.deepEqual(parseCodeowners('\\\n* @x').map((r) => r.pattern), ['*'], 'a lone backslash line is skipped');
   assert.match(readFileSync(join(out, 'report.html'), 'utf8'), /id="declared-ownership"/);
   // A rule a later rule overrides everywhere is not "no file".
   const shadowRepo = init(dir, 'declared-shadow');
@@ -796,4 +799,101 @@ test('stage code hash follows imports and re-exports', () => {
   } finally {
     rmSync(mods, { recursive: true, force: true });
   }
+});
+
+test('agent: tools and questions are pseudonymized, answers mapped back', async () => {
+  const db = join(dir, 'agent.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  const stats = withDb(db, (conn) => collectStats(conn));
+  const secrets = [
+    ...stats.owners.filter((o) => o.owner).flatMap((o) => [o.owner.email, o.owner.name]),
+    ...stats.repos.map((r) => r.name), 'a.js', 'shared.js',
+  ];
+  const leaks = (text) => secrets.filter((s) => new RegExp(`(?<![\\w@.-])${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w@-])`, 'i').test(text));
+
+  const session = agentSession(stats, aiConfig({ OWNH_AI_BASE_URL: 'http://localhost:1/v1' }), null);
+  for (const [name, handler] of Object.entries(session.handlers)) {
+    const args = name === 'owner_profile' ? { owner: session.p.owner(stats.owners[0].owner) } : name === 'codeowners' ? {} : {};
+    assert.deepEqual(leaks(JSON.stringify(handler(args))), [], `tool ${name} leaks a name`);
+  }
+  const top = stats.owners[0].owner;
+  assert.equal(session.p.question(`How much does ${top.name} own in alpha?`).includes(top.name), false);
+
+  // Two owners with one display name: both tokens in questions, emails in answers.
+  const twins = { ...stats, owners: [{ owner: { name: 'Fiona Format', email: 'f1@example.com' } }, { owner: { name: 'Fiona Format', email: 'f2@example.com' } }], repos: [] };
+  const tp = agentPseudonyms(twins);
+  const asked = tp.question('What does Fiona Format own?');
+  assert.match(asked, /^What does \[O\d+\] or \[O\d+\] own\?$/);
+  assert.equal(tp.unmap(asked), 'What does Fiona Format <f1@example.com> or Fiona Format <f2@example.com> own?');
+
+  // Time-scoped tools read the database: over all quarters they agree with the
+  // stats, and their results are pseudonymized too.
+  withDb(db, (conn) => {
+    const timed = agentSession(stats, aiConfig({ OWNH_AI_BASE_URL: 'http://localhost:1/v1' }), null, { db: conn });
+    const all = timed.handlers.removals({ from_quarter: '1970 Q1', to_quarter: '2100 Q4' });
+    assert.equal(all.lines_removed, stats.deletions.removed);
+    assert.equal(all.lines_removed_owned_by_others, stats.deletions.removedOfOthers);
+    const act = timed.handlers.activity({ from_date: '1970-01-01', to_date: '2100-12-31' });
+    assert.equal(act.commits, conn.prepare('SELECT COUNT(*) AS n FROM commits WHERE is_merge = 0').get().n);
+    assert.deepEqual(leaks(JSON.stringify([all, act])), []);
+    assert.throws(() => timed.handlers.removals({ from_quarter: 'last month', to_quarter: '2026 Q1' }), /expected a quarter/);
+    assert.ok(timed.messages[0].content.includes('Today is '));
+  });
+
+  const sent = [];
+  const realFetch = globalThis.fetch;
+  let round = 0;
+  globalThis.fetch = async (_url, init) => {
+    const body = JSON.parse(init.body);
+    sent.push(init.body);
+    round++;
+    if (round === 1) {
+      return new Response(JSON.stringify({ choices: [{ message: { role: 'assistant', content: null, tool_calls: [{ id: 'c1', type: 'function', function: { name: 'owners', arguments: '{"limit": 3}' } }] } }] }), { status: 200 });
+    }
+    // The tool result came back as a tool message; answer with its first token.
+    const tool = body.messages.find((m) => m.role === 'tool');
+    const first = JSON.parse(tool.content).owners[0].owner;
+    return new Response(JSON.stringify({ choices: [{ message: { role: 'assistant', content: `${first} owns the most lines.` } }] }), { status: 200 });
+  };
+  try {
+    const answer = await ask(session, `Who owns the most lines? Is it ${top.name}?`);
+    assert.equal(answer, `${top.name} owns the most lines.`);
+    assert.equal(round, 2);
+    for (const body of sent) assert.deepEqual(leaks(body), [], 'a request leaks a name');
+    assert.ok(JSON.parse(sent[0]).tools.some((t) => t.function.name === 'owner_profile'));
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+test('bot detection: [bot] accounts, tools, and bot or robot as a word in the name', async () => {
+  const { isBot } = await import('../src/oddities.js');
+  const bot = (name, email = 'x@example.com') => isBot({ name, email });
+  for (const n of ['depbot[bot]', 'Fiona Build Bot', 'docs-bot', 'Petra Robot', 'BOT', 'renovate']) assert.ok(bot(n), n);
+  for (const n of ['Fiona Format', 'Ada Lindqvist', 'Abbot Costa', 'Robotham Lee', 'fionabot']) assert.ok(!bot(n), n);
+  assert.ok(bot('Petra Process', '49699333+dependabot[bot]@users.noreply.github.com'));
+});
+
+test('declared ownership: compact table only when one rule decides every line', async () => {
+  const { declaredSimple, declaredDetailed } = await import('../src/sections.js');
+  const repo = (name, rules, noRule) => ({ name, declared: { rules: Array.from({ length: rules }, () => ({})), noRule } });
+  const stats = { repos: [repo('a', 1, 0), repo('b', 1, 500), repo('c', 0, 10), repo('d', 3, 0)] };
+  assert.deepEqual(declaredSimple(stats).map((r) => r.name), ['a']);
+  assert.deepEqual(declaredDetailed(stats).map((r) => r.name), ['b', 'c', 'd']);
+});
+
+test('agent question filter: everyone known, exact case for one-word names, plain-word repos only when marked', () => {
+  const stats = { owners: [{ owner: { name: 'Fiona Format', email: 'fiona@example.com' }, lines: 5 }], repos: [{ name: 'tools' }, { name: 'body-parser' }] };
+  const people = [
+    { owner: { name: 'Fiona Format', email: 'fiona@example.com' }, aliases: ['ff'] },
+    { owner: { name: 'Mark', email: 'mark@example.com' }, aliases: [] },
+    { owner: { name: 'Ada Lindqvist', email: 'ada@example.com' }, aliases: [] }, // owns no lines
+  ];
+  const p = agentPseudonyms(stats, people);
+  const q = p.question('Did Ada Lindqvist or Mark mark the tools in body-parser, repo tools, or `tools`? ff?');
+  assert.doesNotMatch(q, /Ada|Lindqvist|body-parser|\bMark\b|\bff\b/);
+  assert.match(q, /mark the tools in \[R\d+\], repo \[R\d+\], or `\[R\d+\]`/, 'ordinary words survive');
+  const tools = agentTools(stats, p);
+  assert.equal(tools.handlers.owners({ limit: null }).owners.length, 1, 'limit null means the default');
+  assert.equal(tools.handlers.owner_profile({ owner: p.owner(people[2].owner) }).lines_owned, 0);
 });

@@ -14,6 +14,7 @@ in [gotchas.md](gotchas.md); global invariants in [CLAUDE.md](../CLAUDE.md).
 - Statistics
 - Reports
 - AI prose
+- Agent
 - Sample report and site
 - Decisions
 - Verification
@@ -42,13 +43,15 @@ dependencies. Git does all repository work through subprocesses (`src/git.js`).
 
 ## Commands
 
-| Command   | Does                                                                                          |
-|-----------|-----------------------------------------------------------------------------------------------|
-| `index`   | New `.db` from repos. One transaction; `--force` builds a temp file, renamed over on success. |
-| `add`     | Appends repos to an existing `.db`; same result as indexing all at once. One transaction.     |
-| `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.               |
-| `summary` | Plain-text summary to stdout.                                                                 |
-| `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).    |
+| Command   | Does                                                                                            |
+|-----------|-------------------------------------------------------------------------------------------------|
+| `index`   | New `.db` from repos, built in a temp file and renamed on success; `--force` replaces a `.db`.  |
+| `add`     | Appends repos to an existing `.db`; same result as indexing all at once. One transaction.       |
+| `blame`   | Fills per-line blame authors; slow, parallel, resumable, optional `--sample N`.                 |
+| `summary` | Plain-text summary to stdout.                                                                   |
+| `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).      |
+| `agent`   | Terminal Q&A over one `.db` through tool calls (see Agent); same AI settings as `--ai`.         |
+| `update`  | `git pull --ff-only` in the checkout the command runs from, if it is its own repository root.   |
 
 A repo path may point anywhere inside the repo (a subdirectory, its `.git`
 directory); `repoRoot` resolves it to the work-tree root, or the git directory
@@ -203,8 +206,13 @@ show, so they cannot disagree.
   rule (once per path); per rule: declared owners, lines, top owner by line
   hash, and by blame for fully blamed repos only. Owners are teams or users,
   not identities, so there is no agree flag. The file is read with git at
-  report time from the stored head; a repo that no longer exists has no
-  declared section. About 50 s for an 826-rule file over 11.7M lines.
+  report time from the stored head; the stage key includes its blob id
+  (`codeownersFingerprint`, or "unreadable" when the clone is gone), so a
+  clone that comes back is read again. Rules that decide no line are split
+  into "matches no file" (tested against every file in the tree, `git ls-tree`,
+  not only files with lines) and "overridden by later rules". Per-rule blame
+  shares are of blamed lines. Repos where one rule decides every line share a
+  compact table. About 50 s for an 826-rule file over 11.7M lines.
   Patterns and team names are paths and names: never in the AI facts.
   Reading CODEOWNERS is not the dropped "generate CODEOWNERS" feature.
 
@@ -230,8 +238,9 @@ its database and generation time (UTC) in the header and in `report.json`
 | `ownership-outlook.svg`                      | ownership outlook trend chart                                              |
 | `blank-line-outlook.svg`                     | blank-line outlook trend chart                                             |
 | `code-survival.svg`                          | survival curves                                                            |
-| `stats-cache.json`                           | cached `collectStats` output (see below; not a report file)                |
+| `stats-cache.json`                           | cached `collectStats` stages, one key each (see below; not a report file)  |
 | `ai-request.json`, `ai-cache.json`           | the AI request as sent, and the cached answer (with `--ai`)                |
+| `agent-requests.jsonl`                       | every request `ownh agent` sent, appended per session                      |
 
 Section order: AI insights (with `--ai`), principal owners, ownership
 profiles, principal lines, cross-repository ownership, three ways to own,
@@ -362,6 +371,52 @@ and always shown; the AI only names the groups.
   after archetype names. Anything rule-based (archetype membership) is unmarked.
 - **Tests:** a fake `complete` function; nothing calls the network.
 
+## Agent
+
+`ownh agent --db x.db` (`src/agent.js`, `runAgent`) is a terminal session
+for questions about one database. It loads stats through `cachedStats` with
+the report directory's cache, so a reported database starts in seconds, and
+uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
+
+- **Tools.** The model answers through OpenAI-style function calling
+  (`chatMessage` in `src/ai.js`, `tools`), at most 8 rounds per question. The
+  tools are read-only views of the stats (`agentTools`): overview, owners
+  (overall or per repo), owner profile, repositories, top lines, outlook (with
+  the head-line total and why the history series differs from it), deletions,
+  survival, CODEOWNERS, archetypes, leverage ranking, and the report's
+  oddities (their text with names replaced as in questions, quoted lines and
+  paths as tokens). A question the tools cannot answer directly makes the
+  model fan out many calls (it once called owner_profile 18 times to rank
+  leverage): add a tool rather than relying on that. No SQL from the model (user
+  decision: curated tools).
+- **Time.** The system prompt carries today's date and quarter. Two tools
+  query the database directly over a read-only connection: `removals` for a
+  range of quarters (the churn table is per quarter, so "last month" becomes
+  the quarter that contains it, and the answer says so; a full scan of churn,
+  about 1 s per 4 GB of database) and `activity` between two dates (commits
+  have exact author times; merges excluded). Finer removal periods would need
+  churn recorded per month, which means a re-index.
+- **Privacy** (user decision: pseudonymized). Tool results carry tokens for
+  owners `[O#]`, repositories `[R#]`, paths and patterns `[F#]`, lines `[L#]`,
+  and CODEOWNERS handles `[D#]`; emails and line text are never sent. The
+  report's oddities are built with these tokens through `findOddities`'
+  naming adapter, never by rewriting its finished prose. The user's question
+  is filtered against every identity and every name an author committed under
+  (`peopleOf`), longest first, whole words: emails and multi-word names in any
+  case, one-word names in exact case only (so "Mark" the word survives),
+  repository names with a non-letter in any case, and repositories named by
+  an ordinary word ("go", "tools") only in backticks or quotes or next to
+  "repo"; the session shows "sent as" when anything changed, and tokens in
+  answers are mapped back locally. A name
+  several owners share (one author, several emails) becomes all their tokens
+  in a question ("[O1] or [O2]"), and such owners are shown with their email in
+  answers; emails still never reach the model.
+  Counts, percentages, and quarter labels are sent as they are. Every request
+  body is appended to `agent-requests.jsonl` in the report directory.
+- **Session.** Works on a terminal and on piped input (one question per
+  line). `/clear` forgets the conversation, `/quit` leaves; a failed request
+  rolls the conversation back to before the question. Answers are plain text.
+
 ## Sample report and site
 
 - `docs/index.html` is the hand-written pitch site (see [design.md](design.md)).
@@ -393,7 +448,7 @@ and always shown; the AI only names the groups.
 | Repo name        | Directory basename (minus `.git`); duplicates are an error.                                                                                                                                                       |
 | Reruns           | `index` rebuilds; `add` appends new repos; updating a repo in place is not supported.                                                                                                                             |
 | Display names    | Most-used name per email across the `.db` (user decision).                                                                                                                                                        |
-| Line encoding    | Decoded as UTF-8 on both paths; invalid bytes become U+FFFD and still match.                                                                                                                                      |
+| Line encoding    | Raw bytes on both paths (`BYTES`), never decoded before hashing; only names, paths, and display text are UTF-8 decoded.                                                                                           |
 | Excludes         | Gitignore-like patterns as git exclude pathspecs (user decision).                                                                                                                                                 |
 | Storage          | SQLite via `node:sqlite`. Rejected: Postgres (server for a local batch job), JSON files.                                                                                                                          |
 | Report location  | `report/<db name>/` (user preference).                                                                                                                                                                            |
@@ -439,8 +494,8 @@ Measured on real runs (repositories not named, see CLAUDE.md conventions):
 
 ## Open questions
 
-- `ownh update` for repos already in a `.db` (new commits since the stored
-  head): feasible with the same min-key upsert plus replacing that repo's
+- Refreshing repos already in a `.db` (new commits since the stored head):
+  feasible with the same min-key upsert plus replacing that repo's
   `head_lines` and churn. Not built.
 - Which generated or vendored files belong in an exclude list beyond `dist/`.
   In real runs a single generated data file was about half of all HEAD lines.

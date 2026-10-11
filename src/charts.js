@@ -164,7 +164,8 @@ const KINDS = [
   { key: 'code', label: 'code', cls: 's1' },
   { key: 'blank', label: 'blank lines', cls: 's2' },
   // Light segment: dark text inside it, for contrast.
-  { key: 'punctuation', label: 'punctuation only', cls: 's4', ink: 'inbar-dark' },
+  // Includes whitespace-only lines (indentation, a CRLF blank line "\r").
+  { key: 'punctuation', label: 'whitespace or punctuation', cls: 's4', ink: 'inbar-dark' },
   { key: 'binary', label: 'binary files', cls: 's3' },
 ];
 

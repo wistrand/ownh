@@ -1,6 +1,6 @@
 import { QUARTER_SQL, buildTimeline } from './timeline.js';
 import { deletions, hasChurn, netByQuarter, survival } from './churn.js';
-import { declaredOwnership } from './codeowners.js';
+import { codeownersFingerprint, declaredOwnership } from './codeowners.js';
 import { blameCounts } from './blamecounts.js';
 import { headPass, topLineCounts } from './head.js';
 import { compareNullLast, rankOwners, share, topOf } from './rank.js';
@@ -91,16 +91,22 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
   const lines = cache.run('lines', { code: CODE.head, data: fp.index, args: { topLines } }, () => topLineCounts(db, topLines, log))
     .map(({ identityId, ...l }) => ({ ...l, owner: identityId === null ? null : identities.get(identityId) ?? null }));
 
-  const blame = cache.run('blame', { code: CODE.blame, data: [fp.index, fp.blame] }, () => blameCounts(db, repos, head.paths, log));
+  // Its input paths come from the head stage, so head's code is in the key too.
+  const blame = cache.run('blame', { code: [CODE.blame, CODE.head], data: [fp.index, fp.blame] }, () => blameCounts(db, repos, head.paths, log));
   const methods = collectMethods(db, repos, head.paths, blame, byRepo, overall, identities, NON_MERGE);
 
   // Declared ownership (CODEOWNERS at the stored head) next to the computed
   // answers. Blame per rule only for fully blamed repos: a sample covers too few
   // files per rule.
-  const declared = cache.run('declared', { code: CODE.declared, data: [fp.index, fp.blame] }, () => {
+  // Inputs from outside its module are in the key: which repos count as fully
+  // blamed (from the blame stage) and each CODEOWNERS file's blob id, which also
+  // changes when a clone becomes unreadable or readable again.
+  const blameFull = Object.fromEntries(repos.map((r) => [r.id, blame[r.id].kind === 'full']));
+  const codeowners = Object.fromEntries(repos.map((r) => [r.id, codeownersFingerprint(r)]));
+  const declared = cache.run('declared', { code: CODE.declared, data: [fp.index, fp.blame], args: { blameFull, codeowners } }, () => {
     const out = {};
     for (const r of repos) {
-      const d = declaredOwnership(db, r, { blameFull: blame[r.id].kind === 'full', identities });
+      const d = declaredOwnership(db, r, { blameFull: blameFull[r.id], identities });
       if (d) log(`declared: ${r.name} (${d.file}, ${d.rules.length} rules with lines)`);
       out[r.id] = d;
     }

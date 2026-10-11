@@ -5,6 +5,10 @@
 // A finding is { kind, title, detail }, where detail is a list of segments:
 // { text } for prose and { code } for literal lines or names, so each renderer
 // can escape them its own way.
+//
+// Every name in a finding goes through `naming` (NAMES by default): owners,
+// repositories, lines, paths, CODEOWNERS patterns and handles. `ownh agent`
+// passes its pseudonymizer, so the findings it sends contain tokens only.
 import { lineLabel, pct, share } from './stats.js';
 import { quarterOf } from './timeline.js';
 
@@ -12,33 +16,48 @@ import { quarterOf } from './timeline.js';
 const MAX_NAMES = 5;
 
 // Lines with no letters or digits: blank lines, braces, brackets, punctuation.
-const TRIVIAL_LINE = /^[\s{}()[\];,.:<>/\\*#'"`=+-]*$/;
+// ASCII whitespace only, the same set as the SQL classification in head.js
+// (SQLite's trim knows no Unicode classes), so both call the same lines trivial.
+export const TRIVIAL_LINE = /^[ \t\r\f\v{}()[\];,.:<>/\\*#'"`=+-]*$/;
 
-// Committers that are automation, not people.
+const NAMES = {
+  owner: (o) => (o ? o.name : 'no one'),
+  repo: (name) => name,
+  line: (l) => lineLabel(l),
+  fullLine: (l) => (l.binary ? l.path : JSON.stringify(l.text)),
+  path: (p) => p,
+  team: (handle) => handle,
+};
+
+// Committers that are automation, not people: known tools, "[bot]" accounts,
+// and names with "bot" or "robot" as a word ("Fiona Build Bot", "docs-bot",
+// "Petra Robot"). Not "bot" inside a word: people are named "...bot" too.
 const BOT = /\[bot\]|dependabot|renovate|scala-steward|semantic[ -]release|github-actions/i;
+const BOT_NAME = /(^|[^a-z0-9])(ro)?bot([^a-z0-9]|$)/i;
 
-export function findOddities(stats) {
+export function findOddities(stats, naming = NAMES) {
+  const N = { ...NAMES, ...naming };
   return [
-    ...trivialLines(stats),
-    ...crlfTwins(stats),
-    ...binaryDuplicates(stats),
-    ...outsourcedRepos(stats),
-    ...absenteeTopOwners(stats),
-    ...nonContributorMajority(stats),
-    ...botCommitters(stats),
-    ...threeWaySplits(stats),
-    ...linesPerCommit(stats),
-    ...leverageOddity(stats),
-    ...demolition(stats),
-    ...declaredInactive(stats),
-    ...declaredUnmatched(stats),
+    ...trivialLines(stats, N),
+    ...crlfTwins(stats, N),
+    ...binaryDuplicates(stats, N),
+    ...outsourcedRepos(stats, N),
+    ...absenteeTopOwners(stats, N),
+    ...nonContributorMajority(stats, N),
+    ...botCommitters(stats, N),
+    ...threeWaySplits(stats, N),
+    ...linesPerCommit(stats, N),
+    ...leverageOddity(stats, N),
+    ...demolition(stats, N),
+    ...declaredInactive(stats, N),
+    ...declaredUnmatched(stats, N),
     ...unattributed(stats),
   ];
 }
 
 // CODEOWNERS rules that name owners for code whose top owner by line hash has
 // made no commit in the last year (the same window as the inactive archetype).
-function declaredInactive(stats) {
+function declaredInactive(stats, N) {
   const now = stats.timeline?.now;
   if (now === undefined || now === null) return [];
   const lastCommit = new Map(stats.owners.filter((o) => o.identityId !== null).map((o) => [o.identityId, o.lastCommit]));
@@ -56,7 +75,7 @@ function declaredInactive(stats) {
   const detail = [{ text: `Together they cover ${num(lines)} lines. Largest: ` }];
   hits.slice(0, MAX_NAMES).forEach((h, i) => {
     if (i) detail.push({ text: '; ' });
-    detail.push({ code: h.rule.pattern }, { text: ` in ${h.repo} declares ${h.rule.owners.join(' ')}; ${h.rule.hash.owner.name} owns ${pct(h.rule.hash.count, h.rule.hash.total)}` });
+    detail.push({ code: N.path(h.rule.pattern) }, { text: ` in ${N.repo(h.repo)} declares ${h.rule.owners.map(N.team).join(' ')}; ${N.owner(h.rule.hash.owner)} owns ${pct(h.rule.hash.count, h.rule.hash.total)}` });
   });
   detail.push({ text: hits.length > MAX_NAMES ? `; and ${hits.length - MAX_NAMES} more.` : '.' });
   return [{
@@ -68,21 +87,21 @@ function declaredInactive(stats) {
 
 // CODEOWNERS rules that decide no line at head: rules whose pattern matches no
 // file, and rules that a later rule overrides for every file they match.
-function declaredUnmatched(stats) {
+function declaredUnmatched(stats, N) {
   return [
-    ...idleRules(stats, 'unmatched', 'declared-unmatched', (n) => `${n === 1 ? 'rule matches' : 'rules match'} no file`),
-    ...idleRules(stats, 'shadowed', 'declared-shadowed', (n) => `${n === 1 ? 'rule is' : 'rules are'} overridden by later rules for every file ${n === 1 ? 'it matches' : 'they match'}`),
+    ...idleRules(stats, N, 'unmatched', 'declared-unmatched', (n) => `${n === 1 ? 'rule matches' : 'rules match'} no file`),
+    ...idleRules(stats, N, 'shadowed', 'declared-shadowed', (n) => `${n === 1 ? 'rule is' : 'rules are'} overridden by later rules for every file ${n === 1 ? 'it matches' : 'they match'}`),
   ];
 }
 
-function idleRules(stats, field, kind, phrase) {
+function idleRules(stats, N, field, kind, phrase) {
   const hits = stats.repos.flatMap((r) => (r.declared?.[field] ?? []).map((pattern) => ({ repo: r.name, pattern })));
   if (!hits.length) return [];
   const repos = new Set(hits.map((h) => h.repo)).size;
   const detail = [];
   hits.slice(0, MAX_NAMES).forEach((h, i) => {
     if (i) detail.push({ text: ', ' });
-    detail.push({ code: h.pattern }, { text: ` (${h.repo})` });
+    detail.push({ code: N.path(h.pattern) }, { text: ` (${N.repo(h.repo)})` });
   });
   detail.push({ text: hits.length > MAX_NAMES ? `, and ${hits.length - MAX_NAMES} more.` : '.' });
   return [{
@@ -92,7 +111,7 @@ function idleRules(stats, field, kind, phrase) {
   }];
 }
 
-function trivialLines(stats) {
+function trivialLines(stats, N) {
   const found = [];
   const top = stats.lines[0];
   if (top && top.binary === false && TRIVIAL_LINE.test(top.text)) {
@@ -100,8 +119,8 @@ function trivialLines(stats) {
       kind: 'trivial-top-line',
       title: 'The most-owned line has no letters or digits',
       detail: [
-        { code: lineLabel(top) },
-        { text: ` appears ${num(top.lines)} times (${pct(top.lines, stats.total)} of all lines) and belongs to ${top.owner ? top.owner.name : 'no one'}, who wrote it first in ${top.origin}.` },
+        { code: N.line(top) },
+        { text: ` appears ${num(top.lines)} times (${pct(top.lines, stats.total)} of all lines) and belongs to ${N.owner(top.owner)}, who wrote it first in ${N.repo(top.origin)}.` },
       ],
     });
   }
@@ -111,13 +130,13 @@ function trivialLines(stats) {
     found.push({
       kind: 'trivial-lines',
       title: `${trivial.length} of the top ${stats.lines.length} lines are whitespace or punctuation`,
-      detail: [{ text: `Together they hold ${pct(lines, stats.total)} of all lines: ` }, ...listCode(trivial.map((l) => lineLabel(l))), { text: '.' }],
+      detail: [{ text: `Together they hold ${pct(lines, stats.total)} of all lines: ` }, ...listCode(trivial.map((l) => N.line(l))), { text: '.' }],
     });
   }
   return found;
 }
 
-function crlfTwins(stats) {
+function crlfTwins(stats, N) {
   const texts = new Set(stats.lines.filter((l) => l.binary === false).map((l) => l.text));
   const twins = stats.lines.filter((l) => l.binary === false && l.text.endsWith('\r') && texts.has(l.text.slice(0, -1)));
   return twins.map((l) => {
@@ -126,26 +145,26 @@ function crlfTwins(stats) {
       kind: 'crlf-twin',
       title: 'The same line, owned twice',
       detail: [
-        { code: lineLabel(lf) }, { text: ` belongs to ${ownerName(lf)} and ` },
-        { code: lineLabel(l) }, { text: ` (Windows line ending) to ${ownerName(l)}.` },
+        { code: N.line(lf) }, { text: ` belongs to ${N.owner(lf.owner)} and ` },
+        { code: N.line(l) }, { text: ` (Windows line ending) to ${N.owner(l.owner)}.` },
       ],
     };
   });
 }
 
-function binaryDuplicates(stats) {
+function binaryDuplicates(stats, N) {
   return stats.lines.filter((l) => l.binary === true && l.lines > 1).map((l) => ({
     kind: 'binary-duplicate',
     title: 'A binary file is one of the most-owned lines',
     detail: [
-      { text: 'The file first committed as ' }, { code: l.path },
-      { text: ` exists ${num(l.lines)} times with identical content. Each copy is one line, owned by ${ownerName(l)}.` },
+      { text: 'The file first committed as ' }, { code: N.path(l.path) },
+      { text: ` exists ${num(l.lines)} times with identical content. Each copy is one line, owned by ${N.owner(l.owner)}.` },
     ],
   }));
 }
 
 // Repos where more lines were first written in one other repo than in the repo itself.
-function outsourcedRepos(stats) {
+function outsourcedRepos(stats, N) {
   const hits = [];
   for (const r of stats.repos) {
     const own = r.origins.find((o) => o.repo === r.name)?.lines ?? 0;
@@ -155,13 +174,13 @@ function outsourcedRepos(stats) {
   hits.sort((a, b) => share(b.outside.lines, b.r.lines) - share(a.outside.lines, a.r.lines) || cmp(a.r.name, b.r.name));
   return hits.map(({ r, own, outside }) => ({
     kind: 'outsourced',
-    title: `${r.name} was mostly written somewhere else`,
-    detail: [{ text: `${pct(outside.lines, r.lines)} of its lines were first written in ${outside.repo}; ${pct(own, r.lines)} in ${r.name} itself.` }],
+    title: `${N.repo(r.name)} was mostly written somewhere else`,
+    detail: [{ text: `${pct(outside.lines, r.lines)} of its lines were first written in ${N.repo(outside.repo)}; ${pct(own, r.lines)} in ${N.repo(r.name)} itself.` }],
   }));
 }
 
 // Repos whose top owner by line hash has never committed to them.
-function absenteeTopOwners(stats) {
+function absenteeTopOwners(stats, N) {
   const hits = stats.repos
     .map((r) => ({ r, top: r.owners.find((o) => o.owner) }))
     .filter(({ top }) => top && !top.contributor);
@@ -169,31 +188,31 @@ function absenteeTopOwners(stats) {
   return [{
     kind: 'absentee-owner',
     title: `${hits.length} of ${stats.repos.length} repositories ${hits.length === 1 ? 'is' : 'are'} owned by someone who never committed to ${hits.length === 1 ? 'it' : 'them'}`,
-    detail: [{ text: names(hits.map(({ r, top }) => `${r.name} (${top.owner.name}, ${pct(top.lines, r.lines)})`)) + '.' }],
+    detail: [{ text: names(hits.map(({ r, top }) => `${N.repo(r.name)} (${N.owner(top.owner)}, ${pct(top.lines, r.lines)})`)) + '.' }],
   }];
 }
 
-function nonContributorMajority(stats) {
+function nonContributorMajority(stats, N) {
   const hits = stats.repos.filter((r) => share(r.absentee, r.lines) > 0.5)
     .sort((a, b) => share(b.absentee, b.lines) - share(a.absentee, a.lines) || cmp(a.name, b.name));
   if (hits.length === 0) return [];
   return [{
     kind: 'non-contributor-majority',
     title: `In ${hits.length} ${hits.length === 1 ? 'repository' : 'repositories'}, most lines belong to people who never committed there`,
-    detail: [{ text: names(hits.map((r) => `${r.name} (${pct(r.absentee, r.lines)})`)) + '.' }],
+    detail: [{ text: names(hits.map((r) => `${N.repo(r.name)} (${pct(r.absentee, r.lines)})`)) + '.' }],
   }];
 }
 
 // Repos whose top committer is automation.
-function botCommitters(stats) {
+function botCommitters(stats, N) {
   const byBot = new Map();
   for (const r of stats.repos) {
     const top = r.methods?.commits;
     if (!top || !isBot(top.owner)) continue;
     const key = top.owner.email;
-    if (!byBot.has(key)) byBot.set(key, { name: top.owner.name, repos: [], topElsewhere: false, blamed: true });
+    if (!byBot.has(key)) byBot.set(key, { owner: top.owner, name: top.owner.name, repos: [], topElsewhere: false, blamed: true });
     const entry = byBot.get(key);
-    entry.repos.push(`${r.name} (${pct(top.count, top.total)} of commits)`);
+    entry.repos.push(`${N.repo(r.name)} (${pct(top.count, top.total)} of commits)`);
     // Whether blame or line hash also name it the top owner of this repo.
     if (r.methods.blame?.owner.email === key || r.methods.hash?.owner.email === key) entry.topElsewhere = true;
     // Blame is only claimed when it was computed for every one of these repos.
@@ -204,14 +223,14 @@ function botCommitters(stats) {
     const others = b.blamed ? 'git blame and line hash both name' : 'line hash names';
     return {
       kind: 'bot-committer',
-      title: `${b.name} is the top committer in ${b.repos.length} ${b.repos.length === 1 ? 'repository' : 'repositories'}`,
+      title: `${N.owner(b.owner)} is the top committer in ${b.repos.length} ${b.repos.length === 1 ? 'repository' : 'repositories'}`,
       detail: [{ text: `${names(b.repos)}.${b.topElsewhere ? '' : ` ${where}, ${others} someone else the top owner.`}` }],
     };
   });
 }
 
 // Repos where commit count, blame, and line hash name three different people.
-function threeWaySplits(stats) {
+function threeWaySplits(stats, N) {
   const hits = stats.repos.filter((r) => {
     const m = r.methods;
     if (!m?.commits || !m.blame || !m.hash) return false;
@@ -222,12 +241,12 @@ function threeWaySplits(stats) {
   return [{
     kind: 'three-way-split',
     title: `Three methods, three owners, in ${hits.length} ${hits.length === 1 ? 'repository' : 'repositories'}`,
-    detail: [{ text: names(hits.map((r) => `${r.name} (${r.methods.commits.owner.name} / ${r.methods.blame.owner.name} / ${r.methods.hash.owner.name})`)) + '.' }],
+    detail: [{ text: names(hits.map((r) => `${N.repo(r.name)} (${N.owner(r.methods.commits.owner)} / ${N.owner(r.methods.blame.owner)} / ${N.owner(r.methods.hash.owner)})`)) + '.' }],
   }];
 }
 
 // Among the top owners, the one holding the most lines per commit.
-function linesPerCommit(stats) {
+function linesPerCommit(stats, N) {
   const candidates = stats.owners.filter((o) => o.owner && o.commits > 0).slice(0, 20);
   if (candidates.length === 0) return [];
   const best = candidates.reduce((a, b) => (b.lines / b.commits > a.lines / a.commits ? b : a));
@@ -235,13 +254,13 @@ function linesPerCommit(stats) {
   if (ratio < 1000) return [];
   return [{
     kind: 'lines-per-commit',
-    title: `${best.owner.name} owns ${num(Math.round(ratio))} lines per commit`,
+    title: `${N.owner(best.owner)} owns ${num(Math.round(ratio))} lines per commit`,
     detail: [{ text: `${num(best.lines)} lines from ${num(best.commits)} ${best.commits === 1 ? 'commit' : 'commits'}, the highest ratio among the top owners.` }],
   }];
 }
 
 // The owner with the most lines owned per line written (at least 100 owned).
-function leverageOddity(stats) {
+function leverageOddity(stats, N) {
   const rows = stats.owners.filter((o) => o.owner && o.written > 0 && o.lines >= 100);
   if (rows.length === 0) return [];
   const best = rows.reduce((a, b) => (b.lines / b.written > a.lines / a.written ? b : a));
@@ -249,12 +268,12 @@ function leverageOddity(stats) {
   if (ratio < 10) return [];
   return [{
     kind: 'leverage',
-    title: `${best.owner.name} owns ${num(Math.round(ratio))} lines for every line written`,
+    title: `${N.owner(best.owner)} owns ${num(Math.round(ratio))} lines for every line written`,
     detail: [{ text: `${num(best.lines)} lines owned from ${num(best.written)} written.` }],
   }];
 }
 
-function demolition(stats) {
+function demolition(stats, N) {
   const d = stats.deletions;
   if (!d) return [];
   const found = [];
@@ -262,7 +281,7 @@ function demolition(stats) {
   if (top && top.owner && top.lines > 0) {
     found.push({
       kind: 'demolition',
-      title: `${top.owner.name} has removed ${num(top.lines)} lines that belonged to others`,
+      title: `${N.owner(top.owner)} has removed ${num(top.lines)} lines that belonged to others`,
       detail: [{ text: `More than anyone else, against ${num(top.ownRemoved)} of their own.` }],
     });
   }
@@ -272,8 +291,8 @@ function demolition(stats) {
       kind: 'most-removed-line',
       title: 'The most-deleted line',
       detail: [
-        line.binary ? { code: line.path } : { code: JSON.stringify(line.text) },
-        { text: ` has been removed ${num(line.lines)} times. It belongs to ${line.owner ? line.owner.name : 'no one'}.` },
+        { code: N.fullLine(line) },
+        { text: ` has been removed ${num(line.lines)} times. It belongs to ${N.owner(line.owner)}.` },
       ],
     });
   }
@@ -298,11 +317,7 @@ function unattributed(stats) {
 }
 
 export function isBot(owner) {
-  return BOT.test(owner.name) || BOT.test(owner.email);
-}
-
-function ownerName(line) {
-  return line.owner ? line.owner.name : 'no one';
+  return BOT.test(owner.name) || BOT.test(owner.email) || BOT_NAME.test(owner.name);
 }
 
 function names(list) {

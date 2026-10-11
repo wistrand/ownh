@@ -12,45 +12,59 @@ Website: [ownh.org](https://ownh.org)
 ## Status
 
 Working: indexing, adding repositories, the text summary, HTML/Markdown/SVG/
-JSON/CSV reports, and a comparison against commit counts and `git blame`.
+JSON/CSV reports, a comparison against commit counts and `git blame`, declared
+ownership from CODEOWNERS, optional AI prose, and `ownh agent` for questions.
+
+## Install
+
+Requires Node.js 22.13 or later and git. No dependencies, no root.
+
+```bash
+curl -fsSL https://ownh.org/install.sh | sh
+```
+
+This clones OWNH into `~/.ownh` and links the `ownh` command into
+`~/.local/bin` (`OWNH_HOME` and `OWNH_BIN` change both). `ownh update` (or
+running the installer again) pulls the latest version; `rm -rf ~/.ownh ~/.local/bin/ownh` removes it. In a clone of this
+repository, `bin/ownh.js` is the same command.
 
 ## Quick start
 
-Requires Node.js 22.13 or later and git. No dependencies.
-
 ```bash
-bin/ownh.js index --db acme.db ~/src/frontend ~/src/backend
-bin/ownh.js summary --db acme.db
+ownh index --db acme.db ~/src/frontend ~/src/backend
+ownh summary --db acme.db
 ```
 
 `--force` rebuilds an existing database. To add repositories to an existing
 database without rebuilding it:
 
 ```bash
-bin/ownh.js add --db acme.db ~/src/another-repo
+ownh add --db acme.db ~/src/another-repo
 ```
 
-Files and directories listed in `ownh.exclude` (optional, not committed) are
+Files and directories listed in `ownh.exclude` next to the tool (`~/.ownh/ownh.exclude`
+after installing; optional, not committed) are
 left out, from history and from the current tree. Pass `--exclude-file <file>` (repeatable) to use your own
 list instead, or `--no-excludes` to include everything.
 
 ## Reports
 
 ```bash
-bin/ownh.js report --db acme.db
+ownh report --db acme.db
 ```
 
 Writes into `report/acme/` (one directory per database; `--out` picks another):
-`report.html` (open it in a browser), `leaderboard.md`, SVG charts (ownership
-by line hash, cross-repository ownership, ownership profiles, outlook, code
-survival), and the underlying data as JSON and CSV.
+`report.html` (open it in a browser), `leaderboard.md`, SVG charts (principal
+owners and what they own, ownership by line hash, cross-repository ownership,
+ownership profiles, outlook, code survival), and the underlying data as JSON
+and CSV.
 
 The expensive statistics passes are cached in `stats-cache.json` in that
 directory, each on its own, so a second report reruns only what the database or
 code changed (a `blame` run, for example, recomputes only the blame-based parts).
 `--no-cache` recomputes everything.
 
-For comparison with conventional methods, `bin/ownh.js blame --db acme.db` runs
+For comparison with conventional methods, `ownh blame --db acme.db` runs
 `git blame` on every file (slow; safe to interrupt and rerun). Add
 `--sample 2000` to blame a random sample of files in large repositories and
 report an estimate instead. Reports then show the top owner of each repository
@@ -68,10 +82,10 @@ owner archetypes, using any OpenAI-compatible chat API, hosted or local
 another):
 
 ```bash
-OPENROUTER_API_KEY=... bin/ownh.js report --db acme.db --ai
+OPENROUTER_API_KEY=... ownh report --db acme.db --ai
 
 # A local server needs no key:
-OWNH_AI_BASE_URL=http://localhost:11434/v1 OWNH_AI_MODEL=<local model> bin/ownh.js report --db acme.db --ai
+OWNH_AI_BASE_URL=http://localhost:11434/v1 OWNH_AI_MODEL=<local model> ownh report --db acme.db --ai
 ```
 
 Only percentages, size bands ("tens of millions of lines"), and trends leave
@@ -90,6 +104,21 @@ figures, and answers are cached per database.
 | `OWNH_AI_MODEL`                         | model (default `openai/gpt-6-luna`)                                         |
 | `OWNH_AI_ZDR`                           | `0` drops the zero-data-retention requirement (OpenRouter only)             |
 | `OWNH_AI_TEMPERATURE`                   | a number (default 0), or `default` to send none                             |
+
+### Ask the database
+
+```bash
+OPENROUTER_API_KEY=... ownh agent --db acme.db
+```
+
+Opens a terminal session where you can ask questions about the database ("who
+owns the most of the payments repo?", "what does our principal owner actually
+own?", "who committed most last month?"). It uses the same AI settings as `--ai`.
+Removals are recorded per quarter, so questions about a shorter period are
+answered for the quarter that contains it. Names, emails, repositories,
+paths, and code never leave the machine: the model sees tokens, and answers are
+translated back locally. Counts, percentages, and quarters are sent. Every
+request is logged to `report/<db>/agent-requests.jsonl`.
 
 ## Website
 

@@ -1,11 +1,18 @@
 #!/usr/bin/env node
+import { existsSync, mkdirSync, realpathSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { blame } from '../src/blame.js';
 import { readDefaultExcludes, readExcludeFile } from '../src/exclude.js';
 import { add, index } from '../src/indexer.js';
-import { report } from '../src/report.js';
+import { cachedStats, report } from '../src/report.js';
+import { aiConfig } from '../src/ai.js';
+import { runAgent } from '../src/agent.js';
+import { quarterOf } from '../src/quarters.js';
+import { openDb } from '../src/db.js';
 import { summary } from '../src/summary.js';
+import { git } from '../src/git.js';
+import { fileURLToPath } from 'node:url';
 
 const USAGE = `usage:
   ownh index --db <file> [--exclude-file <file>]... [--no-excludes] [--force] <repo>...
@@ -13,6 +20,8 @@ const USAGE = `usage:
   ownh summary --db <file> [--top <n>]
   ownh report --db <file> [--out <dir>] [--top <n>] [--ai | --ai-dry-run] [--no-cache]   (default --out: report/<db name>/)
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
+  ownh agent --db <file> [--out <dir>] [--top <n>]   (ask questions about the database; same AI settings as --ai)
+  ownh update   (git pull the checkout this command runs from)
 
   Without --exclude-file, patterns come from ownh.exclude next to the tool,
   if it exists.
@@ -112,8 +121,69 @@ async function main([command, ...args]) {
     const files = await report({ dbPath: values.db, outDir: out, top, log, ai: values.ai, aiDryRun: values['ai-dry-run'], cache: !values['no-cache'] });
     for (const file of files) log(`wrote ${out}/${file}`);
     if (values.ai || values['ai-dry-run']) log(`AI request (when one was made or prepared): ${out}/ai-request.json`);
+  } else if (command === 'update') {
+    selfUpdate();
+  } else if (command === 'agent') {
+    const { values } = parseArgs({
+      args,
+      options: {
+        db: { type: 'string' },
+        out: { type: 'string' },
+        top: { type: 'string', default: '20' },
+      },
+    });
+    const top = Number(values.top);
+    if (!values.db || !Number.isInteger(top) || top < 1) return usage();
+    if (!existsSync(values.db)) throw new Error(`${values.db} does not exist`);
+    const config = aiConfig(process.env);
+    if (!config.key && config.requireKey) throw new Error('no API key: set OWNH_AI_KEY or OPENROUTER_API_KEY, or OWNH_AI_BASE_URL for a keyless endpoint');
+    // Same directory and stats cache as `report`, so a reported database starts fast.
+    const out = values.out ?? join('report', basename(values.db).replace(/\.db$/, ''));
+    mkdirSync(out, { recursive: true });
+    const stats = cachedStats({ dbPath: values.db, outDir: out, top, log, cache: true });
+    if (stats.timeline) stats.timeline.inProgress = quarterOf(Date.now() / 1000) === stats.timeline.now;
+    // Read-only connection for the time-scoped tools, open for the session.
+    const db = openDb(values.db);
+    try {
+      await runAgent({ stats, config, outDir: out, db });
+    } finally {
+      db.close();
+    }
   } else {
     usage();
+  }
+}
+
+// `ownh update`: fast-forward the git checkout this command runs from (the
+// installer's ~/.ownh clone, or any clone). Node resolves the installer's
+// symlink, so import.meta.url is inside the checkout itself.
+function selfUpdate() {
+  const root = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '');
+  let before;
+  let top;
+  try {
+    before = git(root, ['rev-parse', '--short', 'HEAD']).trim();
+    top = git(root, ['rev-parse', '--show-toplevel']).trim();
+  } catch {
+    throw new Error(`${root} is not a git checkout; reinstall with: curl -fsSL https://ownh.org/install.sh | sh`);
+  }
+  // A copy of OWNH inside some other repository must not pull that repository.
+  if (realpathSync(top) !== realpathSync(root)) {
+    throw new Error(`${root} is inside another git repository (${top}), not an OWNH checkout; reinstall with: curl -fsSL https://ownh.org/install.sh | sh`);
+  }
+  try {
+    git(root, ['pull', '--ff-only', '--quiet']);
+  } catch (err) {
+    // git prints hints first; the reason is the "fatal:" line.
+    const lines = (err.stderr || err.message).toString().trim().split('\n');
+    throw new Error(`update failed in ${root}: ${(lines.find((l) => l.startsWith('fatal:')) ?? lines[0]).replace(/^fatal: /, '')}`);
+  }
+  const after = git(root, ['rev-parse', '--short', 'HEAD']).trim();
+  if (after === before) {
+    log(`Already up to date (${after}).`);
+  } else {
+    const n = git(root, ['rev-list', '--count', `${before}..${after}`]).trim();
+    log(`Updated ${before} -> ${after} (${n} ${n === '1' ? 'commit' : 'commits'}).`);
   }
 }
 

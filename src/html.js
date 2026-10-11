@@ -74,7 +74,7 @@ export function reportHtml(stats, top, charts) {
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p>`),
     section('Three ways to own a repository', `
       <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
-      line hash. Blame shows "-" until <code>bin/ownh.js blame</code> has covered every file (or every file of its sample).
+      line hash. Blame shows "-" until <code>ownh blame</code> has covered every file (or every file of its sample).
       Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.</p>
       ${table(
         ['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'],
@@ -210,9 +210,7 @@ function declaredHtml(stats) {
       ['Repository', 'Pattern', 'Declared owners', 'Lines', 'By line hash', 'By blame'],
       simple.map((r) => {
         const rule = r.declared.rules[0];
-        return rule
-          ? [cell(esc(r.name), r.name), pattern(rule), owners(rule), cell(num(rule.lines), rule.lines), top(rule.hash), top(rule.blame)]
-          : [cell(esc(r.name), r.name), cell('-', ''), cell('(no rule matches a file)', ''), cell(num(r.declared.noRule), r.declared.noRule), cell('-', ''), cell('-', '')];
+        return [cell(esc(r.name), r.name), pattern(rule), owners(rule), cell(num(rule.lines), rule.lines), top(rule.hash), top(rule.blame)];
       }),
       ['', '', '', 'num', '', ''],
       { cls: 'r-fixed', widths: ['18%', '14%', '20%', '8%', '20%', '20%'] },

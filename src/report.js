@@ -76,7 +76,8 @@ export async function report({ dbPath, outDir, top = 20, log = () => {}, ai = fa
 // written.
 const STATS_CACHE = 'stats-cache.json';
 
-function cachedStats({ dbPath, outDir, top, log, cache }) {
+// Also used by `ownh agent`, which shares the report directory's cache.
+export function cachedStats({ dbPath, outDir, top, log, cache }) {
   const stages = stageCache(cache ? join(outDir, STATS_CACHE) : null, log);
   const db = openDb(dbPath);
   let stats;
@@ -153,7 +154,7 @@ function leaderboard(stats, top, charts) {
     '## Three ways to own a repository',
     '',
     'The top owner of each repository by commit count, by `git blame`, and by line hash.',
-    'Blame shows "-" until `bin/ownh.js blame` has covered every file (or every file of its sample).',
+    'Blame shows "-" until `ownh blame` has covered every file (or every file of its sample).',
     'Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.',
     '',
     ...mdTable(['Repository', 'By commits', 'By blame', 'By line hash', 'Agree'], [
@@ -293,9 +294,7 @@ function declaredMd(stats) {
       '',
       ...mdTable(['Repository', ...header], simple.map((r) => {
         const rule = r.declared.rules[0];
-        return rule
-          ? [md(r.name), code(rule.pattern), md(declaredOwners(rule)), num(rule.lines), top(rule.hash), top(rule.blame)]
-          : [md(r.name), '-', '(no rule matches a file)', num(r.declared.noRule), '-', '-'];
+        return [md(r.name), code(rule.pattern), md(declaredOwners(rule)), num(rule.lines), top(rule.hash), top(rule.blame)];
       }), ['l', 'l', 'l', 'r', 'l', 'l']),
       '',
     ] : []),
@@ -434,7 +433,10 @@ function crossCsv(stats) {
 
 function csv(header, rows) {
   const cell = (v) => {
-    const s = String(v);
+    let s = String(v);
+    // Spreadsheets run cells starting with = + - @ as formulas ("@org/team",
+    // a name like "=cmd"); a leading apostrophe keeps them text. Numbers stay.
+    if (typeof v === 'string' && /^[=+\-@\t\r]/.test(s)) s = `'${s}`;
     return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   return `${[header, ...rows].map((r) => r.map(cell).join(',')).join('\n')}\n`;
@@ -475,6 +477,8 @@ function escapeCell(s) {
 // leading block marker ("# ", "- ", "1. ") cannot start a heading or list.
 function md(s) {
   return String(s)
+    // A newline in untrusted text (AI prose, a name) would start a new block.
+    .replace(/\s*\r?\n\s*/g, ' ')
     .replace(/[\\`*_[\]<>|~&]/g, '\\$&')
     .replace(/^(\s*)(#|[-+])(?=\s|$)/, '$1\\$2')
     .replace(/^(\s*\d+)([.)])(?=\s|$)/, '$1\\$2');

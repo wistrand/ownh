@@ -82,14 +82,17 @@ export function declaredRepos(stats) {
   return stats.repos.filter((r) => r.declared);
 }
 
-// Repositories where at most one rule matches any line (usually a lone
-// "* @team") share one compact table; the rest get a table per repository.
+// Repositories where one rule decides every line (usually a lone "* @team")
+// share one compact table; the rest, including repos with lines no rule
+// covers, get a table and a summary each.
+const isSimple = (r) => r.declared.rules.length === 1 && r.declared.noRule === 0;
+
 export function declaredSimple(stats) {
-  return declaredRepos(stats).filter((r) => r.declared.rules.length <= 1);
+  return declaredRepos(stats).filter(isSimple);
 }
 
 export function declaredDetailed(stats) {
-  return declaredRepos(stats).filter((r) => r.declared.rules.length > 1);
+  return declaredRepos(stats).filter((r) => !isSimple(r));
 }
 
 export function declaredSummary(r) {

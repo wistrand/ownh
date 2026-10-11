@@ -75,7 +75,7 @@ across repositories. The closest analogues work at file or blob level.
 | Hercules (src-d) [22]   | Mines full history incl. merges; ownership and burndown outputs; merges repos    | Closest in scope (multi-repo, full history). Full-history walk: `git/git` from under 4 min to 2 h 45 min (v4 notes). |
 | truckfactor (PyPI) [25] | File owned by whoever edited the most lines; greedy removal of authors           | Bus factor, not line ownership.                                                                                      |
 | CodeScene [24]          | Knowledge maps, "former contributor" knowledge loss, off-boarding simulation     | Commercial version of the same question; warns against use for performance evaluation.                               |
-| git-of-theseus [23]     | Surviving lines by year added (cohorts), Kaplan-Meier survival curves            | Measures age of code, not owners. A cohort chart of surviving lines is a possible OWNH report.                       |
+| git-of-theseus [23]     | Surviving lines by year added (cohorts), Kaplan-Meier survival curves            | Measures age of code, not owners. OWNH reports Kaplan-Meier survival per owner.                                      |
 
 ### Research on ownership metrics
 
@@ -127,7 +127,7 @@ Not from the literature: observed on a large public project analyzed together
 with several of its tool repositories. No source; reproduce by indexing a main
 repository together with repositories that are subtree-synced into it.
 
-- **Mechanism.** Subtree syncs (git subtree, or josh-style tools) import a
+- **Mechanism.** Subtree syncs (git subtree and similar tools) import a
   tool repository's history into the main repository. The same commits, with
   the same author times, then exist in both, so each line has two introductions
   with equal author time. The ownership key `(author_time, repository name,

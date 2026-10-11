@@ -114,19 +114,19 @@
 <rect class="s2" x="92" y="78" width="12" height="12" rx="3"/>
 <text class="label" x="110" y="89">blank lines</text>
 <rect class="s4" x="209" y="78" width="12" height="12" rx="3"/>
-<text class="label" x="227" y="89">punctuation only</text>
+<text class="label" x="227" y="89">whitespace or punctuation</text>
 <text class="label" x="202" y="133" text-anchor="end">Ada Lindqvist</text>
 <rect class="s1 seg" x="214.0" y="119" width="156.5" height="24"><title>Ada Lindqvist, code: 3,301 lines (34.8% of their lines)</title></rect>
 <text class="inbar" x="292.3" y="135" text-anchor="middle">34.8%</text>
 <rect class="s2 seg" x="370.5" y="119" width="169.7" height="24"><title>Ada Lindqvist, blank lines: 3,578 lines (37.7% of their lines)</title></rect>
 <text class="inbar" x="455.4" y="135" text-anchor="middle">37.7%</text>
-<rect class="s4 seg" x="540.2" y="119" width="123.8" height="24"><title>Ada Lindqvist, punctuation only: 2,611 lines (27.5% of their lines)</title></rect>
+<rect class="s4 seg" x="540.2" y="119" width="123.8" height="24"><title>Ada Lindqvist, whitespace or punctuation: 2,611 lines (27.5% of their lines)</title></rect>
 <text class="inbar-dark" x="602.1" y="135" text-anchor="middle">27.5%</text>
 <text class="muted" x="674" y="135">9,490</text>
 <text class="label" x="202" y="167" text-anchor="end">Mira Quist</text>
 <rect class="s1 seg" x="214.0" y="153" width="308.6" height="24"><title>Mira Quist, code: 1,273 lines (68.6% of their lines)</title></rect>
 <text class="inbar" x="368.3" y="169" text-anchor="middle">68.6%</text>
-<rect class="s4 seg" x="522.6" y="153" width="141.4" height="24"><title>Mira Quist, punctuation only: 583 lines (31.4% of their lines)</title></rect>
+<rect class="s4 seg" x="522.6" y="153" width="141.4" height="24"><title>Mira Quist, whitespace or punctuation: 583 lines (31.4% of their lines)</title></rect>
 <text class="inbar-dark" x="593.3" y="169" text-anchor="middle">31.4%</text>
 <text class="muted" x="674" y="169">1,856</text>
 <text class="label" x="202" y="201" text-anchor="end">Umar Lindqvist</text>
@@ -136,7 +136,7 @@
 <text class="label" x="202" y="235" text-anchor="end">Fiona Format</text>
 <rect class="s1 seg" x="214.0" y="221" width="441.9" height="24"><title>Fiona Format, code: 1,091 lines (98.2% of their lines)</title></rect>
 <text class="inbar" x="434.9" y="237" text-anchor="middle">98.2%</text>
-<rect class="s4 seg" x="655.9" y="221" width="8.1" height="24"><title>Fiona Format, punctuation only: 20 lines (1.8% of their lines)</title></rect>
+<rect class="s4 seg" x="655.9" y="221" width="8.1" height="24"><title>Fiona Format, whitespace or punctuation: 20 lines (1.8% of their lines)</title></rect>
 <text class="muted" x="674" y="237">1,111</text>
 <text class="label" x="202" y="269" text-anchor="end">Rosa Garcia</text>
 <rect class="s1 seg" x="214.0" y="255" width="450.0" height="24"><title>Rosa Garcia, code: 512 lines (100.0% of their lines)</title></rect>

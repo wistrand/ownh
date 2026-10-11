@@ -19,6 +19,7 @@
 // given (within rounding), or the answer is rejected and retried, and finally
 // withheld. Answers are cached by a hash of model, prompt version, and facts.
 import { createHash } from 'node:crypto';
+import { TRIVIAL_LINE } from './oddities.js';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { quarterLabel } from './timeline.js';
@@ -121,12 +122,13 @@ function ofRepositories(f) {
   return f === 'none' ? 'no repositories' : f === 'all' ? 'all repositories' : `${f} of repositories`;
 }
 
-const TRIVIAL = /^[\s{}()[\];,.:<>/\\*#'"`=+-]*$/;
+// One definition of a trivial line for reports, agent, and AI (oddities.js).
+const TRIVIAL = TRIVIAL_LINE;
 
 function lineKind(l) {
   if (l.binary === null) return 'unattributed';
   if (l.binary) return 'binary file';
-  if (l.text.trim() === '') return l.text === '' ? 'blank line' : 'whitespace-only line';
+  if (/^[ \t\r\f\v]*$/.test(l.text)) return l.text === '' ? 'blank line' : 'whitespace-only line';
   if (TRIVIAL.test(l.text)) return 'punctuation-only line (braces, brackets)';
   return 'code line';
 }
@@ -293,24 +295,32 @@ function parseJson(content) {
 // --- API -------------------------------------------------------------------------
 
 // The JSON body sent to the API. Also what ai-request.json records.
-export function requestBody(config, messages) {
+// `extra` adds request fields (the agent's `tools`).
+export function requestBody(config, messages, extra = {}) {
   return {
     model: config.model,
     messages,
+    ...extra,
     ...(config.temperature === null || config.temperature === undefined ? {} : { temperature: config.temperature }),
     ...(config.openRouter ? { provider: { data_collection: 'deny', ...(config.zdr ? { zdr: true } : {}) } } : {}),
   };
 }
 
-export async function chatCompletion(config, messages) {
-  const post = (cfg) => fetch(`${cfg.baseUrl}/chat/completions`, {
-    method: 'POST',
-    // Only what the API needs: no referer or app-title attribution headers, and
-    // no authorization at all for a keyless (local) endpoint.
-    headers: { ...(cfg.key ? { authorization: `Bearer ${cfg.key}` } : {}), 'content-type': 'application/json' },
-    body: JSON.stringify(requestBody(cfg, messages)),
-    signal: AbortSignal.timeout(180_000),
-  });
+// One chat completion; returns the reply message ({ content, tool_calls }).
+// `onRequest` sees each request body as sent (the audit files).
+export async function chatMessage(config, messages, { extra = {}, onRequest = () => {} } = {}) {
+  const post = (cfg) => {
+    const body = requestBody(cfg, messages, extra);
+    onRequest(body);
+    return fetch(`${cfg.baseUrl}/chat/completions`, {
+      method: 'POST',
+      // Only what the API needs: no referer or app-title attribution headers, and
+      // no authorization at all for a keyless (local) endpoint.
+      headers: { ...(cfg.key ? { authorization: `Bearer ${cfg.key}` } : {}), 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(180_000),
+    });
+  };
   let res = await post(config);
   if (res.status === 400 && config.temperature !== null && config.temperature !== undefined) {
     // Some models accept only their default temperature; retry without it.
@@ -321,7 +331,13 @@ export async function chatCompletion(config, messages) {
   }
   if (!res.ok) throw new Error(`AI request failed: HTTP ${res.status} ${(await res.text()).slice(0, 300)}`);
   const data = await res.json();
-  const content = data.choices?.[0]?.message?.content;
+  const message = data.choices?.[0]?.message;
+  if (!message) throw new Error('AI response had no message');
+  return message;
+}
+
+export async function chatCompletion(config, messages) {
+  const { content } = await chatMessage(config, messages);
   if (typeof content !== 'string') throw new Error('AI response had no message content');
   return content;
 }

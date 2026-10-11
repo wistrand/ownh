@@ -27,7 +27,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 
 | Path                 | Role                                                                                                                        |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `bin/ownh.js`        | CLI: `index`, `add`, `summary`, `report`, `blame`                                                                           |
+| `bin/ownh.js`        | CLI: `index`, `add`, `summary`, `report`, `blame`, `agent`, `update`                                                        |
 | `src/indexer.js`     | history walk, first-introducer upsert, HEAD scoring                                                                         |
 | `src/git.js`         | git subprocesses: `log -p`, `diff` vs empty tree, `cat-file`, `blame`                                                       |
 | `src/exclude.js`     | exclude-file parsing, patterns to git pathspecs                                                                             |
@@ -42,7 +42,7 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `src/quarters.js`    | quarter numbers and labels (`QUARTER_SQL`, `quarterOf`, `quarterLabel`)                                                     |
 | `src/summary.js`     | plain-text summary                                                                                                          |
 | `src/report.js`      | report files: leaderboard.md, JSON, CSV                                                                                     |
-| `src/charts.js`      | SVG pie, cross-ownership heatmap, radar charts                                                                              |
+| `src/charts.js`      | SVG charts: owner shares and composition bars, pie, cross-ownership heatmap, radar, trend and survival                      |
 | `src/oddities.js`    | "Oddities" report section: odd findings derived from the stats                                                              |
 | `src/profiles.js`    | data for the radar charts (owner and repository profiles)                                                                   |
 | `src/timeline.js`    | quarterly series and projections for the report's Outlook                                                                   |
@@ -52,12 +52,15 @@ git history (1..n repos) ──> index / add ──> .db ──> blame (optional
 | `src/archetypes.js`  | rule-based owner groups (principal, inactive, absentee, leverage, demolition, automation)                                   |
 | `src/codeowners.js`  | CODEOWNERS parsing (GitHub rules) and declared ownership per rule, compared with line hash and blame                        |
 | `src/ai.js`          | optional `--ai` prose: pseudonymized facts, OpenAI-compatible call (hosted or local), number guard, cache                   |
+| `src/agent.js`       | `ownh agent`: terminal Q&A over a database via tool calls; pseudonymized tool results and questions, audit log              |
 | `src/html.js`        | self-contained report.html (inline charts, sortable tables)                                                                 |
 | `src/blame.js`       | `ownh blame`: git blame per HEAD file, parallel, resumable                                                                  |
 | `src/sample.js`      | deterministic blame file sample                                                                                             |
 | `test/`              | fixture repo builder and `node:test` suite                                                                                  |
 | `docs/`              | pitch site, served at https://ownh.org (GitHub Pages)                                                                       |
 | `docs/CNAME`         | GitHub Pages custom domain (`ownh.org`); keep it                                                                            |
+| `docs/install.sh`    | installer: clones into `~/.ownh`, links `ownh` into `~/.local/bin` (`curl ... | sh`)                                        |
+| `docs/robots.txt`    | allows all crawlers (Google-Extended explicitly); points to `docs/sitemap.xml`                                              |
 | `docs/sample/`       | sample report of six generated demo repos (`scripts/demo-repos.js`); generated, run `npm run sample`                        |
 | `whitepaper/`        | LaTeX source of the method whitepaper; built to `docs/ownh-whitepaper.pdf`, never edit the PDF                              |
 | `docs/og.png`        | link-preview image, rendered from `scripts/og.svg`                                                                          |
@@ -83,6 +86,8 @@ bin/ownh.js add --db out.db [--exclude-file f]... [--no-excludes] <repo>...   # 
 bin/ownh.js summary --db out.db [--top 10]
 bin/ownh.js report --db out.db [--out dir] [--top 20] [--ai | --ai-dry-run] [--no-cache]   # default out: report/out/; caches stats stages in stats-cache.json there
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
+bin/ownh.js agent --db out.db [--out dir] [--top n]   # ask questions in a terminal session; same AI settings as --ai
+bin/ownh.js update   # git pull --ff-only in the checkout the command runs from (the installer's ~/.ownh)
 npm test        # only when the user asks
 npm run sample  # regenerate docs/sample/ after changing report output
 rsvg-convert scripts/og.svg -o docs/og.png   # after editing the preview image
@@ -102,7 +107,7 @@ npm run whitepaper  # rebuild docs/ownh-whitepaper.pdf (pdflatex) after editing 
 - `add` must give the same result as a full `index` of all repos. Anything order-dependent (tiebreaks, identity display names) breaks that.
 - No normalization. A line is the exact bytes between `\n` separators: whitespace, blank lines, and a trailing `\r` (CRLF) are all part of the line. A binary file is one line: the SHA-256 of its full content. Binary means whatever git decides (attributes plus content check), never our own heuristic. Lines are hashed as raw bytes, never decoded first (`BYTES` in `src/git.js`). History and HEAD must split, classify, exclude, and hash identically (`src/hash.js`, `lines()` and `binaryPaths()` in `src/git.js`; each side of a "Binary files differ" diff is classified on its own in `src/indexer.js`).
 - One shared first-introducer table across all input repos. A single repo is the n=1 case, never a separate code path.
-- AI-written report text (`--ai`) may only state numbers OWNH computed; `checkAnswer` in `src/ai.js` enforces it. Never send names, emails, repository names, dates, absolute counts, or code text to the model: tokens, percentages, and size bands only (`buildFacts`). Review a new database's payload with `--ai-dry-run` before the first real request.
+- AI-written report text (`--ai`) may only state numbers OWNH computed; `checkAnswer` in `src/ai.js` enforces it. Never send names, emails, repository names, dates, absolute counts, or code text to the model: tokens, percentages, and size bands only (`buildFacts`). Review a new database's payload with `--ai-dry-run` before the first real request. `ownh agent` (user decision) sends counts, percentages, and quarters too, but the same never-send list holds: names, emails, repository names, paths, CODEOWNERS handles, and line text are tokens in tool results and in the user's questions (`agentPseudonyms` in `src/agent.js`).
 - Never publish invented numbers. Every percentage, rank, or count in user-facing material comes from a reproducible run on a real repo. Placeholders are marked as placeholders.
 - Never "fix" the absurdities. The algorithm stays faithfully naive (first introducer of a hash owns it); the satire is the output of an honest implementation of a bad idea.
 - Same repos, same output. Runs must be deterministic, independent of the order repos are passed in, so a reader can reproduce the leaderboard.

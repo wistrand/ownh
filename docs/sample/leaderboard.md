@@ -2,7 +2,7 @@
 
 Repositories: 6. Lines under management: 17,495.
 OWNH 0.1.0.
-Database: `sample.db`. Generated 2026-10-10 21:54 UTC.
+Database: `sample.db`. Generated 2026-10-11 07:36 UTC.
 
 ## AI insights (AI-generated)
 
@@ -87,7 +87,7 @@ Non-contributors own lines in a repository without a single commit to it.
 ## Three ways to own a repository
 
 The top owner of each repository by commit count, by `git blame`, and by line hash.
-Blame shows "-" until `bin/ownh.js blame` has covered every file (or every file of its sample).
+Blame shows "-" until `ownh blame` has covered every file (or every file of its sample).
 Values marked ~ are estimates from a random sample of files, with a 95% margin in percentage points.
 
 | Repository           | By commits              | By blame               | By line hash          | Agree |
