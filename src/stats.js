@@ -314,6 +314,11 @@ function agree(m) {
   return emails.length > 1 && emails.every((e) => e === emails[0]);
 }
 
+// "1 repository", "3 repositories".
+export function repoCount(n) {
+  return `${n.toLocaleString('en-US')} ${n === 1 ? 'repository' : 'repositories'}`;
+}
+
 export function pct(n, total) {
   return `${(share(n, total) * 100).toFixed(1)}%`;
 }

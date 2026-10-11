@@ -12,7 +12,7 @@ import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { pseudonymizeStats } from './pseudonymize.js';
 import { stageCache } from './stagecache.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, share, textWidth } from './stats.js';
+import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, repoCount, share, textWidth } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
@@ -171,7 +171,7 @@ function leaderboard(stats, top, charts) {
       ...stats.repos.map((r) => methodCells(md(r.name), r.methods)),
     ], ['l', 'l', 'l', 'l', 'l']),
     '',
-    `The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.`,
+    `The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${repoCount(stats.repos.length)}.`,
     '',
     ...declaredMd(stats),
     ...leverageMd(stats),

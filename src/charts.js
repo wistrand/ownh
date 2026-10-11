@@ -4,7 +4,7 @@
 // <title> so hovering in a browser shows the exact numbers; leaderboard.md is
 // the table view.
 import { ownerStatus } from './archetypes.js';
-import { lineLabel, pct, share } from './stats.js';
+import { lineLabel, pct, repoCount, share } from './stats.js';
 
 const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
 const MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
@@ -92,7 +92,7 @@ export function lineSharePieSvg(stats) {
     { cls: 'other', label: 'Everything else', detail: `all other lines · ${pct(rest, stats.total)}`, lines: rest, plain: true },
   ];
 
-  return pieSvg('Ownership by line hash', `Share of ${stats.total.toLocaleString('en-US')} lines across ${stats.repos.length} repositories held by each line`, segments, stats.total);
+  return pieSvg('Ownership by line hash', `Share of ${stats.total.toLocaleString('en-US')} lines across ${repoCount(stats.repos.length)} held by each line`, segments, stats.total);
 }
 
 // --- Pie: lines by the status of their owner --------------------------------

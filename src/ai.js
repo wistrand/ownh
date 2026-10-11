@@ -118,7 +118,9 @@ function ownerShare(members, total) {
   return members === 1 ? 'one owner' : `${fraction(members, total)} of owners`.replace(/^none of owners$/, 'no owners').replace(/^all of owners$/, 'all owners');
 }
 
-function ofRepositories(f) {
+function ofRepositories(f, repos) {
+  // One repository: "all of one" would read as a portfolio.
+  if (repos === 1) return f === 'all' ? 'the repository' : 'no repository';
   return f === 'none' ? 'no repositories' : f === 'all' ? 'all repositories' : `${f} of repositories`;
 }
 
@@ -177,7 +179,9 @@ export function buildFacts(stats, archetypes, p) {
   };
   const d = stats.deletions;
   return {
-    scale: { repositories: countBand(stats.repos.length), owners: countBand(owners.length), lines: lineBand(stats.total) },
+    // "one" is no more revealing than "fewer than ten", and stops the model
+    // describing a single repository as a portfolio.
+    scale: { repositories: stats.repos.length === 1 ? 'one' : countBand(stats.repos.length), owners: countBand(owners.length), lines: lineBand(stats.total) },
     topOwners: owners.slice(0, TOP).map((o) => ({ owner: p.owner(o.owner), sharePct: pct(o.lines / stats.total) })),
     topLines: stats.lines.slice(0, TOP).map((l) => ({ kind: lineKind(l), sharePct: pct(l.lines / stats.total), owner: p.owner(l.owner) })),
     crossRepository: [...stats.repos].sort((a, b) => b.foreign / (b.lines || 1) - a.foreign / (a.lines || 1)).slice(0, TOP).map((r) => ({
@@ -185,7 +189,7 @@ export function buildFacts(stats, archetypes, p) {
       writtenElsewherePct: wholePct(r.lines ? r.foreign / r.lines : 0),
       ownedByNonContributorsPct: wholePct(r.lines ? r.absentee / r.lines : 0),
     })),
-    methodsAgreeIn: ofRepositories(fraction(stats.repos.filter((r) => r.methods?.agree).length, stats.repos.length)),
+    methodsAgreeIn: ofRepositories(fraction(stats.repos.filter((r) => r.methods?.agree).length, stats.repos.length), stats.repos.length),
     outlook: t ? {
       now: p.quarter(t.now),
       inactiveOwnersMajority: shareProj(proj.knowledgeLoss),

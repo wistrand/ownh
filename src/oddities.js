@@ -9,7 +9,7 @@
 // Every name in a finding goes through `naming` (NAMES by default): owners,
 // repositories, lines, paths, CODEOWNERS patterns and handles. `ownh agent`
 // passes its pseudonymizer, so the findings it sends contain tokens only.
-import { lineLabel, pct, share } from './stats.js';
+import { lineLabel, pct, repoCount, share } from './stats.js';
 import { quarterOf } from './timeline.js';
 
 // Names lists in findings are cut to this many, with "and N more".
@@ -187,7 +187,7 @@ function absenteeTopOwners(stats, N) {
   if (hits.length === 0) return [];
   return [{
     kind: 'absentee-owner',
-    title: `${hits.length} of ${stats.repos.length} repositories ${hits.length === 1 ? 'is' : 'are'} owned by someone who never committed to ${hits.length === 1 ? 'it' : 'them'}`,
+    title: `${hits.length} of ${repoCount(stats.repos.length)} ${hits.length === 1 ? 'is' : 'are'} owned by someone who never committed to ${hits.length === 1 ? 'it' : 'them'}`,
     detail: [{ text: names(hits.map(({ r, top }) => `${N.repo(r.name)} (${N.owner(top.owner)}, ${pct(top.lines, r.lines)})`)) + '.' }],
   }];
 }

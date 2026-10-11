@@ -8,7 +8,7 @@ import { esc } from './charts.js';
 import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
-import { lineLabel, methodShare, ownerLabel, pct, share } from './stats.js';
+import { lineLabel, methodShare, ownerLabel, pct, repoCount, share } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
   const anchor = repoAnchors(stats.repos);
@@ -19,7 +19,7 @@ export function reportHtml(stats, top, charts) {
   const main = [
     `<header class="r-head">
       <h1>OWNH Ownership Report</h1>
-      <p class="r-meta">${stats.repos.length} repositories · ${num(stats.total)} lines under management · OWNH ${esc(stats.toolVersion)}</p>
+      <p class="r-meta">${repoCount(stats.repos.length)} · ${num(stats.total)} lines under management · OWNH ${esc(stats.toolVersion)}</p>
       ${stats.generated ? `<p class="r-meta">Database <code>${esc(stats.generated.database)}</code> · generated ${esc(stats.generated.at)}</p>` : ''}
     </header>`,
     ...aiSummaryHtml(stats),
@@ -83,7 +83,7 @@ export function reportHtml(stats, top, charts) {
         [methodRowHtml('All repositories', stats.methods, true), ...stats.repos.map((r) => methodRowHtml(r.name, r.methods))],
         ['', '', '', '', ''],
       )}
-      <p class="r-note">The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${stats.repos.length} repositories.</p>`),
+      <p class="r-note">The three methods agree on ${stats.repos.filter((r) => r.methods.agree).length} of ${repoCount(stats.repos.length)}.</p>`),
     ...declaredHtml(stats),
     ...leverageHtml(stats),
     ...demolitionHtml(stats),
@@ -121,7 +121,7 @@ export function reportHtml(stats, top, charts) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OWNH Ownership Report</title>
+<title>${stats.generated ? `${esc(stats.generated.database)} · ` : ''}OWNH Ownership Report</title>
 <style>${PAGE_STYLE}</style>
 </head>
 <body>

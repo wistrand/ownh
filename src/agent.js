@@ -18,6 +18,7 @@ import { ARCHETYPE_TITLES, findArchetypes } from './archetypes.js';
 import { TRIVIAL_LINE, findOddities } from './oddities.js';
 import { leverage } from './sections.js';
 import { quarterLabel, quarterOf } from './quarters.js';
+import { repoCount } from './stats.js';
 
 export const AGENT_LOG = 'agent-requests.jsonl';
 const MAX_ROUNDS = 8;
@@ -733,7 +734,7 @@ export async function runAgent({ stats, config, outDir, db = null, input = proce
   const dim = paint(color, '2');
   const say = (s = '') => output.write(`${s}\n`);
   const session = agentSession(stats, config, outDir, { db });
-  say(`${stats.repos.length} repositories, ${stats.total.toLocaleString('en-US')} lines under management. Model ${config.model}.`);
+  say(`${repoCount(stats.repos.length)}, ${stats.total.toLocaleString('en-US')} lines under management. Model ${config.model}.`);
   say(dim('Names are sent to the model as tokens; counts and quarters as they are. Requests are logged to agent-requests.jsonl.'));
   if (tty) say(`\n${paint(color, '1;32')('Ready.')} Ask a question about ownership, or /help.\n`);
   // A bold, colored prompt on a terminal, so it is clear when input is wanted.
