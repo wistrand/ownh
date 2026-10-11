@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { existsSync, mkdirSync, realpathSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, realpathSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { parseArgs } from 'node:util';
 import { blame } from '../src/blame.js';
-import { readDefaultExcludes, readExcludeFile } from '../src/exclude.js';
+import { DEFAULT_EXCLUDE_FILE, readDefaultExcludes, readExcludeFile } from '../src/exclude.js';
 import { add, index } from '../src/indexer.js';
 import { cachedStats, report } from '../src/report.js';
 import { aiConfig } from '../src/ai.js';
@@ -22,6 +22,7 @@ const USAGE = `usage:
   ownh blame --db <file> [--jobs <n>] [--sample <files>] [--repo <name>]...
   ownh agent --db <file> [--out <dir>] [--top <n>]   (ask questions about the database; same AI settings as --ai)
   ownh update   (git pull the checkout this command runs from)
+  ownh info     (where this command and its source are, version, git commit)
 
   Without --exclude-file, patterns come from ownh.exclude next to the tool,
   if it exists.
@@ -121,6 +122,8 @@ async function main([command, ...args]) {
     const files = await report({ dbPath: values.db, outDir: out, top, log, ai: values.ai, aiDryRun: values['ai-dry-run'], cache: !values['no-cache'] });
     for (const file of files) log(`wrote ${out}/${file}`);
     if (values.ai || values['ai-dry-run']) log(`AI request (when one was made or prepared): ${out}/ai-request.json`);
+  } else if (command === 'info') {
+    info();
   } else if (command === 'update') {
     selfUpdate();
   } else if (command === 'agent') {
@@ -157,6 +160,39 @@ async function main([command, ...args]) {
 // `ownh update`: fast-forward the git checkout this command runs from (the
 // installer's ~/.ownh clone, or any clone). Node resolves the installer's
 // symlink, so import.meta.url is inside the checkout itself.
+// `ownh info`: where this command and its source are, and what version.
+function info() {
+  const root = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '');
+  const version = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')).version;
+  const invoked = process.argv[1];
+  const real = realpathSync(invoked);
+  const out = [
+    `OWNH ${version}`,
+    `command:  ${invoked}${real !== invoked ? ` -> ${real}` : ''}`,
+    `source:   ${root}`,
+  ];
+  const ask = (args) => {
+    try { return git(root, args).trim(); } catch { return null; }
+  };
+  const top = ask(['rev-parse', '--show-toplevel']);
+  if (top && realpathSync(top) === realpathSync(root)) {
+    const commit = ask(['log', '-1', '--format=%h %cd', '--date=short']);
+    const branch = ask(['rev-parse', '--abbrev-ref', 'HEAD']);
+    const remote = ask(['remote', 'get-url', 'origin']);
+    const dirty = ask(['status', '--porcelain', '--untracked-files=no']);
+    out.push(`git:      ${commit ?? '?'} on ${branch ?? '?'}${dirty ? ' (local changes)' : ''}${remote ? `, from ${remote}` : ''}`);
+  } else {
+    out.push('git:      not a git checkout (ownh update needs one)');
+  }
+  out.push(
+    `node:     ${process.version}`,
+    `excludes: ${DEFAULT_EXCLUDE_FILE}${existsSync(DEFAULT_EXCLUDE_FILE) ? '' : ' (not present)'}`,
+  );
+  // Installed by docs/install.sh: the command is a symlink to the checkout.
+  if (lstatSync(invoked).isSymbolicLink()) out.push(`uninstall: rm -rf ${root} ${invoked}`);
+  process.stdout.write(`${out.join('\n')}\n`);
+}
+
 function selfUpdate() {
   const root = fileURLToPath(new URL('..', import.meta.url)).replace(/\/$/, '');
   let before;

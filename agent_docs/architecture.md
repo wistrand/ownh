@@ -52,6 +52,7 @@ dependencies. Git does all repository work through subprocesses (`src/git.js`).
 | `report`  | Report files into `--out`, default `report/<db name>/`; stats cached there (`--no-cache`).      |
 | `agent`   | Terminal Q&A over one `.db` through tool calls (see Agent); same AI settings as `--ai`.         |
 | `update`  | `git pull --ff-only` in the checkout the command runs from, if it is its own repository root.   |
+| `info`    | Version, the command path and the file it resolves to, source checkout, git commit, Node.       |
 
 A repo path may point anywhere inside the repo (a subdirectory, its `.git`
 directory); `repoRoot` resolves it to the work-tree root, or the git directory

@@ -1,6 +1,6 @@
 {
   "name": "ownh",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "description": "Objective Weighted Normalized Heuristics for code ownership",
   "type": "module",
   "bin": {

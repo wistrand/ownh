@@ -87,6 +87,7 @@ bin/ownh.js summary --db out.db [--top 10]
 bin/ownh.js report --db out.db [--out dir] [--top 20] [--ai | --ai-dry-run] [--no-cache]   # default out: report/out/; caches stats stages in stats-cache.json there
 bin/ownh.js blame --db out.db [--jobs n] [--sample files] [--repo name]...   # slow; resumable
 bin/ownh.js agent --db out.db [--out dir] [--top n]   # ask questions in a terminal session; same AI settings as --ai
+bin/ownh.js info   # where the command and source are, version, git commit, uninstall line
 bin/ownh.js update   # git pull --ff-only in the checkout the command runs from (the installer's ~/.ownh)
 npm test        # only when the user asks
 npm run sample  # regenerate docs/sample/ after changing report output

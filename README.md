@@ -25,7 +25,7 @@ curl -fsSL https://ownh.org/install.sh | sh
 
 This clones OWNH into `~/.ownh` and links the `ownh` command into
 `~/.local/bin` (`OWNH_HOME` and `OWNH_BIN` change both). `ownh update` (or
-running the installer again) pulls the latest version; `rm -rf ~/.ownh ~/.local/bin/ownh` removes it. In a clone of this
+running the installer again) pulls the latest version; `rm -rf ~/.ownh ~/.local/bin/ownh` removes it (`ownh info` shows the exact paths). In a clone of this
 repository, `bin/ownh.js` is the same command.
 
 ## Quick start
