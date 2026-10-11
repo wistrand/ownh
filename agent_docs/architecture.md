@@ -390,6 +390,12 @@ and always shown; the AI only names the groups.
   - Every request is written to `ai-request.json` in the report directory
     (minus the key). `--ai-dry-run` writes it and sends nothing; use it to
     review the payload for a new database before the first real request.
+    `scripts/check-ai-payload.js <db>` checks that file for committer
+    names, emails, repository names, and years, and exits 1 on a hit, so it
+    can gate the real run. It skips the system prompt (fixed text) and
+    matches one-word names and repository names only as whole JSON values:
+    real committers and repositories are called "may", "two", and "text",
+    words the prompt and the size bands use.
   - Residual: the provider sees the API key's account, the IP address, the
     model choice, and the shape of the data (percentages, bands, trends).
 - **Number guard:** `checkAnswer` rejects replies with numbers not in the facts
