@@ -226,6 +226,19 @@ show, so they cannot disagree.
   quarter. Projections take the least-squares slope of the last 12 quarters,
   continue it from the latest value, and report R². "Now" is the newest commit's
   quarter, not the clock.
+- **Emerging owners** (`emergingOwners` in `src/timeline.js`,
+  `timeline.emerging`; the Outlook's "succession pipeline" table): owners whose
+  first owned line is from the last 8 quarters (`EMERGING_QUARTERS`), ranked
+  by lines gained over the last 4 (`GAIN_QUARTERS`), with the next owner up
+  (smallest current value above theirs in the same series, ties by identity
+  id; bots included as targets) and when they overtake that owner: the gap
+  between the two series, fitted since they arrived, projected to zero like a
+  share target (too early under 3 quarters). `stats.js` names them, drops bots
+  and anyone without a gain from the list, ranks ties by email, and keeps 10.
+  Computed from series the timeline already builds, so no cache stage. The
+  principal owner was tried first as the target (user decision to change):
+  they outgrew every newcomer on every database tried, so the column only ever
+  said "not on track".
 - **Churn analyses** (`src/churn.js`): deletions (who removes whose lines, the
   most-removed line, lines re-added after deletion) and survival. Rankings break
   ties by email, never identity id. Every owner also gets `removedOthers` (lines
@@ -296,13 +309,21 @@ material findings, three ways to own, declared ownership (repos with
 CODEOWNERS), leverage, code demolition, repositories, excluded patterns.
 
 "Material findings" is the user-facing name of the oddities (`src/oddities.js`,
-`stats.oddities`; renamed and moved to the top, user decision): grouped by
+`stats.oddities`; renamed, user decision; placed after cross-repository
+ownership): grouped by
 `groupFindings` into Line holdings, Repository control, Contributor
 performance, Measurement consistency, and Declared ownership compliance (a
 kind not mapped in `CATEGORIES` lands under Other), numbered across groups,
 under a one-line deadpan note (`FINDINGS_NOTE`), with a tile counting them in
 `report.html`. The agent's `material_findings` tool returns the same numbers
 and categories. The code keeps the internal name.
+
+The HTML tiles (`tilesHtml`) are repositories, lines under management,
+principal owner, principal line, ownership entropy (with a tooltip defining
+it), and the material findings count (linked to the section). They are laid
+out in two even rows of ceil(n / 2), two columns on a phone: `auto-fit` left
+one tile alone on a row, and one row of six is too narrow at the page's
+maximum width.
 
 - Untrusted text (author names, repository names, line text, AI prose) is
   escaped: `md()` in `src/report.js` for Markdown (inline markup, HTML

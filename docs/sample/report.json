@@ -262,6 +262,198 @@
         "blank": 5095
       }
     ],
+    "emerging": [
+      {
+        "identityId": 39,
+        "firstQuarter": "2024 Q4",
+        "gained": 69,
+        "overtake": {
+          "identityId": 12,
+          "status": "projected",
+          "quarter": "2026 Q3",
+          "owner": {
+            "name": "Dagny Petrov",
+            "email": "dagny.petrov@example.com"
+          }
+        },
+        "owner": {
+          "name": "Olga Fischer",
+          "email": "olga.fischer@example.com"
+        },
+        "lines": 130
+      },
+      {
+        "identityId": 28,
+        "firstQuarter": "2025 Q2",
+        "gained": 63,
+        "overtake": {
+          "identityId": 19,
+          "status": "projected",
+          "quarter": "2026 Q3",
+          "owner": {
+            "name": "Kasimir Zeller",
+            "email": "kasimir.zeller@example.com"
+          }
+        },
+        "owner": {
+          "name": "Casper Dahl",
+          "email": "casper.dahl@example.com"
+        },
+        "lines": 80
+      },
+      {
+        "identityId": 25,
+        "firstQuarter": "2025 Q1",
+        "gained": 62,
+        "overtake": {
+          "identityId": 9,
+          "status": "projected",
+          "quarter": "2026 Q3",
+          "owner": {
+            "name": "Hugo Varga",
+            "email": "hugo.varga@example.com"
+          }
+        },
+        "owner": {
+          "name": "Sven Silva",
+          "email": "sven.silva@example.com"
+        },
+        "lines": 110
+      },
+      {
+        "identityId": 41,
+        "firstQuarter": "2025 Q3",
+        "gained": 52,
+        "overtake": {
+          "identityId": 26,
+          "status": "projected",
+          "quarter": "2027 Q3",
+          "owner": {
+            "name": "Bruno Tanaka",
+            "email": "bruno.tanaka@example.com"
+          }
+        },
+        "owner": {
+          "name": "Dmitri Moreau",
+          "email": "dmitri.moreau@example.com"
+        },
+        "lines": 52
+      },
+      {
+        "identityId": 38,
+        "firstQuarter": "2024 Q3",
+        "gained": 41,
+        "overtake": {
+          "identityId": 39,
+          "status": "not-on-track",
+          "quarter": null,
+          "owner": {
+            "name": "Olga Fischer",
+            "email": "olga.fischer@example.com"
+          }
+        },
+        "owner": {
+          "name": "Wim Bianchi",
+          "email": "wim.bianchi@example.com"
+        },
+        "lines": 126
+      },
+      {
+        "identityId": 32,
+        "firstQuarter": "2026 Q2",
+        "gained": 39,
+        "overtake": {
+          "identityId": 15,
+          "status": "insufficient",
+          "quarter": null,
+          "owner": {
+            "name": "Gustav Quist",
+            "email": "gustav.quist@example.com"
+          }
+        },
+        "owner": {
+          "name": "Petra Process",
+          "email": "petra.process@example.com"
+        },
+        "lines": 39
+      },
+      {
+        "identityId": 35,
+        "firstQuarter": "2024 Q4",
+        "gained": 20,
+        "overtake": {
+          "identityId": 2,
+          "status": "projected",
+          "quarter": "2026 Q3",
+          "owner": {
+            "name": "depbot[bot]",
+            "email": "depbot@example.com"
+          }
+        },
+        "owner": {
+          "name": "Aron Okafor",
+          "email": "aron.okafor@example.com"
+        },
+        "lines": 33
+      },
+      {
+        "identityId": 37,
+        "firstQuarter": "2025 Q1",
+        "gained": 18,
+        "overtake": {
+          "identityId": 34,
+          "status": "projected",
+          "quarter": "2026 Q4",
+          "owner": {
+            "name": "Jonas Petrov",
+            "email": "jonas.petrov@example.com"
+          }
+        },
+        "owner": {
+          "name": "Lars Eriksen",
+          "email": "lars.eriksen@example.com"
+        },
+        "lines": 28
+      },
+      {
+        "identityId": 30,
+        "firstQuarter": "2025 Q3",
+        "gained": 17,
+        "overtake": {
+          "identityId": 7,
+          "status": "projected",
+          "quarter": "2027 Q2",
+          "owner": {
+            "name": "Tove Andersen",
+            "email": "tove.andersen@example.com"
+          }
+        },
+        "owner": {
+          "name": "Xenia Moreau",
+          "email": "xenia.moreau@example.com"
+        },
+        "lines": 17
+      },
+      {
+        "identityId": 36,
+        "firstQuarter": "2024 Q4",
+        "gained": 14,
+        "overtake": {
+          "identityId": 28,
+          "status": "not-on-track",
+          "quarter": null,
+          "owner": {
+            "name": "Casper Dahl",
+            "email": "casper.dahl@example.com"
+          }
+        },
+        "owner": {
+          "name": "Cleo Bianchi",
+          "email": "cleo.bianchi@example.com"
+        },
+        "lines": 69
+      }
+    ],
     "projections": {
       "knowledgeLoss": {
         "target": 0.5,
@@ -5722,7 +5914,7 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-12 05:55 UTC"
+    "at": "2026-10-12 07:49 UTC"
   },
   "archetypes": [
     {

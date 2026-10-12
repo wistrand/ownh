@@ -17,10 +17,11 @@ Pieces (details in [agent_docs/architecture.md](agent_docs/architecture.md)):
 git history (1..n repos) ──> index ──────> .db ──> blame (optional)
                                               │
                                               └──> collectStats ──> summary, report
-                                                                     ├─ owners, lines, pie, cross-repo heatmap
+                                                                     ├─ owners (line entropy), lines, pies, cross-repo heatmap
+                                                                     ├─ material findings (oddities), ownership entropy
                                                                      ├─ spider charts, three-way comparison, declared (CODEOWNERS)
                                                                      ├─ leverage, demolition, survival
-                                                                     └─ outlook (projections), oddities
+                                                                     └─ outlook (projections, emerging owners), OKR draft
 ```
 
 ## Layout
@@ -47,7 +48,7 @@ git history (1..n repos) ──> index ──────> .db ──> blame (op
 | `src/charts.js`       | SVG charts: owner shares and composition bars, pie, cross-ownership heatmap, radar, trend and survival                      |
 | `src/oddities.js`     | "Material findings" report section (internally oddities): odd findings derived from the stats                               |
 | `src/profiles.js`     | data for the radar charts (owner and repository profiles)                                                                   |
-| `src/timeline.js`     | quarterly series and projections for the report's Outlook                                                                   |
+| `src/timeline.js`     | quarterly series and projections for the report's Outlook, including emerging owners                                        |
 | `src/outlook.js`      | Outlook statements and charts (shared by Markdown and HTML)                                                                 |
 | `src/churn.js`        | churn analyses: true ownership history, deletions, survival (Kaplan-Meier)                                                  |
 | `src/sections.js`     | leverage, code demolition, and code survival report pieces                                                                  |

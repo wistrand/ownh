@@ -5,7 +5,8 @@
 // The inlined SVGs carry their own <style> with short class names (.title,
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
 import { esc } from './charts.js';
-import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
+import { emergingNote, kpiQuarter, outlookNote, outlookStatements, overtakeText } from './outlook.js';
+import { GAIN_QUARTERS } from './timeline.js';
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, FINDINGS_NOTE, LINE_ENTROPY_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
 import { groupFindings } from './oddities.js';
@@ -288,7 +289,22 @@ function outlookHtml(stats, charts) {
       ]),
       ['', 'num', 'num', 'num', 'num', 'num', 'num', 'num'],
     )}
-    <p class="r-note">${esc(outlookNote(t))}</p>`;
+    <p class="r-note">${esc(outlookNote(t))}</p>${t.emerging?.length ? `
+    <h4>Emerging owners</h4>
+    <p class="r-note">${esc(emergingNote(t))}</p>
+    ${table(
+      ['Rank', 'Owner', 'Since', 'Lines', `Gained, last ${GAIN_QUARTERS} quarters`, 'Next owner up', 'Projected to overtake'],
+      t.emerging.map((e, k) => [
+        cell(k + 1, k + 1),
+        cell(esc(e.owner.name)),
+        cell(esc(e.firstQuarter), e.firstQuarter),
+        cell(num(e.lines), e.lines),
+        cell(num(e.gained), e.gained),
+        cell(e.overtake?.owner ? esc(e.overtake.owner.name) : '-'),
+        cell(esc(overtakeText(e.overtake)), e.overtake?.quarter ?? ''),
+      ]),
+      ['num', '', '', 'num', 'num', '', ''],
+    )}` : ''}`;
 }
 
 function originsTable(r) {

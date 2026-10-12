@@ -65,7 +65,10 @@ cross-repository ownership, ownership profiles, outlook, code survival), and
 the underlying data as JSON and CSV. Every report states its Ownership
 Entropy (how widely ownership is spread, in bits, with the effective number of
 owners it amounts to) and each principal owner's Line Entropy (how varied the
-lines they own are).
+lines they own are). Material findings, grouped by category, list the
+conditions that warrant the attention of ownership leadership; the Outlook
+includes the succession pipeline of emerging owners, with the owner each is
+projected to overtake next.
 
 The expensive statistics passes are cached in `stats-cache.json` in that
 directory, each on its own, so a second report reruns only what the database or

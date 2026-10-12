@@ -1,7 +1,7 @@
 // The report's "Outlook" section: projection statements and charts built from
 // the timeline (see timeline.js). Shared by leaderboard.md and report.html.
 import { trendSvg } from './charts.js';
-import { FIT_QUARTERS, projectionPoints, quarterLabel } from './timeline.js';
+import { EMERGING_QUARTERS, FIT_QUARTERS, GAIN_QUARTERS, projectionPoints, quarterLabel } from './timeline.js';
 
 // Quarters of history drawn before "now", and quarters of projection after it.
 const HISTORY_QUARTERS = 20;
@@ -14,6 +14,28 @@ export function outlookNote(t) {
     : 'Series count lines that exist today, by the quarter their owner first wrote them, so deleted code is not included. ';
   const partial = t.inProgress ? ` ${t.nowLabel} was still in progress when this report was generated, so its figures cover only part of the quarter.` : '';
   return `${fit}${series}The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.${partial}`;
+}
+
+// Emerging owners: the note under the heading, and the overtake column.
+export function emergingNote(t) {
+  const gained = t.mode === 'history'
+    ? 'lines added minus lines removed'
+    : 'lines that exist today and were first written in those quarters';
+  return `The succession pipeline: owners whose first owned line is from the last ${EMERGING_QUARTERS} quarters, `
+    + `ranked by lines gained in the last ${GAIN_QUARTERS} (${gained}). The last columns name the owner directly `
+    + 'above them and when their trend, fitted since they arrived, overtakes that owner. Automation is not considered for succession.';
+}
+
+// The next owner up, and when: "2027 Q3", "beyond 2036 Q4", "not on track".
+export function overtakeText(o) {
+  if (!o) return 'none: already first';
+  return {
+    projected: o.quarter,
+    beyond: `beyond ${o.quarter}`,
+    reached: `ahead since ${o.quarter}`,
+    'not-on-track': 'not on track',
+    insufficient: 'too early to project',
+  }[o.status] ?? '-';
 }
 
 // A KPI row's quarter label, marked when it is the quarter still in progress

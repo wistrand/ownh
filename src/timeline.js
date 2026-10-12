@@ -30,6 +30,10 @@ const HORIZON_QUARTERS = 40;
 // An owner is inactive in quarter Q without a commit in Q or the 3 quarters before.
 // The KPI table covers this many quarters.
 export const KPI_QUARTERS = 8;
+// Emerging owners: first owned line in the last EMERGING_QUARTERS quarters,
+// ranked by lines gained over the last GAIN_QUARTERS.
+export const EMERGING_QUARTERS = 8;
+export const GAIN_QUARTERS = 4;
 
 // mode: 'history' when cohorts are net additions minus removals (a true
 // history), 'cohort' when they are surviving lines by first-written quarter.
@@ -110,6 +114,7 @@ export function buildTimeline({ cohorts, mode = 'cohort', commitQuarters, blankB
     principal: principal ? { name: principal.owner.name, email: principal.owner.email } : null,
     series,
     kpis: kpiRows(series),
+    emerging: emergingOwners(quarters, ownedCum, firstQuarterOf, principal),
     projections: {
       knowledgeLoss: projectShare(quarters, inactiveShare, 0.5),
       principal: principal ? projectShare(quarters, principalShare, 0.5) : null,
@@ -134,6 +139,47 @@ function kpiRows(s) {
     });
   }
   return rows;
+}
+
+// Owners who arrived in the last EMERGING_QUARTERS quarters (their first owned
+// line), with the lines they gained over the last GAIN_QUARTERS and when they
+// are projected to overtake the next owner up: the owner with the smallest
+// line count above theirs in the same series (ties by identity id, so the
+// target is deterministic). The gap between the two series, fitted over the
+// quarters since they arrived (at most FIT_QUARTERS), is projected to zero like
+// a share reaching its target. Unsorted, unnamed, bots included: stats.js
+// ranks, names, and filters them.
+function emergingOwners(quarters, ownedCum, firstQuarterOf, principal) {
+  const n = quarters.length;
+  const now = quarters[n - 1];
+  // Everyone by their current value, largest first, for the next owner up.
+  const standing = [...ownedCum].filter(([id]) => id !== null)
+    .map(([id, cum]) => ({ id, value: cum[n - 1] }))
+    .sort((a, b) => b.value - a.value || a.id - b.id);
+  const out = [];
+  for (const [id, first] of firstQuarterOf) {
+    if (id === null || first <= now - EMERGING_QUARTERS) continue;
+    if (principal && id === principal.identityId) continue;
+    const cum = ownedCum.get(id);
+    const back = n - 1 - GAIN_QUARTERS;
+    const gained = cum[n - 1] - (back >= 0 ? cum[back] : 0);
+    const own = cum[n - 1];
+    let next = null;
+    for (const s of standing) {
+      if (s.value <= own) break;
+      next = s;
+    }
+    let overtake = null;
+    if (next) {
+      const from = quarters.indexOf(first);
+      const ahead = ownedCum.get(next.id);
+      const gap = cum.map((v, i) => v - ahead[i]);
+      const p = projectShare(quarters.slice(from), gap.slice(from), 0);
+      overtake = { identityId: next.id, status: p.status, quarter: p.quarter ?? null };
+    }
+    out.push({ identityId: id, firstQuarter: quarterLabel(first), gained, overtake });
+  }
+  return out;
 }
 
 // Least-squares line through (x, y); returns { slope, intercept, r2 }.

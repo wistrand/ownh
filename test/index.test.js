@@ -217,6 +217,32 @@ test('ownership entropy: bits and effective owners per method', async () => {
   }
 });
 
+test('emerging owners: newcomers ranked by recent gain, with an overtake projection', async () => {
+  const { buildTimeline } = await import('../src/timeline.js');
+  // Twelve quarters, 2024 Q1 to 2026 Q4 (quarter numbers are year * 4 + q - 1).
+  // The principal (1) owns from the start; 2 arrives in 2026 Q1 and gains
+  // fast; 3 arrives in 2026 Q3; 4 is old.
+  const base = 2024 * 4;
+  const cohorts = [];
+  for (let q = base; q < base + 12; q++) cohorts.push({ repoId: 1, identityId: 1, q, n: 10 });
+  for (let q = base + 8; q < base + 12; q++) cohorts.push({ repoId: 1, identityId: 2, q, n: 25 });
+  cohorts.push({ repoId: 1, identityId: 3, q: base + 10, n: 5 }, { repoId: 1, identityId: 4, q: base, n: 50 });
+  const commitQuarters = cohorts.map(({ identityId, q }) => ({ identityId, q }));
+  const t = buildTimeline({ cohorts, mode: 'history', commitQuarters, blankByQuarter: null, contributed: new Set(), principal: { identityId: 1, owner: { name: 'P', email: 'p@example.com' } } });
+  const byId = new Map(t.emerging.map((e) => [e.identityId, e]));
+  assert.deepEqual([...byId.keys()].sort(), [2, 3], 'newcomers only, never the principal');
+  assert.equal(byId.get(2).gained, 100);
+  assert.equal(byId.get(2).firstQuarter, '2026 Q1');
+  // Now: 1 has 120, 2 has 100, 4 has 50, 3 has 5. The next owner up from 2 is
+  // the principal; 2 closes that gap by 15 a quarter, 20 behind now, so one or
+  // two quarters out. From 3 it is 4, whom 3 does not gain on.
+  assert.equal(byId.get(2).overtake.identityId, 1);
+  assert.equal(byId.get(2).overtake.status, 'projected');
+  assert.match(byId.get(2).overtake.quarter, /^2027 Q[12]$/);
+  assert.equal(byId.get(3).overtake.identityId, 4);
+  assert.equal(byId.get(3).overtake.status, 'insufficient');
+});
+
 test('report files agree with the summary', async () => {
   const db = join(dir, 'report.db');
   const out = join(dir, 'report');

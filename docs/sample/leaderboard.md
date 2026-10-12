@@ -2,7 +2,7 @@
 
 Repositories: 6. Lines under management: 17,495. Ownership entropy: 2.85 bits (7.2 effective owners).
 [OWNH](https://ownh.org) 1.0.1.
-Database: `sample.db`. Generated 2026-10-12 05:55 UTC.
+Database: `sample.db`. Generated 2026-10-12 07:49 UTC.
 
 ## AI insights (AI-generated)
 
@@ -103,6 +103,23 @@ Copies of the same line are indistinguishable, so removals are paired with the o
 | 2026 Q2 |                 17,513 | +4.6% |          1 |         54.1% |            13.0% |           76.1% |                 5,095 |
 
 Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,513 lines against 17,495 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.
+
+### Emerging owners
+
+The succession pipeline: owners whose first owned line is from the last 8 quarters, ranked by lines gained in the last 4 (lines added minus lines removed). The last columns name the owner directly above them and when their trend, fitted since they arrived, overtakes that owner. Automation is not considered for succession.
+
+| Rank | Owner         | Since   | Lines | Gained, last 4 quarters | Next owner up  | Projected to overtake |
+|-----:|---------------|---------|------:|------------------------:|----------------|-----------------------|
+|    1 | Olga Fischer  | 2024 Q4 |   130 |                      69 | Dagny Petrov   | 2026 Q3               |
+|    2 | Casper Dahl   | 2025 Q2 |    80 |                      63 | Kasimir Zeller | 2026 Q3               |
+|    3 | Sven Silva    | 2025 Q1 |   110 |                      62 | Hugo Varga     | 2026 Q3               |
+|    4 | Dmitri Moreau | 2025 Q3 |    52 |                      52 | Bruno Tanaka   | 2027 Q3               |
+|    5 | Wim Bianchi   | 2024 Q3 |   126 |                      41 | Olga Fischer   | not on track          |
+|    6 | Petra Process | 2026 Q2 |    39 |                      39 | Gustav Quist   | too early to project  |
+|    7 | Aron Okafor   | 2024 Q4 |    33 |                      20 | depbot\[bot\]  | 2026 Q3               |
+|    8 | Lars Eriksen  | 2025 Q1 |    28 |                      18 | Jonas Petrov   | 2026 Q4               |
+|    9 | Xenia Moreau  | 2025 Q3 |    17 |                      17 | Tove Andersen  | 2027 Q2               |
+|   10 | Cleo Bianchi  | 2024 Q4 |    69 |                      14 | Casper Dahl    | not on track          |
 
 ## OKR draft (AI-generated)
 

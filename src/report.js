@@ -5,8 +5,8 @@ import { compositionSvg, crossOwnershipSvg, lineSharePieSvg, ownerStatusPieSvg, 
 import { reportHtml } from './html.js';
 import { findOddities, groupFindings } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
-import { kpiQuarter, outlookCharts, outlookNote, outlookStatements } from './outlook.js';
-import { quarterOf } from './timeline.js';
+import { emergingNote, kpiQuarter, outlookCharts, outlookNote, outlookStatements, overtakeText } from './outlook.js';
+import { GAIN_QUARTERS, quarterOf } from './timeline.js';
 import { aiConfig, aiInsights } from './ai.js';
 import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js';
 import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, FINDINGS_NOTE, LINE_ENTROPY_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
@@ -441,6 +441,18 @@ function outlookMd(stats, charts) {
     '',
     md(outlookNote(t)),
     '',
+    ...(t.emerging?.length ? [
+      '### Emerging owners',
+      '',
+      md(emergingNote(t)),
+      '',
+      ...mdTable(
+        ['Rank', 'Owner', 'Since', 'Lines', `Gained, last ${GAIN_QUARTERS} quarters`, 'Next owner up', 'Projected to overtake'],
+        t.emerging.map((e, k) => [String(k + 1), md(e.owner.name), e.firstQuarter, num(e.lines), num(e.gained), e.overtake?.owner ? md(e.overtake.owner.name) : '-', overtakeText(e.overtake)]),
+        ['r', 'l', 'l', 'r', 'r', 'l', 'l'],
+      ),
+      '',
+    ] : []),
   ];
 }
 

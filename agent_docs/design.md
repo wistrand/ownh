@@ -145,7 +145,14 @@ claim to its source; keep it accurate if that changes.
   fewer people holding more of the code, the opposite of a healthy bus
   factor. Never explain that on the site.
 - FAQ entries riff on real tools (`--ignore-revs-file`, truck factor), see the
-  Similar systems section of [research.md](research.md).
+  Similar systems section of [research.md](research.md). Each answer is one
+  short deadpan line; never repeat a question's shape (one "What is a good
+  ...?" is enough). "What is Ownership Entropy?" defines the KR4 term. Line
+  entropy has no FAQ entry (user decision): the site never shows it.
+- Report wording follows the same register: "Material findings" (grouped as
+  Line holdings, Repository control, Contributor performance, Measurement
+  consistency, Declared ownership compliance), "the succession pipeline" for
+  emerging owners, "Automation is not considered for succession".
 
 ## Pitch copy
 

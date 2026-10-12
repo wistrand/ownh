@@ -4,10 +4,14 @@ import { codeownersFingerprint, declaredOwnership } from './codeowners.js';
 import { blameCounts } from './blamecounts.js';
 import { headPass, topLineCounts } from './head.js';
 import { lineEntropy } from './lineentropy.js';
+import { isBot } from './oddities.js';
 import { compareNullLast, rankOwners, share, topOf } from './rank.js';
 import { codeHash, stageCache } from './stagecache.js';
 
 export { share } from './rank.js';
+
+// Rows in the report's Emerging owners table.
+const EMERGING_ROWS = 10;
 
 // Every number shown by `summary` and `report` comes from collectStats, so the
 // text summary and the report files can't disagree.
@@ -141,7 +145,22 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
     contributed,
     principal: ranked.find((o) => o.owner) ?? null,
   });
-  if (timeline) timeline.headLines = total;
+  if (timeline) {
+    timeline.headLines = total;
+    // Emerging owners, named and ranked: people only (a version-bump bot is not
+    // a successor), with a gain, by lines gained, ties by email.
+    timeline.emerging = timeline.emerging
+      .map((e) => ({
+        ...e,
+        owner: identities.get(e.identityId) ?? null,
+        lines: overall.get(e.identityId) ?? 0,
+        // The owner to overtake, named.
+        overtake: e.overtake ? { ...e.overtake, owner: identities.get(e.overtake.identityId) ?? null } : null,
+      }))
+      .filter((e) => e.owner && !isBot(e.owner) && e.gained > 0)
+      .sort((a, b) => b.gained - a.gained || compareNullLast(a.owner.email, b.owner.email))
+      .slice(0, EMERGING_ROWS);
+  }
 
   // Newest commit per author (unix seconds), merges included, for activity checks.
   const lastCommitBy = new Map(db.prepare('SELECT identity_id AS id, MAX(author_time) AS t FROM commits GROUP BY identity_id').all().map((r) => [r.id, r.t]));
