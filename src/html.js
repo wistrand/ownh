@@ -30,7 +30,7 @@ export function reportHtml(stats, top, charts) {
       tile('Lines under management', num(stats.total)),
       topOwner ? tile('Principal owner', esc(topOwner.owner.name), pct(topOwner.lines, stats.total)) : '',
       topLine ? tile('Principal line', `<code class="r-lit">${esc(lineLabel(topLine, 24))}</code>`, pct(topLine.lines, stats.total)) : '',
-      hashEntropy ? tile('Ownership entropy', `${hashEntropy.bits.toFixed(2)} bits`, `${hashEntropy.effectiveOwners.toFixed(1)} effective owners`) : '',
+      hashEntropy ? tile('Ownership entropy', `${hashEntropy.bits.toFixed(2)} bits`, `${hashEntropy.effectiveOwners.toFixed(1)} effective owners`, OWNERSHIP_ENTROPY_TITLE) : '',
       tile('Material findings', `<a href="#material-findings">${num(stats.oddities.length)}</a>`, stats.oddities.length ? 'see below' : ''),
     ]),
     section('Principal owners', ownerCharts + table(
@@ -311,8 +311,12 @@ function tilesHtml(tiles) {
     </section>`;
 }
 
-function tile(label, value, sub = '') {
-  return `<div class="r-tile"><div class="r-tile-label">${label}</div><div class="r-tile-value">${value}</div>${sub ? `<div class="r-tile-sub">${sub}</div>` : ''}</div>`;
+const OWNERSHIP_ENTROPY_TITLE = 'Shannon entropy of the owners\' shares of all lines, by line hash. '
+  + '0 bits is a single owner; each additional bit doubles the effective number of owners.';
+
+// `title`: plain text shown on hover, escaped here.
+function tile(label, value, sub = '', title = '') {
+  return `<div class="r-tile"${title ? ` title="${esc(title)}"` : ''}><div class="r-tile-label">${label}</div><div class="r-tile-value">${value}</div>${sub ? `<div class="r-tile-sub">${sub}</div>` : ''}</div>`;
 }
 
 // Each section gets an id from its title (e.g. #outlook, #code-survival) so
