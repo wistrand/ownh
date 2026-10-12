@@ -30,10 +30,32 @@ const NAMES = {
 };
 
 // Committers that are automation, not people: known tools, "[bot]" accounts,
-// and names with "bot" or "robot" as a word ("Fiona Build Bot", "docs-bot",
-// "Petra Robot"). Not "bot" inside a word: people are named "...bot" too.
+// and names with "bot", "robot", or "automation" as a word ("Fiona Build Bot",
+// "docs-bot", "Petra Robot", "Release Automation"). Not "bot" inside a word:
+// people are named "...bot" too.
 const BOT = /\[bot\]|dependabot|renovate|scala-steward|semantic[ -]release|github-actions/i;
-const BOT_NAME = /(^|[^a-z0-9])(ro)?bot([^a-z0-9]|$)/i;
+const BOT_NAME = /(^|[^a-z0-9])((ro)?bot|automation)([^a-z0-9]|$)/i;
+
+// The report shows findings ("Material findings") grouped by category, in this
+// order, numbered across groups. A kind not listed goes last, under "Other".
+const CATEGORIES = [
+  ['Line holdings', ['trivial-lines', 'trivial-top-line', 'crlf-twin', 'binary-duplicate', 'most-removed-line', 'restored', 'unattributed']],
+  ['Repository control', ['outsourced', 'absentee-owner', 'non-contributor-majority']],
+  ['Contributor performance', ['lines-per-commit', 'leverage', 'demolition', 'bot-committer', 'bot-line-entropy']],
+  ['Measurement consistency', ['three-way-split']],
+  ['Declared ownership compliance', ['declared-inactive', 'declared-unmatched', 'declared-shadowed']],
+];
+
+// [{ title, findings: [{ ...finding, number }] }], empty groups left out.
+export function groupFindings(findings) {
+  const categoryOf = new Map(CATEGORIES.flatMap(([title, kinds]) => kinds.map((k) => [k, title])));
+  const order = [...CATEGORIES.map(([title]) => title), 'Other'];
+  const groups = new Map(order.map((title) => [title, []]));
+  for (const f of findings) groups.get(categoryOf.get(f.kind) ?? 'Other').push(f);
+  let number = 0;
+  return order.filter((title) => groups.get(title).length)
+    .map((title) => ({ title, findings: groups.get(title).map((f) => ({ ...f, number: ++number })) }));
+}
 
 export function findOddities(stats, naming = NAMES) {
   const N = { ...NAMES, ...naming };
@@ -45,6 +67,7 @@ export function findOddities(stats, naming = NAMES) {
     ...absenteeTopOwners(stats, N),
     ...nonContributorMajority(stats, N),
     ...botCommitters(stats, N),
+    ...botLineEntropy(stats, N),
     ...threeWaySplits(stats, N),
     ...linesPerCommit(stats, N),
     ...leverageOddity(stats, N),
@@ -171,12 +194,24 @@ function outsourcedRepos(stats, N) {
     const outside = r.origins.find((o) => o.repo !== null && o.repo !== r.name);
     if (outside && outside.lines > own) hits.push({ r, own, outside });
   }
+  if (!hits.length) return [];
   hits.sort((a, b) => share(b.outside.lines, b.r.lines) - share(a.outside.lines, a.r.lines) || cmp(a.r.name, b.r.name));
-  return hits.map(({ r, own, outside }) => ({
+  // One finding for all of them, so the report does not repeat the sentence.
+  if (hits.length === 1) {
+    const { r, own, outside } = hits[0];
+    return [{
+      kind: 'outsourced',
+      title: `${N.repo(r.name)} was mostly written somewhere else`,
+      detail: [{ text: `${pct(outside.lines, r.lines)} of its lines were first written in ${N.repo(outside.repo)}; ${pct(own, r.lines)} in ${N.repo(r.name)} itself.` }],
+    }];
+  }
+  const shown = hits.slice(0, MAX_NAMES).map(({ r, own, outside }) => `${N.repo(r.name)} (${pct(outside.lines, r.lines)} first written in ${N.repo(outside.repo)}, ${pct(own, r.lines)} in itself)`);
+  const more = hits.length > MAX_NAMES ? `; and ${hits.length - MAX_NAMES} more` : '';
+  return [{
     kind: 'outsourced',
-    title: `${N.repo(r.name)} was mostly written somewhere else`,
-    detail: [{ text: `${pct(outside.lines, r.lines)} of its lines were first written in ${N.repo(outside.repo)}; ${pct(own, r.lines)} in ${N.repo(r.name)} itself.` }],
-  }));
+    title: `${hits.length} repositories were mostly written somewhere else`,
+    detail: [{ text: `${shown.join('; ')}${more}.` }],
+  }];
 }
 
 // Repos whose top owner by line hash has never committed to them.
@@ -227,6 +262,26 @@ function botCommitters(stats, N) {
       detail: [{ text: `${names(b.repos)}.${b.topElsewhere ? '' : ` ${where}, ${others} someone else the top owner.`}` }],
     };
   });
+}
+
+// Among the top owners, the most varied lines (highest line entropy) belong to
+// automation, while the principal owner's are mostly copies.
+const ENTROPY_OWNERS = 10;
+function botLineEntropy(stats, N) {
+  const top = stats.owners.filter((o) => o.owner && o.lineEntropy).slice(0, ENTROPY_OWNERS);
+  if (top.length < 2) return [];
+  const best = top.reduce((a, b) => (b.lineEntropy.bits > a.lineEntropy.bits ? b : a));
+  const principal = top[0];
+  if (!isBot(best.owner) || best === principal) return [];
+  const bits = (o) => `${o.lineEntropy.bits.toFixed(1)} bits`;
+  return [{
+    kind: 'bot-line-entropy',
+    title: `The most varied lines among the top ${top.length} owners belong to ${N.owner(best.owner)}`,
+    detail: [{
+      text: `Its ${plural(best.lineEntropy.lines, 'line')} hold ${bits(best)} of line entropy (${plural(best.lineEntropy.distinct, 'distinct line')}). `
+        + `The principal owner, ${N.owner(principal.owner)}, holds ${plural(principal.lineEntropy.lines, 'line')} at ${bits(principal)} (${plural(principal.lineEntropy.distinct, 'distinct line')}).`,
+    }],
+  }];
 }
 
 // Repos where commit count, blame, and line hash name three different people.

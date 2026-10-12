@@ -1,5 +1,5 @@
 import { openDb } from './db.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, plural, textWidth } from './stats.js';
+import { collectStats, entropyText, lineLabel, methodShare, ownerLabel, padText, pct, plural, textWidth } from './stats.js';
 
 export function summary({ dbPath, top = 10, log }) {
   const db = openDb(dbPath);
@@ -16,6 +16,7 @@ function render(stats, top) {
     `repos: ${stats.repos.map((r) => r.name).join(', ')}`,
     `excluded patterns: ${stats.excludes.length ? stats.excludes.join(', ') : '(none)'}`,
     `lines scored: ${stats.total}`,
+    `ownership entropy: ${entropyText(stats.methods.entropy?.hash)}`,
     '',
     'Top owners, all repos',
     ...ownerTable(stats.owners, top, stats.total),

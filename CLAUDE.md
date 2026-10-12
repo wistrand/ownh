@@ -36,6 +36,7 @@ git history (1..n repos) ──> index ──────> .db ──> blame (op
 | `src/hash.js`         | line and file hash                                                                                                          |
 | `src/stats.js`        | `collectStats`: every number summary and report show                                                                        |
 | `src/head.js`         | head-line passes cached as stats stages: owners, line kinds, top lines                                                      |
+| `src/lineentropy.js`  | line entropy per owner (how varied their HEAD lines are), cached as a stats stage                                           |
 | `src/blamecounts.js`  | blame counts per repo (full or sampled), cached as a stats stage                                                            |
 | `src/rank.js`         | owner ranking helpers (`rankOwners`, `topOf`, `share`) shared by stats and stages                                           |
 | `src/stagecache.js`   | per-stage stats cache (`stats-cache.json`): code hash over a module's imports, cache file                                   |
@@ -44,7 +45,7 @@ git history (1..n repos) ──> index ──────> .db ──> blame (op
 | `src/report.js`       | report files: leaderboard.md, JSON, CSV                                                                                     |
 | `src/pseudonymize.js` | `report --pseudonymize`: names, emails, and CODEOWNERS handles replaced in the stats before rendering                       |
 | `src/charts.js`       | SVG charts: owner shares and composition bars, pie, cross-ownership heatmap, radar, trend and survival                      |
-| `src/oddities.js`     | "Oddities" report section: odd findings derived from the stats                                                              |
+| `src/oddities.js`     | "Material findings" report section (internally oddities): odd findings derived from the stats                               |
 | `src/profiles.js`     | data for the radar charts (owner and repository profiles)                                                                   |
 | `src/timeline.js`     | quarterly series and projections for the report's Outlook                                                                   |
 | `src/outlook.js`      | Outlook statements and charts (shared by Markdown and HTML)                                                                 |

@@ -75,7 +75,8 @@ repo actually exhibits.
 - Spider charts, because every manager loves spider charts. The owner profile
   is "Normalized" (to the highest value shown), which finally gives the N in
   OWNH something to do.
-- An "Oddities" section that states the absurd findings flatly.
+- A "Material findings" section (internally oddities) that states the absurd
+  findings flatly, numbered, near the top of the report, in audit language.
 - Punchline slide: the three-way comparison (commits / blame / hash).
 - Declared ownership: what CODEOWNERS says next to what line hash and blame
   compute, per rule. The site already calls CODEOWNERS fiction; this shows it.
@@ -137,8 +138,12 @@ claim to its source; keep it accurate if that changes.
   page head), rendered from `scripts/og.svg` with `rsvg-convert`.
 - The OKR section's figures (KR sample lines and the KPI table) are copied by
   hand from `docs/sample/report.json`. After every `npm run sample`, check
-  them against `timeline.kpis`, `timeline.projections.blank`, and
-  `survival.all`; they drifted once already.
+  them against `timeline.kpis`, `timeline.projections.blank`,
+  `survival.all`, and `methods.entropy.hash` (KR4); they drifted once already.
+- "Ownership Entropy" is named for its sound (user decision: it reads like a
+  KPI). Its deadpan direction is down: KR4 asks for lower entropy, which means
+  fewer people holding more of the code, the opposite of a healthy bus
+  factor. Never explain that on the site.
 - FAQ entries riff on real tools (`--ignore-revs-file`, truck factor), see the
   Similar systems section of [research.md](research.md).
 

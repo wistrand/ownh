@@ -199,6 +199,27 @@ show, so they cannot disagree.
 - **Three methods** (`collectMethods`): top owner by non-merge commit count, by
   blame (exact or estimated), and by line hash, per repo and overall, with an
   agree flag.
+- **Ownership entropy** (`entropy` in `src/stats.js`, `methods.entropy`): per
+  method, per repo and overall, the Shannon entropy in bits of the shares that
+  method gives each owner, plus `effectiveOwners` (2^bits). Unowned lines are
+  left out; bots count. Blame uses the exact counts, or the sample's expanded
+  estimate; overall blame entropy needs blame for every repo, like the overall
+  top owner. Computed in the combining code from counts the stages already
+  return. Shown as a report tile and in the Markdown header (line hash),
+  `methods.csv` columns, the `summary` header, the agent's `overview`, and the
+  AI facts (`ownershipEntropyBits`: bits to one decimal only, since the
+  effective owner count is close to a head count). A per-method table was
+  tried and dropped as too much (user decision). Source: author entropy in
+  [research.md](research.md).
+- **Line entropy** (`lineEntropy` stage, `src/lineentropy.js`;
+  `owners[].lineEntropy`): per owner, the entropy in bits of their HEAD lines
+  over the distinct lines they own: 0 when every line is a copy of one line.
+  The principal owner of blank lines and braces scores low. Counted per hash
+  in 16 ranges and summed per owner (H = log2 N - sum(n log2 n) / N), so no
+  per-owner hash list is held; about 4 s on 3.5 million lines. Shown as a
+  column in the principal owners table (distinct lines in the HTML tooltip)
+  and in `owners.csv`. Named apart from ownership entropy on purpose: one
+  measures people, the other one person's lines.
 - **Timeline** (`src/timeline.js`, `buildTimeline`): quarterly series. With
   `churn` it is a true history (net added minus removed per owner, checked
   against the HEAD line count); without it, surviving lines by first-written
@@ -268,10 +289,20 @@ slightly; all use `ACTIVE_WINDOW` from `src/quarters.js`.
 | `ai-request.json`, `ai-cache.json`           | the AI request as sent, and the cached answer (with `--ai`)                |
 | `agent-requests.jsonl`                       | every request `ownh agent` sent, appended per session                      |
 
-Section order: AI insights (with `--ai`), principal owners, ownership
-profiles, principal lines, cross-repository ownership, three ways to own,
-declared ownership (repos with CODEOWNERS), leverage, code demolition, code survival, outlook, OKR draft (with `--ai`),
-ownership archetypes, oddities, repositories, excluded patterns.
+Section order (user decision): AI insights (with `--ai`), tiles (HTML),
+principal owners, ownership profiles, principal lines, code survival, outlook,
+OKR draft (with `--ai`), ownership archetypes, cross-repository ownership,
+material findings, three ways to own, declared ownership (repos with
+CODEOWNERS), leverage, code demolition, repositories, excluded patterns.
+
+"Material findings" is the user-facing name of the oddities (`src/oddities.js`,
+`stats.oddities`; renamed and moved to the top, user decision): grouped by
+`groupFindings` into Line holdings, Repository control, Contributor
+performance, Measurement consistency, and Declared ownership compliance (a
+kind not mapped in `CATEGORIES` lands under Other), numbered across groups,
+under a one-line deadpan note (`FINDINGS_NOTE`), with a tile counting them in
+`report.html`. The agent's `material_findings` tool returns the same numbers
+and categories. The code keeps the internal name.
 
 - Untrusted text (author names, repository names, line text, AI prose) is
   escaped: `md()` in `src/report.js` for Markdown (inline markup, HTML
@@ -292,7 +323,11 @@ ownership archetypes, oddities, repositories, excluded patterns.
   (`src/outlook.js`); leverage, demolition, and survival pieces likewise
   (`src/sections.js`); radar data in `src/profiles.js`.
 - Oddities (`src/oddities.js`) are facts derived from the stats; each claim is
-  checked by the code that prints it.
+  checked by the code that prints it. Automation is `isBot`: known tools,
+  `[bot]` accounts, and names with "bot", "robot", or "automation" as a word.
+  `bot-line-entropy` fires when, among the top 10 owners, the highest line
+  entropy belongs to automation (the bot holds the most varied lines while the
+  principal owner holds the copies).
 - Line kinds (`KIND` in `src/head.js`: code, blank, punctuation only, binary):
   each `head` row carries a kind; `collectStats` sums them into
   `owners[].composition` and per repository into `repos[].owners[].composition`.
@@ -304,15 +339,16 @@ ownership archetypes, oddities, repositories, excluded patterns.
   own key; the rest of `collectStats` only combines their results and always
   runs.
 
-  | Stage       | Module            | Data key            | Args             |
-  |-------------|-------------------|---------------------|------------------|
-  | `head`      | `head.js`         | index runs          |                  |
-  | `lines`     | `head.js`         | index runs          | `--top`          |
-  | `blame`     | `blamecounts.js`  | index runs, blame   |                  |
-  | `declared`  | `codeowners.js`   | index runs, blame   |                  |
-  | `history`   | `churn.js`        | index runs          |                  |
-  | `deletions` | `churn.js`        | index runs          |                  |
-  | `survival`  | `churn.js`        | index runs          | top owners, now  |
+  | Stage         | Module            | Data key            | Args             |
+  |---------------|-------------------|---------------------|------------------|
+  | `head`        | `head.js`         | index runs          |                  |
+  | `lines`       | `head.js`         | index runs          | `--top`          |
+  | `lineEntropy` | `lineentropy.js`  | index runs          |                  |
+  | `blame`       | `blamecounts.js`  | index runs, blame   |                  |
+  | `declared`    | `codeowners.js`   | index runs, blame   |                  |
+  | `history`     | `churn.js`        | index runs          |                  |
+  | `deletions`   | `churn.js`        | index runs          |                  |
+  | `survival`    | `churn.js`        | index runs          | top owners, now  |
 
   The code key is `codeHash` of the stage's module: its source plus, followed
   through its import and re-export statements, every local module it uses,
@@ -454,7 +490,7 @@ uses the `--ai` settings (`aiConfig`: endpoint, key, model, ZDR, temperature).
   `rank_by`), owner profile, repositories, top lines, outlook (with the
   head-line total and why the history series differs from it), deletions,
   survival, CODEOWNERS, archetypes, leverage ranking, and the report's
-  oddities (their text with names replaced as in questions, quoted lines and
+  material findings (`material_findings`; their text with names replaced as in questions, quoted lines and
   paths as tokens). A question the tools cannot answer directly makes the
   model fan out many calls (it once called owner_profile 18 times to rank
   leverage): add a tool rather than relying on that. No SQL from the model (user

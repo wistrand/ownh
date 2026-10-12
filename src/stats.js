@@ -3,6 +3,7 @@ import { deletions, hasChurn, netByQuarter, survival } from './churn.js';
 import { codeownersFingerprint, declaredOwnership } from './codeowners.js';
 import { blameCounts } from './blamecounts.js';
 import { headPass, topLineCounts } from './head.js';
+import { lineEntropy } from './lineentropy.js';
 import { compareNullLast, rankOwners, share, topOf } from './rank.js';
 import { codeHash, stageCache } from './stagecache.js';
 
@@ -20,6 +21,7 @@ const CODE = {
   blame: codeHash(new URL('./blamecounts.js', import.meta.url)),
   declared: codeHash(new URL('./codeowners.js', import.meta.url)),
   churn: codeHash(new URL('./churn.js', import.meta.url)),
+  lineEntropy: codeHash(new URL('./lineentropy.js', import.meta.url)),
 };
 
 // What a stage's data key covers. `index`: every completed index or add run
@@ -93,6 +95,9 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
 
   const lines = cache.run('lines', { code: CODE.head, data: fp.index, args: { topLines } }, () => topLineCounts(db, topLines, log))
     .map(({ identityId, ...l }) => ({ ...l, owner: identityId === null ? null : identities.get(identityId) ?? null }));
+
+  // Per owner: how varied the lines they hold are (lineentropy.js).
+  const lineBits = cache.run('lineEntropy', { code: CODE.lineEntropy, data: fp.index }, () => lineEntropy(db, log));
 
   // Its input paths come from the head stage, so head's code is in the key too.
   const blame = cache.run('blame', { code: [CODE.blame, CODE.head], data: [fp.index, fp.blame] }, () => blameCounts(db, repos, head.paths, log));
@@ -177,6 +182,8 @@ export function collectStats(db, { topLines = 10, log = () => {}, cache = stageC
       lastCommit: o.identityId === null ? null : (lastCommitBy.get(o.identityId) ?? null),
       // What the owned lines are: blank, punctuation-only, code, binary.
       composition: o.identityId === null ? null : (composition.get(o.identityId) ?? null),
+      // How varied they are: { lines, distinct, bits }, see lineentropy.js.
+      lineEntropy: o.identityId === null ? null : (lineBits[o.identityId] ?? null),
       // Lines owned by someone else that this owner removed; null without churn.
       removedOthers: o.identityId === null || !removedOthersBy ? null : (removedOthersBy.get(o.identityId) ?? 0),
     })),
@@ -231,6 +238,7 @@ function collectMethods(db, repos, paths, blame, byRepo, overall, identities, NO
   for (const r of repos) {
     const b = blame[r.id];
     let top = null;
+    let blameCounts = null;
     if (b.kind === 'full') {
       const counts = new Map(b.counts);
       for (const [id, n] of counts) {
@@ -238,12 +246,15 @@ function collectMethods(db, repos, paths, blame, byRepo, overall, identities, NO
         allBlameTotal += n;
       }
       top = topOf(counts, identities);
+      blameCounts = counts;
     } else if (b.kind === 'sample') {
       const est = blameEstimate(b.files.map((f) => new Map(f)), paths[r.id].length, identities);
       for (const [id, n] of est.expanded) allBlame.set(id, (allBlame.get(id) ?? 0) + n);
       allBlameTotal += est.expandedTotal;
       blameEstimated = true;
       top = est.top;
+      // Estimated from the sample, like the top owner's share.
+      blameCounts = est.expanded;
     } else {
       blameComplete = false;
     }
@@ -253,6 +264,11 @@ function collectMethods(db, repos, paths, blame, byRepo, overall, identities, NO
       hash: topOf(byRepo.get(r.id).owners, identities),
       blamedFiles: b.done,
       files: paths[r.id].length,
+      entropy: {
+        commits: entropy(commits.get(r.id)),
+        blame: blameCounts ? entropy(blameCounts) : null,
+        hash: entropy(byRepo.get(r.id).owners),
+      },
     };
     m.agree = agree(m);
     result.set(r.id, m);
@@ -266,6 +282,11 @@ function collectMethods(db, repos, paths, blame, byRepo, overall, identities, NO
     commits: topOf(allCommits, identities),
     blame: overallBlame,
     hash: topOf(overall, identities),
+    entropy: {
+      commits: entropy(allCommits),
+      blame: blameComplete ? entropy(allBlame) : null,
+      hash: entropy(overall),
+    },
   };
   all.agree = agree(all);
   return { byRepo: result, overall: all };
@@ -312,6 +333,40 @@ function blameEstimate(files, totalFiles, identities) {
 function agree(m) {
   const emails = [m.commits, m.blame, m.hash].filter(Boolean).map((t) => t.owner.email);
   return emails.length > 1 && emails.every((e) => e === emails[0]);
+}
+
+// Ownership entropy: the Shannon entropy, in bits, of the shares one method
+// gives each owner (Map identity id -> count). 0 when one owner holds
+// everything; log2(owners) when all hold the same. `effectiveOwners` is
+// 2^bits: how many equal owners would give the same entropy. Unowned lines
+// (id null) are left out; bots count like anyone else. Null without counts.
+export function entropy(counts) {
+  let total = 0;
+  for (const [id, n] of counts) if (id !== null && n > 0) total += n;
+  if (!total) return null;
+  let bits = 0;
+  let owners = 0;
+  for (const [id, n] of counts) {
+    if (id === null || n <= 0) continue;
+    const p = n / total;
+    bits -= p * Math.log2(p);
+    owners++;
+  }
+  // -0 for a single owner.
+  bits = Math.max(0, bits);
+  return { bits, effectiveOwners: 2 ** bits, owners };
+}
+
+// "2.68 bits (6.4 effective owners)".
+export function entropyText(e) {
+  if (!e) return '-';
+  const eff = e.effectiveOwners.toFixed(1);
+  return `${e.bits.toFixed(2)} bits (${eff} effective ${eff === '1.0' ? 'owner' : 'owners'})`;
+}
+
+// An owner's line entropy for a table cell: "7.9 bits", or "-".
+export function bitsText(e) {
+  return e ? `${e.bits.toFixed(1)} bits` : '-';
 }
 
 // "1 repository", "3 repositories".

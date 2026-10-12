@@ -72,6 +72,13 @@ export const SURVIVAL_NOTE = 'Copies of the same line are indistinguishable, so 
 export const DEMOLITION_NOTE = 'Removals inside merge commits are not counted: they are relative to git\'s ' +
   're-run of the merge, not to a parent.';
 
+export const FINDINGS_NOTE = 'Conditions identified in this analysis that warrant the attention of ownership ' +
+  'leadership. Each finding is computed from the data and can be reproduced from the same repositories.';
+
+export const LINE_ENTROPY_NOTE = 'Line entropy is how varied an owner\'s lines are: the Shannon entropy, in bits, ' +
+  'of their lines over the distinct lines they own. 0 bits means every line is a copy of one line; each ' +
+  'additional bit doubles the number of distinct lines their holdings amount to.';
+
 // Declared ownership: repositories with a CODEOWNERS file, the rules shown per
 // repository (largest first), and one summary sentence each.
 export const DECLARED_ROWS = 15;

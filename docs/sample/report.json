@@ -631,6 +631,11 @@
         "code": 3301,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 9490,
+        "distinct": 251,
+        "bits": 4.070843770188562
+      },
       "removedOthers": 95
     },
     {
@@ -648,6 +653,11 @@
         "punctuation": 583,
         "code": 1273,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 1856,
+        "distinct": 231,
+        "bits": 4.951534327876291
       },
       "removedOthers": 63
     },
@@ -667,6 +677,11 @@
         "code": 1132,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 1132,
+        "distinct": 273,
+        "bits": 5.880894051844102
+      },
       "removedOthers": 473
     },
     {
@@ -684,6 +699,11 @@
         "punctuation": 20,
         "code": 1091,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 1111,
+        "distinct": 675,
+        "bits": 8.69219971529478
       },
       "removedOthers": 5053
     },
@@ -703,6 +723,11 @@
         "code": 512,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 512,
+        "distinct": 395,
+        "bits": 8.296713229275852
+      },
       "removedOthers": 866
     },
     {
@@ -720,6 +745,11 @@
         "punctuation": 0,
         "code": 351,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 351,
+        "distinct": 286,
+        "bits": 8.002592560986656
       },
       "removedOthers": 1256
     },
@@ -739,6 +769,11 @@
         "code": 300,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 300,
+        "distinct": 114,
+        "bits": 6.106079188173506
+      },
       "removedOthers": 279
     },
     {
@@ -756,6 +791,11 @@
         "punctuation": 0,
         "code": 224,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 224,
+        "distinct": 162,
+        "bits": 6.716485324432668
       },
       "removedOthers": 532
     },
@@ -775,6 +815,11 @@
         "code": 221,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 221,
+        "distinct": 151,
+        "bits": 6.787419811341784
+      },
       "removedOthers": 599
     },
     {
@@ -792,6 +837,11 @@
         "punctuation": 0,
         "code": 218,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 218,
+        "distinct": 64,
+        "bits": 4.969761730701163
       },
       "removedOthers": 240
     },
@@ -811,6 +861,11 @@
         "code": 140,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 140,
+        "distinct": 100,
+        "bits": 6.3657554955908155
+      },
       "removedOthers": 564
     },
     {
@@ -828,6 +883,11 @@
         "punctuation": 0,
         "code": 134,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 134,
+        "distinct": 127,
+        "bits": 6.934673963036602
       },
       "removedOthers": 238
     },
@@ -847,6 +907,11 @@
         "code": 131,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 131,
+        "distinct": 112,
+        "bits": 6.70052498264862
+      },
       "removedOthers": 292
     },
     {
@@ -864,6 +929,11 @@
         "punctuation": 0,
         "code": 130,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 130,
+        "distinct": 128,
+        "bits": 6.991598582259224
       },
       "removedOthers": 159
     },
@@ -883,6 +953,11 @@
         "code": 126,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 126,
+        "distinct": 112,
+        "bits": 6.727202344100497
+      },
       "removedOthers": 225
     },
     {
@@ -900,6 +975,11 @@
         "punctuation": 0,
         "code": 115,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 115,
+        "distinct": 105,
+        "bits": 6.665012768316866
       },
       "removedOthers": 368
     },
@@ -919,6 +999,11 @@
         "code": 110,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 110,
+        "distinct": 110,
+        "bits": 6.78135971352466
+      },
       "removedOthers": 325
     },
     {
@@ -936,6 +1021,11 @@
         "punctuation": 0,
         "code": 109,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 109,
+        "distinct": 106,
+        "bits": 6.713138453217293
       },
       "removedOthers": 304
     },
@@ -955,6 +1045,11 @@
         "code": 105,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 105,
+        "distinct": 96,
+        "bits": 6.542816946237551
+      },
       "removedOthers": 425
     },
     {
@@ -972,6 +1067,11 @@
         "punctuation": 0,
         "code": 103,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 103,
+        "distinct": 97,
+        "bits": 6.55533766306354
       },
       "removedOthers": 286
     },
@@ -991,6 +1091,11 @@
         "code": 97,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 97,
+        "distinct": 54,
+        "bits": 5.233466064414094
+      },
       "removedOthers": 325
     },
     {
@@ -1008,6 +1113,11 @@
         "punctuation": 0,
         "code": 81,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 81,
+        "distinct": 78,
+        "bits": 6.256456330018409
       },
       "removedOthers": 300
     },
@@ -1027,6 +1137,11 @@
         "code": 80,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 80,
+        "distinct": 77,
+        "bits": 6.237492001110319
+      },
       "removedOthers": 222
     },
     {
@@ -1044,6 +1159,11 @@
         "punctuation": 0,
         "code": 69,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 69,
+        "distinct": 65,
+        "bits": 5.992582427792662
       },
       "removedOthers": 426
     },
@@ -1063,6 +1183,11 @@
         "code": 68,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 68,
+        "distinct": 33,
+        "bits": 4.562981180621691
+      },
       "removedOthers": 160
     },
     {
@@ -1080,6 +1205,11 @@
         "punctuation": 0,
         "code": 63,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 63,
+        "distinct": 48,
+        "bits": 5.4891071060052585
       },
       "removedOthers": 221
     },
@@ -1099,6 +1229,11 @@
         "code": 63,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 63,
+        "distinct": 44,
+        "bits": 5.204723820911709
+      },
       "removedOthers": 298
     },
     {
@@ -1116,6 +1251,11 @@
         "punctuation": 0,
         "code": 52,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 52,
+        "distinct": 51,
+        "bits": 5.661978179679553
       },
       "removedOthers": 161
     },
@@ -1135,6 +1275,11 @@
         "code": 45,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 45,
+        "distinct": 43,
+        "bits": 5.402964207440786
+      },
       "removedOthers": 288
     },
     {
@@ -1152,6 +1297,11 @@
         "punctuation": 0,
         "code": 39,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 39,
+        "distinct": 18,
+        "bits": 3.6820861928883817
       },
       "removedOthers": 0
     },
@@ -1171,6 +1321,11 @@
         "code": 35,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 35,
+        "distinct": 35,
+        "bits": 5.129283016944966
+      },
       "removedOthers": 35
     },
     {
@@ -1188,6 +1343,11 @@
         "punctuation": 0,
         "code": 33,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 33,
+        "distinct": 33,
+        "bits": 5.044394119358453
       },
       "removedOthers": 116
     },
@@ -1207,6 +1367,11 @@
         "code": 29,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 29,
+        "distinct": 12,
+        "bits": 3.0417384274359476
+      },
       "removedOthers": 29
     },
     {
@@ -1224,6 +1389,11 @@
         "punctuation": 0,
         "code": 28,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 28,
+        "distinct": 21,
+        "bits": 4.307354922057604
       },
       "removedOthers": 27
     },
@@ -1243,6 +1413,11 @@
         "code": 23,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 23,
+        "distinct": 17,
+        "bits": 3.9690016298759927
+      },
       "removedOthers": 370
     },
     {
@@ -1260,6 +1435,11 @@
         "punctuation": 0,
         "code": 17,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 17,
+        "distinct": 17,
+        "bits": 4.087462841250339
       },
       "removedOthers": 19
     },
@@ -1279,6 +1459,11 @@
         "code": 14,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 14,
+        "distinct": 14,
+        "bits": 3.807354922057604
+      },
       "removedOthers": 116
     },
     {
@@ -1296,6 +1481,11 @@
         "punctuation": 0,
         "code": 12,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 12,
+        "distinct": 12,
+        "bits": 3.584962500721156
       },
       "removedOthers": 66
     },
@@ -1315,6 +1505,11 @@
         "code": 12,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 12,
+        "distinct": 11,
+        "bits": 3.4182958340544896
+      },
       "removedOthers": 59
     },
     {
@@ -1333,6 +1528,11 @@
         "code": 12,
         "binary": 0
       },
+      "lineEntropy": {
+        "lines": 12,
+        "distinct": 11,
+        "bits": 3.4182958340544896
+      },
       "removedOthers": 14
     },
     {
@@ -1350,6 +1550,11 @@
         "punctuation": 0,
         "code": 5,
         "binary": 0
+      },
+      "lineEntropy": {
+        "lines": 5,
+        "distinct": 5,
+        "bits": 2.321928094887362
       },
       "removedOthers": 2
     }
@@ -1552,6 +1757,23 @@
       "total": 17495,
       "share": 0.5424406973420978
     },
+    "entropy": {
+      "commits": {
+        "bits": 4.861308161397386,
+        "effectiveOwners": 29.0669574411376,
+        "owners": 41
+      },
+      "blame": {
+        "bits": 4.604948145872419,
+        "effectiveOwners": 24.334785382083556,
+        "owners": 41
+      },
+      "hash": {
+        "bits": 2.8469737149123264,
+        "effectiveOwners": 7.1948954090628385,
+        "owners": 41
+      }
+    },
     "agree": false
   },
   "repos": [
@@ -1590,6 +1812,23 @@
         },
         "blamedFiles": 53,
         "files": 53,
+        "entropy": {
+          "commits": {
+            "bits": 3.7279159257504095,
+            "effectiveOwners": 13.249958406542216,
+            "owners": 32
+          },
+          "blame": {
+            "bits": 3.549083517491082,
+            "effectiveOwners": 11.70524736177836,
+            "owners": 29
+          },
+          "hash": {
+            "bits": 2.3297358272006945,
+            "effectiveOwners": 5.027132892327403,
+            "owners": 32
+          }
+        },
         "agree": false
       },
       "declared": {
@@ -2232,6 +2471,23 @@
         },
         "blamedFiles": 31,
         "files": 31,
+        "entropy": {
+          "commits": {
+            "bits": 4.200927834268478,
+            "effectiveOwners": 18.39099760074982,
+            "owners": 33
+          },
+          "blame": {
+            "bits": 3.702257132806311,
+            "effectiveOwners": 13.016386885470846,
+            "owners": 27
+          },
+          "hash": {
+            "bits": 2.3427701905412204,
+            "effectiveOwners": 5.072757484381129,
+            "owners": 36
+          }
+        },
         "agree": false
       },
       "declared": {
@@ -2934,6 +3190,23 @@
         },
         "blamedFiles": 57,
         "files": 57,
+        "entropy": {
+          "commits": {
+            "bits": 3.148423092366249,
+            "effectiveOwners": 8.866858743480753,
+            "owners": 31
+          },
+          "blame": {
+            "bits": 3.119251534225346,
+            "effectiveOwners": 8.689369712203336,
+            "owners": 26
+          },
+          "hash": {
+            "bits": 2.757558466820127,
+            "effectiveOwners": 6.762508333656889,
+            "owners": 25
+          }
+        },
         "agree": false
       },
       "declared": {
@@ -3439,6 +3712,23 @@
         },
         "blamedFiles": 14,
         "files": 14,
+        "entropy": {
+          "commits": {
+            "bits": 3.6643932211067853,
+            "effectiveOwners": 12.6792123512847,
+            "owners": 26
+          },
+          "blame": {
+            "bits": 2.9997181072728294,
+            "effectiveOwners": 7.998437007511516,
+            "owners": 20
+          },
+          "hash": {
+            "bits": 2.3099429495699257,
+            "effectiveOwners": 4.958634709918363,
+            "owners": 18
+          }
+        },
         "agree": false
       },
       "declared": {
@@ -3838,6 +4128,23 @@
         },
         "blamedFiles": 69,
         "files": 69,
+        "entropy": {
+          "commits": {
+            "bits": 4.274655551752508,
+            "effectiveOwners": 19.355283737332357,
+            "owners": 32
+          },
+          "blame": {
+            "bits": 3.962207662223326,
+            "effectiveOwners": 15.58631163648447,
+            "owners": 31
+          },
+          "hash": {
+            "bits": 2.279614215383632,
+            "effectiveOwners": 4.855480981554859,
+            "owners": 33
+          }
+        },
         "agree": false
       },
       "declared": {
@@ -4495,6 +4802,23 @@
         },
         "blamedFiles": 60,
         "files": 60,
+        "entropy": {
+          "commits": {
+            "bits": 4.0090503916360785,
+            "effectiveOwners": 16.100687544167723,
+            "owners": 33
+          },
+          "blame": {
+            "bits": 3.7162123080057863,
+            "effectiveOwners": 13.142905188796945,
+            "owners": 30
+          },
+          "hash": {
+            "bits": 2.2988774456466117,
+            "effectiveOwners": 4.920747352597051,
+            "owners": 33
+          }
+        },
         "agree": false
       },
       "declared": {
@@ -5175,28 +5499,10 @@
     },
     {
       "kind": "outsourced",
-      "title": "web-frontend was mostly written somewhere else",
+      "title": "3 repositories were mostly written somewhere else",
       "detail": [
         {
-          "text": "66.8% of its lines were first written in platform; 21.8% in web-frontend itself."
-        }
-      ]
-    },
-    {
-      "kind": "outsourced",
-      "title": "billing-service was mostly written somewhere else",
-      "detail": [
-        {
-          "text": "65.7% of its lines were first written in platform; 20.5% in billing-service itself."
-        }
-      ]
-    },
-    {
-      "kind": "outsourced",
-      "title": "api-gateway was mostly written somewhere else",
-      "detail": [
-        {
-          "text": "63.4% of its lines were first written in platform; 33.9% in api-gateway itself."
+          "text": "web-frontend (66.8% first written in platform, 21.8% in itself); billing-service (65.7% first written in platform, 20.5% in itself); api-gateway (63.4% first written in platform, 33.9% in itself)."
         }
       ]
     },
@@ -5416,7 +5722,7 @@
   ],
   "generated": {
     "database": "sample.db",
-    "at": "2026-10-11 19:03 UTC"
+    "at": "2026-10-12 05:48 UTC"
   },
   "archetypes": [
     {
@@ -5497,32 +5803,32 @@
     "promptVersion": 2,
     "cached": true,
     "summary": [
-      "OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.2% of lines, while inactive owners account for 76.1% at 2026 Q2, a majority since 2023 Q4.",
-      "Blank lines represent 20.5% of lines and are attributed to Ada Lindqvist. The next blank-line milestone is projected for 2031 Q4; the line-survival half-life is 2 years and is not projected.",
-      "Cross-repository ownership is uneven: 80% of billing-service’s lines were written elsewhere, while 57% of api-gateway’s lines are owned by non-contributors. The methods agree in no repositories, limiting confidence in attribution consistency."
+      "The portfolio spans fewer than ten repositories, dozens of owners and tens of thousands of lines. Ada Lindqvist holds 54% of lines; blank lines alone account for 21%, with punctuation-only lines also prominent.",
+      "Ownership crosses repository boundaries: lines written elsewhere account for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Methods agree in no repositories, and ownership entropy ranges from 2.8 bits by line hash to 4.9 bits by commits.",
+      "At 2026 Q2, the principal owner holds 54.1%, up from 51.2% at 2025 Q3, while inactive-owner share has eased to 76.1% from 77.9%. The next blank-line milestone is projected for 2031 Q4."
     ],
     "okr": {
-      "objective": "Build a more balanced and consistent ownership profile across repositories.",
+      "objective": "Improve ownership sustainability and consistency across the codebase.",
       "keyResults": [
         {
-          "text": "Reduce principal-owner concentration from 54.1% at 2026 Q2, after it rose from 51.2% at 2025 Q3.",
-          "status": "off track"
-        },
-        {
-          "text": "Lower the inactive-owner share from 76.1% at 2026 Q2, after easing from 77.9% at 2025 Q3, while the majority has persisted since 2023 Q4.",
+          "text": "Reduce principal-owner concentration from 54.1% at 2026 Q2, after rising from 51.2% at 2025 Q3.",
           "status": "at risk"
         },
         {
-          "text": "Increase method agreement from a baseline of no repositories.",
+          "text": "Continue reducing inactive-owner share from 76.1% at 2026 Q2, down from 77.9% at 2025 Q3.",
+          "status": "on track"
+        },
+        {
+          "text": "Establish agreement among ownership methods, starting from no repositories where methods agree.",
           "status": "off track"
         }
       ]
     },
     "archetypeNames": {
-      "principal": "Dominant Steward",
+      "principal": "Dominant Principal",
       "inactive": "Dormant Majority",
-      "demolition": "High-Impact Removers",
-      "automation": "Automated Owner"
+      "demolition": "Code Demolishers",
+      "automation": "Automated Steward"
     }
   }
 }

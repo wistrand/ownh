@@ -6,14 +6,16 @@
 // .label, .muted, ...). Page styles use the "r-" prefix so they never collide.
 import { esc } from './charts.js';
 import { kpiQuarter, outlookNote, outlookStatements } from './outlook.js';
-import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
+import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, FINDINGS_NOTE, LINE_ENTROPY_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements } from './sections.js';
 import { ARCHETYPE_TITLES, exampleLabels } from './archetypes.js';
+import { groupFindings } from './oddities.js';
 import { lineLabel, methodShare, ownerLabel, plural, pct, repoCount, share, SITE } from './stats.js';
 
 export function reportHtml(stats, top, charts) {
   const anchor = repoAnchors(stats.repos);
   const topOwner = stats.owners.find((o) => o.owner);
   const topLine = stats.lines[0];
+  const hashEntropy = stats.methods.entropy?.hash ?? null;
   const ownerFigures = [charts.ownerShares, charts.composition].filter(Boolean).map((c) => `<figure class="r-chart">${c}</figure>`).join('');
   const ownerCharts = ownerFigures ? `<div class="r-pair">${ownerFigures}</div>` : '';
   const main = [
@@ -23,19 +25,24 @@ export function reportHtml(stats, top, charts) {
       ${stats.generated ? `<p class="r-meta">Database <code>${esc(stats.generated.database)}</code> · generated ${esc(stats.generated.at)}</p>` : ''}
     </header>`,
     ...aiSummaryHtml(stats),
-    `<section class="r-tiles">
-      ${tile('Repositories', num(stats.repos.length))}
-      ${tile('Lines under management', num(stats.total))}
-      ${topOwner ? tile('Principal owner', esc(topOwner.owner.name), pct(topOwner.lines, stats.total)) : ''}
-      ${topLine ? tile('Principal line', `<code class="r-lit">${esc(lineLabel(topLine, 24))}</code>`, pct(topLine.lines, stats.total)) : ''}
-    </section>`,
+    tilesHtml([
+      tile('Repositories', num(stats.repos.length)),
+      tile('Lines under management', num(stats.total)),
+      topOwner ? tile('Principal owner', esc(topOwner.owner.name), pct(topOwner.lines, stats.total)) : '',
+      topLine ? tile('Principal line', `<code class="r-lit">${esc(lineLabel(topLine, 24))}</code>`, pct(topLine.lines, stats.total)) : '',
+      hashEntropy ? tile('Ownership entropy', `${hashEntropy.bits.toFixed(2)} bits`, `${hashEntropy.effectiveOwners.toFixed(1)} effective owners`) : '',
+      tile('Material findings', `<a href="#material-findings">${num(stats.oddities.length)}</a>`, stats.oddities.length ? 'see below' : ''),
+    ]),
     section('Principal owners', ownerCharts + table(
-      ['Rank', 'Owner', 'Lines', 'Share'],
+      ['Rank', 'Owner', 'Lines', 'Share', 'Line entropy'],
       stats.owners.slice(0, top).map((o, k) => [
         cell(k + 1, k + 1), cell(esc(ownerLabel(o.owner))), cell(num(o.lines), o.lines), cell(pct(o.lines, stats.total), o.lines),
+        o.lineEntropy
+          ? cell(`<span title="${num(o.lineEntropy.distinct)} distinct lines">${o.lineEntropy.bits.toFixed(1)} bits</span>`, o.lineEntropy.bits)
+          : cell('-', -1),
       ]),
-      ['num', '', 'num', 'num'],
-    )),
+      ['num', '', 'num', 'num', 'num'],
+    ) + `<p class="r-note">${esc(LINE_ENTROPY_NOTE)}</p>`),
     section('Ownership profiles', `
       <p class="r-note">Hover a point for the exact value.</p>
       <div class="r-pair"><figure class="r-chart">${charts.owners}</figure><figure class="r-chart">${charts.repos}</figure></div>`),
@@ -55,6 +62,13 @@ export function reportHtml(stats, top, charts) {
         ]),
         ['num', '', 'num', 'num', '', ''],
       )}`),
+    ...(stats.survival ? [section('Code survival', `
+      <ul class="r-outlook">${survivalStatements(stats).map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
+      ${charts.survival ? `<figure class="r-chart">${charts.survival}</figure>` : ''}
+      <p class="r-note">${esc(SURVIVAL_NOTE)}</p>`)] : []),
+    ...(stats.timeline ? [section('Outlook', outlookHtml(stats, charts))] : []),
+    ...okrHtml(stats),
+    ...archetypesHtml(stats),
     section('Cross-repository ownership', `
       <p class="r-note">Rows are the repository where a line lives; columns are the repository where that
       line was first written, and so where its owner acquired it. Hover a cell for the exact count.</p>
@@ -74,6 +88,11 @@ export function reportHtml(stats, top, charts) {
         ['', 'num', 'num', 'num', ''],
       )}
       <p class="r-note">Non-contributors own lines in a repository without a single commit to it.</p>`),
+    section('Material findings', `<p class="r-note">${esc(FINDINGS_NOTE)}</p>${stats.oddities.length
+      ? groupFindings(stats.oddities).map((g) => `
+      <h4>${esc(g.title)}</h4>
+      <ol class="r-odd" start="${g.findings[0].number}">${g.findings.map((o) => `<li><span class="r-odd-title">${esc(o.title)}.</span> <span class="r-odd-detail">${o.detail.map((p) => (p.code !== undefined ? `<code class="r-lit">${esc(p.code)}</code>` : esc(p.text))).join('')}</span></li>`).join('\n')}</ol>`).join('')
+      : '<p class="r-note">None found.</p>'}`),
     section('Three ways to own a repository', `
       <p class="r-note">The top owner of each repository by commit count, by <code>git blame</code>, and by
       line hash. Blame shows "-" until <code>ownh blame</code> has covered every file (or every file of its sample).
@@ -87,16 +106,6 @@ export function reportHtml(stats, top, charts) {
     ...declaredHtml(stats),
     ...leverageHtml(stats),
     ...demolitionHtml(stats),
-    ...(stats.survival ? [section('Code survival', `
-      <ul class="r-outlook">${survivalStatements(stats).map((s) => `<li>${esc(s)}</li>`).join('')}</ul>
-      ${charts.survival ? `<figure class="r-chart">${charts.survival}</figure>` : ''}
-      <p class="r-note">${esc(SURVIVAL_NOTE)}</p>`)] : []),
-    ...(stats.timeline ? [section('Outlook', outlookHtml(stats, charts))] : []),
-    ...okrHtml(stats),
-    ...archetypesHtml(stats),
-    section('Oddities', stats.oddities.length
-      ? `<ul class="r-odd">${stats.oddities.map((o) => `<li><span class="r-odd-title">${esc(o.title)}.</span> <span class="r-odd-detail">${o.detail.map((p) => (p.code !== undefined ? `<code class="r-lit">${esc(p.code)}</code>` : esc(p.text))).join('')}</span></li>`).join('\n')}</ul>`
-      : '<p class="r-note">None found.</p>'),
     section('Repositories', stats.repos.map((r) => `
       <details class="r-repo" id="${anchor.get(r.name)}">
         <summary><span class="r-repo-name">${esc(r.name)}</span>
@@ -292,6 +301,16 @@ function originsTable(r) {
   )}`;
 }
 
+// The tiles in two even rows of ceil(n / 2), two columns on a phone. auto-fit
+// left a single tile on its own row; one row of six is too narrow at the
+// page's maximum width.
+function tilesHtml(tiles) {
+  const shown = tiles.filter(Boolean);
+  return `<section class="r-tiles" style="--tiles-half: ${Math.ceil(shown.length / 2)}">
+      ${shown.join('\n      ')}
+    </section>`;
+}
+
 function tile(label, value, sub = '') {
   return `<div class="r-tile"><div class="r-tile-label">${label}</div><div class="r-tile-value">${value}</div>${sub ? `<div class="r-tile-sub">${sub}</div>` : ''}</div>`;
 }
@@ -401,9 +420,11 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 .r-off { background: #fadcdc; color: #b83232; }
 .r-pair { display: grid; gap: 16px; }
 @media (min-width: 1100px) { .r-pair { grid-template-columns: 1fr 1fr; } }
-.r-odd { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 900px; }
-.r-odd li { line-height: 1.55; }
-.r-odd-title { font-weight: 500; }
+.r-odd { margin: 0; padding-left: 24px; display: grid; gap: 10px; max-width: 900px; }
+.r-odd li { line-height: 1.55; padding-left: 4px; }
+.r-odd li::marker { font-weight: 600; color: var(--r-accent); }
+.r-odd-title { font-weight: 600; }
+.r-tile-value a { color: inherit; text-decoration: none; }
 .r-odd-detail { color: var(--r-text-2); }
 .r-outlook { margin: 0 0 20px; padding-left: 20px; display: grid; gap: 8px; max-width: 900px; }
 .r-outlook b { font-weight: 600; }
@@ -411,7 +432,8 @@ h2 .r-sparkle { width: 0.9em; height: 0.9em; margin-right: 2px; }
 .r-down { color: #c2412d; }
 .r-meta, .r-note { color: var(--r-text-2); margin: 4px 0; font-size: 14px; }
 .r-section { margin-top: 48px; }
-.r-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+.r-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+@media (min-width: 680px) { .r-tiles { grid-template-columns: repeat(var(--tiles-half, 3), minmax(0, 1fr)); } }
 .r-tile { background: var(--r-raised); border: 1px solid var(--r-border); border-radius: 8px; padding: 14px 16px; }
 .r-tile-label { color: var(--r-text-2); font-size: 13px; }
 .r-tile-value { font-size: 24px; font-weight: 600; margin-top: 4px; overflow-wrap: anywhere; }

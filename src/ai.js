@@ -98,6 +98,8 @@ const pct = (v) => Math.round(v * 1000) / 10;
 // Shares of one repository: whole percents, since a small repo's line count
 // could otherwise be recovered from the decimals.
 const wholePct = (v) => Math.round(v * 100);
+// Ownership entropy in bits, one decimal (see buildFacts).
+const bitsOf = (e) => (e ? Math.round(e.bits * 10) / 10 : null);
 // Shares of a count (owners, repositories) as words. Any number, even in 5%
 // steps, can be reversed when the total is small (2 of 6 repositories is 35%,
 // which no other small total produces); coarse words map many counts to each.
@@ -192,6 +194,14 @@ export function buildFacts(stats, archetypes, p) {
       ownedByNonContributorsPct: wholePct(r.lines ? r.absentee / r.lines : 0),
     })),
     methodsAgreeIn: ofRepositories(fraction(stats.repos.filter((r) => r.methods?.agree).length, stats.repos.length), stats.repos.length),
+    // Bits only, to one decimal: the effective number of owners (2^bits) is
+    // closer to a head count, which never leaves the machine.
+    ownershipEntropyBits: stats.methods?.entropy ? {
+      meaning: 'Shannon entropy of the owners\' shares, in bits: 0 is a single owner, each additional bit doubles the effective number of owners',
+      byLineHash: bitsOf(stats.methods.entropy.hash),
+      byCommits: bitsOf(stats.methods.entropy.commits),
+      byBlame: bitsOf(stats.methods.entropy.blame),
+    } : undefined,
     outlook: t ? {
       now: p.quarter(t.now),
       inactiveOwnersMajority: shareProj(proj.knowledgeLoss),

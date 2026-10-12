@@ -15,7 +15,7 @@ import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { chatMessage } from './ai.js';
 import { ARCHETYPE_TITLES, findArchetypes } from './archetypes.js';
-import { TRIVIAL_LINE, findOddities } from './oddities.js';
+import { TRIVIAL_LINE, findOddities, groupFindings } from './oddities.js';
 import { leverage } from './sections.js';
 import { ACTIVE_WINDOW, quarterLabel, quarterOf } from './quarters.js';
 import { repoCount } from './stats.js';
@@ -267,6 +267,14 @@ function editDistance(a, b) {
 
 const share = (n, total) => (total ? Math.round((n / total) * 1000) / 10 : 0);
 
+// Ownership entropy per method, rounded for the model: bits to two decimals,
+// effective owners to one.
+function entropyOf(methods) {
+  const e = (x) => (x ? { bits: Math.round(x.bits * 100) / 100, effective_owners: Math.round(x.effectiveOwners * 10) / 10 } : null);
+  const m = methods?.entropy ?? {};
+  return { commits: e(m.commits), blame: e(m.blame), line_hash: e(m.hash) };
+}
+
 function kindOf(l) {
   if (l.binary === null) return 'unattributed';
   if (l.binary) return 'binary file';
@@ -312,12 +320,15 @@ export function agentTools(stats, p, db = null) {
   });
   const handlers = {
     overview: () => ({
-      repositories: stats.repos.map((r) => ({ repo: p.repo(r.name), lines: r.lines })),
+      repositories: stats.repos.map((r) => ({ repo: p.repo(r.name), lines: r.lines, ownership_entropy: entropyOf(r.methods) })),
       lines_total: stats.total,
       owners_with_lines: owners.length,
       top_owners: owners.slice(0, 10).map((o) => ownerRow(o, stats.total)),
       methods_overall: { commits: top(stats.methods.commits), blame: top(stats.methods.blame), line_hash: top(stats.methods.hash), agree: stats.methods.agree },
       repositories_where_methods_agree: stats.repos.filter((r) => r.methods.agree).length,
+      // Shannon entropy of each method's ownership shares (bits) and 2^bits,
+      // the effective number of owners; per repository in `repositories`.
+      ownership_entropy: entropyOf(stats.methods),
       now_quarter: now === null ? null : quarterLabel(now),
       now_quarter_in_progress: Boolean(stats.timeline?.inProgress),
     }),
@@ -466,8 +477,6 @@ export function agentTools(stats, p, db = null) {
         lowest_among_most_prolific_writers: lev.lowest.map(row),
       };
     },
-    // The report's Oddities, with names and repositories in their text replaced
-    // like the user's questions, and quoted lines, paths, and patterns as tokens.
     // Name lookup for people and repositories the model has no token for.
     // Runs locally; results carry tokens only, never the matched names. One
     // tool for both, so the model need not guess which kind a name is.
@@ -490,11 +499,14 @@ export function agentTools(stats, p, db = null) {
         .sort((a, b) => rank[a.match] - rank[b.match] || b.lines - a.lines);
       return { query, people: people.slice(0, n), more_people: Math.max(0, people.length - n), repositories: repositories.slice(0, n) };
     },
-    // The report's Oddities, built with tokens for every name (findOddities'
-    // naming adapter), never by rewriting finished prose.
-    oddities: () => findOddities(stats, {
+    // The report's Material findings, built with tokens for every name
+    // (findOddities' naming adapter), never by rewriting finished prose.
+    // Grouped and numbered as in the report, so "finding 4" means the same.
+    material_findings: () => groupFindings(findOddities(stats, {
       owner: (o) => (o ? p.owner(o) : 'no one'), repo: p.repo, line: p.line, fullLine: p.line, path: p.path, team: p.team,
-    }).map((o) => ({ finding: o.title, detail: o.detail.map((d) => (d.code !== undefined ? d.code : d.text)).join('') })),
+    })).flatMap((g) => g.findings.map((o) => ({
+      number: o.number, category: g.title, finding: o.title, detail: o.detail.map((d) => (d.code !== undefined ? d.code : d.text)).join(''),
+    }))),
     archetypes: () => findArchetypes(stats).map((a) => ({
       group: ARCHETYPE_TITLES[a.key], rule: a.aiRule, owners: a.members, share_of_lines_pct: share(a.lines, stats.total), examples: a.examples.map(p.owner),
     })),
@@ -524,7 +536,7 @@ export function agentTools(stats, p, db = null) {
     fn('codeowners', 'CODEOWNERS declared ownership: without repo, which repositories have one; with repo, its rules compared with the computed owners.', repoParam),
     fn('archetypes', 'Rule-based owner groups (principal, inactive, absentee, high leverage, net demolishers, automation).'),
     fn('leverage', 'Owners ranked by lines owned per line written: the highest, and the lowest among the most prolific writers.'),
-    fn('oddities', "The report's list of odd findings (trivial lines owning the codebase, outsourced repositories, method splits, bots, demolition, CODEOWNERS)."),
+    fn('material_findings', "The report's Material findings: conditions that warrant attention (trivial lines owning the codebase, outsourced repositories, method splits, bots, demolition, CODEOWNERS)."),
     ...(db ? [
       fn('ownership_change', 'Who gained and who lost owned lines in a period (lines added minus removed, per owner of the lines), and who removed the most lines owned by others. Use for "took over", "gained", "grew", "lost". Quarters optional (default all history); optionally one repository.', {
         from_quarter: { type: 'string', description: 'first quarter, e.g. "2025 Q1" (optional)' },

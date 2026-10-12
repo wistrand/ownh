@@ -3,16 +3,16 @@ import { basename, join, resolve } from 'node:path';
 import { openDb } from './db.js';
 import { compositionSvg, crossOwnershipSvg, lineSharePieSvg, ownerStatusPieSvg, ownerSharesSvg, radarSvg } from './charts.js';
 import { reportHtml } from './html.js';
-import { findOddities } from './oddities.js';
+import { findOddities, groupFindings } from './oddities.js';
 import { ownerProfile, repoProfile } from './profiles.js';
 import { kpiQuarter, outlookCharts, outlookNote, outlookStatements } from './outlook.js';
 import { quarterOf } from './timeline.js';
 import { aiConfig, aiInsights } from './ai.js';
 import { ARCHETYPE_TITLES, exampleLabels, findArchetypes } from './archetypes.js';
-import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
+import { DECLARED_NOTE, DECLARED_ROWS, DEMOLITION_NOTE, FINDINGS_NOTE, LINE_ENTROPY_NOTE, SURVIVAL_NOTE, declaredDetailed, declaredOwners, declaredRepos, declaredSimple, declaredSummary, leverage, survivalStatements, survivalSvg } from './sections.js';
 import { pseudonymizeStats } from './pseudonymize.js';
 import { stageCache } from './stagecache.js';
-import { collectStats, lineLabel, methodShare, ownerLabel, padText, pct, plural, repoCount, share, SITE, textWidth } from './stats.js';
+import { bitsText, collectStats, entropyText, lineLabel, methodShare, ownerLabel, padText, pct, plural, repoCount, share, SITE, textWidth } from './stats.js';
 
 // Writes the report files into outDir. Everything is derived from the .db via
 // collectStats; regenerate rather than edit.
@@ -132,7 +132,7 @@ function leaderboard(stats, top, charts) {
   const out = [
     '# OWNH Ownership Report',
     '',
-    `Repositories: ${stats.repos.length}. Lines under management: ${stats.total.toLocaleString('en-US')}.`,
+    `Repositories: ${stats.repos.length}. Lines under management: ${stats.total.toLocaleString('en-US')}.${stats.methods.entropy?.hash ? ` Ownership entropy: ${entropyText(stats.methods.entropy.hash)}.` : ''}`,
     `[OWNH](${SITE}) ${stats.toolVersion}.`,
     `Database: ${codeSpan(stats.generated.database)}. Generated ${stats.generated.at}.`,
     '',
@@ -141,9 +141,11 @@ function leaderboard(stats, top, charts) {
     '',
     ...(charts.ownerShares ? ['![Principal owners](owner-shares.svg)', ''] : []),
     ...(charts.composition ? ['![What the principal owners own](owner-composition.svg)', ''] : []),
-    ...mdTable(['Rank', 'Owner', 'Lines', 'Share'], stats.owners.slice(0, top).map((o, k) => [
-      String(k + 1), md(ownerLabel(o.owner)), num(o.lines), pct(o.lines, stats.total),
-    ]), ['r', 'l', 'r', 'r']),
+    ...mdTable(['Rank', 'Owner', 'Lines', 'Share', 'Line entropy'], stats.owners.slice(0, top).map((o, k) => [
+      String(k + 1), md(ownerLabel(o.owner)), num(o.lines), pct(o.lines, stats.total), bitsText(o.lineEntropy),
+    ]), ['r', 'l', 'r', 'r', 'r']),
+    '',
+    LINE_ENTROPY_NOTE,
     '',
     '## Ownership profiles',
     '',
@@ -165,6 +167,10 @@ function leaderboard(stats, top, charts) {
       md(l.origin ?? ''),
     ]), ['r', 'l', 'r', 'r', 'l', 'l']),
     '',
+    ...survivalMd(stats, charts),
+    ...outlookMd(stats, charts),
+    ...okrMd(stats),
+    ...archetypesMd(stats),
     '## Cross-repository ownership',
     '',
     'Rows are the repository where a line lives; columns are the repository where',
@@ -189,6 +195,18 @@ function leaderboard(stats, top, charts) {
     '',
     'Non-contributors own lines in a repository without a single commit to it.',
     '',
+    '## Material findings',
+    '',
+    FINDINGS_NOTE,
+    '',
+    ...(stats.oddities.length
+      ? groupFindings(stats.oddities).flatMap((g) => [
+        `### ${g.title}`,
+        '',
+        ...g.findings.map((o) => `${o.number}. **${md(o.title)}.** ${o.detail.map((p) => (p.code !== undefined ? codeSpan(p.code) : md(p.text))).join('')}`),
+        '',
+      ])
+      : ['None found.', '']),
     '## Three ways to own a repository',
     '',
     'The top owner of each repository by commit count, by `git blame`, and by line hash.',
@@ -205,16 +223,6 @@ function leaderboard(stats, top, charts) {
     ...declaredMd(stats),
     ...leverageMd(stats),
     ...demolitionMd(stats),
-    ...survivalMd(stats, charts),
-    ...outlookMd(stats, charts),
-    ...okrMd(stats),
-    ...archetypesMd(stats),
-    '## Oddities',
-    '',
-    ...(stats.oddities.length
-      ? stats.oddities.map((o) => `- ${md(o.title)}. ${o.detail.map((p) => (p.code !== undefined ? codeSpan(p.code) : md(p.text))).join('')}`)
-      : ['None found.']),
-    '',
     '## Repositories',
   ];
   for (const r of stats.repos) {
@@ -447,13 +455,19 @@ function methodsCsv(stats) {
   const header = ['repo'];
   for (const m of ['commits', 'blame', 'hash']) header.push(`${m}_name`, `${m}_email`, `${m}_count`, `${m}_total`, `${m}_share`);
   header.push('blame_sample_files', 'blame_files', 'blame_margin', 'agree');
-  const row = (name, m) => [name, ...cols(m.commits), ...cols(m.blame), ...cols(m.hash), ...est(m.blame), Number(m.agree)];
+  for (const m of ['commits', 'blame', 'hash']) header.push(`${m}_entropy_bits`, `${m}_effective_owners`);
+  const ent = (e) => (e ? [e.bits, e.effectiveOwners] : ['', '']);
+  const row = (name, m) => [
+    name, ...cols(m.commits), ...cols(m.blame), ...cols(m.hash), ...est(m.blame), Number(m.agree),
+    ...ent(m.entropy?.commits), ...ent(m.entropy?.blame), ...ent(m.entropy?.hash),
+  ];
   return csv(header, [row('', stats.methods), ...stats.repos.map((r) => row(r.name, r.methods))]);
 }
 
 function ownersCsv(stats) {
-  return csv(['rank', 'name', 'email', 'lines', 'share'], stats.owners.map((o, k) => [
+  return csv(['rank', 'name', 'email', 'lines', 'share', 'distinct_lines', 'line_entropy_bits'], stats.owners.map((o, k) => [
     k + 1, o.owner?.name ?? '', o.owner?.email ?? '', o.lines, share(o.lines, stats.total),
+    o.lineEntropy?.distinct ?? '', o.lineEntropy?.bits ?? '',
   ]));
 }
 
@@ -518,8 +532,9 @@ function md(s) {
     // A newline in untrusted text (AI prose, a name) would start a new block.
     .replace(/\s*\r?\n\s*/g, ' ')
     .replace(/[\\`*_[\]<>|~&]/g, '\\$&')
-    // Leading spaces would make a code block.
-    .replace(/^\s+/, '')
+    // Indentation (a tab, or four spaces) would make a code block. A single
+    // leading space stays: inline parts are joined after a code span.
+    .replace(/^(?:\t|[ ]{4,})[ \t]*/, '')
     // A heading, a list item, or a rule ("---", "==="); a numbered list.
     .replace(/^(#|[-+=])/, '\\$1')
     .replace(/^(\d+)([.)])(?=\s|$)/, '$1\\$2')

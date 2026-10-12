@@ -62,7 +62,10 @@ Writes into `report/acme/` (one directory per database; `--out` picks another):
 `report.html` (open it in a browser), `leaderboard.md`, SVG charts (principal
 owners and what they own, ownership by line hash and by owner status,
 cross-repository ownership, ownership profiles, outlook, code survival), and
-the underlying data as JSON and CSV.
+the underlying data as JSON and CSV. Every report states its Ownership
+Entropy (how widely ownership is spread, in bits, with the effective number of
+owners it amounts to) and each principal owner's Line Entropy (how varied the
+lines they own are).
 
 The expensive statistics passes are cached in `stats-cache.json` in that
 directory, each on its own, so a second report reruns only what the database or

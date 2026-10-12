@@ -89,6 +89,13 @@ across repositories. The closest analogues work at file or blob level.
   (Foucault et al.) questioned whether ownership generally affects quality [15][16].
   Useful context for the pitch: ownership metrics have a respectable research
   history, which is what makes OWNH's deadpan claims plausible.
+- **Author entropy** (Casebolt, Krein, MacLean, Knutson, Delorey, MSR 2009):
+  the entropy of the shares of a file's lines attributed to each author, used
+  to characterize authorship patterns across the GNOME suite; a follow-up
+  applied it to 592 Eclipse projects [28][29]. OWNH's ownership entropy is the
+  same formula over the owners each method names, reported in bits with
+  2^bits as the effective number of owners (that reading is OWNH's, not the
+  papers'). Only abstracts were read.
 
 ### Content-addressed provenance (closest real analogues)
 
@@ -180,6 +187,8 @@ repository together with repositories that are subtree-synced into it.
 25. truckfactor https://pypi.org/project/truckfactor
 26. git-fame https://github.com/casperdcl/git-fame
 27. git-who https://github.com/sinclairtarget/git-who
+28. Casebolt, Krein, MacLean, Knutson, Delorey, Author Entropy vs. File Size in the GNOME Suite of Applications (MSR 2009), doi:10.1109/MSR.2009.5069484 https://flosshub.org/node/930
+29. Taylor, Krein, MacLean, Knutson, An Analysis of Author Contribution Patterns in Eclipse Foundation Project Source Code https://flosshub.org/node/1288
 
 URLs for sources 2-5 and 7-12 were not recorded with the original research.
 Open question: add them before citing any of those in public copy. The site

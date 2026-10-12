@@ -195,6 +195,28 @@ test('a pseudonymized report names no committer and keeps the cache out', async 
   assert.equal(stats.owners[0].owner.name, 'Contributor 1');
 });
 
+test('ownership entropy: bits and effective owners per method', async () => {
+  const { entropy } = await import('../src/stats.js');
+  assert.equal(entropy(new Map([[1, 10]])).bits, 0);
+  assert.equal(entropy(new Map([[1, 5], [2, 5], [3, 5], [4, 5]])).bits, 2);
+  assert.equal(entropy(new Map([[1, 5], [2, 5], [null, 90]])).effectiveOwners, 2, 'unowned lines are left out');
+  assert.equal(entropy(new Map()), null);
+  const db = join(dir, 'entropy.db');
+  await index({ dbPath: db, repoPaths: [repos.alpha, repos.beta] });
+  const stats = withDb(db, (conn) => collectStats(conn));
+  const lines = new Map(stats.owners.map((o) => [o.identityId, o.lines]));
+  assert.ok(Math.abs(stats.methods.entropy.hash.bits - entropy(lines).bits) < 1e-9, 'same up to summation order');
+  assert.ok(stats.methods.entropy.commits.bits > 0);
+  assert.equal(stats.methods.entropy.blame, null, 'no blame run yet');
+  for (const r of stats.repos) assert.ok(r.methods.entropy.hash.bits >= 0);
+  // Line entropy per owner: lines and distinct lines add up to the HEAD lines.
+  for (const o of stats.owners.filter((x) => x.owner)) {
+    assert.equal(o.lineEntropy.lines, o.lines);
+    assert.ok(o.lineEntropy.distinct >= 1 && o.lineEntropy.distinct <= o.lines);
+    assert.ok(o.lineEntropy.bits >= 0 && o.lineEntropy.bits <= Math.log2(o.lineEntropy.distinct) + 1e-9);
+  }
+});
+
 test('report files agree with the summary', async () => {
   const db = join(dir, 'report.db');
   const out = join(dir, 'report');
@@ -217,7 +239,7 @@ test('report files agree with the summary', async () => {
   };
   assert.equal(await runLog({}), 'nothing');
   assert.equal(readFileSync(join(out, 'owners.csv'), 'utf8'), owners);
-  assert.equal(await runLog({ cache: false }), 'head, lines, blame, declared, history, deletions, survival');
+  assert.equal(await runLog({ cache: false }), 'head, lines, lineEntropy, blame, declared, history, deletions, survival');
   assert.equal(await runLog({ top: 4 }), 'lines');
   await blame({ dbPath: db });
   assert.equal(await runLog({ top: 4 }), 'blame, declared');
@@ -897,8 +919,15 @@ test('agent: tools and questions are pseudonymized, answers mapped back', async 
 test('bot detection: [bot] accounts, tools, and bot or robot as a word in the name', async () => {
   const { isBot } = await import('../src/oddities.js');
   const bot = (name, email = 'x@example.com') => isBot({ name, email });
-  for (const n of ['depbot[bot]', 'Fiona Build Bot', 'docs-bot', 'Petra Robot', 'BOT', 'renovate']) assert.ok(bot(n), n);
-  for (const n of ['Fiona Format', 'Ada Lindqvist', 'Abbot Costa', 'Robotham Lee', 'fionabot']) assert.ok(!bot(n), n);
+  for (const n of ['depbot[bot]', 'Fiona Build Bot', 'docs-bot', 'Petra Robot', 'BOT', 'renovate', 'Release Automation']) assert.ok(bot(n), n);
+  for (const n of ['Fiona Format', 'Ada Lindqvist', 'Abbot Costa', 'Robotham Lee', 'fionabot', 'Automationist Lee']) assert.ok(!bot(n), n);
+  // The most varied lines among the top owners belong to automation.
+  const { findOddities } = await import('../src/oddities.js');
+  const owner = (name, lines, distinct, bits) => ({ owner: { name, email: `${name.split(' ')[0].toLowerCase()}@example.com` }, lines, lineEntropy: { lines, distinct, bits } });
+  const odd = findOddities({ owners: [owner('Ada Lindqvist', 900, 40, 4.1), owner('Release Automation', 300, 280, 8.0), owner('Mira Quist', 200, 150, 7.0)], lines: [], repos: [], methods: {}, deletions: null, timeline: null });
+  const hit = odd.find((o) => o.kind === 'bot-line-entropy');
+  assert.match(hit.title, /belong to Release Automation/);
+  assert.match(hit.detail[0].text, /Ada Lindqvist, holds 900 lines at 4\.1 bits \(40 distinct lines\)/);
   assert.ok(bot('Petra Process', '49699333+dependabot[bot]@users.noreply.github.com'));
 });
 

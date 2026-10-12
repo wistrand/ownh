@@ -1,16 +1,16 @@
 # OWNH Ownership Report
 
-Repositories: 6. Lines under management: 17,495.
+Repositories: 6. Lines under management: 17,495. Ownership entropy: 2.85 bits (7.2 effective owners).
 [OWNH](https://ownh.org) 1.0.1.
-Database: `sample.db`. Generated 2026-10-11 19:03 UTC.
+Database: `sample.db`. Generated 2026-10-12 05:48 UTC.
 
 ## AI insights (AI-generated)
 
-OWNH covers fewer than ten repositories, dozens of owners and tens of thousands of lines. Ownership is concentrated: Ada Lindqvist holds 54.2% of lines, while inactive owners account for 76.1% at 2026 Q2, a majority since 2023 Q4.
+The portfolio spans fewer than ten repositories, dozens of owners and tens of thousands of lines. Ada Lindqvist holds 54% of lines; blank lines alone account for 21%, with punctuation-only lines also prominent.
 
-Blank lines represent 20.5% of lines and are attributed to Ada Lindqvist. The next blank-line milestone is projected for 2031 Q4; the line-survival half-life is 2 years and is not projected.
+Ownership crosses repository boundaries: lines written elsewhere account for 80% in billing-service, 78% in web-frontend and 66% in api-gateway. Methods agree in no repositories, and ownership entropy ranges from 2.8 bits by line hash to 4.9 bits by commits.
 
-Cross-repository ownership is uneven: 80% of billing-service’s lines were written elsewhere, while 57% of api-gateway’s lines are owned by non-contributors. The methods agree in no repositories, limiting confidence in attribution consistency.
+At 2026 Q2, the principal owner holds 54.1%, up from 51.2% at 2025 Q3, while inactive-owner share has eased to 76.1% from 77.9%. The next blank-line milestone is projected for 2031 Q4.
 
 _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
 
@@ -20,23 +20,25 @@ _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked
 
 ![What the principal owners own](owner-composition.svg)
 
-| Rank | Owner                                           | Lines | Share |
-|-----:|-------------------------------------------------|------:|------:|
-|    1 | Ada Lindqvist \<ada.lindqvist@example.com\>     | 9,490 | 54.2% |
-|    2 | Mira Quist \<mira.quist@example.com\>           | 1,856 | 10.6% |
-|    3 | Umar Lindqvist \<umar.lindqvist@example.com\>   | 1,132 |  6.5% |
-|    4 | Fiona Format \<fiona.format@example.com\>       | 1,111 |  6.4% |
-|    5 | Rosa Garcia \<rosa.garcia@example.com\>         |   512 |  2.9% |
-|    6 | Juno Rasmussen \<juno.rasmussen@example.com\>   |   351 |  2.0% |
-|    7 | Ines Dahl \<ines.dahl@example.com\>             |   300 |  1.7% |
-|    8 | Ivar Fischer \<ivar.fischer@example.com\>       |   224 |  1.3% |
-|    9 | Pavel Rasmussen \<pavel.rasmussen@example.com\> |   221 |  1.3% |
-|   10 | Greta Okafor \<greta.okafor@example.com\>       |   218 |  1.2% |
-|   11 | Vera Tanaka \<vera.tanaka@example.com\>         |   140 |  0.8% |
-|   12 | Nils Yilmaz \<nils.yilmaz@example.com\>         |   134 |  0.8% |
-|   13 | Dagny Petrov \<dagny.petrov@example.com\>       |   131 |  0.7% |
-|   14 | Olga Fischer \<olga.fischer@example.com\>       |   130 |  0.7% |
-|   15 | Wim Bianchi \<wim.bianchi@example.com\>         |   126 |  0.7% |
+| Rank | Owner                                           | Lines | Share | Line entropy |
+|-----:|-------------------------------------------------|------:|------:|-------------:|
+|    1 | Ada Lindqvist \<ada.lindqvist@example.com\>     | 9,490 | 54.2% |     4.1 bits |
+|    2 | Mira Quist \<mira.quist@example.com\>           | 1,856 | 10.6% |     5.0 bits |
+|    3 | Umar Lindqvist \<umar.lindqvist@example.com\>   | 1,132 |  6.5% |     5.9 bits |
+|    4 | Fiona Format \<fiona.format@example.com\>       | 1,111 |  6.4% |     8.7 bits |
+|    5 | Rosa Garcia \<rosa.garcia@example.com\>         |   512 |  2.9% |     8.3 bits |
+|    6 | Juno Rasmussen \<juno.rasmussen@example.com\>   |   351 |  2.0% |     8.0 bits |
+|    7 | Ines Dahl \<ines.dahl@example.com\>             |   300 |  1.7% |     6.1 bits |
+|    8 | Ivar Fischer \<ivar.fischer@example.com\>       |   224 |  1.3% |     6.7 bits |
+|    9 | Pavel Rasmussen \<pavel.rasmussen@example.com\> |   221 |  1.3% |     6.8 bits |
+|   10 | Greta Okafor \<greta.okafor@example.com\>       |   218 |  1.2% |     5.0 bits |
+|   11 | Vera Tanaka \<vera.tanaka@example.com\>         |   140 |  0.8% |     6.4 bits |
+|   12 | Nils Yilmaz \<nils.yilmaz@example.com\>         |   134 |  0.8% |     6.9 bits |
+|   13 | Dagny Petrov \<dagny.petrov@example.com\>       |   131 |  0.7% |     6.7 bits |
+|   14 | Olga Fischer \<olga.fischer@example.com\>       |   130 |  0.7% |     7.0 bits |
+|   15 | Wim Bianchi \<wim.bianchi@example.com\>         |   126 |  0.7% |     6.7 bits |
+
+Line entropy is how varied an owner's lines are: the Shannon entropy, in bits, of their lines over the distinct lines they own. 0 bits means every line is a copy of one line; each additional bit doubles the number of distinct lines their holdings amount to.
 
 ## Ownership profiles
 
@@ -68,6 +70,61 @@ _Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked
 |   14 | `"  return value;"`                                      |    70 |  0.4% | Ada Lindqvist  | platform         |
 |   15 | `"  if (!result) {"`                                     |    70 |  0.4% | Ada Lindqvist  | platform         |
 
+## Code survival
+
+- All code: half-life of 2.0 years.
+- Ada Lindqvist: half-life of 2.3 years.
+- Mira Quist: half-life of 2.5 years.
+- Umar Lindqvist: half-life of 2.5 years.
+
+![Code survival](code-survival.svg)
+
+Copies of the same line are indistinguishable, so removals are paired with the oldest surviving copies of that line first. Lines still present count as surviving at their current age. A half-life marked projected extends an exponential decay through the last point.
+
+## Outlook
+
+- **Knowledge retention:** Contributors with no commit in the past year have owned the majority of the codebase since 2023 Q4 (now 76.1%).
+- **Principal owner:** Ada Lindqvist has owned the majority of the codebase since 2025 Q3 (now 54.1%).
+- **Blank lines:** 5,095 blank lines have been committed. At the current rate, the 10,000th arrives in 2031 Q4 (fit over 2023 Q3 to 2026 Q2, R² 0.99).
+
+![Ownership outlook](ownership-outlook.svg)
+
+![Blank line outlook](blank-line-outlook.svg)
+
+| Quarter | Lines under management |   QoQ | New owners | Ada Lindqvist | Non-contributors | Inactive owners | Blank lines committed |
+|---------|-----------------------:|------:|-----------:|--------------:|-----------------:|----------------:|----------------------:|
+| 2024 Q3 |                 11,927 | +2.7% |          1 |         42.6% |            12.2% |           69.6% |                 3,298 |
+| 2024 Q4 |                 12,917 | +8.3% |          3 |         45.7% |            12.5% |           71.5% |                 3,534 |
+| 2025 Q1 |                 13,706 | +6.1% |          2 |         47.8% |            12.7% |           71.9% |                 3,772 |
+| 2025 Q2 |                 14,786 | +7.9% |          2 |         49.7% |            12.9% |           77.1% |                 4,098 |
+| 2025 Q3 |                 15,506 | +4.9% |          3 |         51.2% |            12.4% |           77.9% |                 4,328 |
+| 2025 Q4 |                 15,709 | +1.3% |          0 |         52.4% |            12.8% |           78.3% |                 4,525 |
+| 2026 Q1 |                 16,737 | +6.5% |          0 |         53.6% |            12.8% |           77.0% |                 4,843 |
+| 2026 Q2 |                 17,513 | +4.6% |          1 |         54.1% |            13.0% |           76.1% |                 5,095 |
+
+Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,513 lines against 17,495 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.
+
+## OKR draft (AI-generated)
+
+**Objective:** Improve ownership sustainability and consistency across the codebase.
+
+- **KR1** (at risk): Reduce principal-owner concentration from 54.1% at 2026 Q2, after rising from 51.2% at 2025 Q3.
+- **KR2** (on track): Continue reducing inactive-owner share from 76.1% at 2026 Q2, down from 77.9% at 2025 Q3.
+- **KR3** (off track): Establish agreement among ownership methods, starting from no repositories where methods agree.
+
+_Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
+
+## Ownership archetypes
+
+| Archetype               | Rule                                                             | Owners | Share of lines | Examples                                  |
+|-------------------------|------------------------------------------------------------------|-------:|---------------:|-------------------------------------------|
+| Dominant Principal (AI) | The single owner with the most lines.                            |      1 |          54.2% | Ada Lindqvist                             |
+| Dormant Majority (AI)   | Owners with no commit in the last 4 quarters.                    |     12 |          76.2% | Ada Lindqvist, Mira Quist, Fiona Format   |
+| Code Demolishers (AI)   | People who removed more lines belonging to others than they own. |     32 |          26.2% | Fiona Format, Rosa Garcia, Juno Rasmussen |
+| Automated Steward (AI)  | Automated accounts (bots) that own lines.                        |      1 |           0.2% | depbot\[bot\]                             |
+
+_Archetype names written by AI; membership is computed by OWNH._
+
 ## Cross-repository ownership
 
 Rows are the repository where a line lives; columns are the repository where
@@ -85,6 +142,37 @@ that line was first written, and so where its owner acquired it.
 | web-frontend    | 3,741 |                  78.2% |                      0.4% | platform (66.8%)       |
 
 Non-contributors own lines in a repository without a single commit to it.
+
+## Material findings
+
+Conditions identified in this analysis that warrant the attention of ownership leadership. Each finding is computed from the data and can be reproduced from the same repositories.
+
+### Line holdings
+
+1. **The most-owned line has no letters or digits.** `""` appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform.
+2. **6 of the top 15 lines are whitespace or punctuation.** Together they hold 38.7% of all lines: `""`, `"}"`, `"  }"`, `"    }"`, `"/*"`, and 1 more.
+3. **The most-deleted line.** `"  }"` has been removed 1,562 times. It belongs to Ada Lindqvist.
+4. **22,013 lines were added again after being deleted.** Each went straight back to its original owner (983 distinct lines).
+
+### Repository control
+
+5. **3 repositories were mostly written somewhere else.** web-frontend (66.8% first written in platform, 21.8% in itself); billing-service (65.7% first written in platform, 20.5% in itself); api-gateway (63.4% first written in platform, 33.9% in itself).
+6. **1 of 6 repositories is owned by someone who never committed to it.** api-gateway (Ada Lindqvist, 57.2%).
+7. **In 1 repository, most lines belong to people who never committed there.** api-gateway (57.3%).
+
+### Contributor performance
+
+8. **Fiona Format has removed 5,053 lines that belonged to others.** More than anyone else, against 21 of their own.
+
+### Measurement consistency
+
+9. **Three methods, three owners, in 5 repositories.** api-gateway (Juno Rasmussen / Fiona Format / Ada Lindqvist), billing-service (Freja Eriksen / Juno Rasmussen / Ada Lindqvist), infra-config (Yusuf Ulrich / Cleo Bianchi / Greta Okafor), platform (Pavel Rasmussen / Fiona Format / Ada Lindqvist), web-frontend (Juno Rasmussen / Fiona Format / Ada Lindqvist).
+
+### Declared ownership compliance
+
+10. **8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year.** Together they cover 17,424 lines. Largest: `*.js` in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%; `*.js` in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%; `*.js` in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%; `*.py` in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%; `*.js` in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%; and 3 more.
+11. **12 CODEOWNERS rules match no file, in 6 repositories.** `/legacy/` (api-gateway), `/docs/` (api-gateway), `/legacy/` (billing-service), `/docs/` (billing-service), `/legacy/` (data-pipeline), and 7 more.
+12. **5 CODEOWNERS rules are overridden by later rules for every file they match, in 5 repositories.** `/src/` (api-gateway), `/src/` (billing-service), `/data_pipeline/` (data-pipeline), `/src/` (platform), `/src/` (web-frontend).
 
 ## Three ways to own a repository
 
@@ -238,78 +326,6 @@ line written can be many lines owned.
 |   10 | Rosa Garcia \<rosa.garcia@example.com\>         |   227 |               169 |
 
 Removals inside merge commits are not counted: they are relative to git's re-run of the merge, not to a parent.
-
-## Code survival
-
-- All code: half-life of 2.0 years.
-- Ada Lindqvist: half-life of 2.3 years.
-- Mira Quist: half-life of 2.5 years.
-- Umar Lindqvist: half-life of 2.5 years.
-
-![Code survival](code-survival.svg)
-
-Copies of the same line are indistinguishable, so removals are paired with the oldest surviving copies of that line first. Lines still present count as surviving at their current age. A half-life marked projected extends an exponential decay through the last point.
-
-## Outlook
-
-- **Knowledge retention:** Contributors with no commit in the past year have owned the majority of the codebase since 2023 Q4 (now 76.1%).
-- **Principal owner:** Ada Lindqvist has owned the majority of the codebase since 2025 Q3 (now 54.1%).
-- **Blank lines:** 5,095 blank lines have been committed. At the current rate, the 10,000th arrives in 2031 Q4 (fit over 2023 Q3 to 2026 Q2, R² 0.99).
-
-![Ownership outlook](ownership-outlook.svg)
-
-![Blank line outlook](blank-line-outlook.svg)
-
-| Quarter | Lines under management |   QoQ | New owners | Ada Lindqvist | Non-contributors | Inactive owners | Blank lines committed |
-|---------|-----------------------:|------:|-----------:|--------------:|-----------------:|----------------:|----------------------:|
-| 2024 Q3 |                 11,927 | +2.7% |          1 |         42.6% |            12.2% |           69.6% |                 3,298 |
-| 2024 Q4 |                 12,917 | +8.3% |          3 |         45.7% |            12.5% |           71.5% |                 3,534 |
-| 2025 Q1 |                 13,706 | +6.1% |          2 |         47.8% |            12.7% |           71.9% |                 3,772 |
-| 2025 Q2 |                 14,786 | +7.9% |          2 |         49.7% |            12.9% |           77.1% |                 4,098 |
-| 2025 Q3 |                 15,506 | +4.9% |          3 |         51.2% |            12.4% |           77.9% |                 4,328 |
-| 2025 Q4 |                 15,709 | +1.3% |          0 |         52.4% |            12.8% |           78.3% |                 4,525 |
-| 2026 Q1 |                 16,737 | +6.5% |          0 |         53.6% |            12.8% |           77.0% |                 4,843 |
-| 2026 Q2 |                 17,513 | +4.6% |          1 |         54.1% |            13.0% |           76.1% |                 5,095 |
-
-Projections continue the trend of the last 12 quarters (least-squares slope) from the latest value. Series are lines added minus lines removed, each line owned by whoever first wrote it; at 2026 Q2 they total 17,513 lines against 17,495 at HEAD (lines added on branches whose changes a merge discarded are never removed). The blank-line series counts blank lines as committed. "Inactive" means no commit in the current or previous three quarters. "Now" is the quarter of the newest commit analyzed.
-
-## OKR draft (AI-generated)
-
-**Objective:** Build a more balanced and consistent ownership profile across repositories.
-
-- **KR1** (off track): Reduce principal-owner concentration from 54.1% at 2026 Q2, after it rose from 51.2% at 2025 Q3.
-- **KR2** (at risk): Lower the inactive-owner share from 76.1% at 2026 Q2, after easing from 77.9% at 2025 Q3, while the majority has persisted since 2023 Q4.
-- **KR3** (off track): Increase method agreement from a baseline of no repositories.
-
-_Written by AI (openai/gpt-6-luna) from OWNH's figures; every number was checked against the data. Names were replaced with tokens before anything left this machine._
-
-## Ownership archetypes
-
-| Archetype                 | Rule                                                             | Owners | Share of lines | Examples                                  |
-|---------------------------|------------------------------------------------------------------|-------:|---------------:|-------------------------------------------|
-| Dominant Steward (AI)     | The single owner with the most lines.                            |      1 |          54.2% | Ada Lindqvist                             |
-| Dormant Majority (AI)     | Owners with no commit in the last 4 quarters.                    |     12 |          76.2% | Ada Lindqvist, Mira Quist, Fiona Format   |
-| High-Impact Removers (AI) | People who removed more lines belonging to others than they own. |     32 |          26.2% | Fiona Format, Rosa Garcia, Juno Rasmussen |
-| Automated Owner (AI)      | Automated accounts (bots) that own lines.                        |      1 |           0.2% | depbot\[bot\]                             |
-
-_Archetype names written by AI; membership is computed by OWNH._
-
-## Oddities
-
-- The most-owned line has no letters or digits. `""`appears 3,578 times (20.5% of all lines) and belongs to Ada Lindqvist, who wrote it first in platform.
-- 6 of the top 15 lines are whitespace or punctuation. Together they hold 38.7% of all lines: `""`, `"}"`, `"  }"`, `"    }"`, `"/*"`, and 1 more.
-- web-frontend was mostly written somewhere else. 66.8% of its lines were first written in platform; 21.8% in web-frontend itself.
-- billing-service was mostly written somewhere else. 65.7% of its lines were first written in platform; 20.5% in billing-service itself.
-- api-gateway was mostly written somewhere else. 63.4% of its lines were first written in platform; 33.9% in api-gateway itself.
-- 1 of 6 repositories is owned by someone who never committed to it. api-gateway (Ada Lindqvist, 57.2%).
-- In 1 repository, most lines belong to people who never committed there. api-gateway (57.3%).
-- Three methods, three owners, in 5 repositories. api-gateway (Juno Rasmussen / Fiona Format / Ada Lindqvist), billing-service (Freja Eriksen / Juno Rasmussen / Ada Lindqvist), infra-config (Yusuf Ulrich / Cleo Bianchi / Greta Okafor), platform (Pavel Rasmussen / Fiona Format / Ada Lindqvist), web-frontend (Juno Rasmussen / Fiona Format / Ada Lindqvist).
-- Fiona Format has removed 5,053 lines that belonged to others. More than anyone else, against 21 of their own.
-- The most-deleted line. `"  }"`has been removed 1,562 times. It belongs to Ada Lindqvist.
-- 22,013 lines were added again after being deleted. Each went straight back to its original owner (983 distinct lines).
-- 8 CODEOWNERS rules declare owners for code whose top owner has not committed in a year. Together they cover 17,424 lines. Largest: `*.js`in platform declares @acme/javascript-guild; Ada Lindqvist owns 59.4%; `*.js`in web-frontend declares @acme/javascript-guild; Ada Lindqvist owns 63.4%; `*.js`in api-gateway declares @acme/javascript-guild; Ada Lindqvist owns 57.5%; `*.py`in data-pipeline declares @acme/python-guild; Ada Lindqvist owns 32.0%; `*.js`in billing-service declares @acme/javascript-guild; Ada Lindqvist owns 63.1%; and 3 more.
-- 12 CODEOWNERS rules match no file, in 6 repositories. `/legacy/`(api-gateway), `/docs/`(api-gateway), `/legacy/`(billing-service), `/docs/`(billing-service), `/legacy/`(data-pipeline), and 7 more.
-- 5 CODEOWNERS rules are overridden by later rules for every file they match, in 5 repositories. `/src/`(api-gateway), `/src/`(billing-service), `/data_pipeline/`(data-pipeline), `/src/`(platform), `/src/`(web-frontend).
 
 ## Repositories
 
